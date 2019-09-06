@@ -1,0 +1,11 @@
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class CgaAccount extends Model
+{
+    //
+    protected $table = 'compte_cga';
+}
