@@ -200,7 +200,14 @@ class AdminController extends Controller
     // envoi du formulaire de modification
     public function makeEditUser($username,UserEditRequest $request) {
         $user = User::select()->where('username',$username)->first();
-
+        // verifier si l'email n'est pas repete
+        if(!User::where("email",$request->input('email'))->where('username',$username)->first() && User::where('email',$request->input("email"))->first()) {
+          return back()->with("_errors","Adresse email existante!");
+        }
+        // verifier si la localisation exist deja
+        if(!User::where('localisation',$request->input("localisation"))->where('username',$username)->first() && User::where("localisation",$request->input('localisation'))->first()) {
+          return back()->with("_errors","Localisation existante!");
+        }
         $user->email = $request->input('email');
         $user->phone = $request->input('phone');
         $user->localisation = $request->input('localisation');

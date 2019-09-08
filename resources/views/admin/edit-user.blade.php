@@ -5,9 +5,15 @@
 	<div class="uk-container">
 		<h3><a href="{{url('/admin/list-users')}}" uk-tooltip="tous les utilisateurs" uk-icon="icon:arrow-left;ratio:1.5"></a> Modifier les informations</h3>
 
-		@if(session('success')) 
+		@if(session('success'))
 		<div class="uk-alert uk-alert-success">
 			<div>{{session('success')}}</div>
+		</div>
+		@endif
+		@if(session('_errors'))
+		<div class="uk-alert-danger" uk-alert>
+			<a href="#" class="uk-alert-close" uk-close></a>
+			<p>{{session("_errors")}}</p>
 		</div>
 		@endif
 
@@ -36,7 +42,7 @@
 				{!!Form::text('localisation',$utilisateur->localisation,['class'=>'uk-input uk-margin-small','placeholder'=>'Agence','id'=>'localisation'])!!}
 				{!!Form::hidden('password','loudcssyf')!!}
 			</div>
-			
+
 			<div id="agency-infos">
 				<h4>Agence</h4>
 				@if($utilisateur->type == 'v_standart')
@@ -57,15 +63,15 @@
 			@endif
 				{!!Form::close()!!}
 
-		
-	</div>	
+
+	</div>
 </div>
 
 @endsection
 @section('script')
 <script type="text/javascript">
 	$(function() {
-		
+
 	});
 </script>
 @endsection
