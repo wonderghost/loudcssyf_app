@@ -81,6 +81,7 @@ return array(
     'App\\Recrutements' => $baseDir . '/app/Recrutements.php',
     'App\\Repertoire' => $baseDir . '/app/Repertoire.php',
     'App\\RexAccount' => $baseDir . '/app/RexAccount.php',
+    'App\\SerialNumberTemp' => $baseDir . '/app/SerialNumberTemp.php',
     'App\\Stock' => $baseDir . '/app/Stock.php',
     'App\\StockPrime' => $baseDir . '/app/StockPrime.php',
     'App\\StockVendeur' => $baseDir . '/app/StockVendeur.php',

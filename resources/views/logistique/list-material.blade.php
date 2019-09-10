@@ -46,10 +46,11 @@
 @section('script')
 <script type="text/javascript">
 	$(function() {
+		
 		// console.log($adminPage.activeData);
 		// return 0;
 		setInterval(function() {
-			$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}",$('#mat-filter').val(),false);	
+			$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}",$('#mat-filter').val(),false);
 		},10000);
 
 		$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}",$('#mat-filter').val(),false);
@@ -59,8 +60,8 @@
 			$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}",$('#mat-filter').val(),false);
 		});
 
-		// 
-		
+		//
+
 
 	});
 </script>

@@ -131,6 +131,9 @@ class LogistiqueController extends Controller
 
     public function completRegistrationFinal(Request $request) {
         $produit = session('produit');
+
+
+
         // ENREGISTREMENT DANS PRODUITS S'IL N'EXISTE PAS
         if(!$_temp = $this->isExisteMaterialName($produit->libelle)) {
             // Le materiel n'existe pas
@@ -179,7 +182,8 @@ class LogistiqueController extends Controller
         }
         $entreeDepot->save();
         session()->forget(['produit','quantite','depot']);
-        return redirect('/admin/add-depot')->with('success',"Enregistrement reussi!");
+        return response()->json('success');
+        // return redirect('/admin/add-depot')->with('success',"Enregistrement reussi!");
     }
 
 

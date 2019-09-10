@@ -449,6 +449,7 @@ class ComposerStaticInit15d5dc02f650ad17553f69fb230f4dbd
         'App\\Recrutements' => __DIR__ . '/../..' . '/app/Recrutements.php',
         'App\\Repertoire' => __DIR__ . '/../..' . '/app/Repertoire.php',
         'App\\RexAccount' => __DIR__ . '/../..' . '/app/RexAccount.php',
+        'App\\SerialNumberTemp' => __DIR__ . '/../..' . '/app/SerialNumberTemp.php',
         'App\\Stock' => __DIR__ . '/../..' . '/app/Stock.php',
         'App\\StockPrime' => __DIR__ . '/../..' . '/app/StockPrime.php',
         'App\\StockVendeur' => __DIR__ . '/../..' . '/app/StockVendeur.php',

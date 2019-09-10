@@ -20,6 +20,8 @@ use App\Livraison;
 use App\RavitaillementVendeur;
 use App\CommandProduit;
 use App\Exceptions\CommandStatus;
+use App\Exceptions\SerialException;
+use App\SerialNumberTemp;
 
 Trait Similarity {
   //  Verifier si le ravitaillement est possbile
@@ -205,15 +207,22 @@ Trait Similarity {
     }
 
     public function findSerialNumber(Request $request) {
-        $temp = Exemplaire::select()->where('serial_number',$request->input('ref'))->first();
+      try {
+        // verifier si le numero de serie existe deja
+        $temp = Exemplaire::where("serial_number",$request->input('ref'))->first();
         if($temp) {
-            return response()->json('done');
+          // le numero existe deja
+          throw new SerialException("Numero existant !");
         }
-        return response()->json('fail');
+        return response()->json('success');
+      }
+       catch (SerialException $e) {
+        return response()->json($e->getMessage());
+      }
     }
 
     public function getSerialNumber( Request $request) {
-        // verifier si le sn existe dans le systeme
+        // recuperation de la valeur en base de donnees
         $temp = Exemplaire::select()->where('serial_number',$request->input('ref'))->first();
         // return response()->json($temp);
         if($temp) {
