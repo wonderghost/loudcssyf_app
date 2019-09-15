@@ -386,6 +386,7 @@ class ComposerStaticInit15d5dc02f650ad17553f69fb230f4dbd
         'App\\Depots' => __DIR__ . '/../..' . '/app/Depots.php',
         'App\\Exceptions\\CommandStatus' => __DIR__ . '/../..' . '/app/Exceptions/CommandStatus.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
+        'App\\Exceptions\\SerialException' => __DIR__ . '/../..' . '/app/Exceptions/SerialException.php',
         'App\\Exemplaire' => __DIR__ . '/../..' . '/app/Exemplaire.php',
         'App\\Formule' => __DIR__ . '/../..' . '/app/Formule.php',
         'App\\Http\\Controllers\\AdminController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdminController.php',

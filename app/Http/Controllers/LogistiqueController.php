@@ -268,18 +268,20 @@ class LogistiqueController extends Controller
           // LA COMMANDE N'EXISTE PAS
           return redirect('/user/commandes')->with("_errors","Ressayez Ulterieurement!");
       }
+      // recuperer le vendeurs qui a emis la commande
+      $user = CommandMaterial::where('id_commande',$commande)->first()->vendeurs()->first();
 
-      // RECUPERATION DES VENDEURS (STANDART ET DA)
-        $user = User::select()->where('type','v_da')->orWhere('type','v_standart')->get();
-        $agence = [];
-        foreach($user as $key => $values) {
-            $agence[$key] = Agence::select()->where('reference',$values->agence)->first();
-        }
-        $materiel = Produits::all();
-        $depots = Depots::all();
-        return view('logistique.add-ravitaillement')->withUsers($user)->withAgences($agence)
+      $this->CommandChangeStatus($commande,$user->username);
+      if($this->changeCommandStatusGlobale($commande)) {
+        return redirect('/user/commandes');
+      };
+      $agence = Agence::where('reference',$user->agence)->first();
+      $materiel = Produits::all();
+      $depots = Depots::all();
+      return view('logistique.add-ravitaillement')->withUsers($user)->withAgences($agence)
                         ->withMateriel($materiel)
-                        ->withDepots($depots);
+                        ->withDepots($depots)
+                        ->withCommande($commande);
     }
 
     // TRAITEMENT DE LA REQUETE DE COMMANDE , ENVOI DU RAVITAILLEMENT
@@ -293,7 +295,7 @@ class LogistiqueController extends Controller
         if(!$this->isExisteCommandeForVendeur($request->input('vendeur'),$request->input('produit'),$commande)) {
             return back()->with('_errors',"Ce vendeur n'a emis aucune commande!");
         }
-
+        $this->changeCommandStatusGlobale($commande);
             // VERIFIER SI LE MATERIEL EXISTE
         if($this->isExisteMaterial($request->input('produit'))) {
             // VERIFIER SI LE MATERIEL EXISTE DANS LE DEPOT CHOISI
@@ -368,17 +370,19 @@ class LogistiqueController extends Controller
                         $livraison->produits = $request->input('produit');
 
                         $livraison->quantite = $request->input('quantite');
-                        $livraison->depot = session('depot');
+                        $livraison->depot = $request->input('depot');
                         $livraison->code_livraison = Str::random(10);;
                         $livraison->save();
                         // ---===
-                        // verification du changement de status pour la commande
-                        $this->CommandChangeStatus (session('commande'),session('vendeur'));
+                        // verification du changement de status pour chaque produit de la commande
+                        $this->CommandChangeStatus(session('commande'),session('vendeur')); //changement par produit pour la commande
+                        $this->changeCommandStatusGlobale(session('commande')); //on confirme la commande globalement
                         return redirect('user/commandes')->with('success',"Ravitaillement reussi!");
 
                     }
                     // ici
                   } else {
+                    $this->CommandChangeStatus(session('commande'),session('vendeur'));
                     $__produit = Produits::where("reference",$request->input('produit'))->first();
                     return back()->with("_errors","Quantite `$__produit->libelle` deja saisi!");
                   }
@@ -672,10 +676,34 @@ class LogistiqueController extends Controller
           'type'=>'debit',
           'vendeurs'  =>  $request->input('ref')
           ])->get()->sum('quantite');
+          // quantite de parabole du
         $parabole_du = $migration - $compense;
         return response()->json($parabole_du);
+        // return response()->json([
+        //   'parabole_du' =>  $parabole_du,
+        //   'restant_pour_ravitaillement' =>  $this->getParaboleRestantPourRavitaillement($vendeur,$command,$material);
+        // ]);
     }
 
+    public function getRestantPourRavitaillement(Request $request) {
+      // Quantite de parabole restant pour ravitaillement
+      #quantite commander
+      $quantiteCommande = CommandProduit::where([
+        'commande'  =>  $request->input('command'),
+        'produit' =>  $request->input('material')
+      ])->first()->quantite_commande;
+
+      #quantite deja envoyer
+      $ravitaillements  = RavitaillementVendeur::select('id_ravitaillement')->where([
+        'vendeurs'  =>  $request->input('vendeurs'),
+        'commands'  =>  $request->input('command')
+      ])->get();
+
+      $quantiteEnvoyer = Livraison::whereIn('ravitaillement',$ravitaillements)->where('produits',$request->input('material'))->sum('quantite');
+
+      $restantPourRavitaillement = $quantiteCommande - $quantiteEnvoyer ;
+      return  response()->json($restantPourRavitaillement);
+    }
     //  CONFIRMER UNE COMMANDE
     public function confirmCommand($idCommande) {
         if(CommandMaterial::where(['id'    =>  $idCommande,'status'    =>  'unconfirmed'])->first()) {

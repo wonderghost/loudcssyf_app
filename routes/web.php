@@ -35,7 +35,7 @@ Route::middleware(['auth','admin'])->group(function () {
 
 	// admin routing
 	Route::get('/admin','AdminController@dashboard');
-	
+
 	Route::get('/admin/add-user','AdminController@getFormUser');
 	Route::post('/admin/add-user','AdminController@addUser');
 	Route::get('/admin/list-users','AdminController@listUser');
@@ -98,8 +98,10 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// RAVITAILLEMENT VENDEURS
 	Route::get('/user/ravitailler/{commande}','LogistiqueController@addStock')->middleware('logistique');
 	Route::post('/user/ravitailler/{commande}','LogistiqueController@makeAddStock')->middleware('logistique');
+
 	Route::post('/user/get-by-depot','LogistiqueController@getMaterialByDepot')->middleware('logistique');
 	Route::post('/user/parabole-du','LogistiqueController@getParaboleDu')->middleware('logistique');
+	Route::post('/user/reste-pour-ravitaillement','LogistiqueController@getRestantPourRavitaillement')->middleware('logistique');
 	// COMPLETER LE RAVITAILLEMENT EN SAISISSANT LES NUMEROS DE SERIE
 	Route::get('/user/ravitailler/{commande}/complete-transfert','LogistiqueController@completeTransfert')->middleware('logistique');
 	Route::post('/user/ravitailler/{commande}/complete-transfert','LogistiqueController@completeTransfertFinal')->middleware('logistique');

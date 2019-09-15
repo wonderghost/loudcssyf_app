@@ -31,7 +31,7 @@
 			        	{!!Form::hidden('compense',$compense,['id'=>'compense'])!!}
 
 			        	@if($material)
-								
+
 			        	<div class="uk-margin-small uk-grid-collapse uk-child-width-1-6@m"  uk-grid>
 			        		<div>
 					            <label uk-tooltip="{{$material->libelle}}">Kit Complet</label>

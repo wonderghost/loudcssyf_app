@@ -24,11 +24,31 @@ use App\Exceptions\SerialException;
 use App\SerialNumberTemp;
 
 Trait Similarity {
+  // changement de status pour la commande globalement
+  public function changeCommandStatusGlobale($command) {
+    $flag=0;
+    $command_produit = CommandProduit::where('commande',$command)->get();
+    foreach ($command_produit as $key => $value) {
+
+      if($value->status_ravitaillement > 0) {
+        $flag++;
+      }
+    }
+    //
+    // dd($flag);
+    if($flag == $command_produit->count()) {
+      // la commande peut etre confirmer globalement
+      CommandMaterial::where('id_commande',$command)->update([
+        'status'  =>  'confirmed'
+      ]);
+      // done
+      return true;
+    }
+  }
   //  Verifier si le ravitaillement est possbile
   public function isRavitaillementPossible ($commande,$request) {
     $commande = CommandMaterial::where([
       'id_commande'  =>  $commande
-
     ])->first();
 
     $ravitaillement = RavitaillementVendeur::select('id_ravitaillement')->where('commands',$commande->id_commande)->where('vendeurs',$request->input('vendeur'))->get();
@@ -42,7 +62,7 @@ Trait Similarity {
 
     // die();
     if($livraisons) {
-      if($comProd->quantite_commande > ($livraisons+$request->input('quantite'))) {
+      if($comProd->quantite_commande >= ($livraisons+$request->input('quantite'))) {
         return true;
       } else {
         return false;
@@ -52,9 +72,9 @@ Trait Similarity {
   }
   public function CommandChangeStatus ($commande,$vendeur) {
     $flag = $this->isCommandStatusChanged($commande,$vendeur);
-    dump($flag);
+    // dump($flag);
     $comProd = CommandProduit::where('commande',$commande)->get();
-    dump($comProd);
+    // dump($comProd);
     foreach ($comProd as $key => $value) {
       if($flag[$value->produit]  == 0) {
         // la commande n'est pas confirmer dabord pour ce produit
@@ -66,7 +86,7 @@ Trait Similarity {
           'commande'  =>  $value->commande,
           'produit' =>  $value->produit,
         ])->update([
-            'status_ravitaillement' =>  true
+            'status_ravitaillement' =>  1
         ]);
       }
     }
@@ -95,7 +115,7 @@ Trait Similarity {
       }
       return $flag;
     } catch (CommandStatus $e) {
-
+      return false;
     }
   }
 

@@ -14,7 +14,7 @@ class CommandMaterial extends Model
 
     // RECUPERER LE VENDEUR QUI A EMIS LA COMMANDE
     public function vendeurs() {
-      return $this->belongsTo('App\User');
+      return $this->belongsTo('App\User','vendeurs','username');
     }
 
     public function ravitaillements() {

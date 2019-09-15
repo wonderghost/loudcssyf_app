@@ -18,6 +18,7 @@ return array(
     'App\\Depots' => $baseDir . '/app/Depots.php',
     'App\\Exceptions\\CommandStatus' => $baseDir . '/app/Exceptions/CommandStatus.php',
     'App\\Exceptions\\Handler' => $baseDir . '/app/Exceptions/Handler.php',
+    'App\\Exceptions\\SerialException' => $baseDir . '/app/Exceptions/SerialException.php',
     'App\\Exemplaire' => $baseDir . '/app/Exemplaire.php',
     'App\\Formule' => $baseDir . '/app/Formule.php',
     'App\\Http\\Controllers\\AdminController' => $baseDir . '/app/Http/Controllers/AdminController.php',

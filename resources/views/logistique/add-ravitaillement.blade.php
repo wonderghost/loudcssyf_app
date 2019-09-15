@@ -12,6 +12,8 @@
 			<div class="uk-alert uk-alert-success">{{session('success')}} <button class="uk-align-right close-button"  uk-icon="icon:close"></button></div>
 		@endif
 
+
+
 		<!-- FORMULAIRE DE RAVITAILLEMENT -->
 		{!!Form::open(['url'=> url()->current()])!!}
 		@if($errors->has('vendeur') || $errors->has('produit') || $errors->has('depot') || $errors->has('quantite'))
@@ -25,24 +27,26 @@
 		@endif
 		<!-- SELECT VENDEURS -->
 		<div class="" uk-grid>
-			<div class="uk-width-2-3@m">
+			<div class="uk-width-3-5@m">
 				<label>Vendeur</label>
 				<select name="vendeur" class="uk-select" id="vendeur-id">
 					<option value="">--Vendeur--</option>
 					@if($users && $agences)
-					@foreach($users as $key => $values)
-					<option value="{{$values->username}}">
-						<span>{{$values->username}}</span> -
-						<span>{{$values->localisation}}</span> -
-						<span>{{$agences[$key]->societe}}</span>
+					<option value="{{$users->username}}">
+						<span>{{$users->username}}</span> -
+						<span>{{$users->localisation}}</span> -
+						<span>{{$agences->societe}}</span>
 					</option>
-					@endforeach
 					@endif
 				</select>
 			</div>
-			<div class="uk-width-1-3@m">
+			<div class="uk-width-1-5@m">
 				<label>Parabole du</label>
 				{!!Form::text('parabole_du',0,['class'=>'uk-input','disabled','id'=>'parabole_du'])!!}
+			</div>
+			<div class="uk-width-1-5@m">
+					<label>Restant pour ravitaillement</label>
+					{!!Form::text('reste_a_ravitailler',0,['class'=>'uk-input','disabled','id'=>'reste_a_ravitailler'])!!}
 			</div>
 		</div>
 		<!-- SELECT MATERIAL -->
@@ -92,6 +96,10 @@
 			$(this).parent().hide(500);
 		})
 
+		// recuration de la quantite restant pour ravitaillement
+
+
+
 		$("#vendeur-id").on('change',function () {
 
 			var form = $adminPage.makeForm("{{csrf_token()}}","{{url('/user/parabole-du')}}",$(this).val());
@@ -104,10 +112,11 @@
 					dataType : 'json'
 				})
 				.done(function (data) {
+					// recuperation de la quantite de parabole du et de celle restant pour ravitaillement
 						$("#parabole_du").val(data);
 				})
 				.fail(function (data) {
-					Uikit.modal.alert('Erreur!');
+					UIkit.modal.alert('Erreur!');
 				});
 			});
 
@@ -116,7 +125,9 @@
 		});
 
 		$('#produit').on('change',function() {
+
 			var form = $adminPage.makeForm("{{csrf_token()}}","{{url('user/get-by-depot')}}",$(this).val());
+			var mat = $(this).val();
 			form.on('submit',function(e) {
 				e.preventDefault();
 				$.ajax({
@@ -144,6 +155,36 @@
 				})
 			});
 			form.submit();
+
+			// recuration de la quantite restant pour ravitaillement
+
+			var myForm = $adminPage.makeForm("","{{url('/user/reste-pour-ravitaillement')}}","");
+
+
+
+			myForm.on('submit',function (e) {
+				e.preventDefault();
+				$.ajax({
+					url : $(this).attr('action'),
+					type : 'post',
+					dataType : 'json',
+					data : {
+						'vendeurs' : "{{$users->username}}",
+						'command'	 : "{{$commande}}",
+						'material' : mat,
+						'_token'	:	"{{csrf_token()}}"
+					}
+				})
+				.done(function (data) {
+					$("#reste_a_ravitailler").val(data);
+				})
+				.fail(function (data) {
+					UIkit.modal.alert(data).then(function () {
+						$(location).attr('href',"{{url()->current()}}");
+					});
+				})
+			});
+		myForm.submit();
 		});
 
 	});
