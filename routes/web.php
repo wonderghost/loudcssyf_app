@@ -15,6 +15,9 @@
 // });
 
 Route::middleware(['auth','admin'])->group(function () {
+	// etat depot Central
+	Route::get('/admin/depot-central','AdminController@etatDepotCentral');
+	Route::post('/admin/depot-central','AdminController@getEtatDepotCentral');
 	// PARAMETRES
 	Route::get('/admin/settings','Settings@index');
 	Route::post('/admin/change-password','Settings@changePassword');
@@ -43,13 +46,10 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/add-depot','LogistiqueController@makeDepot');
 	Route::post("/admin/add-depot",'LogistiqueController@addDepot');
 	Route::post('/admin/add-material','LogistiqueController@addMaterial');
-	Route::get('/admin/add-material/complete-registration','LogistiqueController@completeRegistration');
-	// completer l'enregistrement du materiel
-	Route::post('/admin/add-material/complete-registration','LogistiqueController@completRegistrationFinal');
 	//
-	Route::post('/admin/add-material/find-serial-number','LogistiqueController@findSerialNumber');
+	// Route::post('/admin/add-material/find-serial-number','LogistiqueController@findSerialNumber');
 	// Annuler un enregistrement
-	Route::post('/admin/add-material/abort-registration','LogistiqueController@abortRegistration');
+	// Route::post('/admin/add-material/abort-registration','LogistiqueController@abortRegistration');
 	//
 	Route::post('/admin/add-depot/auto-complete','LogistiqueController@findMaterial');
 	// list des materieles
@@ -77,7 +77,17 @@ Auth::routes();
 // Route::get('/','HomeController@connexion');
 // Route::get('/home', 'HomeController@index')->name('home');
 Route::middleware(['auth','unblocked'])->group(function () {
+	// ravitailler un depot
+	Route::get('/user/ravitailler-depot','LogistiqueController@ravitaillerDepot')->middleware('logistique');
+	Route::post('/user/ravitailler-depot','LogistiqueController@sendRavitaillementDepot')->middleware('logistique');
 
+	Route::get('/user/add-material/complete-registration','LogistiqueController@completeRegistration')->middleware('logistique');
+	Route::post('/user/add-material/complete-registration','LogistiqueController@completRegistrationFinal')->middleware('logistique');
+
+	Route::post('/user/add-material/find-serial-number','LogistiqueController@findSerialNumber')->middleware('logistique');
+	// Annuler un enregistrement
+	Route::post('/user/add-material/abort-registration','LogistiqueController@abortRegistration')->middleware('logistique');
+	// completer l'enregistrement du materiel
 	// PROFILE UTILISATEURS
 	Route::get('/user/settings','Settings@indexUser');
 	Route::post('/user/change-password','Settings@changePasswordUser');

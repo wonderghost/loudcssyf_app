@@ -50,50 +50,51 @@
                 <li class="uk-parent">
                     <a href="#"><span uk-icon="icon:user;ratio:0.9"></span> Utilisateurs</a>
                     <ul class="uk-nav-sub">
-                        <li><a href="{{url('/admin/add-user')}}"><span uk-icon="icon:plus"></span> Nouveau</a></li>
-                        <li><a href="{{url('/admin/list-users')}}"><span uk-icon="icon:list"></span> Tous les utilisateurs</a></li>
+                        <li><a href="{{url('/admin/add-user')}}"><span uk-icon="icon:arrow-right"></span> Nouveau</a></li>
+                        <li><a href="{{url('/admin/list-users')}}"><span uk-icon="icon:arrow-right"></span> Tous les utilisateurs</a></li>
                     </ul>
                 </li>
                 <li class="uk-parent">
                     <a href="#"><span uk-icon="icon:credit-card;ratio:0.9"></span> Compte Credit</a>
                     <ul class="uk-nav-sub">
-                        <li><a href="{{url('/admin/add-account-credit')}}"><span uk-icon="icon:shrink"></span> Crediter</a></li>
-                        <li><a href="#"><span uk-icon="icon:plus"></span> Creer un compte</a></li>
-                        <li><a href="#"><span uk-icon="icon:history"></span> Toutes les transactions</a></li>
+                        <li><a href="{{url('/admin/add-account-credit')}}"><span uk-icon="icon:arrow-right"></span> Crediter</a></li>
+                        <li><a href="#"><span uk-icon="icon:arrow-right"></span> Creer un compte</a></li>
+                        <li><a href="#"><span uk-icon="icon:arrow-right"></span> Toutes les transactions</a></li>
                     </ul>
                 </li>
                 <li class="uk-parent">
                     <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Depots</a>
                     <ul class="uk-nav-sub">
-                        <li><a href="{{url('/admin/add-depot')}}"><span uk-icon="icon:plus"></span> Nouveau</a></li>
-                        <li><a href="{{url('/admin/list-material')}}"><span uk-icon="icon:list"></span> Tous les materiels</a></li>
+                        <li><a href="{{url('/admin/add-depot')}}"><span uk-icon="icon:arrow-right"></span> Nouveau Materiel</a></li>
+                        <li><a href="{{url('/admin/depot-central')}}"><span uk-icon="icon:arrow-right"></span> Depot Central</a></li>
+                        <li><a href="{{url('/admin/list-material')}}"><span uk-icon="icon:arrow-right"></span> Tous les materiels</a></li>
                         <!-- <li><a href="{{url('/admin/list-depot')}}"><span uk-icon="icon:list"></span> Tous les depots</a></li> -->
-                        <li><a href="{{url('/admin/history-depot')}}"><span uk-icon="icon:history"></span> Historique </a></li>
+                        <li><a href="{{url('/admin/history-depot')}}"><span uk-icon="icon:arrow-right"></span> Historique </a></li>
                     </ul>
                 </li>
                 <li class="uk-parent">
                     <a href="#"><span uk-icon="icon:thumbnails;ratio:0.9"></span> Stock</a>
                     <ul class="uk-nav-sub">
-                        <li><a href="{{url('/admin/inventory')}}"><span uk-icon="icon:list"></span> Inventaire</a></li>
-                        <li><a href="#"><span uk-icon="icon:history"></span> Historique de ravitaillement</a></li>
+                        <li><a href="{{url('/admin/inventory')}}"><span uk-icon="icon:arrow-right"></span> Inventaire</a></li>
+                        <li><a href="#"><span uk-icon="icon:arrow-right"></span> Historique de ravitaillement</a></li>
                     </ul>
                 </li>
                 <li class="uk-parent">
                     <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Commandes</a>
                     <ul class="uk-nav-sub">
-                        <li><a href="{{url('/user/commandes')}}"><span uk-icon="icon:thumbnails"></span> Toutes les Commandes</a></li>
+                        <li><a href="{{url('/user/commandes')}}"><span uk-icon="icon:arrow-right"></span> Toutes les Commandes</a></li>
                     </ul>
                 </li>
                 <li class="uk-parent">
                             <a href="#"><span uk-icon="icon:cart;ratio:0.9"></span> Rapport Ventes</a>
                             <ul class="uk-nav-sub">
-                                <li><a href="{{url('admin/add-rapport')}}"><span uk-icon="icon:plus"></span> Ajouter</a></li>
+                                <li><a href="{{url('admin/add-rapport')}}"><span uk-icon="icon:arrow-right"></span> Ajouter</a></li>
                                 <!-- <li><a href="#"><span uk-icon="icon:plus"></span> Recrutement</a></li> -->
                                 <!-- <li><a href="#"><span uk-icon="icon:refresh"></span> Reabonnement</a></li> -->
                                 <!-- <li><a href="#"><span uk-icon="icon:move"></span> Upgrade</a></li> -->
                                 <!-- <li><a href="#"><span uk-icon="icon:shrink"></span> Migration</a></li> -->
                                 <!-- <li><a href="#"><span uk-icon="icon:forward"></span> Libre</a></li> -->
-                                <li><a href="{{url('admin/all-rapport')}}"><span uk-icon="icon:history"></span> Toutes les ventes</a></li>
+                                <li><a href="{{url('admin/all-rapport')}}"><span uk-icon="icon:arrow-right"></span> Toutes les ventes</a></li>
                             </ul>
                         </li>
                     @endif
@@ -103,16 +104,17 @@
                 <li class="uk-parent">
                     <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Depots</a>
                     <ul class="uk-nav-sub">
-                        <li><a href="{{url('/user/list-material')}}"><span uk-icon="icon:list"></span> Tous les materiels</a></li>
-                        <li><a href="{{url('/user/history-depot')}}"><span uk-icon="icon:history"></span> Historique </a></li>
+                        <li><a href="{{url('/user/ravitailler-depot')}}"><span uk-icon="icon:arrow-right"></span> Ravitailler un depot</a></li>
+                        <li><a href="{{url('/user/list-material')}}"><span uk-icon="icon:arrow-right"></span> Tous les materiels</a></li>
+                        <li><a href="{{url('/user/history-depot')}}"><span uk-icon="icon:arrow-right"></span> Historique </a></li>
                     </ul>
                 </li>
                 <li class="uk-parent">
                     <a href="#"><span uk-icon="icon:thumbnails;ratio:0.9"></span> Stock</a>
                     <ul class="uk-nav-sub">
                         <!-- <li><a href="{{url('/user/add-stock')}}"><span uk-icon="icon:plus"></span> Ravitaillement</a></li> -->
-                        <li><a href="{{url('/user/inventory')}}"><span uk-icon="icon:list"></span> Inventaire</a></li>
-                        <li><a href="#"><span uk-icon="icon:history"></span> Historique de ravitaillement</a></li>
+                        <li><a href="{{url('/user/inventory')}}"><span uk-icon="icon:arrow-right"></span> Inventaire</a></li>
+                        <li><a href="#"><span uk-icon="icon:arrow-right"></span> Historique de ravitaillement</a></li>
                     </ul>
                 </li>
                 <li class="uk-parent">
@@ -141,24 +143,24 @@
                         <li class="uk-parent">
                             <a href="#"><span uk-icon="icon:thumbnails;ratio:0.9"></span> Stock</a>
                             <ul class="uk-nav-sub">
-                                <li><a href="{{url('/user/my-inventory')}}"><span uk-icon="icon:list"></span> Inventaire</a></li>
-                                <li><a href="{{url('/user/my-history-ravitaillement')}}"><span uk-icon="icon:history"></span> Historique de ravitaillement</a></li>
+                                <li><a href="{{url('/user/my-inventory')}}"><span uk-icon="icon:arrow-right"></span> Inventaire</a></li>
+                                <li><a href="{{url('/user/my-history-ravitaillement')}}"><span uk-icon="icon:arrow-right"></span> Historique de ravitaillement</a></li>
                             </ul>
                         </li>
 
                         <li class="uk-parent">
                             <a href="#"><span uk-icon="icon:users;ratio:0.9"></span> Carnet d'adresse</a>
                             <ul class="uk-nav-sub">
-                                <li><a href="{{url('/user/add-client')}}"><span uk-icon="icon:plus"></span> Nouveau</a></li>
-                                <li><a href="{{url('/user/list-client')}}"><span uk-icon="icon:list"></span> Repertoire</a></li>
+                                <li><a href="{{url('/user/add-client')}}"><span uk-icon="icon:arrow-right"></span> Nouveau</a></li>
+                                <li><a href="{{url('/user/list-client')}}"><span uk-icon="icon:arrow-right"></span> Repertoire</a></li>
                             </ul>
                         </li>
 
                         <li class="uk-parent">
                             <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Commandes</a>
                             <ul class="uk-nav-sub">
-                                <li><a href="{{url('/user/new-command')}}"><span uk-icon="icon:plus"></span> Nouvelle Commande</a></li>
-                                <li><a href="{{url('/user/list-command')}}"><span uk-icon="icon:thumbnails"></span> Toutes les Commandes</a></li>
+                                <li><a href="{{url('/user/new-command')}}"><span uk-icon="icon:arrow-right"></span> Nouvelle Commande</a></li>
+                                <li><a href="{{url('/user/list-command')}}"><span uk-icon="icon:arrow-right"></span> Toutes les Commandes</a></li>
                             </ul>
                         </li>
                         <!-- <li class="uk-parent">
@@ -175,16 +177,16 @@
                             <a href="#"><span uk-icon="icon:credit-card;ratio:0.9"></span> Credit</a>
                             <ul class="uk-nav-sub">
                                 <!-- LOGISTIC ONLY -->
-                                <li><a href="{{url('user/cga-credit')}}"><span uk-icon="icon:shrink"></span> Crediter un Vendeur</a></li>
+                                <li><a href="{{url('user/cga-credit')}}"><span uk-icon="icon:arrow-right"></span> Crediter un Vendeur</a></li>
                                 <!-- // -->
-                                <li><a href="{{url('/user/vendeur-solde')}}"><span uk-icon="icon:history"></span> Solde Vendeur</a></li>
-                                <li><a href=""><span uk-icon="icon:history"></span> Historique</a></li>
+                                <li><a href="{{url('/user/vendeur-solde')}}"><span uk-icon="icon:arrow-right"></span> Solde Vendeur</a></li>
+                                <li><a href=""><span uk-icon="icon:arrow-right"></span> Historique</a></li>
                             </ul>
                         </li>
                         <li class="uk-parent">
                             <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Commandes</a>
                             <ul class="uk-nav-sub">
-                                <li><a href=""><span uk-icon="icon:thumbnails"></span> Toutes les Commandes</a></li>
+                                <li><a href=""><span uk-icon="icon:arrow-right"></span> Toutes les Commandes</a></li>
                             </ul>
                         </li>
                         @endif
@@ -194,16 +196,16 @@
                             <a href="#"><span uk-icon="icon:credit-card;ratio:0.9"></span> Credit</a>
                             <ul class="uk-nav-sub">
                                 <!-- LOGISTIC ONLY -->
-                                <li><a href="{{url('user/rex-credit')}}"><span uk-icon="icon:shrink"></span> Crediter un Vendeur</a></li>
+                                <li><a href="{{url('user/rex-credit')}}"><span uk-icon="icon:arrow-right"></span> Crediter un Vendeur</a></li>
                                 <!-- // -->
-                                <li><a href=""><span uk-icon="icon:history"></span> Solde Vendeur</a></li>
-                                <li><a href=""><span uk-icon="icon:history"></span> Historique</a></li>
+                                <li><a href=""><span uk-icon="icon:arrow-right"></span> Solde Vendeur</a></li>
+                                <li><a href=""><span uk-icon="icon:arrow-right"></span> Historique</a></li>
                             </ul>
                         </li>
                         <li class="uk-parent">
                             <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Commandes</a>
                             <ul class="uk-nav-sub">
-                                <li><a href=""><span uk-icon="icon:thumbnails"></span> Toutes les Commandes</a></li>
+                                <li><a href=""><span uk-icon="icon:arrow-right"></span> Toutes les Commandes</a></li>
                             </ul>
                         </li>
                         @endif
@@ -215,8 +217,8 @@
                             <a href="#"><span uk-icon="icon:cart;ratio:0.9"></span> Materiels</a>
                             <ul class="uk-nav-sub">
                                 <!-- LOGISTIC ONLY -->
-                                <li><a href="{{url('/user/inventaire-depot')}}"><span uk-icon="icon:list"></span> Stock</a></li>
-                                <li><a href="{{url('/user/livraison')}}"><span uk-icon="icon:list"></span> Commandes</a></li>
+                                <li><a href="{{url('/user/inventaire-depot')}}"><span uk-icon="icon:arrow-right"></span> Stock</a></li>
+                                <li><a href="{{url('/user/livraison')}}"><span uk-icon="icon:arrow-right"></span> Commandes</a></li>
                                 <!-- // -->
                                 <!-- <li><a href=""><span uk-icon="icon:history"></span> Solde Vendeur</a></li>
                                 <li><a href=""><span uk-icon="icon:history"></span> Historique</a></li> -->
@@ -254,6 +256,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/js/uikit.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/js/uikit-icons.min.js"></script>
 <script type="text/javascript" src="{{asset('js/myscript.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/myscript_second.js')}}"></script>
 <script type="text/javascript">
 	$(function () {
         $(".close-button").on('click',function () {

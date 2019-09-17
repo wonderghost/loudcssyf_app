@@ -25,11 +25,10 @@ class MaterialRequest extends FormRequest
     {
         return [
             //
-            'depot'=>'required',
             'libelle'=>'required',
             'prix_initial'=>'required|numeric|min:1',
             'prix_unitaire'=>'required|numeric|min:1',
-            'quantite'=>'required',
+            'quantite'=>'required|min:1',
             'marge' => 'required|numeric|min:1'
         ];
     }

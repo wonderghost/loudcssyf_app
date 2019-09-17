@@ -32,26 +32,18 @@
 			</div>
 			<div class="uk-width-1-2@m">
 				<h3>Nouveau Materiel</h3>
-				@if($errors->has('depot') || $errors->has('libelle') || $errors->has('prix_unitaire') || $errors->has('quantite') || $errors->has('prix_initial') || $errors->has('marge'))
+				@if($errors->has('libelle') || $errors->has('prix_unitaire') || $errors->has('quantite') || $errors->has('prix_initial') || $errors->has('marge') || $errors->has('with_serial'))
 				<div class="uk-alert uk-alert-danger">
 					<button class="uk-align-right close-button"  uk-icon="icon:close"></button>
-					<div>{{$errors->first('depot')}}</div>
 					<div>{{$errors->first('libelle')}}</div>
 					<div>{{$errors->first('prix_unitaire')}}</div>
 					<div>{{$errors->first('prix_initial')}}</div>
 					<div>{{$errors->first('marge')}}</div>
 					<div>{{$errors->first('quantite')}}</div>
+					<div>{{$errors->first('with_serial')}}</div>
 				</div>
 				@endif
 				{!!Form::open(['url'=>'/admin/add-material'])!!}
-				<select name="depot" class="uk-select">
-					<option value="">Depots *</option>
-					@if($depots)
-					@foreach($depots as $values)
-					<option value="{{$values->localisation}}">{{$values->localisation}}</option>
-					@endforeach
-					@endif
-				</select>
 				{!!Form::text('libelle','',['class'=>'uk-input uk-margin-small','placeholder'=>'Materiel*','id'=>'mat-lib'])!!}
 				{!!Form::text('prix_initial',null,['class'=>'uk-input uk-margin-small','placeholder'=>'Prix Initial*','id'=>'mat-pi'])!!}
 				{!!Form::text('prix_unitaire',null,['class'=>'uk-input uk-margin-small','placeholder'=>'Prix de Vente*','id'=>'mat-pu'])!!}
@@ -59,7 +51,7 @@
 				{!!Form::number('quantite','',['class'=>'uk-input uk-margin-small','placeholder'=>'Quantite*'])!!}
 				<div>
 				<label>
-					Avec S/N {!!Form::checkbox('with_serial','true',['class'=>'uk-checkbox'])!!}
+					Avec S/N {!!Form::checkbox('with_serial',true,['class'=>'uk-checkbox'])!!}
 				</label>
 				</div>
 				<button type="submit" class="uk-button-default uk-border-rounded uk-margin-small">valider<span uk-icon="icon:check"></span></button>

@@ -13,9 +13,50 @@ function lisibilite_nombre(nbr) {
   	 return retour;
   	}
 //
-
-//
 var $adminPage = {
+  editButtonClick : function () {
+    $(".edit-button").on('click',function() {
+      $(location).attr('href','/admin/edit-material/'+$(this).attr('id'));
+    });
+  },
+  onLoading : function (flag) {
+    if(flag) {
+      $('.loader').show(300)
+    } else {
+      $('.loader').hide(300)
+    }
+  },
+  showListMaterial : function (data) {
+    var tr = []
+      for(var i =0 ;i < data.length ; i++) {
+        tr [i] = $("<tr></tr>");
+        var td = [];
+        for ( var j= 0 ; j< 8 ; j++) {
+          td [j] = $("<td></td>");
+          tr[i].append(td[j])
+        }
+
+        td[0].text(data[i].libelle)
+        td[1].text(data[i].quantite_centrale)
+        td[2].text(lisibilite_nombre(data[i].prix_initial))
+        td[3].text(lisibilite_nombre(data[i].prix_vente))
+        var ht = data[i].prix_vente - (data[i].prix_vente/1.18)
+        var tva = data[i].prix_vente/1.18
+        td[4].text(lisibilite_nombre(ht.toFixed(0)))
+        td[5].text(lisibilite_nombre(tva.toFixed(0)))
+        td[6].text(data[i].marge)
+        var edit = $("<button></button>") , span = $("<span></span>");
+        span.attr("uk-icon","icon:pencil")
+
+        edit.attr('id',data[i].reference)
+        edit.addClass('uk-button-primary uk-border-rounded edit-button')
+        edit.text('edit')
+        edit.append(span)
+        td[7].append(edit)
+        $("#list-material").append(tr[i])
+      }
+      $adminPage.editButtonClick();
+  },
 	makeForm : function (formToken,url,reference) {
 		var form = $("<form></form>");form.attr('action',url);form.attr('method','post');
 			var token = $("<input/>");
@@ -58,7 +99,7 @@ var $adminPage = {
 	}
 
 };
-//
+// bloquer un utilisateur
 $adminPage.blockUser = function ($formToken,$url,username) {
 	var form = $adminPage.makeForm($formToken,$url,username);
 	form.on('submit',function(e) {
@@ -82,6 +123,7 @@ $adminPage.blockUser = function ($formToken,$url,username) {
 	});
 	form.submit();
 }
+// debloquer un utilisateur
 $adminPage.unblockUser = function ($formToken,$url,username) {
 	var form = $adminPage.makeForm($formToken,$url,username);
 	form.on('submit',function(e) {
@@ -105,63 +147,6 @@ $adminPage.unblockUser = function ($formToken,$url,username) {
 	});
 	form.submit();
 }
-
-
-//
-
-$adminPage.createTableRow = function (sdata,champs=null,table,options,dashOption) {
-		 	table.html('');
-		 	//
-		 	var list=[];
-		 	// var champs = ['libelle','quantite','prix_achat','prix_unitaire','photo','edit','details'];
-					for(var i=0;i<sdata.length;i++) {
-						var td=[]
-						list[i]=$("<tr></tr>");
-						list[i].addClass('uk-animation-toggle');
-						for(var j=0;j<champs.length;j++) {
-							td[j] =$("<td></td>");
-							td[j].addClass('uk-animation-push');
-							// td[j].text(sdata[i].libelle);
-							// list[i].append(td[j]);
-						}
-						td[0].text(sdata[i].libelle);
-						td[1].text(sdata[i].quantite);
-						td[3].text(sdata[i].prix_achat);
-						td[2].text(sdata[i].prix_unitaire);
-						//
-
-
-						$adminPage.getAction(options,td,sdata[i].reference,dashOption);
-						// link.attr('href','')
-
-						//
-						// var img = $('<img/>');
-						// img.addClass('uk-preserve-width'); img.attr('src',"{{asset('uploads/')}}"+'/'+sdata[i].photo);
-						var img = $('<span><span/>');img.addClass('uk-icon uk-icon-image item-img');
-						img.attr('uk-icon-image','ratio:2');
-						img.attr('id',sdata[i].photo);
-						// img.attr('style',"background-image : url({{asset('uploads/')}}"+"/"+sdata[i].photo+");");
-						// img.attr('src',"{{asset('uploads/')}}"+'/'+sdata[i].photo);
-						td[4].append(img);
-						for(var j=0;j<champs.length;j++) {
-							list[i].append(td[j]);
-						}
-
-						if(sdata[i].date) {
-							td[2].text(sdata[i].date);
-							td[3].text(sdata[i].prix_unitaire);
-							td[4].text(sdata[i].prix_achat);
-							td[5].append(img);
-						}
-
-						table.append(list[i]);
-					}
-					$("td:empty").remove();
-
-
-		 	//
-
-		 };
 
 		 $adminPage.getAction = function (options=1,td,link,dashOption=false) {
 		 		var linkEdit = $("<a></a>");linkEdit.addClass('uk-button uk-button-link uk-text-capitalize');
@@ -191,102 +176,6 @@ $adminPage.createTableRow = function (sdata,champs=null,table,options,dashOption
 		 };
 
 
-$adminPage.addItemToCommand  = function (item) {
-
-	item.on('click',function () {
-		var reference = $(this).attr('id');
-		UIkit.modal.prompt('Entrez la quantite',1).then(function (quantite) {
-			// if(typeOf(quantite))
-			quantite = parseInt(quantite);
-			if(quantite && quantite > 0) {
-				// console.log(quantite);
-				// return 0;
-				var form = $adminPage.makeForm($('#token').val(),'add-item',reference);
-				var inputQuantite = $("<input/>");inputQuantite.attr('name','quantite');inputQuantite.val(quantite);
-				form.append(inputQuantite);
-				form.on('submit',function (e) {
-					e.preventDefault();
-					$.ajax({
-						url : $(this).attr('action'),
-						type : $(this).attr('method'),
-						data : $(this).serialize(),
-						dataType:'json'
-					})
-					.done(function (data) {
-
-						UIkit.modal.alert(data).then(function() {
-							// RECUPERATION DE LA LISTE ACTUALISEE DES PRODUITS
-							$adminPage.getDataFormAjax('all',$("#token").val(),'',['libelle','quantite','prix_achat','prix_unitaire','photo','edit','details'],$("#list-item"),2);
-						});
-					})
-					.fail(function (data) {
-						console.log(data);
-					});
-				});
-
-				form.submit();
-			} else {
-				UIkit.modal.alert('La valeur ne peut etre nulle').then(function() {
-					return 0;
-				});
-			}
-			// return 0;
-			//
-
-		});
-		// console.log(item);
-	});
-};
-
-$adminPage.getPanier =function (token,url) {
-	var form = $adminPage.makeForm(token,url,'');
-	form.on('submit',function(e) {
-		e.preventDefault();
-		$.ajax({
-			url:$(this).attr('action'),
-			type : $(this).attr('method'),
-			data : $(this).serialize(),
-			dataType : 'json'
-		})
-		.done(function (data) {
-			$("#panier").text(data.nb);
-		})
-		.fail(function (data) {
-			console.log(data);
-		});
-	});
-	form.submit();
-};
-
-$adminPage.detailsPanierOnGerant = function (token,url) {
-	var form=$adminPage.makeForm(token,url,'');
-	form.on('submit',function(e) {
-		e.preventDefault();
-		$.ajax({
-			url : $(this).attr('action'),
-			type : $(this).attr('method'),
-			data : $(this).serialize(),
-			dataType : 'json'
-		})
-		.done(function (data) {
-			if(data =="indefinie") {
-				UIkit.modal.alert('Aucune Commande en cours').then(function () {
-					$(location).attr('href','');
-				});
-			}
-			else {
-				$("#load").fadeOut();
-				$adminPage.createTableData(data.item_details,['libelle','quantite','prix_unitaire','total'],$("#details-panier"));
-				$("#cash").html(data.total_cash);
-			}
-		})
-		.fail(function(data) {
-			console.log(data);
-		});
-	});
-	form.submit();
-};
-
 $adminPage.createTableData = function (sdata,champs=null,table) {
 		 	//
 		 	table.html('');
@@ -298,7 +187,7 @@ $adminPage.createTableData = function (sdata,champs=null,table) {
 						// list[i].addClass('uk-animation-scale-up');
 						for(var j=0;j<champs.length;j++) {
 							td[j] =$("<td></td>");
-							td[j].addClass('uk-animation-shake');
+							td[j].addClass('uk-animation-slide-top');
 						}
 						td[0].text(sdata[i].libelle);
 						td[0].addClass('uk-text-bold');
@@ -321,13 +210,6 @@ $adminPage.createTableData = function (sdata,champs=null,table) {
 						linkEdit.append(span);
 
 						td[7].append(linkEdit);
-
-
-						//
-						// var img = $('<span><span/>');img.addClass('uk-icon uk-icon-image item-img');
-						// img.attr('uk-icon-image','ratio:2');
-						// img.attr('id',sdata[i].photo);
-
 						// td[4].append(img);
 						for(var j=0;j<champs.length;j++) {
 							list[i].append(td[j]);
@@ -610,96 +492,7 @@ $adminPage.getListRavitaillement = function (formToken,url,reference) {
 	form.submit();
 };
 
-$adminPage.finaliseCommand = function (formToken,url,reference) {
-	$(".btn-confirm").on('click',function() {
-		var form = $adminPage.makeForm(formToken,url,reference);
-		var input =$('<input/>');
-		input.attr('type','hidden');
-		 input.val($(this).attr('id'));
-		input.attr('name','action');
-		form.append(input);
-		form.on('submit',function (e) {
-			e.preventDefault();
-			// envoi de la requete ajax
-			$.ajax({
-				url: $(this).attr('action'),
-				type : $(this).attr('method'),
-				data : $(this).serialize(),
-				dataType:'json'
-			})
-			.done(function(data) {
-				UIkit.modal.alert(data).then(function () {
-					$(location).attr('href','');
-				});
-			})
-			.fail(function(data) {
-				console.log(data);
-			});
-		});
-		form.submit();
-	});
-};
 
-// RECHERCHE RAPIDE DES PRODUITS
-$adminPage.findItem = function (formToken,url,reference,wordSearch) {
-	var form = $adminPage.makeForm(formToken,url,reference);
-	var input = $('<input/>'); input.attr('type','hidden'); input.attr('name','wordSearch');
-	if(wordSearch) {
-		input.val(wordSearch);
-	}
-
-	form.append(input);
-	form.on('submit',function(e) {
-		e.preventDefault();
-		// envoi de la requet ajax
-		$.ajax({
-			url : $(this).attr('action'),
-			type : $(this).attr('method'),
-			data : $(this).serialize(),
-			dataType : 'json'
-		})
-		.done(function (data) {
-			if(data && data == "undefined") {
-				$("#list-item").html("<h1>Not found</h1>");
-			} else {
-				$adminPage.createTableRow(data,['libelle','quantite','prix_achat','prix_unitaire','photo','edit','details'],$("#list-item"));
-				$adminPage.showImage();
-			}
-		})
-		.fail(function (data) {
-			console.log(data);
-		});
-	});
-	form.submit();
-};
-// ===
-
-// FILTRER LES COMMANDES PAR DATE
-$adminPage.filterByDate = function ($ref) {
-	// FILTRAGE PAR DATE
-		var bout = $("<input/>");
-		 bout.attr('type','hidden');
-		 bout.attr('name','ref');
-		 bout.val($ref);
-		$("#filter-date").append(bout);
-
-		$("#filter-date").on('submit',function (e) {
-			e.preventDefault();
-			$.ajax({
-				url : $(this).attr('action') ,
-				type : $(this).attr('method'),
-				data : $(this).serialize(),
-				dataType : 'json'
-			})
-			.done(function (data) {
-				console.log(data);
-				$adminPage.createTableDataCommand(data,['code','date','boutique','status','cash',''],$("#list-command"),true);
-			})
-			.fail(function (data) {
-				console.log(data);
-			});
-		});
-};
 // list des commandes
 $adminPage.createTableCommandRow = function (sdata,champs=null,table,linkDetails) {
 		 	//
@@ -714,12 +507,7 @@ $adminPage.createTableCommandRow = function (sdata,champs=null,table,linkDetails
 							td[j] =$("<td></td>");
 							// td[j].addClass('uk-animation-shake');
 						}
-						// td[6].text(sdata[i].material);
-						// LIENS POUR LE DETAIL DES VENTES A TRAVERS LE NUMERO CLIENTS
 
-
-						// td[0].addClass('uk-text-bold');
-						// td[0].text(sdata[i].clients);
 
 						td[0].append(sdata[i].item);
 						td[1].text(sdata[i].quantite);
@@ -862,9 +650,3 @@ $adminPage.createTableCommandRow = function (sdata,champs=null,table,linkDetails
 						table.append(list[i]);
 					}
 		 };
-
-// VERIFICATION DE LA VALIDATION
-$adminPage.verifValidation = function () {
-
-}
-//

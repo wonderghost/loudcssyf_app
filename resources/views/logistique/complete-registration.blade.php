@@ -1,6 +1,6 @@
-@extends('layouts.app_admin')
+@extends('layouts.app_users')
 
-@section('admin_content')
+@section('content')
 <div class="uk-section uk-section-default">
 	<div class="uk-container">
 		<h3>Complete Registration</h3>
@@ -57,7 +57,7 @@
 		// apres le focus (verifier le duplicat et l'existence en base de donnees )
 		$(".serial-input").on('blur',function () {
 
-			var form = $adminPage.makeForm("{{csrf_token()}}",'/admin/add-material/find-serial-number',$(this).val());
+			var form = $adminPage.makeForm("{{csrf_token()}}",'/user/add-material/find-serial-number',$(this).val());
 			var serialNow = $(this);
 
 			// verification de l'exitence dans la base de donnees | envoi de la requete ajax
@@ -116,7 +116,7 @@
 		// ACTION SUR LE BOUTTON ANNULER
 		$("#abort").on('click',function() {
 			UIkit.modal.dialog("<div class='uk-padding' uk-spinner> Patientez svp... </div>");
-			var form = $adminPage.makeForm("{{csrf_token()}}",'/admin/add-material/abort-registration','');
+			var form = $adminPage.makeForm("{{csrf_token()}}",'/user/add-material/abort-registration','');
 			form.on('submit',function(e) {
 				e.preventDefault();
 				$.ajax({
@@ -128,7 +128,7 @@
 				.done(function(data) {
 					if(data == 'done') {
 						UIkit.modal.alert('Enregistrement annulé!').then(function() {
-							$(location).attr('href','');
+							$(location).attr('href',"{{url()->previous()}}");
 						});
 					}
 				})
@@ -146,7 +146,7 @@ $("#complete-form").on('submit',function (e) {
 	e.preventDefault();
 $(".serial-input").each(function (index,element) {
 	if($(element).val() == "") {
-		console.log('ok');
+		// console.log('ok');
 		$("#validate").attr('disabled','');
 	}
 })
@@ -163,7 +163,7 @@ $(".serial-input").each(function (index,element) {
 		if(data && data == "success") {
 			// enregistrement reussis
 			UIkit.modal.alert("Enregistrement reussi!").then(function () {
-				$(location).attr('href',"{{url('admin/list-material')}}");
+				$(location).attr('href',"{{url('user/list-material')}}");
 			})
 		}
 	})

@@ -24,6 +24,23 @@ use App\Exceptions\SerialException;
 use App\SerialNumberTemp;
 
 Trait Similarity {
+  // verifier la disponibilite de la quantite dans le depot central
+  public function isQuantiteValidInDepotCentral($produit,$quantite) {
+    $temp = Produits::where('reference',$produit)
+      ->where('quantite_centrale','>=',$quantite)->first();
+      if($temp) {
+        return $temp;
+      }
+      return false;
+  }
+  // avec ou sans serial number
+  public function isWithSerialNumber($reference) {
+    $temp = Produits::where('reference',$reference)->where('with_serial',1)->first();
+    if($temp) {
+      return $temp;
+    }
+    return false;
+  }
   // changement de status pour la commande globalement
   public function changeCommandStatusGlobale($command) {
     $flag=0;
@@ -230,6 +247,7 @@ Trait Similarity {
       try {
         // verifier si le numero de serie existe deja
         $temp = Exemplaire::where("serial_number",$request->input('ref'))->first();
+        // return response()->json($temp);
         if($temp) {
           // le numero existe deja
           throw new SerialException("Numero existant !");

@@ -28,6 +28,18 @@ class AdminController extends Controller
 {
     //
     use Similarity;
+
+    // etat du depot central
+    public function etatDepotCentral() {
+
+      return view('admin.depot-central');
+    }
+    // recuperation etat du depot Central
+    public function getEtatDepotCentral(Request $request) {
+      //
+      $produits = Produits::all();
+      return response()->json($produits);
+    }
     // VERIFIER SI LE NUMEROD N'EXISTE PAS EN DB
     public function isExistNumeroCga($numero) {
         $temp = CgaAccount::select()->where('numero',$numero)->first();

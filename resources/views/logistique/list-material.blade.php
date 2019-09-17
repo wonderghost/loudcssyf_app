@@ -46,7 +46,7 @@
 @section('script')
 <script type="text/javascript">
 	$(function() {
-		
+
 		// console.log($adminPage.activeData);
 		// return 0;
 		setInterval(function() {
