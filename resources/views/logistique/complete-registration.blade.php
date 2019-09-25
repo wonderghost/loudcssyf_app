@@ -11,10 +11,11 @@
 		<input type="hidden" id="quantite" value="{{session('quantite')}}">
 			{!!Form::open(['url'=>url()->current(),'method'=>'post','id'=>'complete-form'])!!}
 			<div id="all-inputs" class="uk-child-width-1-4@m" uk-grid><div uk-spinner>Patientez svp...</div></div>
-		<div class="uk-margin-small">
+		<div id="submit-btn" class="uk-margin-small">
 			<button type="button" class="uk-button-danger uk-border-rounded" id="abort">Annuler <span uk-icon="icon:close"></span></button>
-			<button type="submit" class="uk-button-default uk-border-rounded" id="validate">Valider <span uk-icon="icon:check"></span></button>
+			<button type="submit" class="uk-button-default uk-border-rounded" disabled id="validate">Valider <span uk-icon="icon:check"></span></button>
 		</div>
+		<div id="loader" style="display : none;" uk-spinner>Patientez un instant ...</div>
 			{!!Form::close()!!}
 	</div>
 </div>
@@ -77,9 +78,10 @@
 							status : 'danger',
 							timeout : 800
 						});
-
+						$("#validate").attr('disabled','')
 
 					} else {
+						$("#validate").removeAttr('disabled')
 						// le numero n'existe pas dans la base de donnees
 						// verifier s'il n'existe pas de duplicat
 						if($.inArray($.trim(serialNow.val()),tabSerial) == -1) {
@@ -89,9 +91,11 @@
 							// la valeur existe dans le tableau
 							if($.trim(serialNow.val()) == "")  {
 								UIkit.modal.alert("Ce champs ne peut etre vide!");
+								$("#validate").attr('disabled','');
 								return 0;
 							}
 							UIkit.modal.alert("Duplicat de numero!").then(function () {
+								$("#validate").attr('disabled','')
 								tabSerial.splice(tabSerial.indexOf($.trim(serialNow.val())),1);
 								$('.serial-input').each(function (index, element) {
 										if($.trim($(element).val()) == $.trim(serialNow.val())) {
@@ -157,10 +161,12 @@ $(".serial-input").each(function (index,element) {
 		data : $(this).serialize(),
 		dataType : 'json',
 		beforeSend : function () {
-			UIkit.modal.dialog("<div class='uk-box-shadow-small uk-background-muted uk-text-center'>Patientez Svp ... <div uk-spinner></div></div>");
+			$("#submit-btn").hide(300)
+			$("#loader").show(300)
 		}
 	}).done(function (data) {
 		if(data && data == "success") {
+			$("#loader").hide(300)
 			// enregistrement reussis
 			UIkit.modal.alert("Enregistrement reussi!").then(function () {
 				$(location).attr('href',"{{url('user/list-material')}}");

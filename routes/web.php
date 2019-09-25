@@ -80,6 +80,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// ravitailler un depot
 	Route::get('/user/ravitailler-depot','LogistiqueController@ravitaillerDepot')->middleware('logistique');
 	Route::post('/user/ravitailler-depot','LogistiqueController@sendRavitaillementDepot')->middleware('logistique');
+	Route::post('user/ravitailler-depot/get-mat-dispo','LogistiqueController@getMaterialDispo')->middleware('logistique');
 
 	Route::get('/user/add-material/complete-registration','LogistiqueController@completeRegistration')->middleware('logistique');
 	Route::post('/user/add-material/complete-registration','LogistiqueController@completRegistrationFinal')->middleware('logistique');

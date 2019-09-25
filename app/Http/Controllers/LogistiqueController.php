@@ -41,6 +41,7 @@ use App\Traits\Similarity;
 use App\Traits\Livraisons;
 //
 use App\Exceptions\CommandStatus;
+use App\Exceptions\AppException;
 
 class LogistiqueController extends Controller
 {
@@ -80,12 +81,24 @@ class LogistiqueController extends Controller
             // le numero de serie n'existe pas
           }
         } else {
-          throw new Exception("Quantite indisponible");
+          throw new AppException("Quantite indisponible");
         }
-      } catch (Exception $e) {
-        dump($e);
+
+      } catch (AppException $e) {
+        return back()->with("_errors",$e->getMessage());
       }
 
+    }
+    // recuperer la quantite de materiel disponible
+
+    public function getMaterialDispo(Request $request) {
+      $material = Produits::find($request->input("ref"));
+      if($material) {
+        return response()->json([
+          'quantite_disponible' =>  $material->quantite_centrale
+        ]);
+      }
+      return response()->json('fail');
     }
 
     public function makeDepot() {
@@ -140,8 +153,8 @@ class LogistiqueController extends Controller
     }
 
     public function completRegistrationFinal(Request $request) {
-        $produit = session('produit');
-        return response()->json($request);
+        $produit = Produits::find(session('produit'));
+        // return response()->json($produit);
 
         // ENREGISTREMENT DES SERIAL NUMBER
         for($i=0;$i<session('quantite');$i++) {
@@ -181,10 +194,14 @@ class LogistiqueController extends Controller
             $stockPrime->quantite = session('quantite');
             $stockPrime->save();
         }
+        // modification dans le depot central
+        $newQuantite = $produit->quantite_centrale - session('quantite');
+        $produit->quantite_centrale = $newQuantite;
+
         $entreeDepot->save();
+        $produit->save();
         session()->forget(['produit','quantite','depot']);
         return response()->json('success');
-        // return redirect('/admin/add-depot')->with('success',"Enregistrement reussi!");
     }
 
 
