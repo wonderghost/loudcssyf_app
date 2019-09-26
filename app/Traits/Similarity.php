@@ -45,12 +45,13 @@ Trait Similarity {
   public function changeCommandStatusGlobale($command) {
     $flag=0;
     $command_produit = CommandProduit::where('commande',$command)->get();
+    // dd($command);
     foreach ($command_produit as $key => $value) {
-
       if($value->status_ravitaillement > 0) {
         $flag++;
       }
     }
+
     //
     // dd($flag);
     if($flag == $command_produit->count()) {
@@ -92,13 +93,14 @@ Trait Similarity {
     // dump($flag);
     $comProd = CommandProduit::where('commande',$commande)->get();
     // dump($comProd);
+    // dd($comProd);
     foreach ($comProd as $key => $value) {
       if($flag[$value->produit]  == 0) {
         // la commande n'est pas confirmer dabord pour ce produit
 
       } else {
         // la commande est confirmer pour ce produit
-        echo "1";
+        // echo "1";
         CommandProduit::where([
           'commande'  =>  $value->commande,
           'produit' =>  $value->produit,
@@ -107,12 +109,10 @@ Trait Similarity {
         ]);
       }
     }
-
   }
   // VERIFICATION POUR LE CHANGEMENT D'ETAT DE LA COMMANDE
   public function isCommandStatusChanged($commande,$vendeur) {
     try {
-
       $laCommande = CommandProduit::where('commande',$commande)->get();
       $live = [];
       $flag = [];
@@ -120,6 +120,8 @@ Trait Similarity {
         $rav = RavitaillementVendeur::select('id_ravitaillement')->where('commands',$commande)->where('vendeurs',$vendeur)->where('livraison','non_confirmer')->get();
         $live[$key] = Livraison::where('status','unlivred')->whereIn('ravitaillement',$rav)->where('produits',$item->produit)->first();
         if($live[$key]) {
+          // dump($item->quantite_commande);
+          // dump($live[$key]->quantite);
           if($item->quantite_commande > $live[$key]->quantite) {
             // 0  => non_confirmer , 1  =>  confirmer
             $flag[$item->produit] = 0;
@@ -130,6 +132,7 @@ Trait Similarity {
           $flag[$item->produit] = 0;
         }
       }
+
       return $flag;
     } catch (CommandStatus $e) {
       return false;

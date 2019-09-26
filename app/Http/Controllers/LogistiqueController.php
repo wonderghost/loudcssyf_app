@@ -17,8 +17,6 @@ use App\Http\Requests\DepotRequest;
 use App\Http\Requests\MaterialRequest;
 use App\Http\Requests\RavitaillementRequest;
 use App\Http\Requests\MaterialEditRequest;
-
-
 use App\User;
 use App\Depots;
 use App\Produits;
@@ -79,6 +77,39 @@ class LogistiqueController extends Controller
             return redirect('/user/add-material/complete-registration');
           } else {
             // le numero de serie n'existe pas
+
+            $produit = Produits::find($request->input('produit'));
+
+
+            if($prod = $this->isInStock($produit->reference,$request->input('depot'))) {
+              // existe deja augmenter la quantite
+              $_quantite = $prod->quantite;
+              $_quantite += $request->input("quantite");
+              StockPrime::select()->where('produit',$produit->reference)->where('depot',$request->input('depot'))->update([
+                  'quantite'=> $_quantite
+              ]);
+
+            } else {
+              // n'existe pas on l'ajoute
+              $stockPrime = new StockPrime;
+              $stockPrime->produit = $produit->reference;
+              $stockPrime->depot = $request->input('depot');
+              $stockPrime->quantite = $request->input('quantite');
+              $stockPrime->save();
+            }
+            // $stockDepot->
+            $entreeDepot = new RavitaillementDepot;
+            $entreeDepot->produit = $produit->reference;
+            $entreeDepot->depot = $request->input('depot');
+            $entreeDepot->quantite = $request->input("quantite");
+
+            $newQuantite = $produit->quantite_centrale - $request->input('quantite');
+            $produit->quantite_centrale = $newQuantite;
+
+            $entreeDepot->save();
+            $produit->save();
+
+            return redirect("/user/list-material")->withSuccess("Success!");
           }
         } else {
           throw new AppException("Quantite indisponible");
@@ -123,6 +154,7 @@ class LogistiqueController extends Controller
     public function addMaterial(MaterialRequest $request) {
       $produit = new Produits;
       // verifier l'unicite de la reference
+      // dd($request);
       do {
           $produit->reference = 'LMAT-'.mt_rand(100000,999999);
       } while ($this->isExisteMaterial($produit->reference));
@@ -131,7 +163,11 @@ class LogistiqueController extends Controller
       $produit->quantite_centrale = $request->input("quantite");
       $produit->prix_initial = $request->input('prix_initial');
       $produit->marge = $request->input('marge');
-      $produit->with_serial = $request->input('with_serial');
+      if($request->input('with_serial')) {
+        $produit->with_serial = $request->input('with_serial');
+      } else {
+        $produit->with_serial = 0;
+      }
       if($this->isExisteMaterialName($request->input('libelle'))) {
         // le materiel existe deja donc augmenter juste la quantite
         $newQuantite  = Produits::where('libelle',$request->input('libelle'))->first()->quantite_centrale + $request->input('quantite');
@@ -293,6 +329,7 @@ class LogistiqueController extends Controller
       if($this->changeCommandStatusGlobale($commande)) {
         return redirect('/user/commandes');
       };
+      // die();
       $agence = Agence::where('reference',$user->agence)->first();
       $materiel = Produits::all();
       $depots = Depots::all();
@@ -304,133 +341,30 @@ class LogistiqueController extends Controller
 
     // TRAITEMENT DE LA REQUETE DE COMMANDE , ENVOI DU RAVITAILLEMENT
     public function makeAddStock(RavitaillementRequest $request,$commande) {
-
-        $msg = '';
-        // VERIFIER SI UNE COMMANDE EXISTE AU NOM DU VENDEUR
-        // dd($request);
-        // dump($request);
-        // die();
-        if(!$this->isExisteCommandeForVendeur($request->input('vendeur'),$request->input('produit'),$commande)) {
-            return back()->with('_errors',"Ce vendeur n'a emis aucune commande!");
-        }
-        $this->changeCommandStatusGlobale($commande);
-            // VERIFIER SI LE MATERIEL EXISTE
-        if($this->isExisteMaterial($request->input('produit'))) {
-            // VERIFIER SI LE MATERIEL EXISTE DANS LE DEPOT CHOISI
-            if($temp = $this->isInStock($request->input('produit'),$request->input('depot'))) {
-                // VERIFIER SI LA QUANTITE EST DISPONIBLE
-                if($temp->quantite >= $request->input('quantite')) {
-                    // la quantite est disponible
-                    // ################333
-                    // Verifier si le  ravitaillement est possible
-                    if($this->isRavitaillementPossible($commande,$request)) {
-                      // LE RAVITAILLEMENT EST POSSIBLE
-                    // VERIFIEZ SI'IL POSSEDE UN S/N
-                    if($this->withSerialNumber($request->input('produit'))) {
-                        // =============REDIRECTION VERS LA PAGE DE SAISI DES NUMEROS DE  SERIRES
-                        session([
-                            'produit' => $request->input('produit'),
-                            'depot' => $request->input('depot'),
-                            'quantite' => $request->input('quantite'),
-                            'vendeur' => $request->input('vendeur'),
-                            'commande'  =>  $commande,
-                            'compense_quantite' =>  $request->input('compense')
-                        ]);
-                        return redirect("/user/ravitailler/$commande/complete-transfert");
-
-                    } else {
-                        // SANS S/N
-
-                        // CALCUL DE LA NOUVELLE QUANTITE RESTANTE
-                        $_quantite = StockPrime::select()->where('produit',$request->input('produit'))
-                                                          ->where('depot',$request->input('depot'))->first()->quantite - $request->input('quantite');
-                        StockPrime::select()->where('produit',$request->input('produit'))->where('depot',$request->input('depot'))->update([
-                            'quantite'=> $_quantite
-                        ]);
-
-                        $stockVendeurs = new StockVendeur;
-                        $stockVendeurs->produit = $request->input('produit');
-                        $stockVendeurs->vendeurs = $request->input('vendeur');
-                        $stockVendeurs->quantite = $request->input('quantite');
-
-                        $ravitaillementVendeurs = new RavitaillementVendeur;
-                        $livraison = new Livraison;
-                        $ravitaillementVendeurs->id_ravitaillement  = "RA-".time();
-                        $livraison->ravitaillement =  $ravitaillementVendeurs->id_ravitaillement;
-                        $ravitaillementVendeurs->vendeurs = $request->input('vendeur');
-                        $ravitaillementVendeurs->commands = $commande;
-
-                        if($tmp = $this->vendeurHasStock($request->input('vendeur'),$request->input('produit'))) {
-                            $laQuantite = $tmp->quantite + $request->input('quantite');
-                            StockVendeur::select()->where('vendeurs',$request->input('vendeur'))->where('produit',$request->input('produit'))->update([
-                                'quantite' => $laQuantite
-                            ]);
-                        } else {
-
-                            $stockVendeurs->save();
-
-                        }
-
-                        $ravitaillementVendeurs->save();
-                        // ENREGISTREMENT DE LA COMPENSE
-                        if($request->input('compense') > 0) {
-                            $compense = new Compense;
-                            $compense->vendeurs = $request->input('vendeur');
-                            $compense->materiel = $request->input('produit');
-                            $compense->quantite = $request->input('compense');
-                            $compense->type = 'debit';
-
-                            $compense->save();
-                        }
-
-                        // ENREGISTREMENT DANS LA TABLE DE LIVRAISON
-
-                        $livraison->produits = $request->input('produit');
-
-                        $livraison->quantite = $request->input('quantite');
-                        $livraison->depot = $request->input('depot');
-                        $livraison->code_livraison = Str::random(10);;
-                        $livraison->save();
-                        // ---===
-                        // verification du changement de status pour chaque produit de la commande
-                        $this->CommandChangeStatus(session('commande'),session('vendeur')); //changement par produit pour la commande
-                        $this->changeCommandStatusGlobale(session('commande')); //on confirme la commande globalement
-                        return redirect('user/commandes')->with('success',"Ravitaillement reussi!");
-
-                    }
-                    // ici
-                  } else {
-                    $this->CommandChangeStatus(session('commande'),session('vendeur'));
-                    $__produit = Produits::where("reference",$request->input('produit'))->first();
-                    return back()->with("_errors","Quantite `$__produit->libelle` deja saisi!");
-                  }
-                } else {
-                    // la quantite est indisponible
-                    return back()->with('_errors',"Quantite indisponible");
-                }
+      try {
+        // existence de la commande pour le vendeur selectionne
+        if($this->isExisteCommandeForVendeur(
+          $request->input('vendeur'),
+          $request->input('produit'),
+          $commande)) {
+            if($this->isQuantiteValidInDepotCentral($request->input('produit'),$request->input('quantite'))) {
+              // disponibilite de la quantite dans le depot central
+              if($this->isRavitaillementPossible ($commande,$request)) {
+                // verifier si le ravitaillement est possible pour ce vendeur
+                dd($request);
+              } else {
+                throw new AppException("Ravitaillement indisponible");
+              }
             } else {
-                // indisponible dans le stock specifie
-                return back()->with('_errors',"Materiel indisponible dans le stock choisi");
+              throw new AppException("Quantite Indisponible!");
             }
-
         } else {
-            // le materiel n'existe pas dans le systeme
-            return back()->with('_errors',"Material inexistant dans le systeme");
+          throw new AppException("Commande Invalide!");
         }
-    }
+      } catch (AppException $e) {
+        return back()->with("_errors",$e->getMessage());
+      }
 
-    public function makeObject($request,$command) {
-        // CONSTRUCTION DES OBJECTS
-        $stockVendeurs = new StockVendeur;
-        $stockVendeurs->produit = $request->input('produit');
-        $stockVendeurs->vendeurs = $request->input('vendeur');
-        $stockVendeurs->quantite = $request->input('quantite');
-
-        $ravitaillementVendeurs = new RavitaillementVendeur;
-        $ravitaillementVendeurs->id_ravitaillement  = "RA-".time();
-        $ravitaillementVendeurs->vendeurs = $request->input('vendeur');
-        $ravitaillementVendeurs->commands = $command;
-        return ['vendeur'=>$stockVendeurs,'historique'=>$ravitaillementVendeurs];
     }
 
     public function vendeurHasStock($vendeur,$ref) {
@@ -697,10 +631,7 @@ class LogistiqueController extends Controller
           // quantite de parabole du
         $parabole_du = $migration - $compense;
         return response()->json($parabole_du);
-        // return response()->json([
-        //   'parabole_du' =>  $parabole_du,
-        //   'restant_pour_ravitaillement' =>  $this->getParaboleRestantPourRavitaillement($vendeur,$command,$material);
-        // ]);
+
     }
 
     public function getRestantPourRavitaillement(Request $request) {

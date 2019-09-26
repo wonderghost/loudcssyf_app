@@ -13,14 +13,14 @@ class CreateStock extends Migration
      */
     public function up()
     {
-        
+
         Schema::create('stock_central',function(Blueprint $table) {
             $table->string('exemplaire');
             $table->string('depot');
             $table->foreign('exemplaire')->references('serial_number')->on('exemplaire');
             $table->foreign('depot')->references('localisation')->on('depots');
             $table->unsignedInteger('quantite')->default(1);
-            $table->string('origine')->default(null);
+            $table->string('origine')->default('');
             $table->timestamps();
         });
     }

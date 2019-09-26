@@ -13,7 +13,7 @@ class CreateStockCentralPrime extends Migration
      */
     public function up()
     {
-        
+
         Schema::create('stock_central_prime',function(Blueprint $table) {
             $table->string('produit');
             $table->string('depot');

@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('password',255);
             $table->string('phone')->nullable();
-            $table->enum('type',['admin','v_standart','v_da','commercial','logistique','gcga','grex'])->default('admin');
+            $table->enum('type',['admin','v_standart','v_da','commercial','logistique','gcga','grex','gdepot'])->default('admin');
             $table->enum('status',['blocked','unblocked'])->default('unblocked');
             $table->rememberToken();
             $table->timestamps();

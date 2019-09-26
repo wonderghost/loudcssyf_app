@@ -374,6 +374,7 @@ class ComposerStaticInit15d5dc02f650ad17553f69fb230f4dbd
     );
 
     public static $classMap = array (
+        'AgenceTableSeeder' => __DIR__ . '/../..' . '/database/seeds/AgenceTableSeeder.php',
         'App\\Abonnement' => __DIR__ . '/../..' . '/app/Abonnement.php',
         'App\\Agence' => __DIR__ . '/../..' . '/app/Agence.php',
         'App\\CgaAccount' => __DIR__ . '/../..' . '/app/CgaAccount.php',
@@ -384,6 +385,7 @@ class ComposerStaticInit15d5dc02f650ad17553f69fb230f4dbd
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Credit' => __DIR__ . '/../..' . '/app/Credit.php',
         'App\\Depots' => __DIR__ . '/../..' . '/app/Depots.php',
+        'App\\Exceptions\\AppException' => __DIR__ . '/../..' . '/app/Exceptions/AppException.php',
         'App\\Exceptions\\CommandStatus' => __DIR__ . '/../..' . '/app/Exceptions/CommandStatus.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
         'App\\Exceptions\\SerialException' => __DIR__ . '/../..' . '/app/Exceptions/SerialException.php',
@@ -3976,6 +3978,7 @@ class ComposerStaticInit15d5dc02f650ad17553f69fb230f4dbd
         'TijsVerkoyen\\CssToInlineStyles\\Css\\Property\\Property' => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles/src/Css/Property/Property.php',
         'TijsVerkoyen\\CssToInlineStyles\\Css\\Rule\\Processor' => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles/src/Css/Rule/Processor.php',
         'TijsVerkoyen\\CssToInlineStyles\\Css\\Rule\\Rule' => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles/src/Css/Rule/Rule.php',
+        'UsersTableSeeder' => __DIR__ . '/../..' . '/database/seeds/UsersTableSeeder.php',
         'Webmozart\\Assert\\Assert' => __DIR__ . '/..' . '/webmozart/assert/src/Assert.php',
         'Whoops\\Exception\\ErrorException' => __DIR__ . '/..' . '/filp/whoops/src/Whoops/Exception/ErrorException.php',
         'Whoops\\Exception\\Formatter' => __DIR__ . '/..' . '/filp/whoops/src/Whoops/Exception/Formatter.php',
