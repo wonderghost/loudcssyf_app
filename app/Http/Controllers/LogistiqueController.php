@@ -351,7 +351,37 @@ class LogistiqueController extends Controller
               // disponibilite de la quantite dans le depot central
               if($this->isRavitaillementPossible ($commande,$request)) {
                 // verifier si le ravitaillement est possible pour ce vendeur
-                dd($request);
+                // ##@+++++
+                $ravitaillementVendeur = new RavitaillementVendeur;
+                $ravitaillementVendeur->id_ravitaillement = 'RAV-'.time();
+                $ravitaillementVendeur->vendeurs = $request->input('vendeur');
+                $ravitaillementVendeur->commands  = $commande;
+
+                if($this->vendeurHasStock($request->input('vendeur'),$request->input('produit'))) {
+                  // verifier si le produit a ete enregistre au moins une fois
+                } else {
+                  // enregistrer pour la premiere fois
+                  $stockVendeur = new StockVendeur;
+                  $stockVendeur->produit = $request->input('produit');
+                  $stockVendeur->vendeurs = $request->input('vendeur');
+                  $stockVendeur->quantite = $request->input('quantite');
+
+                }
+                // creation de la livraison
+                $livraison = new Livraison ;
+                $livraison->ravitaillement = $ravitaillementVendeur->id_ravitaillement;
+                $livraison->produits = $request->input('produit');
+                $livraison->depot = $request->input('depot');
+                $livraison->quantite = $request->input('quantite');
+                do {
+                  $livraison->code_livraison  = Str::random(6);
+                } while ($this->existCode($livraison->code_livraison));
+
+                dump($livraison);
+                dump($stockVendeur);
+                dump($ravitaillementVendeur);
+                die();
+
               } else {
                 throw new AppException("Ravitaillement indisponible");
               }

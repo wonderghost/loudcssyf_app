@@ -24,6 +24,14 @@ use App\Exceptions\SerialException;
 use App\SerialNumberTemp;
 
 Trait Similarity {
+  // verifier l'unicite du code de livraison
+  public function existCode($code) {
+    $temp = Livraison::where('code_livraison',$code)->first();
+    if($temp) {
+      return $temp;
+    }
+    return false;
+  }
   // verifier la disponibilite de la quantite dans le depot central
   public function isQuantiteValidInDepotCentral($produit,$quantite) {
     $temp = Produits::where('reference',$produit)

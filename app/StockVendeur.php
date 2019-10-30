@@ -8,4 +8,5 @@ class StockVendeur extends Model
 {
     //
     protected $table = 'stock_vendeur';
+    protected $keyType = 'string';
 }
