@@ -27,7 +27,7 @@ class UserEditRequest extends FormRequest
             //
             'email'=>'required',
             'phone'=>'required',
-            'societe'=>'required'
+            'societe'=>'string'
         ];
     }
 }
