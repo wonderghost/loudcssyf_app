@@ -379,7 +379,14 @@ public function isExistRapportOnThisDate(Carbon $date,$vendeurs) {
   return false;
 }
 
-
+public function debitStockCentral($depot,$produit,$newQuantite) {
+  StockPrime::where([
+    'depot' =>  $depot,
+    'produit' =>  $produit
+  ])->update([
+    'quantite'  =>  $newQuantite
+  ]);
+}
 
 
 }

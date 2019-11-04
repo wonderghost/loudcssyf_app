@@ -22,22 +22,46 @@
 				</select>
 			</div>
 		</div>
+
 		<div uk-spinner id="loader" style="display: none;"></div>
-		<table class="uk-table uk-table-divider">
-			<thead>
-				<tr>
-					<th>Designation</th>
-					<th>Quantite</th>
-					<th>Prix Initial (GNF)</th>
-					<th>Prix TTC (GNF)</th>
-					<th>HT (GNF)</th>
-					<th>TVA (18%) (GNF)</th>
-					<th>Marge</th>
-					<th class="uk-text-center" colspan="2">-</th>
-				</tr>
-			</thead>
-			<tbody id="mat-list"></tbody>
-		</table>
+		<ul uk-accordion>
+    <li class="uk-open">
+			<!-- LIST MATERIAL -->
+        <a class="uk-accordion-title" href="#">Tous les materiels</a>
+        <div class="uk-accordion-content">
+					<table class="uk-table uk-table-divider">
+						<thead>
+							<tr>
+								<th>Designation</th>
+								<th>Quantite</th>
+								<th>Prix Initial (GNF)</th>
+								<th>Prix TTC (GNF)</th>
+								<th>HT (GNF)</th>
+								<th>TVA (18%) (GNF)</th>
+								<th>Marge</th>
+								<th class="uk-text-center" colspan="2">-</th>
+							</tr>
+						</thead>
+						<tbody id="mat-list"></tbody>
+					</table>
+				</div>
+    </li>
+		<li>
+			<a href="#" class="uk-accordion-title">Numeros de Serie</a>
+			<div class="uk-accordion-content">
+				<table class="uk-table uk-table-divider">
+					<thead>
+						<tr>
+							<th>Serial</th>
+							<th>Vendeurs</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody id="serial-list"></tbody>
+				</table>
+			</div>
+		</li>
+</ul>
 
 	</div>
 </div>
@@ -60,7 +84,9 @@
 			$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}",$('#mat-filter').val(),false);
 		});
 
-		//
+		//Liste des Numeros de SERIES
+
+		$logistique.ListSerialNumber($adminPage,"{{csrf_token()}}","{{url('/user/get-serialNumber')}}")
 
 
 	});

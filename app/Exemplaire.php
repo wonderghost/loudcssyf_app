@@ -8,4 +8,10 @@ class Exemplaire extends Model
 {
     //
     protected $table = 'exemplaire';
+    protected $keyType = 'string';
+    protected $primaryKey = 'serial_number';
+
+    public function vendeurs() {
+      return $this->hasOne('App\User','username','vendeurs');
+    }
 }

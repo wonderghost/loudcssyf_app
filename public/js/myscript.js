@@ -459,7 +459,6 @@ $adminPage.getListCommand = function (formToken,url,reference) {
 			dataType: 'json'
 		})
 		.done(function (data) {
-			console.log(data);
 			// $adminPage.createTableDataCommand(data,['code','date','boutique','status','cash',''],$("#list-command"));
 			$adminPage.createTableDataCommand(data,['libelle','quantite','depot','origine','date','edit'],$("#mat-list"));
 		})

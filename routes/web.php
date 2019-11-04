@@ -101,11 +101,13 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// 	LISTE DES COMMANDES
 	Route::get('/user/commandes','LogistiqueController@allCommandes')->middleware('logistique');
 	Route::post('/user/commandes','LogistiqueController@getAllCommandes')->middleware('logistique');
-	// ===
+	// === MATERIELS
 	Route::get('/user/list-material','LogistiqueController@listMaterial')->middleware('logistique');
 	Route::post('/user/list-material','LogistiqueController@getListMaterial')->middleware('logistique');
 	Route::get('/user/history-depot','LogistiqueController@historyDepot')->middleware('logistique');
 	Route::post('/user/history-depot','LogistiqueController@getHistoryDepot')->middleware('logistique');
+	# recuperation des numeros de SERIES
+	Route::post('/user/get-serialNumber','LogistiqueController@ListSerialNumber')->middleware('logistique');
 	// RAVITAILLEMENT VENDEURS
 	Route::get('/user/ravitailler/{commande}','LogistiqueController@addStock')->middleware('logistique');
 	Route::post('/user/ravitailler/{commande}','LogistiqueController@makeAddStock')->middleware('logistique');

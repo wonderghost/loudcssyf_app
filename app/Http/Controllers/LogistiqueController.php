@@ -47,6 +47,20 @@ class LogistiqueController extends Controller
     use Similarity;
     use Livraisons;
 
+    // liste des numeros de serie des materiels
+    public function ListSerialNumber(Request $request) {
+      $serials = Exemplaire::all();
+      $all = [];
+      foreach ($serials as $key => $element) {
+        $all[$key] = [
+          'serial_number' =>  $element->serial_number,
+          'vendeurs'  =>   $element->vendeurs()->first() ? $element->vendeurs()->first()->username : 'non attribuer' ,
+          'status'  =>  $element->status
+        ];
+
+      }
+      return response()->json($all);
+    }
     // ravitailler un depot
     public function ravitaillerDepot() {
       $materiel = Produits::all();
@@ -359,6 +373,7 @@ class LogistiqueController extends Controller
 
                 if($this->vendeurHasStock($request->input('vendeur'),$request->input('produit'))) {
                   // verifier si le produit a ete enregistre au moins une fois
+
                 } else {
                   // enregistrer pour la premiere fois
                   $stockVendeur = new StockVendeur;
