@@ -373,7 +373,8 @@ class LogistiqueController extends Controller
 
                 if($this->vendeurHasStock($request->input('vendeur'),$request->input('produit'))) {
                   // verifier si le produit a ete enregistre au moins une fois
-
+                  echo "en cours de developpement ...";
+                  die();
                 } else {
                   // enregistrer pour la premiere fois
                   $stockVendeur = new StockVendeur;
@@ -435,8 +436,15 @@ class LogistiqueController extends Controller
     }
 
     public function vendeurHasStock($vendeur,$ref) {
-        $temp = StockVendeur::select()->where('vendeurs',$vendeur)->where('produit',$ref)->first();
+        $temp = StockVendeur::where([
+          'vendeurs'  =>  $vendeur,
+          'produit' =>  $ref
+          ])->first();
+          // dump($temp);
+          // die();
         if($temp) {
+          // dump($temp);
+          // die();
             return $temp;
         }
         return false;
