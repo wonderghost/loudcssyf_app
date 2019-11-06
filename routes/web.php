@@ -183,6 +183,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// ####  	GESTIONNAIRE DEPOT 		####
 	Route::get('/user/inventaire-depot','LogistiqueController@inventaireDepot');
 	Route::get('/user/livraison','LogistiqueController@inventaireLivraison');
+	Route::post("/user/livraison",'LogistiqueController@getListLivraison');
 	Route::post('/user/inventaire-depot/get-list','LogistiqueController@getInventaireForDepot');
 
 });

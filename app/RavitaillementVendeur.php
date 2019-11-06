@@ -1,5 +1,4 @@
 <?php
-
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +16,7 @@ class RavitaillementVendeur extends Model
     }
 
     public function vendeurs() {
-      return $this->belongsTo('App\User');
+      return $this->belongsTo('App\User','vendeurs','username')->first();
     }
 
     public function commands() {

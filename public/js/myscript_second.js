@@ -3,7 +3,7 @@ var $logistique = {
   ListSerialNumber : function (adminPage,token,url) {
 
     var form = adminPage.makeForm(token,url,"")
-    console.log(form)
+
     form.on('submit',function (e) {
       e.preventDefault()
 
@@ -24,6 +24,27 @@ var $logistique = {
     form.submit()
   } ,
 
+  ListLivraison : function (adminPage,token,url) {
+      var form = adminPage.makeForm(token,url,"")
+      form.on('submit',function(e) {
+        e.preventDefault()
+        $.ajax({
+          url : url,
+          type : $(this).attr('method'),
+          dataType : 'json',
+          data : $(this).serialize()
+        })
+        .done(function (data) {
+          $logistique.dataList(data,$("#livraison"))
+        })
+        .fail(function(data) {
+          alert(data.responseJSON.message)
+          $(location).attr('href',"")
+        })
+      })
+      form.submit()
+  }
+,
   dataList : function (data,content) {
 
     var row = [] , cols = [] ;
@@ -38,6 +59,5 @@ var $logistique = {
         count++
       }
     })
-
   }
 }

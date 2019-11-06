@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 
 use App\StockPrime;
 use App\Stock;
+use App\Livraison;
+use Illuminate\Support\Carbon;
 
 trait Livraisons {
 
@@ -38,4 +40,21 @@ public function inventaireDepot() {
 public function inventaireLivraison() {
   return view('gdepot.all-livraison');
 }
+// liste des livraison
+  public function getListLivraison(Request $request) {
+    $livraisons = Livraison::all();
+    $all = [];
+    foreach ($livraisons as $key => $value) {
+      $date = new Carbon($value->created_at);
+      $all[$key]  = [
+        'date'  =>  $date->toFormattedDateString(),
+        'vendeur' =>  $value->ravitaillementVendeurs()->vendeurs()->username.' _ '.$value->ravitaillementVendeurs()->vendeurs()->localisation,
+        'item'  =>  $value->produits()->libelle,
+        'quantite'  =>   $value->quantite,
+        'status'  =>  $value->status
+      ];
+    }
+    return response()->json($all);
+  }
+
 }

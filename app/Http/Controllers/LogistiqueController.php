@@ -380,7 +380,6 @@ class LogistiqueController extends Controller
                   $stockVendeur->produit = $request->input('produit');
                   $stockVendeur->vendeurs = $request->input('vendeur');
                   $stockVendeur->quantite = $request->input('quantite');
-
                 }
                 // creation de la livraison
                 $livraison = new Livraison ;
@@ -392,11 +391,34 @@ class LogistiqueController extends Controller
                   $livraison->code_livraison  = Str::random(6);
                 } while ($this->existCode($livraison->code_livraison));
 
+                dump($request);
                 dump($livraison);
                 dump($stockVendeur);
                 dump($ravitaillementVendeur);
-                die();
 
+                //debit dans le depot choisi
+
+                $newQuantite = StockPrime::where([
+                  'produit'  =>  $request->input('produit'),
+                  'depot' =>  $request->input('depot')
+                ])->first()->quantite - $request->input('quantite');
+
+                dump($newQuantite);
+                dump($commande);
+
+                StockPrime::where([
+                  'produit' =>  $request->input('produit'),
+                  'depot' =>  $request->input('depot')
+                ])->update([
+                  'quantite'  =>  $newQuantite
+                ]);
+
+                // @@@
+
+                $ravitaillementVendeur->save();
+                $stockVendeur->save();
+                $livraison->save();
+                return redirect('/user/ravitailler/'.$commande)->withSuccess("Success!");
               } else {
                 throw new AppException("Ravitaillement indisponible");
               }

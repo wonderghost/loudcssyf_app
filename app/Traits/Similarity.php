@@ -24,6 +24,7 @@ use App\Exceptions\SerialException;
 use App\SerialNumberTemp;
 
 Trait Similarity {
+  
   // verifier l'unicite du code de livraison
   public function existCode($code) {
     $temp = Livraison::where('code_livraison',$code)->first();

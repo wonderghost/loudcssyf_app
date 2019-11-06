@@ -5,27 +5,31 @@
   <div class="uk-container">
     <h3>
 			<a href="{{url()->previous()}}" uk-tooltip="Retour" uk-icon="icon:arrow-left;ratio:1.5"></a>
-			 Commandes</h3>
+			 Livraisons</h3>
        <hr class="uk-divider-small">
-       <table class="uk-table uk-table-divider">
+       <table class="uk-table uk-table-hover uk-table-striped uk-table-small">
         <thead>
           <tr>
             <th>Date</th>
             <th>Vendeur</th>
             <th>Item</th>
             <th>Quantite</th>
-            <th>Numero_Recu</th>
-            <th>Paraboles a livrer</th>
+            <!-- <th>Numero_Recu</th> -->
+            <!-- <th>Paraboles a livrer</th> -->
             <th>Status</th>
-            <th>Recu</th>
+            <!-- <th>Recu</th> -->
             <th class="uk-text-center" colspan="2">-</th>
           </tr>
         </thead>
-        <tbody id="list-commands"></tbody>
+        <tbody id="livraison"></tbody>
        </table>
   </div>
 </div>
 @endsection
 @section('script')
-
+<script type="text/javascript">
+  $(function () {
+    $logistique.ListLivraison($adminPage,"{{csrf_token()}}","{{url('/user/livraison')}}","")
+  })
+</script>
 @endsection

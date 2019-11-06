@@ -12,11 +12,11 @@ class Livraison extends Model
     protected $primaryKey = 'id';
 
     public function ravitaillementVendeurs() {
-      return $this->belongsTo('App\RavitaillementVendeur');
+      return $this->belongsTo('App\RavitaillementVendeur','ravitaillement','id_ravitaillement')->first();
     }
 
     public function produits() {
-      return $this->belongsTo('App\Produits');
+      return $this->belongsTo('App\Produits','produits','reference')->first();
     }
 
     public function depot() {
