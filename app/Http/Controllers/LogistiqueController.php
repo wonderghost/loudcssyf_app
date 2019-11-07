@@ -653,46 +653,18 @@ class LogistiqueController extends Controller
         return view('logistique.list-commandes');
     }
 
+// recuperer les commandes non confirmer
     public function getAllCommandes(Request $request) {
-        $commands= CommandMaterial::all();
+        $commands= CommandMaterial::where('status','unconfirmed')->orderBy('created_at','desc')->get();
+        $_commands = CommandMaterial::where("status",'confirmed')->orderBy('created_at','desc')->get();
 
-        foreach($commands as $key => $values) {
-            // $produit = Produits::select()->where('reference',$values->produit)->first();
-            $vendeurs = User::where('username',$values->vendeurs)->first();
-            if($vendeurs->type == "v_da") {
-              $agence = Agence::where('reference',$vendeurs->agence)->first()->societe;
-            } else {
-              $agence = $vendeurs->localisation;
-            }
+        $all =  $this->organizeCommandList($commands);
+        $_all = $this->organizeCommandList($_commands);
 
-            $date = new Carbon($values->created_at);
-
-            $command_produit = CommandProduit::where([
-              'commande'  =>  $values->id_commande
-              ])->first();
-
-              $migration = RapportVente::where('vendeurs',$values->vendeurs)->sum('quantite_migration');
-          		$compense = Compense::where([
-          			'vendeurs'	=>	Auth::user()->username,
-          			'materiel'	=>	Produits::where('libelle','Parabole')->first()->reference
-          			])->sum('quantite');
-
-              $parabole_a_livrer  = $command_produit->parabole_a_livrer - ($migration + $compense);
-
-            $all [$key] = [
-                'item' => 'Kit complet',
-                'quantite' => $command_produit->quantite_commande,
-                'numero_recu' => $values->numero_versement,
-                'status' =>  ($values->status == 'unconfirmed') ? 'en attente' : 'confirmer',
-                'id' => $values->id,
-                'vendeurs'  =>  $values->vendeurs.' ( '.$agence.' )',
-                'date'  =>  $date->toFormattedDateString().' | '.$date->toTimeString(),
-                'image' =>  $values->image,
-                'parabole_a_livrer' =>  $parabole_a_livrer,
-                'link'  =>  url('user/ravitailler',[$values->id_commande])
-                    ];
-        }
-        return response()->json($all);
+        return response()->json([
+          'unconfirmed' =>  $all,
+          'confirmed' =>  $_all
+        ]);
     }
 
     public function getParaboleDu(Request $request) {

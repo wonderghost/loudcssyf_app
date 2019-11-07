@@ -1,6 +1,7 @@
 <?php
 namespace App\Traits;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Http\Requests\DepotRequest;
 use App\Http\Requests\MaterialRequest;
@@ -22,9 +23,12 @@ use App\CommandProduit;
 use App\Exceptions\CommandStatus;
 use App\Exceptions\SerialException;
 use App\SerialNumberTemp;
+use App\User;
+use App\Agence;
+use App\Compense;
 
 Trait Similarity {
-  
+
   // verifier l'unicite du code de livraison
   public function existCode($code) {
     $temp = Livraison::where('code_livraison',$code)->first();
@@ -379,7 +383,7 @@ public function isExistRapportOnThisDate(Carbon $date,$vendeurs) {
   }
   return false;
 }
-
+// debit du stock
 public function debitStockCentral($depot,$produit,$newQuantite) {
   StockPrime::where([
     'depot' =>  $depot,
@@ -389,5 +393,45 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
   ]);
 }
 
+//
+  public function organizeCommandList($commands) {
+    $all = [];
+    foreach($commands as $key => $values) {
+        $vendeurs = User::where('username',$values->vendeurs)->first();
+        if($vendeurs->type == "v_da") {
+          $agence = Agence::where('reference',$vendeurs->agence)->first()->societe;
+        } else {
+          $agence = $vendeurs->localisation;
+        }
+
+        $date = new Carbon($values->created_at);
+
+        $command_produit = CommandProduit::where([
+          'commande'  =>  $values->id_commande
+          ])->first();
+
+          $migration = RapportVente::where('vendeurs',$values->vendeurs)->sum('quantite_migration');
+          $compense = Compense::where([
+            'vendeurs'	=>	Auth::user()->username,
+            'materiel'	=>	Produits::where('libelle','Parabole')->first()->reference
+            ])->sum('quantite');
+
+          $parabole_a_livrer  = $command_produit->parabole_a_livrer - ($migration + $compense);
+
+        $all [$key] = [
+            'item' => 'Kit complet',
+            'quantite' => $command_produit->quantite_commande,
+            'numero_recu' => $values->numero_versement,
+            'status' =>  ($values->status == 'unconfirmed') ? 'en attente' : 'confirmer',
+            'id' => $values->id,
+            'vendeurs'  =>  $values->vendeurs.' ( '.$agence.' )',
+            'date'  =>  $date->toFormattedDateString().' | '.$date->toTimeString(),
+            'image' =>  $values->image,
+            'parabole_a_livrer' =>  $parabole_a_livrer,
+            'link'  =>  url('user/ravitailler',[$values->id_commande])
+                ];
+    }
+    return $all ;
+  }
 
 }

@@ -2,12 +2,12 @@
 
 @section('user_content')
 <div class="uk-section uk-section-default">
-	<div class="uk-padding-small">
+	<div class="uk-container uk-container-large">
 		<h3>
 			<a href="{{url('/user')}}" uk-tooltip="Dashboard" uk-icon="icon:arrow-left;ratio:1.5"></a>
 			 Toute les commandes</h3>
 			 <hr class="uk-divider-small">
-			 <div class="uk-container">
+
 			 @if(session("_errors"))
 			 <div class="uk-alert-danger" uk-alert>
 				 <a href="#" class="uk-alert-close" uk-close></a>
@@ -20,23 +20,50 @@
 				 <p>{{session("success")}}</p>
 			 </div>
 			 @endif
-		 </div>
-			 <table class="uk-table uk-table-divider">
-			 	<thead>
-			 		<tr>
-			 			<th>Date</th>
-			 			<th>Vendeur</th>
-			 			<th>Item</th>
-			 			<th>Quantite</th>
-			 			<th>Numero_Recu</th>
-			 			<th>Paraboles a livrer</th>
-			 			<th>Status</th>
-			 			<th>Recu</th>
-			 			<th class="uk-text-center" colspan="2">-</th>
-			 		</tr>
-			 	</thead>
-			 	<tbody id="list-commands"></tbody>
-			 </table>
+			 <ul uk-accordion>
+			     <li class="uk-open">
+			         <a class="uk-accordion-title" href="#">En attente de confirmation</a>
+			         <div class="uk-accordion-content">
+								 <table class="uk-table uk-table-divider">
+								  <thead>
+								 	 <tr>
+								 		 <th>Date</th>
+								 		 <th>Vendeur</th>
+								 		 <th>Item</th>
+								 		 <th>Quantite</th>
+								 		 <th>Numero_Recu</th>
+								 		 <th>Paraboles a livrer</th>
+								 		 <th>Status</th>
+								 		 <th>Recu</th>
+								 		 <th class="uk-text-center" colspan="2">-</th>
+								 	 </tr>
+								  </thead>
+								  <tbody id="list-commands"></tbody>
+								 </table>
+							 </div>
+			     </li>
+					 <li>
+						 <a href="#" class="uk-accordion-title">Deja Confirmer</a>
+						 <div class="uk-accordion-content">
+							 <table class="uk-table uk-table-divider">
+							  <thead>
+							 	<tr>
+							 		<th>Date</th>
+							 		<th>Vendeur</th>
+							 		<th>Item</th>
+							 		<th>Quantite</th>
+							 		<th>Numero_Recu</th>
+							 		<th>Paraboles a livrer</th>
+							 		<th>Status</th>
+							 		<th>Recu</th>
+							 		<th class="uk-text-center" colspan="2">-</th>
+							 	</tr>
+							  </thead>
+							  <tbody id="list-command-confirm"></tbody>
+							 </table>
+						 </div>
+					 </li>
+			 </ul>
 	</div>
 </div>
 @endsection
@@ -54,7 +81,9 @@
 				data : $(this).serialize()
 			})
 			.done(function (data) {
-				$adminPage.createTableCommandRowLogistique(data,['date','vendeur','item','quantite','numero_recu','parabole','status','recu','confirm'],$("#list-commands"),"","{{url('/')}}");
+				$adminPage.createTableCommandRowLogistique(data.unconfirmed,['date','vendeur','item','quantite','numero_recu','parabole','status','recu','confirm'],$("#list-commands"),"","{{url('/')}}");
+				$adminPage.createTableCommandRowLogistique(data.confirmed,['date','vendeur','item','quantite','numero_recu','parabole','status','recu','confirm'],$("#list-command-confirm"),"","{{url('/')}}");
+
 			})
 			.fail(function (data) {
 				Uikit.modal.alert(data).then(function () {
