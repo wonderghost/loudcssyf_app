@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 use App\StockPrime;
 use App\Stock;
 use App\Livraison;
+use App\Depots;
 use Illuminate\Support\Carbon;
-
+use Illuminate\Support\Facades\Auth;
 trait Livraisons {
 
   // RECUPERATION DE L'INVENTAIRE DU DEPOT
@@ -42,7 +43,7 @@ public function inventaireLivraison() {
 }
 // liste des livraison
   public function getListLivraison(Request $request) {
-    $livraisons = Livraison::all();
+    $livraisons = Livraison::where('depot',Depots::where('vendeurs',Auth::user()->username)->first()->localisation)->get();
     $all = [];
     foreach ($livraisons as $key => $value) {
       $date = new Carbon($value->created_at);
@@ -51,7 +52,7 @@ public function inventaireLivraison() {
         'vendeur' =>  $value->ravitaillementVendeurs()->vendeurs()->username.' _ '.$value->ravitaillementVendeurs()->vendeurs()->localisation,
         'item'  =>  $value->produits()->libelle,
         'quantite'  =>   $value->quantite,
-        'status'  =>  $value->status
+        'status'  =>  $value->status == 'unlivred'  ? "En attente de livraison" : "Livraison effectuee"
       ];
     }
     return response()->json($all);

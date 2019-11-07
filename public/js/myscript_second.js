@@ -17,8 +17,9 @@ var $logistique = {
         $logistique.dataList(data,$("#serial-list"))
       })
       .fail(function (data) {
-        console.log(data)
-        // $(location).attr('href','')
+        alert(data.responseJSON.message)
+        $(location).attr('href',"")
+
       })
     })
     form.submit()
@@ -36,8 +37,15 @@ var $logistique = {
         })
         .done(function (data) {
           $logistique.dataList(data,$("#livraison"))
+          // ajout du button confirmation
+          var confirm = $("<a></a>")
+          confirm.text('Confirmer')
+          confirm.addClass('uk-button-primary uk-border-rounded ')
+          confirm.attr('uk-icon','icon : check ; ration : 0.7')
+          $('.row').append(confirm)
         })
         .fail(function(data) {
+          console.log(data)
           alert(data.responseJSON.message)
           $(location).attr('href',"")
         })
@@ -54,7 +62,9 @@ var $logistique = {
       for(var prop in element) {
         cols [count] = $("<td></td>")
         cols[count].text(element[prop])
+        cols[count].addClass('col')
         row[index].append(cols[count])
+        row[index].addClass('row')
         content.append(row[index])
         count++
       }
