@@ -6,7 +6,6 @@ var $logistique = {
 
     form.on('submit',function (e) {
       e.preventDefault()
-
       $.ajax({
         url : url ,
         type : $(this).attr('method'),
@@ -19,7 +18,6 @@ var $logistique = {
       .fail(function (data) {
         alert(data.responseJSON.message)
         $(location).attr('href',"")
-
       })
     })
     form.submit()
@@ -36,13 +34,23 @@ var $logistique = {
           data : $(this).serialize()
         })
         .done(function (data) {
-          $logistique.dataList(data,$("#livraison"))
+          $logistique.dataList(data.list,$("#livraison"))
           // ajout du button confirmation
           var confirm = $("<a></a>")
           confirm.text('Confirmer')
-          confirm.addClass('uk-button-primary uk-border-rounded ')
+          confirm.addClass('uk-button-primary uk-border-rounded confirm-button-livraison')
+          confirm.attr('id','')
           confirm.attr('uk-icon','icon : check ; ration : 0.7')
           $('.row').append(confirm)
+
+          // ajout des identifiants de livraison
+          $('.confirm-button-livraison').each(function(index,element) {
+            $(element).attr('id',data.ids[index].id)
+          })
+          // action de la confirmation
+          $('.confirm-button-livraison').on('click',function () {
+            $logistique.actionOnConfirmButton($(this).attr('id'))
+          })
         })
         .fail(function(data) {
           console.log(data)
@@ -51,6 +59,30 @@ var $logistique = {
         })
       })
       form.submit()
+  }
+  ,
+  ListLivraisonByVendeurs : function (adminPage,token,url,ref) {
+    var form = adminPage.makeForm(token,url,ref)
+    form.on('submit',function(e){
+      e.preventDefault()
+      $.ajax({
+        url : url ,
+        type : 'post',
+        dataType : 'json',
+        data : $(this).serialize()
+      })
+      .done(function(data) {
+        $logistique.dataList(data,$("#livraison"))
+      })
+      .fail(function(data){
+        console.log(data)
+      })
+    })
+    form.submit()
+  }
+,
+  actionOnConfirmButton : function (id) {
+    console.log('id = '+ id )
   }
 ,
   dataList : function (data,content) {

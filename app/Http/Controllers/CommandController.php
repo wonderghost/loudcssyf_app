@@ -11,11 +11,15 @@ use App\RapportVente;
 use App\Compense;
 use App\Exemplaire;
 use App\CommandProduit;
+use App\Livraison;
+use App\RavitaillementVendeur;
+
+use App\Traits\Livraisons;
 
 class CommandController extends Controller
 {
     //
-
+		use Livraisons;
 		// VERIFICATION S'IL N'EXISTE PAS UNE COMMANDE EN ATTENTE
 		public function isExistCommandEnAttente() {
 			$temp = CommandMaterial::where([

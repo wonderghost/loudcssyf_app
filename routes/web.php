@@ -141,6 +141,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 
 	Route::get('/user/details-command/{id}','CommandController@DetailsCommand')->middleware('vendeur');
 	Route::post('user/details-command/{id}','CommandController@getDetailsCommand')->middleware('vendeur');
+	Route::post('user/details-command/{id}/get-livraison','CommandController@getListLivraisonByVendeurs')->middleware('vendeur');
 
 	// ==--
 	// ----	ENVOI DES COMMANDES -----

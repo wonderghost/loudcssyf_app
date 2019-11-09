@@ -7,6 +7,7 @@ use App\StockPrime;
 use App\Stock;
 use App\Livraison;
 use App\Depots;
+use App\RavitaillementVendeur;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 trait Livraisons {
@@ -45,6 +46,7 @@ public function inventaireLivraison() {
   public function getListLivraison(Request $request) {
     $livraisons = Livraison::where('depot',Depots::where('vendeurs',Auth::user()->username)->first()->localisation)->get();
     $all = [];
+    $ids = [];
     foreach ($livraisons as $key => $value) {
       $date = new Carbon($value->created_at);
       $all[$key]  = [
@@ -53,6 +55,32 @@ public function inventaireLivraison() {
         'item'  =>  $value->produits()->libelle,
         'quantite'  =>   $value->quantite,
         'status'  =>  $value->status == 'unlivred'  ? "En attente de livraison" : "Livraison effectuee"
+      ];
+      $ids[$key]  = [
+        'id'  =>  $value->id
+      ];
+    }
+    return response()->json([
+      'list'  =>  $all,
+      'ids' =>  $ids
+    ]);
+  }
+
+  // liste de livraison par vendeurs
+  public function getListLivraisonByVendeurs(Request $request) {
+    $ravitaillement = RavitaillementVendeur::select('id_ravitaillement')->where([
+      'vendeurs'  =>  Auth::user()->username,
+      'commands'  =>  $request->input('ref')
+    ])->get();
+    $livraison = Livraison::where('status','unlivred')->whereIn('ravitaillement',$ravitaillement)->get();
+    $all = [];
+    foreach ($livraison as $key => $value) {
+      $all[$key]  = [
+        'article' =>  $value->produits()->libelle,
+        'quantite'  =>  $value->quantite,
+        'status'  =>  $value->status == "unlivred" ? "En attente" : "Confirmer",
+        'code_livraison'  =>  $value->code_livraison,
+        'depot' =>  $value->depot
       ];
     }
     return response()->json($all);

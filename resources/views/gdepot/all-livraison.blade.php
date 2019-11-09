@@ -12,7 +12,7 @@
           <tr>
             <th>Date</th>
             <th>Vendeur</th>
-            <th>Item</th>
+            <th>Article</th>
             <th>Quantite</th>
             <!-- <th>Numero_Recu</th> -->
             <!-- <th>Paraboles a livrer</th> -->
@@ -30,6 +30,7 @@
 <script type="text/javascript">
   $(function () {
     $logistique.ListLivraison($adminPage,"{{csrf_token()}}","{{url('/user/livraison')}}","")
+    
   })
 </script>
 @endsection

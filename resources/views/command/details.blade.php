@@ -20,7 +20,22 @@
 					</div>
 			    </li>
 			    <li><span>Parabole dû : </span><span id="parabole-du"></span></li>
+			    <li><span></span><span id="code-livraison" class=""></span></li>
 			</ul>
+			<!-- livraison -->
+			<table class="uk-table uk-table-hover uk-table-striped uk-table-small">
+			 <thead>
+				 <tr>
+					 <th>Article</th>
+					 <th>Quantite</th>
+					 <th>Status</th>
+					 <th>Code de Livraison</th>
+					 <th>Point de ravitaillement</th>
+					 <th class="uk-text-center" colspan="2">-</th>
+				 </tr>
+			 </thead>
+			 <tbody id="livraison"></tbody>
+			</table>
 	</div>
 </div>
 @endsection
@@ -28,6 +43,7 @@
 @section('script')
 <script type="text/javascript">
 	$(function (){
+		$logistique.ListLivraisonByVendeurs($adminPage,"{{csrf_token()}}","{{url()->current()}}"+"/get-livraison","{{$id}}")
 		var form = $adminPage.makeForm("{{csrf_token()}}","{{url()->current()}}",$("#id-command").val());
 		form.on('submit',function (e) {
 			e.preventDefault();
