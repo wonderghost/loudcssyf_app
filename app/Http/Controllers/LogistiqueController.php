@@ -371,17 +371,6 @@ class LogistiqueController extends Controller
                 $ravitaillementVendeur->vendeurs = $request->input('vendeur');
                 $ravitaillementVendeur->commands  = $commande;
 
-                if($this->vendeurHasStock($request->input('vendeur'),$request->input('produit'))) {
-                  // verifier si le produit a ete enregistre au moins une fois
-                  echo "en cours de developpement ...";
-                  die();
-                } else {
-                  // enregistrer pour la premiere fois
-                  $stockVendeur = new StockVendeur;
-                  $stockVendeur->produit = $request->input('produit');
-                  $stockVendeur->vendeurs = $request->input('vendeur');
-                  $stockVendeur->quantite = $request->input('quantite');
-                }
                 // creation de la livraison
                 $livraison = new Livraison ;
                 $livraison->ravitaillement = $ravitaillementVendeur->id_ravitaillement;
@@ -392,20 +381,12 @@ class LogistiqueController extends Controller
                   $livraison->code_livraison  = Str::random(6);
                 } while ($this->existCode($livraison->code_livraison));
 
-                dump($request);
-                dump($livraison);
-                dump($stockVendeur);
-                dump($ravitaillementVendeur);
-
                 //debit dans le depot choisi
 
                 $newQuantite = StockPrime::where([
                   'produit'  =>  $request->input('produit'),
                   'depot' =>  $request->input('depot')
                 ])->first()->quantite - $request->input('quantite');
-
-                dump($newQuantite);
-                dump($commande);
 
                 StockPrime::where([
                   'produit' =>  $request->input('produit'),
@@ -414,11 +395,32 @@ class LogistiqueController extends Controller
                   'quantite'  =>  $newQuantite
                 ]);
 
-                // @@@
+                if($this->vendeurHasStock($request->input('vendeur'),$request->input('produit'))) {
+                  // verifier si le produit a ete enregistre au moins une fois
+                  $quantiteVendeur = StockVendeur::where([
+                    'vendeurs'  =>  $request->input('vendeur'),
+                    'produit' =>  $request->input('produit')
+                  ])->first()->quantite + $request->input('quantite');
+                  //
+                  StockVendeur::where([
+                    'vendeurs'  =>  $request->input('vendeur'),
+                    'produit' =>  $request->input('produit')
+                  ])->update([
+                    'quantite'  =>  $quantiteVendeur
+                  ]);
+
+                } else {
+                  // enregistrer pour la premiere fois
+                  $stockVendeur = new StockVendeur;
+                  $stockVendeur->produit = $request->input('produit');
+                  $stockVendeur->vendeurs = $request->input('vendeur');
+                  $stockVendeur->quantite = $request->input('quantite');
+                  $stockVendeur->save();
+                }
 
                 $ravitaillementVendeur->save();
-                $stockVendeur->save();
                 $livraison->save();
+
                 return redirect('/user/ravitailler/'.$commande)->withSuccess("Success!");
               } else {
                 throw new AppException("Ravitaillement indisponible");
