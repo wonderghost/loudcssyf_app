@@ -16,7 +16,8 @@
 			 <table class="uk-table uk-table-divider">
 			 	<thead>
 			 		<tr>
-			 			<th>Item</th>
+			 			<th>Date</th>
+			 			<th>Article</th>
 			 			<th>Quantite</th>
 			 			<th>Numero Recu</th>
 			 			<th>Status</th>
@@ -42,7 +43,7 @@
 				data : $(this).serialize()
 			})
 			.done(function (data) {
-				$adminPage.createTableCommandRow(data,['item','quantite','numero_recu','status','details'],$("#list-command"));
+				$adminPage.createTableCommandRow(data,['date','item','quantite','numero_recu','status','details'],$("#list-command"));
 			})
 			.fail(function (data) {
 				Uikit.modal.alert(data).then(function () {

@@ -677,7 +677,7 @@ class LogistiqueController extends Controller
           'type'=>'debit',
           'vendeurs'  =>  $request->input('ref')
           ])->get()->sum('quantite');
-          // quantite de parabole du
+          // quantite de parabole duDA-5648
         $parabole_du = $migration - $compense;
         return response()->json($parabole_du);
 

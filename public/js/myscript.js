@@ -508,14 +508,15 @@ $adminPage.createTableCommandRow = function (sdata,champs=null,table,linkDetails
 						}
 
 
-						td[0].append(sdata[i].item);
-						td[1].text(sdata[i].quantite);
-						td[2].text(sdata[i].numero_recu);
-						td[3].text(sdata[i].status);
+						td[0].append(sdata[i].date);
+						td[1].append(sdata[i].item);
+						td[2].text(sdata[i].quantite);
+						td[3].text(sdata[i].numero_recu);
+						td[4].text(sdata[i].status);
 						if(sdata[i].status == "en attente") {
-							td[3].addClass('uk-text-danger');
+							td[4].addClass('uk-text-danger');
 						} else {
-							td[3].addClass('uk-text-success');
+							td[4].addClass('uk-text-success');
 						}
 						// td[3].addClass('uk-text-success')
 						var a 	=	$("<a></a>");
@@ -523,7 +524,7 @@ $adminPage.createTableCommandRow = function (sdata,champs=null,table,linkDetails
 						a.attr('uk-icon','icon:more');
 						a.addClass('uk-button-default uk-border-rounded');
 						a.text('details ');
-						td[4].append(a);
+						td[5].append(a);
 						//
 
 						for(var j=0;j<champs.length;j++) {
