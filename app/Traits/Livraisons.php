@@ -53,6 +53,7 @@ public function inventaireLivraison() {
         'date'  =>  $date->toFormattedDateString(),
         'vendeur' =>  $value->ravitaillementVendeurs()->vendeurs()->username.' _ '.$value->ravitaillementVendeurs()->vendeurs()->localisation,
         'item'  =>  $value->produits()->libelle,
+        'commande'  =>  $value->ravitaillementVendeurs()->commands,
         'quantite'  =>   $value->quantite,
         'status'  =>  $value->status == 'unlivred'  ? "En attente de livraison" : "Livraison effectuee"
       ];
@@ -86,4 +87,10 @@ public function inventaireLivraison() {
     return response()->json($all);
   }
 
+  public function confirmLivraison( Request $request) {
+    echo "en cours de developpement";
+    die();
+    dd($request);
+
+  }
 }

@@ -11,6 +11,8 @@ class Exemplaire extends Model
     protected $keyType = 'string';
     protected $primaryKey = 'serial_number';
 
+    protected $fillable = ['vendeurs'];
+
     public function vendeurs() {
       return $this->hasOne('App\User','username','vendeurs');
     }

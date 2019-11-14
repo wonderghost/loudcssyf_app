@@ -182,10 +182,11 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/ventes','VendeurController@allRecrutement')->middleware('vendeur');
 
 	// ####  	GESTIONNAIRE DEPOT 		####
-	Route::get('/user/inventaire-depot','LogistiqueController@inventaireDepot');
-	Route::get('/user/livraison','LogistiqueController@inventaireLivraison');
-	Route::post("/user/livraison",'LogistiqueController@getListLivraison');
-	Route::post('/user/inventaire-depot/get-list','LogistiqueController@getInventaireForDepot');
+	Route::get('/user/inventaire-depot','LogistiqueController@inventaireDepot')->middleware('depot');
+	Route::get('/user/livraison','LogistiqueController@inventaireLivraison')->middleware('depot');
+	Route::post("/user/livraison",'LogistiqueController@getListLivraison')->middleware('depot');
+	Route::post('/user/livraison/confirm','LogistiqueController@confirmLivraison')->middleware('depot');
+	Route::post('/user/inventaire-depot/get-list','LogistiqueController@getInventaireForDepot')->middleware('depot');
 
 });
 
