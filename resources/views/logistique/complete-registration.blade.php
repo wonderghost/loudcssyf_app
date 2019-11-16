@@ -46,13 +46,12 @@
 		console.log(tabSerial);
 		// pendant le focus
 		$(".serial-input").on('focus',function () {
-			console.log('focus');
+
 			var _serialNow = $(this);
 			if($.trim(_serialNow.val()) !== "" && $.inArray($.trim(_serialNow.val()),tabSerial) > -1) {
 				// existe dans le tableau
 				tabSerial.splice(tabSerial.indexOf($.trim(_serialNow.val())),1);
 			}
-			console.log(tabSerial);
 		});
 
 		// apres le focus (verifier le duplicat et l'existence en base de donnees )

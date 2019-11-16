@@ -7,6 +7,14 @@
 			<a href="{{url()->previous()}}" uk-tooltip="Retour" uk-icon="icon:arrow-left;ratio:1.5"></a>
 			 Livraisons</h3>
        <hr class="uk-divider-small">
+       @if($errors->any())
+       @foreach($errors->all() as $error)
+       <div class="uk-alert-danger uk-box-shadow-small uk-border-rounded" uk-alert>
+         <a href="#" class="uk-alert-close" uk-close></a>
+         <p>{{$error}}</p>
+       </div>
+       @endforeach
+       @endif
        <table class="uk-table uk-table-hover uk-table-striped uk-table-small">
         <thead>
           <tr>
@@ -44,6 +52,8 @@
               <li>
                 <a href="#" class="uk-accordion-title">Suivant</a>
                 <div class="uk-accordion-content">
+                  <input type="hidden" name="livraison" id="livraison-id" value="">
+                  <input type="hidden" name="with_serial" id="with-serial" value="">
                   {!!Form::label('Entrez le code de confirmation de la livraison')!!}
                   {!!Form::text('confirm_code','',['class'=>'uk-input uk-margin-small','placeholder'=>'Code de Confirmation'])!!}
                   {!!Form::label('Confirmez Votre Mot de passe')!!}

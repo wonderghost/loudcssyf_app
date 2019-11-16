@@ -71,6 +71,7 @@ return array(
     'App\\Http\\Requests\\UserRequest' => $baseDir . '/app/Http/Requests/UserRequest.php',
     'App\\Lesclients' => $baseDir . '/app/Lesclients.php',
     'App\\Livraison' => $baseDir . '/app/Livraison.php',
+    'App\\LivraisonSerialFile' => $baseDir . '/app/LivraisonSerialFile.php',
     'App\\Option' => $baseDir . '/app/Option.php',
     'App\\Produits' => $baseDir . '/app/Produits.php',
     'App\\Providers\\AppServiceProvider' => $baseDir . '/app/Providers/AppServiceProvider.php',

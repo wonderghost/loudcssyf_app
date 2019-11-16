@@ -58,7 +58,8 @@ public function inventaireLivraison() {
         'status'  =>  $value->status == 'unlivred'  ? "En attente de livraison" : "Livraison effectuee"
       ];
       $ids[$key]  = [
-        'id'  =>  $value->id
+        'id'  =>  $value->id,
+        'with_serial' =>  $value->produits()->with_serial
       ];
     }
     return response()->json([
@@ -88,9 +89,14 @@ public function inventaireLivraison() {
   }
 
   public function confirmLivraison( Request $request) {
+    $validation = $request->validate([
+      'livraison' =>  'required|exists:livraisons,id',
+      'with_serial' =>  'required|exists:produits,with_serial',
+      'confirm_code'  =>  'required|string',
+      'password'  =>  'required|string'
+    ]);
     echo "en cours de developpement";
     die();
     dd($request);
-
   }
 }

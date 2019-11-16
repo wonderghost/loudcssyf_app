@@ -48,17 +48,21 @@ var $logistique = {
           // ajout des identifiants de livraison
           $('.confirm-button-livraison').each(function(index,element) {
             $(element).attr('id',data.ids[index].id)
+            $(element).attr('with-serial',data.ids[index].with_serial)
             $(element).attr('quantite',data.list[index].quantite)
+
           })
           // action de la confirmation
           $('.confirm-button-livraison').on('click',function () {
             $logistique.actionOnConfirmButton($(this).attr('id'))
-            $logistique.SerialInputCols($(this).attr('quantite'),$("#all-serials"))
-            
+            $("#all-serials").html('')
+            $("#with-serial").val($(this).attr('with-serial'))
+            if($(this).attr("with-serial") == 1) {
+              $logistique.SerialInputCols($(this).attr('quantite'),$("#all-serials"))
+            }
           })
         })
         .fail(function(data) {
-          console.log(data)
           alert(data.responseJSON.message)
           $(location).attr('href',"")
         })
@@ -87,7 +91,7 @@ var $logistique = {
   }
 ,
   actionOnConfirmButton : function (id) {
-    console.log('id = '+ id )
+    $("#livraison-id").val(id)
   }
 ,
   dataList : function (data,content) {
