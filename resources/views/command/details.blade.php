@@ -9,6 +9,7 @@
 			 <hr class="uk-divider-small">
 			 <input type="hidden" id="id-command" value="{{$id}}">
 			 <ul class="uk-list">
+			    <li><span>Materiel : </span><span class="uk-text-bold" id="id-commande">{{$id}}</span></li>
 			    <li><span>Materiel : </span><span class="uk-text-bold" id="materiel"></span></li>
 			    <li><span>Quantite : </span><span class="uk-text-bold" id="quantite"></span></li>
 			    <li><span>Numero du recu : </span><span class="uk-text-bold" id="numero-recu"></span></li>

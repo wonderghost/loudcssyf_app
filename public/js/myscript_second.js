@@ -22,8 +22,28 @@ var $logistique = {
     })
     form.submit()
   } ,
-
-  ListLivraison : function (adminPage,token,url) { //Liste de livraison chez le gestionnaire de depot
+  ListLivraisonConfirmee : function (adminPage,token,url) {
+    var form = adminPage.makeForm(token,url,"")
+    form.on('submit',function(e) {
+      e.preventDefault()
+      $.ajax({
+        url : url,
+        type : $(this).attr('method'),
+        dataType : 'json',
+        data : $(this).serialize(),
+      })
+      .done(function(data) {
+        $logistique.dataList(data.list,$("#livraison-confirmee"))
+      })
+      .fail(function (data) {
+        alert(data.responseJSON.message)
+        $(location).attr('href',"")
+      })
+    })
+    form.submit()
+  }
+  ,
+  ListLivraison : function (adminPage,token,url,urlFindSerial="") { //Liste de livraison chez le gestionnaire de depot
       var form = adminPage.makeForm(token,url,"")
       form.on('submit',function(e) {
         e.preventDefault()
@@ -59,6 +79,7 @@ var $logistique = {
             $("#with-serial").val($(this).attr('with-serial'))
             if($(this).attr("with-serial") == 1) {
               $logistique.SerialInputCols($(this).attr('quantite'),$("#all-serials"))
+              $logistique.inputSerialValidate(adminPage,token,urlFindSerial)
             }
           })
         })
@@ -131,5 +152,82 @@ var $logistique = {
       parent.append(div);
     }
   }
+,
+inputSerialValidate : function (adminPage,token,url) {
+  // @@@@####
+  var tabSerial = [];
+  // pendant le focus
+  $(".serial-input").on('focus',function () {
 
+    var _serialNow = $(this);
+    if($.trim(_serialNow.val()) !== "" && $.inArray($.trim(_serialNow.val()),tabSerial) > -1) {
+      // existe dans le tableau
+      tabSerial.splice(tabSerial.indexOf($.trim(_serialNow.val())),1);
+    }
+  });
+  // apres le focus (verifier le duplicat et l'existence en base de donnees )
+  $(".serial-input").on('blur',function () {
+    // '/user/add-material/find-serial-number'
+    var form = adminPage.makeForm(token,url,$(this).val());
+    var serialNow = $(this);
+
+    // verification de l'exitence dans la base de donnees | envoi de la requete ajax
+    form.on('submit',function(e) {
+      e.preventDefault();
+      $.ajax({
+        url : $(this).attr('action'),
+        type : $(this).attr('method'),
+        data : $(this).serialize(),
+        dataType : 'json'
+      })
+      .done(function (data) {
+        console.log(data)
+        return 0
+        if(data && data !== 'success') {
+          // Erreur genere
+          UIkit.notification({
+            message : data,
+            status : 'danger',
+            timeout : 800
+          });
+          $("#validate").attr('disabled','')
+
+        } else {
+          $("#validate").removeAttr('disabled')
+          // le numero n'existe pas dans la base de donnees
+          // verifier s'il n'existe pas de duplicat
+          if($.inArray($.trim(serialNow.val()),tabSerial) == -1) {
+            // la valeur n'existe pas dans le tableau , il faut l'ajouter
+            tabSerial.push($.trim(serialNow.val()));
+          } else {
+            // la valeur existe dans le tableau
+            if($.trim(serialNow.val()) == "")  {
+              // UIkit.modal.alert("Ce champs ne peut etre vide!");
+              alert("Ce champs ne peut etre vide!")
+              $("#validate").attr('disabled','');
+              return 0;
+            }
+            UIkit.modal.alert("Duplicat de numero!").then(function () {
+              $("#validate").attr('disabled','')
+              tabSerial.splice(tabSerial.indexOf($.trim(serialNow.val())),1);
+              $('.serial-input').each(function (index, element) {
+                  if($.trim($(element).val()) == $.trim(serialNow.val())) {
+                    $(element).val('');
+                  }
+              });
+            });
+          }
+
+        }
+
+      })
+      .fail(function(data) {
+        console.log(data)
+        // $(location).attr('href',"")
+      });
+    });
+    form.submit();
+  });
+  // ####
+}
 }

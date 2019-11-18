@@ -185,6 +185,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/inventaire-depot','LogistiqueController@inventaireDepot')->middleware('depot');
 	Route::get('/user/livraison','LogistiqueController@inventaireLivraison')->middleware('depot');
 	Route::post("/user/livraison",'LogistiqueController@getListLivraison')->middleware('depot');
+	Route::post("/user/livraison-confirmee",'LogistiqueController@getListLivraisonConfirmee')->middleware('depot');
 	Route::post('/user/livraison/confirm','LogistiqueController@confirmLivraison')->middleware('depot');
 	Route::post('/user/inventaire-depot/get-list','LogistiqueController@getInventaireForDepot')->middleware('depot');
 	Route::post('/user/livraions/with-serial','LogistiqueController@itemWithSerial')->middleware('depot');

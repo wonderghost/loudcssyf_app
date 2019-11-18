@@ -10,6 +10,9 @@ use App\Depots;
 use App\RavitaillementVendeur;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Exceptions\AppException;
+
 trait Livraisons {
 
   // RECUPERATION DE L'INVENTAIRE DU DEPOT
@@ -42,9 +45,12 @@ public function inventaireDepot() {
 public function inventaireLivraison() {
   return view('gdepot.all-livraison');
 }
-// liste des livraison
-  public function getListLivraison(Request $request) {
-    $livraisons = Livraison::where('depot',Depots::where('vendeurs',Auth::user()->username)->first()->localisation)->get();
+// liste des livraison non confirmee
+  public function getListLivraison(Request $request,$status = 'unlivred') {
+    $livraisons = Livraison::where([
+      'depot' =>  Depots::where('vendeurs',Auth::user()->username)->first()->localisation,
+      'status'  =>  $status
+      ])->get();
     $all = [];
     $ids = [];
     foreach ($livraisons as $key => $value) {
@@ -67,7 +73,10 @@ public function inventaireLivraison() {
       'ids' =>  $ids
     ]);
   }
-
+  // list des livraison confirmee
+  public function getListLivraisonConfirmee(Request $request , $status = 'unlivred') {
+      return $this->getListLivraison($request,'livred');
+  }
   // liste de livraison par vendeurs
   public function getListLivraisonByVendeurs(Request $request) {
     $ravitaillement = RavitaillementVendeur::select('id_ravitaillement')->where([
@@ -95,8 +104,58 @@ public function inventaireLivraison() {
       'confirm_code'  =>  'required|string',
       'password'  =>  'required|string'
     ]);
-    echo "en cours de developpement";
-    die();
-    dd($request);
+    try {
+      // verifier si le status est non Livrer
+      if($this->livraisonStatus($request->input('livraison')) == 'unlivred') {
+        // verifier si le mots de passe correspond
+        if(Hash::check($request->input('password'),Auth::user()->password)) {
+          // verifier si le code de confirmation est correcte
+          if($this->confirmationCodeOk($request->input('livraison'),$request->input('confirm_code'))) {
+            // Verifier si les numeros de series existes
+            if($request->input('with_serial') == 1) {
+              // Les Numeros de Series existes
+              dd($request);
+            } else {
+              // Les Numeros de Series n'existes pas
+              // Changement de status de livraison
+              Livraison::where([
+                'id'  =>  $request->input('livraison')
+              ])->update([
+                'status'  =>  'livred'
+              ]);
+              return redirect('/user/livraison')->withSuccess("Success!");
+            }
+          } else {
+            throw new AppException("Le Code de confirmation est incorrect!",2);
+          }
+        } else {
+          throw new AppException("Le Mot de passe ne corresponds pas , Ressayez !",1);
+        }
+      } else {
+        throw new AppException("Erreur Deja Livrer",0);
+      }
+
+    } catch (AppException $e) {
+      return back()->with("_errors",$e->getMessage());
+    }
+
   }
+
+// Verifier le status de la livraison (unlivred | livred)
+  public function livraisonStatus($id) {
+    return Livraison::where('id',$id)->first()->status;
+  }
+  // Verifier si le code de confirmation est correcte
+
+  public function confirmationCodeOK($id,$code) {
+    $livraison = Livraison::where([
+      'id'  =>  $id,
+      'code_livraison' =>  $code
+    ])->first();
+    if($livraison) {
+      return $livraison;
+    }
+    return false;
+  }
+
 }

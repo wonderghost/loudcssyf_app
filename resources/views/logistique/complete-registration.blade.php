@@ -43,7 +43,6 @@
 		}
 
 		var tabSerial = [];
-		console.log(tabSerial);
 		// pendant le focus
 		$(".serial-input").on('focus',function () {
 

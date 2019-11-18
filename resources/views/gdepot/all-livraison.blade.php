@@ -7,6 +7,18 @@
 			<a href="{{url()->previous()}}" uk-tooltip="Retour" uk-icon="icon:arrow-left;ratio:1.5"></a>
 			 Livraisons</h3>
        <hr class="uk-divider-small">
+       @if(session('success'))
+       <div class="uk-alert-success uk-box-shadow-small uk-border-rounded" uk-alert>
+         <a href="#" class="uk-alert-close" uk-close></a>
+         <p>{{session('success')}}</p>
+       </div>
+       @endif
+       @if(session('_errors'))
+       <div class="uk-alert-danger uk-box-shadow-small uk-border-rounded" uk-alert>
+         <a href="#" class="uk-alert-close" uk-close></a>
+         <p>{{session('_errors')}}</p>
+       </div>
+       @endif
        @if($errors->any())
        @foreach($errors->all() as $error)
        <div class="uk-alert-danger uk-box-shadow-small uk-border-rounded" uk-alert>
@@ -15,20 +27,46 @@
        </div>
        @endforeach
        @endif
-       <table class="uk-table uk-table-hover uk-table-striped uk-table-small">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Vendeur</th>
-            <th>Article</th>
-            <th>Commande</th>
-            <th>Quantite</th>
-            <th>Status</th>
-            <th class="uk-text-center" colspan="2">-</th>
-          </tr>
-        </thead>
-        <tbody id="livraison"></tbody>
-       </table>
+       <ul uk-accordion="collapsible: false">
+           <li>
+               <a class="uk-accordion-title" href="#">Livraison en Attente</a>
+               <div class="uk-accordion-content">
+                 <table class="uk-table uk-table-hover uk-table-striped uk-table-small">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Vendeur</th>
+                      <th>Article</th>
+                      <th>Commande</th>
+                      <th>Quantite</th>
+                      <th>Status</th>
+                      <th class="uk-text-center">-</th>
+                    </tr>
+                  </thead>
+                  <tbody id="livraison"></tbody>
+                 </table>
+               </div>
+           </li>
+           <li>
+             <a href="#" class="uk-accordion-title">Livraison Confirmee</a>
+             <div class="uk-accordion-content">
+               <table class="uk-table uk-table-hover uk-table-striped uk-table-small">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Vendeur</th>
+                    <th>Article</th>
+                    <th>Commande</th>
+                    <th>Quantite</th>
+                    <th>Status</th>
+                    <th class="uk-text-center" colspan="2">-</th>
+                  </tr>
+                </thead>
+                <tbody id="livraison-confirmee"></tbody>
+               </table>
+             </div>
+           </li>
+         </ul>
        <!-- Confirmer le mot de passe et le code de confirmation -->
        <!-- Selection et saisi des numeros de series -->
        <div id="serials" uk-modal>
@@ -73,9 +111,11 @@
 @section('script')
 <script type="text/javascript">
   $(function () {
-    $logistique.ListLivraison($adminPage,"{{csrf_token()}}","{{url('/user/livraison')}}","")
-
+    $logistique.ListLivraison($adminPage,"{{csrf_token()}}","{{url('/user/livraison')}}","{{url('/user/add-material/find-serial-number')}}")
     // Envoi du formulaire d'envoi des numeros de serie
+    $logistique.ListLivraisonConfirmee($adminPage,"{{csrf_token()}}","{{url('/user/livraison-confirmee')}}")
+
+
 
   })
 </script>

@@ -21,6 +21,7 @@
 			 			<th>Quantite</th>
 			 			<th>Numero Recu</th>
 			 			<th>Status</th>
+			 			<th>id</th>
 			 			<th>-</th>
 			 		</tr>
 			 	</thead>
@@ -43,7 +44,7 @@
 				data : $(this).serialize()
 			})
 			.done(function (data) {
-				$adminPage.createTableCommandRow(data,['date','item','quantite','numero_recu','status','details'],$("#list-command"));
+				$adminPage.createTableCommandRow(data,['date','item','quantite','numero_recu','status','id','details'],$("#list-command"));
 			})
 			.fail(function (data) {
 				Uikit.modal.alert(data).then(function () {

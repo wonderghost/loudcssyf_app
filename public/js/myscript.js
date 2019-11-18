@@ -513,6 +513,8 @@ $adminPage.createTableCommandRow = function (sdata,champs=null,table,linkDetails
 						td[2].text(sdata[i].quantite);
 						td[3].text(sdata[i].numero_recu);
 						td[4].text(sdata[i].status);
+						td[5].text(sdata[i].id_commande);
+            td[5].addClass('uk-text-bold')
 						if(sdata[i].status == "en attente") {
 							td[4].addClass('uk-text-danger');
 						} else {
@@ -524,7 +526,7 @@ $adminPage.createTableCommandRow = function (sdata,champs=null,table,linkDetails
 						a.attr('uk-icon','icon:more');
 						a.addClass('uk-button-default uk-border-rounded');
 						a.text('details ');
-						td[5].append(a);
+						td[6].append(a);
 						//
 
 						for(var j=0;j<champs.length;j++) {

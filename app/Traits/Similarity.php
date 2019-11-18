@@ -274,6 +274,10 @@ Trait Similarity {
         return response()->json($e->getMessage());
       }
     }
+    // verifier si le numero de serie exist dans le depot en cours
+    public function findSerialNumberForDepot(Request $request) {
+      
+    }
 
     public function getSerialNumber( Request $request) {
         // recuperation de la valeur en base de donnees
