@@ -274,9 +274,42 @@ Trait Similarity {
         return response()->json($e->getMessage());
       }
     }
-    // verifier si le numero de serie exist dans le depot en cours
-    public function findSerialNumberForDepot(Request $request) {
-      
+    // Validation des numeros de series lors des livraisons
+    public function validateSerialNumberForLivraison(Request $request) {
+      try {
+        if(trim($request->input('ref')) == "") {
+          throw new SerialException("Ce champs ne peut etre vide !");
+        }
+        // verification de l'existence dans le depot specifie
+        $depot = Depots::where('vendeurs',Auth::user()->username)->first();
+        $existenceState = Stock::where([
+          'exemplaire'  =>  $request->input('ref'),
+          'depot' =>  $depot->localisation
+        ])->first();
+
+        if($existenceState) {
+          // Le numero de serie existe dans le depot
+          // Verifier si le numero n'est pas deja attribuer a un vendeur
+          $attributionVendeurState = Exemplaire::where([
+            'serial_number' =>  $request->input('ref'),
+            'status'  =>  'inactif',
+            'vendeurs'  =>  NULL
+          ])->first();
+          if($attributionVendeurState) {
+            // le numero n'est pas encore attribuer
+            return response()->json('success');
+          }
+          else {
+            throw new SerialException("Ce Numero est deja attribuer!");
+          }
+        }
+        else {
+          throw new SerialException("Ce Numero n'existe pas dans votre stock!");
+        }
+      } catch (SerialException $e) {
+        return response()->json($e->getMessage());
+      }
+
     }
 
     public function getSerialNumber( Request $request) {

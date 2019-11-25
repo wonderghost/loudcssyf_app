@@ -92,11 +92,12 @@
                 <div class="uk-accordion-content">
                   <input type="hidden" name="livraison" id="livraison-id" value="">
                   <input type="hidden" name="with_serial" id="with-serial" value="">
+                  <input type="hidden" name="quantite" id="quantite" value="">
                   {!!Form::label('Entrez le code de confirmation de la livraison')!!}
                   {!!Form::text('confirm_code','',['class'=>'uk-input uk-margin-small','placeholder'=>'Code de Confirmation'])!!}
                   {!!Form::label('Confirmez Votre Mot de passe')!!}
                   {!!Form::password('password',['class'=>'uk-input uk-margin-small','placeholder'=>'Entrez votre mot de passe'])!!}
-                  {!!Form::submit('Confirmer',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
+                  {!!Form::submit('Confirmer',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-small','id'=>'confirm-button-livraison','disabled'=>''])!!}
                 </div>
               </li>
             </ul>
@@ -111,7 +112,7 @@
 @section('script')
 <script type="text/javascript">
   $(function () {
-    $logistique.ListLivraison($adminPage,"{{csrf_token()}}","{{url('/user/livraison')}}","{{url('/user/add-material/find-serial-number')}}")
+    $logistique.ListLivraison($adminPage,"{{csrf_token()}}","{{url('/user/livraison')}}","{{url('/user/livraison/validate-serial')}}")
     // Envoi du formulaire d'envoi des numeros de serie
     $logistique.ListLivraisonConfirmee($adminPage,"{{csrf_token()}}","{{url('/user/livraison-confirmee')}}")
 

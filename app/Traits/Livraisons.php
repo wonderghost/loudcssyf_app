@@ -8,6 +8,7 @@ use App\Stock;
 use App\Livraison;
 use App\Depots;
 use App\RavitaillementVendeur;
+use App\LivraisonSerialFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -114,17 +115,29 @@ public function inventaireLivraison() {
             // Verifier si les numeros de series existes
             if($request->input('with_serial') == 1) {
               // Les Numeros de Series existes
-              dd($request);
+              echo "en cours de developpement";
+              // ecriture dans un fichier texte et stockage du dit fichier
+              $fileSerial = new LivraisonSerialFile;
+              $fileSerial->filename = 'serial_file_'.time().'.txt';
+              $fileSerial->livraison_id = $request->input('livraison');
+              $file = config('serial_file.path')."/".$fileSerial->filename;
+
+              $handle = fopen($file,'w');
+              for ($i=0; $i < $request->input('quantite') ; $i++) {
+                fputs($handle,$request->input('serial-number-'.($i+1))."\n");
+              }
+              fclose($handle);
+              $fileSerial->save();
             } else {
               // Les Numeros de Series n'existes pas
-              // Changement de status de livraison
-              Livraison::where([
-                'id'  =>  $request->input('livraison')
+            }
+            // Changement de status de livraison
+            Livraison::where([
+              'id'  =>  $request->input('livraison')
               ])->update([
                 'status'  =>  'livred'
               ]);
               return redirect('/user/livraison')->withSuccess("Success!");
-            }
           } else {
             throw new AppException("Le Code de confirmation est incorrect!",2);
           }

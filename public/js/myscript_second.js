@@ -78,6 +78,7 @@ var $logistique = {
             $("#all-serials").html('')
             $("#with-serial").val($(this).attr('with-serial'))
             if($(this).attr("with-serial") == 1) {
+              $("#quantite").val($(this).attr('quantite'))
               $logistique.SerialInputCols($(this).attr('quantite'),$("#all-serials"))
               $logistique.inputSerialValidate(adminPage,token,urlFindSerial)
             }
@@ -151,6 +152,7 @@ var $logistique = {
       div.append(inputs[i]);
       parent.append(div);
     }
+
   }
 ,
 inputSerialValidate : function (adminPage,token,url) {
@@ -171,6 +173,7 @@ inputSerialValidate : function (adminPage,token,url) {
     var form = adminPage.makeForm(token,url,$(this).val());
     var serialNow = $(this);
 
+
     // verification de l'exitence dans la base de donnees | envoi de la requete ajax
     form.on('submit',function(e) {
       e.preventDefault();
@@ -181,8 +184,6 @@ inputSerialValidate : function (adminPage,token,url) {
         dataType : 'json'
       })
       .done(function (data) {
-        console.log(data)
-        return 0
         if(data && data !== 'success') {
           // Erreur genere
           UIkit.notification({
@@ -190,12 +191,12 @@ inputSerialValidate : function (adminPage,token,url) {
             status : 'danger',
             timeout : 800
           });
-          $("#validate").attr('disabled','')
-
+          $("#confirm-button-livraison").attr('disabled','')
         } else {
-          $("#validate").removeAttr('disabled')
+
           // le numero n'existe pas dans la base de donnees
           // verifier s'il n'existe pas de duplicat
+          $("#confirm-button-livraison").removeAttr('disabled')
           if($.inArray($.trim(serialNow.val()),tabSerial) == -1) {
             // la valeur n'existe pas dans le tableau , il faut l'ajouter
             tabSerial.push($.trim(serialNow.val()));
@@ -204,11 +205,11 @@ inputSerialValidate : function (adminPage,token,url) {
             if($.trim(serialNow.val()) == "")  {
               // UIkit.modal.alert("Ce champs ne peut etre vide!");
               alert("Ce champs ne peut etre vide!")
-              $("#validate").attr('disabled','');
+              $("#confirm-button-livraison").attr('disabled','')
               return 0;
             }
             UIkit.modal.alert("Duplicat de numero!").then(function () {
-              $("#validate").attr('disabled','')
+              $("#confirm-button-livraison").attr('disabled','')
               tabSerial.splice(tabSerial.indexOf($.trim(serialNow.val())),1);
               $('.serial-input').each(function (index, element) {
                   if($.trim($(element).val()) == $.trim(serialNow.val())) {
@@ -222,8 +223,8 @@ inputSerialValidate : function (adminPage,token,url) {
 
       })
       .fail(function(data) {
-        console.log(data)
-        // $(location).attr('href',"")
+        alert(data.responseJSON.message)
+        $(location).attr('href',"")
       });
     });
     form.submit();
