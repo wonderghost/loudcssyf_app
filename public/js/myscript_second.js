@@ -78,6 +78,7 @@ var $logistique = {
             $("#all-serials").html('')
             $("#with-serial").val($(this).attr('with-serial'))
             if($(this).attr("with-serial") == 1) {
+              $("#confirm-button-livraison").attr('disabled','')
               $("#quantite").val($(this).attr('quantite'))
               $logistique.SerialInputCols($(this).attr('quantite'),$("#all-serials"))
               $logistique.inputSerialValidate(adminPage,token,urlFindSerial)
@@ -230,5 +231,35 @@ inputSerialValidate : function (adminPage,token,url) {
     form.submit();
   });
   // ####
+}
+,
+listLivraisonToConfirm : function (adminPage, token ,url) {
+  var form = adminPage.makeForm(token,url,"")
+  form.on('submit',function(e){
+    e.preventDefault()
+    $.ajax({
+      url : url ,
+      type : $(this).attr('method'),
+      dataType : 'json',
+      data : $(this).serialize()
+    }).
+    done(function (data) {
+      $logistique.dataList(data,$("#livraison-to-validate"))
+      // ajout du button validation
+      var validate = $("<button></button>")
+      validate.text('Valider')
+      validate.attr('type','button')
+      validate.addClass('uk-button-primary uk-border-rounded confirm-button-livraison')
+      validate.attr('id','')
+      validate.attr('uk-icon','icon : check ; ration : 0.7')
+      $('.row').append(validate)
+    })
+    .fail(function (data){
+      alert(data.responseJSON.message)
+      $(location).attr('href',"")
+    })
+  })
+  // envoi du formulaire pour traitement de la requete
+  form.submit()
 }
 }

@@ -8,4 +8,8 @@ class Stock extends Model
 {
     //
     protected $table = 'stock_central';
+
+    public function exemplaire() {
+      return  Exemplaire::where('serial_number',$this->exemplaire)->first();
+    }
 }

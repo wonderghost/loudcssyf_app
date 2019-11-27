@@ -8,6 +8,7 @@ use App\Stock;
 use App\Livraison;
 use App\Depots;
 use App\RavitaillementVendeur;
+use App\Produits;
 use App\LivraisonSerialFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +21,8 @@ trait Livraisons {
 public function getInventaireForDepot(Request $request) {
   // global $tab =  [];
   $GLOBALS['tab'] = [];
+  $GLOBALS['serials'] = [];
+
   $stock  = StockPrime::where('depot',$request->input('ref'))->get();
   $serial   = Stock::where('depot',$request->input('ref'))->get();
   // dump($stock);
@@ -28,13 +31,25 @@ public function getInventaireForDepot(Request $request) {
     $GLOBALS['tab'][$key] =  [
       'item'  =>  $item->produits()->first()->libelle,
       'quantite'  =>  $item->quantite,
-      'prix_ttc'  =>  $item->produits()->first()->prix_vente
+      'prix_initial'  =>  number_format($item->produits()->first()->prix_initial,0,'',' '),
+      'prix_ttc'  =>  number_format($item->produits()->first()->prix_vente,0,'',' '),
+      'ht'  =>  0,
+      'tva' =>  0,
+      'marge' =>  0
     ];
 
   });
+  $serial->each(function ($item , $key) {
+    $GLOBALS['serials'][$key] = [
+      'serial'  =>  $item->exemplaire,
+      'vendeurs'  =>  $item->exemplaire()->vendeurs,
+      'status'  =>  $item->exemplaire()->status
+    ];
+  });
+
   return response()->json([
     'inventaire'  =>  $GLOBALS['tab'],
-    'serials' =>  $serial
+    'serials' =>  $GLOBALS['serials']
   ]);
 }
 
@@ -115,7 +130,6 @@ public function inventaireLivraison() {
             // Verifier si les numeros de series existes
             if($request->input('with_serial') == 1) {
               // Les Numeros de Series existes
-              echo "en cours de developpement";
               // ecriture dans un fichier texte et stockage du dit fichier
               $fileSerial = new LivraisonSerialFile;
               $fileSerial->filename = 'serial_file_'.time().'.txt';
@@ -170,5 +184,21 @@ public function inventaireLivraison() {
     }
     return false;
   }
-
+// recuperation de la liste des livraisons a valider
+  public function getListLivraisonToValidate(Request $request) {
+    $livraison = Livraison::where('status','livred')->whereIn('produits',Produits::select('reference')->where('with_serial',1)->get())->get();
+    $all=[];
+    foreach ($livraison as $key => $value) {
+      $date = new Carbon($value->created_at);
+      $all[$key] = [
+        'date'  =>  $date->toFormattedDateString(),
+        'vendeur' =>  $value->ravitaillementVendeurs()->vendeurs()->username.' _ '.$value->ravitaillementVendeurs()->vendeurs()->localisation,
+        'produit' =>  $value->produits()->libelle,
+        'command' =>  $value->ravitaillementVendeurs()->commands,
+        'quantite'  =>  $value->quantite,
+        'status'  =>  $value->status == 'unlivred'  ? "En attente de livraison" : "Livraison effectuee"
+      ];
+    }
+    return response()->json($all);
+  }
 }

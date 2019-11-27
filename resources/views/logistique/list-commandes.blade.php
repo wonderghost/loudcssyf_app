@@ -63,6 +63,25 @@
 							 </table>
 						 </div>
 					 </li>
+					 <li>
+						 <a href="#" class="uk-accordion-title">Livraison a Valider</a>
+						 <div class="uk-accordion-content">
+							 <table class="uk-table uk-table-striped uk-table-hover uk-table-small">
+							 	<thead>
+							 		<tr>
+							 			<th>Date</th>
+							 			<th>Vendeur</th>
+							 			<th>ARTICLE</th>
+							 			<th>COMMANDE</th>
+							 			<th>QUANTITE</th>
+							 			<th>STATUS</th>
+										<th>-</th>
+							 		</tr>
+							 	</thead>
+								<tbody id="livraison-to-validate"></tbody>
+							 </table>
+						 </div>
+					 </li>
 			 </ul>
 	</div>
 </div>
@@ -81,21 +100,23 @@
 				data : $(this).serialize()
 			})
 			.done(function (data) {
+				// recuperation des listes de commande [confrimer , non confirmer]
 				$adminPage.createTableCommandRowLogistique(data.unconfirmed,['date','vendeur','item','quantite','numero_recu','parabole','status','recu','confirm'],$("#list-commands"),"","{{url('/')}}");
 				$adminPage.createTableCommandRowLogistique(data.confirmed,['date','vendeur','item','quantite','numero_recu','parabole','status','recu','confirm'],$("#list-command-confirm"),"","{{url('/')}}");
-
 			})
 			.fail(function (data) {
-				Uikit.modal.alert(data).then(function () {
-					$(location).attr('href',"{{url()->current()}}");
-				})
+				alert(data.responseJSON.message)
+				$(location).attr('href',"{{url()->current()}}")
 			});
 		});
-		form.submit();
+
+		form.submit()
 		setInterval(function() {
 			form.submit();
 		},20000);
 
+		// recuperation de la liste des livraison a Valider
+		$logistique.listLivraisonToConfirm($adminPage,"{{csrf_token()}}","{{url('/user/commandes/livraison-validation')}}")
 	});
 </script>
 @endsection

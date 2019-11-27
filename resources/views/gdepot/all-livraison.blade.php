@@ -59,7 +59,7 @@
                     <th>Commande</th>
                     <th>Quantite</th>
                     <th>Status</th>
-                    <th class="uk-text-center" colspan="2">-</th>
+                    <!-- <th class="uk-text-center" colspan="2">-</th> -->
                   </tr>
                 </thead>
                 <tbody id="livraison-confirmee"></tbody>
@@ -97,7 +97,7 @@
                   {!!Form::text('confirm_code','',['class'=>'uk-input uk-margin-small','placeholder'=>'Code de Confirmation'])!!}
                   {!!Form::label('Confirmez Votre Mot de passe')!!}
                   {!!Form::password('password',['class'=>'uk-input uk-margin-small','placeholder'=>'Entrez votre mot de passe'])!!}
-                  {!!Form::submit('Confirmer',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-small','id'=>'confirm-button-livraison','disabled'=>''])!!}
+                  {!!Form::submit('Confirmer',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-small','id'=>'confirm-button-livraison'])!!}
                 </div>
               </li>
             </ul>

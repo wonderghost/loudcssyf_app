@@ -7,15 +7,19 @@
 			<a href="{{url()->previous()}}" uk-tooltip="Retour" uk-icon="icon:arrow-left;ratio:1.5"></a>
 			 Inventaire</h3>
       <hr class="uk-divider-small">
-      <div class="uk-child-width-1-2@m" uk-grid>
+      <div class="uk-child-width-1-1@m" uk-grid>
         <div class="">
           <!-- inventaire -->
           <table class="uk-table uk-table-divider">
             <thead>
               <tr>
-                <th>Item</th>
+                <th>Designation</th>
                 <th>Quantite</th>
-                <th>Prix TTC</th>
+                <th>Prix Initial</th>
+                <th>Prix ttc</th>
+                <th>Prix ht</th>
+                <th>Prix tva</th>
+                <th>Marge</th>
               </tr>
             </thead>
             <tbody id="list-material"></tbody>
@@ -27,6 +31,8 @@
             <thead>
               <tr>
                 <th>Serials</th>
+                <th>Vendeurs</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody id="serials"></tbody>
@@ -56,32 +62,8 @@ $(function () {
     })
     .done(function (data) {
       if(data) {
-
-        $.each(data.inventaire,function (index,value) {
-          var tr = $("<tr></tr>");
-          var td = [];
-
-          for (var i = 0; i < 3 ; i++) {
-            td[i] = $("<td></td>");
-          }
-
-          td[0].text(value.item);
-          td[1].text(value.quantite);
-          td[2].text(lisibilite_nombre(value.prix_ttc));
-
-          for(var i = 0 ; i < 3 ; i++) {
-            tr.append(td[i]);
-          }
-          $("#list-material").append(tr);
-        });
-
-        $.each(data.serials,function (index,value) {
-          var tr = $("<tr></tr>");
-          var td = $("<td></td>");
-          td.text(lisibilite_nombre(value.exemplaire));
-          tr.append(td);
-          $("#serials").append(tr);
-        });
+        $logistique.dataList(data.inventaire,$("#list-material"))
+        $logistique.dataList(data.serials,$("#serials"))
     }
   })
     .fail(function(data) {
