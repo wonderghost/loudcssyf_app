@@ -83,6 +83,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 
 // livraison a valider
 	Route::post('/user/commandes/livraison-validation','LogistiqueController@getListLivraisonToValidate')->middleware('logistique');
+	Route::post('/user/commandes/get-serial-validation','LogistiqueController@getSerialForValidateLivraison')->middleware('logistique');
 // ###
 	Route::get('/user/add-material/complete-registration','LogistiqueController@completeRegistration')->middleware('logistique');
 	Route::post('/user/add-material/complete-registration','LogistiqueController@completRegistrationFinal')->middleware('logistique');

@@ -71,9 +71,6 @@
        <!-- Selection et saisi des numeros de series -->
        <div id="serials" uk-modal>
          <div class="uk-modal-dialog">
-           <div class="uk-modal-header">
-             <h3 class="uk-text-center"></h3>
-           </div>
            <div class="uk-modal-body">
              {!!Form::open(['url'=>'/user/livraison/confirm','id'=>'confirm-form'])!!}
              <ul uk-accordion="collapsible: false">

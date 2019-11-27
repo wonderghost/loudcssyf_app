@@ -2,7 +2,6 @@
 namespace App\Traits;
 
 use Illuminate\Http\Request;
-
 use App\StockPrime;
 use App\Stock;
 use App\Livraison;
@@ -13,6 +12,7 @@ use App\LivraisonSerialFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Arr;
 use App\Exceptions\AppException;
 
 trait Livraisons {
@@ -189,6 +189,7 @@ public function inventaireLivraison() {
     $livraison = Livraison::where('status','livred')->whereIn('produits',Produits::select('reference')->where('with_serial',1)->get())->get();
     $all=[];
     $files = [];
+    $ids = [];
     foreach ($livraison as $key => $value) {
       $date = new Carbon($value->created_at);
 
@@ -203,10 +204,43 @@ public function inventaireLivraison() {
       $files[$key] = [
         'filename'  =>  $value->serialFile()
       ];
+
+      $ids[$key]  = [
+        'id'  =>  $value->id
+      ];
     }
     return response()->json([
       'all' =>  $all,
-      'file'  =>  $files
+      'file'  =>  $files,
+      'ids' =>  $ids
     ]);
+  }
+
+  public function getSerialForValidateLivraison(Request $request) {
+    $file = LivraisonSerialFile::where('livraison_id',$request->input('ref'))->first()->filename;
+    // ouverture du fichier en lecture seul
+    $tabSerial = [];
+    $handle = fopen(config('serial_file.path')."/".$file,"r");
+    if($handle) {
+      while(!feof($handle)) {
+        $serial = fgets($handle);
+        $serial = str_replace("\n","",$serial);
+        array_push($tabSerial,$serial);
+      }
+      fclose($handle);
+    }
+
+    // filtrer le tableau en supprimant les valeurs vides
+    $filtered = Arr::where($tabSerial, function ($value , $key ) {
+      return !empty($value);
+    });
+
+    foreach ($filtered as $key => $value) {
+      $tabSerial[$key] = [
+        'serial'  =>  $value
+      ];
+    }
+
+    return response()->json($tabSerial);
   }
 }

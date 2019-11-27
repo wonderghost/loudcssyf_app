@@ -119,6 +119,7 @@ var $logistique = {
   dataList : function (data,content) {
 
     var row = [] , cols = [] ;
+    content.html('')
     data.forEach(function (element,index) {
       row[index] = $("<tr></tr>")
       var count = 0 ;
@@ -132,7 +133,7 @@ var $logistique = {
         count++
       }
     })
-    
+
   }
   ,
   SerialInputCols : function (quantite,parent) {
@@ -246,21 +247,37 @@ listLivraisonToConfirm : function (adminPage, token ,url) {
     done(function (data) {
       $logistique.dataList(data.all,$("#livraison-to-validate"))
       // ajout du button validation
-      var validate = $("<button></button>") , details = $("<a></a>")
-      validate.text('Valider')
-      details.text('Details')
-      details.attr('uk-toggle','')
+      var validate = $("<button></button>") , details = $("<button></button>")
+
+      validate.text('valider')
       validate.attr('type','button')
-      details.attr('href','#modal-livraison-detail')
-      validate.addClass(' uk-button-primary uk-border-rounded confirm-button-livraison uk-margin-right')
-      details.addClass('uk-button-default uk-border-rounded detail-livraison')
+      validate.addClass(' uk-button-primary uk-border-rounded validate-button-livraison uk-margin-right')
       validate.attr('id','')
+      validate.attr('uk-toggle','target : #modal-livraison-validate')
+
+      details.text('details')
+      details.attr('uk-toggle','target : #modal-livraison-detail')
+      details.addClass('uk-button-default uk-border-rounded detail-livraison')
       // ajout du button details
       validate.attr('uk-icon',"icon : check ; ratio : 0.7")
       details.attr('uk-icon',"icon : more ; ratio : 0.7")
 
       $('.row').append(validate)
       $('.row').append(details)
+
+      //
+      $('.validate-button-livraison').each(function(index,element) {
+        $(element).attr('id',data.ids[index].id)
+      })
+      // action au click sur le boutton validate
+      $(".validate-button-livraison").on('click',function () {
+        // console.log($(this).attr('id'))
+        let username = this.parentNode
+        $("#vendeur-name").html(username.firstChild.nextSibling.innerText)
+        // ####
+        $logistique.getListSerialNumberOnValidation(token,"/user/commandes/get-serial-validation",$(this).attr('id'))
+      })
+
       // ajout du fichier au click sur le bouton Details
 
       $('.detail-livraison').each(function (index , element) {
@@ -271,9 +288,6 @@ listLivraisonToConfirm : function (adminPage, token ,url) {
         $("#file-link").attr('href',"/livraison_serial_files/"+$(this).attr('filename'))
         $("#file-link").attr('download',$(this).attr('filename'))
       })
-
-
-
     })
     .fail(function (data){
       alert(data.responseJSON.message)
@@ -283,4 +297,26 @@ listLivraisonToConfirm : function (adminPage, token ,url) {
   // envoi du formulaire pour traitement de la requete
   form.submit()
 }
+,
+getListSerialNumberOnValidation : function (token , url , ref) {
+  var form = $adminPage.makeForm(token , url ,ref)
+  form.on('submit',function (e) {
+    e.preventDefault()
+    $.ajax({
+      url : url ,
+      type : $(this).attr('method'),
+      data : $(this).serialize(),
+      dataType : 'json'
+    })
+    .done(function (data) {
+      $logistique.dataList(data,$("#serial-validate-list"))
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href',"/")
+    })
+  })
+  form.submit()
+}
+
 }

@@ -94,6 +94,30 @@
 			     </div>
 			 </div>
 			 <!-- // -->
+			 <!-- MODAL VALIDATE LIVRAISON  -->
+			 <div id="modal-livraison-validate" class="uk-flex-top" uk-modal>
+			     <div class="uk-modal-dialog uk-modal-body">
+			         <button class="uk-modal-close-default" type="button" uk-close></button>
+			         <p class="">
+								 Vous confirmez l'envoi de materiel chez  :  <span id="vendeur-name" class="uk-text-bold"></span>
+							 </p>
+							 <table class="uk-table uk-table-divider uk-table-striped uk-table-small uk-table-hover" >
+								 <thead>
+								 	<tr>
+								 		<th>Serial</th>
+								 	</tr>
+								 </thead>
+									 <tbody id="serial-validate-list"></tbody>
+							 </table>
+							 <hr class="uk-divider-small">
+							 {!!Form::open(['url'=>''])!!}
+							 {!!Form::label('Confirmez Votre Mot de passe')!!}
+							 {!!Form::password('password_confirmation',['class'=>'uk-input uk-border-rounded uk-margin-small','required'=>''])!!}
+							 {!!Form::submit('Confirmer',['class'=>'uk-button uk-button-primary uk-border-rounded uk-float-right uk-box-shadow-small','disabled'])!!}
+							 {!!Form::close()!!}
+			     </div>
+			 </div>
+			 <!-- // -->
 	</div>
 </div>
 @endsection
@@ -129,6 +153,9 @@
 		// recuperation de la liste des livraison a Valider
 		$logistique.listLivraisonToConfirm($adminPage,"{{csrf_token()}}","{{url('/user/commandes/livraison-validation')}}")
 
+		$('.validate-button-livraison').on('click',function () {
+			console.log($(this).attr('id'))
+		})
 	});
 </script>
 @endsection
