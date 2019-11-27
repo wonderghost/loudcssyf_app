@@ -200,13 +200,13 @@ public function inventaireLivraison() {
         'quantite'  =>  $value->quantite,
         'status'  =>  $value->status == 'unlivred'  ? "En attente de livraison" : "Livraison effectuee",
       ];
-      $file[$key] = [
+      $files[$key] = [
         'filename'  =>  $value->serialFile()
       ];
     }
     return response()->json([
       'all' =>  $all,
-      'file'  =>  $file
+      'file'  =>  $files
     ]);
   }
 }

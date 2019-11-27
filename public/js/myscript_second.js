@@ -132,6 +132,7 @@ var $logistique = {
         count++
       }
     })
+    
   }
   ,
   SerialInputCols : function (quantite,parent) {

@@ -10,7 +10,7 @@
       <div class="uk-child-width-1-1@m" uk-grid>
         <div class="">
           <!-- inventaire -->
-          <table class="uk-table uk-table-divider">
+          <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
             <thead>
               <tr>
                 <th>Designation</th>
@@ -27,7 +27,7 @@
         </div>
         <div class="">
           <!-- serial number -->
-          <table class="uk-table uk-table-divider" >
+          <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small" >
             <thead>
               <tr>
                 <th>Serials</th>
@@ -64,6 +64,7 @@ $(function () {
       if(data) {
         $logistique.dataList(data.inventaire,$("#list-material"))
         $logistique.dataList(data.serials,$("#serials"))
+        
     }
   })
     .fail(function(data) {
