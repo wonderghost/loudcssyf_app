@@ -22,4 +22,8 @@ class Livraison extends Model
     public function depot() {
       return $this->belongsTo('App\Depots');
     }
+
+    public function serialFile() {
+      return LivraisonSerialFile::where('livraison_id',$this->id)->first()->filename;
+    }
 }

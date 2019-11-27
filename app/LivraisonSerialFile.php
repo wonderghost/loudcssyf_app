@@ -8,4 +8,7 @@ class LivraisonSerialFile extends Model
 {
     //
     protected  $table = 'livraison_serial_files';
+
+    protected $keyType = 'string';
+    protected $primaryKey = 'filename';
 }

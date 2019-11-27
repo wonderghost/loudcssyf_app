@@ -83,6 +83,17 @@
 						 </div>
 					 </li>
 			 </ul>
+
+			 <!-- MODAL DETAIL LIVRAISON TO DOWNLOAD -->
+
+			 <div id="modal-livraison-detail" class="uk-flex-top" uk-modal>
+			     <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical uk-text-center">
+			         <button class="uk-modal-close-default" type="button" uk-close></button>
+			         <p class="uk-text-lead">Cliquez sur le button pour telecharger le fichier text</p>
+							 <a id="file-link" download="" target="_blank" class="uk-button uk-button-primary uk-border-rounded uk-box-shadow-small">Telecharger <span uk-icon="icon : download"></span> </a>
+			     </div>
+			 </div>
+			 <!-- // -->
 	</div>
 </div>
 @endsection
@@ -117,6 +128,7 @@
 
 		// recuperation de la liste des livraison a Valider
 		$logistique.listLivraisonToConfirm($adminPage,"{{csrf_token()}}","{{url('/user/commandes/livraison-validation')}}")
+
 	});
 </script>
 @endsection

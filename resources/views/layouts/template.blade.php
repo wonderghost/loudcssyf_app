@@ -262,18 +262,6 @@
         $(".close-button").on('click',function () {
             $(this).parent().hide(500);
         })
-
-        // var modal = UIkit.modal.dialog("<div uk-spinner></div>");
-        // $(window).ajaxStart(function () {
-        //     // modal.show();
-        // });
-
-        // $(window).ajaxSuccess(function () {
-        //     // modal.hide();
-        // });
-
-
-
 	})
 </script>
 @yield('script')

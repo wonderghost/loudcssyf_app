@@ -70,7 +70,6 @@ var $logistique = {
             $(element).attr('id',data.ids[index].id)
             $(element).attr('with-serial',data.ids[index].with_serial)
             $(element).attr('quantite',data.list[index].quantite)
-
           })
           // action de la confirmation
           $('.confirm-button-livraison').on('click',function () {
@@ -244,15 +243,36 @@ listLivraisonToConfirm : function (adminPage, token ,url) {
       data : $(this).serialize()
     }).
     done(function (data) {
-      $logistique.dataList(data,$("#livraison-to-validate"))
+      $logistique.dataList(data.all,$("#livraison-to-validate"))
       // ajout du button validation
-      var validate = $("<button></button>")
+      var validate = $("<button></button>") , details = $("<a></a>")
       validate.text('Valider')
+      details.text('Details')
+      details.attr('uk-toggle','')
       validate.attr('type','button')
-      validate.addClass('uk-button-primary uk-border-rounded confirm-button-livraison')
+      details.attr('href','#modal-livraison-detail')
+      validate.addClass(' uk-button-primary uk-border-rounded confirm-button-livraison uk-margin-right')
+      details.addClass('uk-button-default uk-border-rounded detail-livraison')
       validate.attr('id','')
-      validate.attr('uk-icon','icon : check ; ration : 0.7')
+      // ajout du button details
+      validate.attr('uk-icon',"icon : check ; ratio : 0.7")
+      details.attr('uk-icon',"icon : more ; ratio : 0.7")
+
       $('.row').append(validate)
+      $('.row').append(details)
+      // ajout du fichier au click sur le bouton Details
+
+      $('.detail-livraison').each(function (index , element) {
+        $(element).attr('filename',data.file[index].filename)
+      })
+
+      $('.detail-livraison').on('click',function(e) {
+        $("#file-link").attr('href',"/livraison_serial_files/"+$(this).attr('filename'))
+        $("#file-link").attr('download',$(this).attr('filename'))
+      })
+
+
+
     })
     .fail(function (data){
       alert(data.responseJSON.message)

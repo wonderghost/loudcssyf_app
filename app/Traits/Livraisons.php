@@ -188,17 +188,25 @@ public function inventaireLivraison() {
   public function getListLivraisonToValidate(Request $request) {
     $livraison = Livraison::where('status','livred')->whereIn('produits',Produits::select('reference')->where('with_serial',1)->get())->get();
     $all=[];
+    $files = [];
     foreach ($livraison as $key => $value) {
       $date = new Carbon($value->created_at);
+
       $all[$key] = [
         'date'  =>  $date->toFormattedDateString(),
         'vendeur' =>  $value->ravitaillementVendeurs()->vendeurs()->username.' _ '.$value->ravitaillementVendeurs()->vendeurs()->localisation,
         'produit' =>  $value->produits()->libelle,
         'command' =>  $value->ravitaillementVendeurs()->commands,
         'quantite'  =>  $value->quantite,
-        'status'  =>  $value->status == 'unlivred'  ? "En attente de livraison" : "Livraison effectuee"
+        'status'  =>  $value->status == 'unlivred'  ? "En attente de livraison" : "Livraison effectuee",
+      ];
+      $file[$key] = [
+        'filename'  =>  $value->serialFile()
       ];
     }
-    return response()->json($all);
+    return response()->json([
+      'all' =>  $all,
+      'file'  =>  $file
+    ]);
   }
 }
