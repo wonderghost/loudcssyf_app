@@ -11,6 +11,7 @@ use App\Traits\Recrutement;
 use App\Traits\Cga;
 use App\Client;
 use App\Repertoire;
+use App\Exemplaire;
 
 
 class VendeurController extends Controller
@@ -24,7 +25,7 @@ class VendeurController extends Controller
     protected $materialPrice    =   0;
 
     public function __construct() {
-        // 
+        //
     }
 
     public function addClient() {
@@ -59,7 +60,7 @@ class VendeurController extends Controller
             $repertoire->save();
         }
         	return redirect('/user/add-client')->with('success',"Nouveau client ajouté!");
-        
+
     	// dd($client);
     }
 
@@ -81,5 +82,18 @@ class VendeurController extends Controller
         return view('ventes.abonnement');
     }
 
-    
+    // liste des numero de serie de materiel par vendeur
+    public function SerialForVendeur(Request $request) {
+      $serials = Exemplaire::where('vendeurs',$request->input('ref'))->get();
+      $all =[];
+      foreach ($serials as $key => $value) {
+        $all[$key]= [
+          'serial'  =>  $value->serial_number,
+          'article' =>  'Terminal Hd z4',
+          'vendeur' =>  $value->vendeurs,
+          'status'  =>  $value->status
+        ];
+      }
+      return response()->json($all);
+    }
 }

@@ -2,7 +2,7 @@
 
 @section('user_content')
 <div class="uk-section uk-section-default">
-	<div class="uk-container">
+	<div class="uk-container uk-container-large">
 		<h3>
 			<a href="{{url('/user')}}" uk-tooltip="Dashboard" uk-icon="icon:arrow-left;ratio:1.5"></a>
 			 Inventaire</h3>
@@ -34,7 +34,7 @@
 			</div>
 		</div>
 		<div uk-spinner id="loader" style="display: none;"></div>
-		<table class="uk-table uk-table-divider">
+		<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
 			<thead>
 				<tr>
 					<th>Designation</th>
@@ -48,6 +48,27 @@
 			</thead>
 			<tbody id="mat-list"></tbody>
 		</table>
+		<!-- liste des NUMEROS DE SERIES -->
+		<ul uk-accordion>
+    <li>
+        <a class="uk-accordion-title" href="#">Numero Materiel</a>
+        <div class="uk-accordion-content">
+					<!-- serial number -->
+          <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small" >
+            <thead>
+              <tr>
+                <th>Serials</th>
+                <th>Article</th>
+                <th>Vendeurs</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="serials-vendeurs"></tbody>
+          </table>
+				</div>
+    </li>
+</ul>
+
 
 	</div>
 </div>
@@ -57,11 +78,12 @@
 <script type="text/javascript">
 	$(function() {
 		setInterval(function() {
-			$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}",$('#mat-filter').val());	
+			$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}",$('#mat-filter').val());
 		},20000);
-		
+
 		$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}",$('#mat-filter').val());
-		
+
+		$logistique.listSerialByVendeur("{{csrf_token()}}","{{url('/user/my-inventory/serials')}}","{{Auth::user()->username}}")
 	});
 </script>
 @endsection

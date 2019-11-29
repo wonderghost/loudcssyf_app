@@ -9,13 +9,13 @@
 			 <hr class="uk-divider-small">
 
 			 @if(session("_errors"))
-			 <div class="uk-alert-danger" uk-alert>
+			 <div class="uk-alert-danger uk-border-rounded uk-box-shadow-small" uk-alert>
 				 <a href="#" class="uk-alert-close" uk-close></a>
 				 <p>{{session("_errors")}}</p>
 			 </div>
 			 @endif
 			 @if(session("success"))
-			 <div class="uk-alert-success" uk-alert>
+			 <div class="uk-alert-success uk-border-rounded uk-box-shadow-small" uk-alert>
 				 <a href="#" class="uk-alert-close" uk-close></a>
 				 <p>{{session("success")}}</p>
 			 </div>
@@ -82,6 +82,12 @@
 							 </table>
 						 </div>
 					 </li>
+					 <li>
+						 <a href="#" class="uk-accordion-title">Livraison validee</a>
+						 <div class="uk-accordion-content">
+							 
+						 </div>
+					 </li>
 			 </ul>
 
 			 <!-- MODAL DETAIL LIVRAISON TO DOWNLOAD -->
@@ -110,10 +116,11 @@
 									 <tbody id="serial-validate-list"></tbody>
 							 </table>
 							 <hr class="uk-divider-small">
-							 {!!Form::open(['url'=>''])!!}
+							 {!!Form::open(['url'=>'/user/commandes/validate-livraison-serials'])!!}
+							 {!!Form::hidden('livraison','',['id'=>'id_livraison'])!!}
 							 {!!Form::label('Confirmez Votre Mot de passe')!!}
 							 {!!Form::password('password_confirmation',['class'=>'uk-input uk-border-rounded uk-margin-small','required'=>''])!!}
-							 {!!Form::submit('Confirmer',['class'=>'uk-button uk-button-primary uk-border-rounded uk-float-right uk-box-shadow-small','disabled'])!!}
+							 {!!Form::submit('Confirmer',['class'=>'uk-button uk-button-primary uk-border-rounded uk-float-right uk-box-shadow-small'])!!}
 							 {!!Form::close()!!}
 			     </div>
 			 </div>
@@ -152,10 +159,6 @@
 
 		// recuperation de la liste des livraison a Valider
 		$logistique.listLivraisonToConfirm($adminPage,"{{csrf_token()}}","{{url('/user/commandes/livraison-validation')}}")
-
-		$('.validate-button-livraison').on('click',function () {
-			console.log($(this).attr('id'))
-		})
 	});
 </script>
 @endsection

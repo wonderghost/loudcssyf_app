@@ -16,4 +16,8 @@ class Exemplaire extends Model
     public function vendeurs() {
       return $this->hasOne('App\User','username','vendeurs');
     }
+
+    public function produits() {
+      
+    }
 }

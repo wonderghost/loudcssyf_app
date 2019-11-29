@@ -84,6 +84,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 // livraison a valider
 	Route::post('/user/commandes/livraison-validation','LogistiqueController@getListLivraisonToValidate')->middleware('logistique');
 	Route::post('/user/commandes/get-serial-validation','LogistiqueController@getSerialForValidateLivraison')->middleware('logistique');
+	Route::post('/user/commandes/validate-livraison-serials','LogistiqueController@validateLivraisonSerial')->middleware('logistique');
 // ###
 	Route::get('/user/add-material/complete-registration','LogistiqueController@completeRegistration')->middleware('logistique');
 	Route::post('/user/add-material/complete-registration','LogistiqueController@completRegistrationFinal')->middleware('logistique');
@@ -130,7 +131,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 
 	// VENDEURS
 	Route::get('/user/my-inventory','LogistiqueController@inventoryVendeur')->middleware('vendeur');
-
+	Route::post('/user/my-inventory/serials','VendeurController@SerialForVendeur')->middleware('vendeur');
 	Route::post('/user/my-inventory','LogistiqueController@getListMaterialByVendeurs');
 	Route::post('/user/my-history-ravitaillement','LogistiqueController@getHistoryRavitaillement')->middleware('vendeur');
 

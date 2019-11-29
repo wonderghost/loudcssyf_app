@@ -8,12 +8,14 @@ use App\Livraison;
 use App\Depots;
 use App\RavitaillementVendeur;
 use App\Produits;
+use App\Exemplaire;
 use App\LivraisonSerialFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Arr;
 use App\Exceptions\AppException;
+
 
 trait Livraisons {
 
@@ -186,7 +188,10 @@ public function inventaireLivraison() {
   }
 // recuperation de la liste des livraisons a valider
   public function getListLivraisonToValidate(Request $request) {
-    $livraison = Livraison::where('status','livred')->whereIn('produits',Produits::select('reference')->where('with_serial',1)->get())->get();
+    $livraison = Livraison::where('status','livred')
+      ->whereIn('produits',Produits::select('reference')
+      ->where('with_serial',1)->get())
+      ->whereIn('ravitaillement',RavitaillementVendeur::select('id_ravitaillement')->where('livraison','non_confirmer')->get())->get();
     $all=[];
     $files = [];
     $ids = [];
@@ -216,11 +221,9 @@ public function inventaireLivraison() {
     ]);
   }
 
-  public function getSerialForValidateLivraison(Request $request) {
-    $file = LivraisonSerialFile::where('livraison_id',$request->input('ref'))->first()->filename;
-    // ouverture du fichier en lecture seul
+  public function getSerialInFileText($filename) {
     $tabSerial = [];
-    $handle = fopen(config('serial_file.path')."/".$file,"r");
+    $handle = fopen($filename,"r");
     if($handle) {
       while(!feof($handle)) {
         $serial = fgets($handle);
@@ -229,6 +232,15 @@ public function inventaireLivraison() {
       }
       fclose($handle);
     }
+    return $tabSerial;
+  }
+
+  public function getSerialForValidateLivraison(Request $request) {
+    $file = LivraisonSerialFile::where('livraison_id',$request->input('ref'))->first()->filename;
+    // ouverture du fichier en lecture seul
+    $tabSerial = [];
+
+    $tabSerial  = $this->getSerialInFileText(config('serial_file.path')."/".$file);
 
     // filtrer le tableau en supprimant les valeurs vides
     $filtered = Arr::where($tabSerial, function ($value , $key ) {
@@ -242,5 +254,44 @@ public function inventaireLivraison() {
     }
 
     return response()->json($tabSerial);
+  }
+
+  public function validateLivraisonSerial(Request $request) {
+    $validation = $request->validate([
+      'livraison' =>  'required|numeric|exists:livraisons,id',
+      'password_confirmation' =>  'required|string'
+    ]);
+    try {
+      // verifier la validite du mot de passe pour la confirmation
+      if(Hash::check($request->input('password_confirmation'),Auth::user()->password)) {
+        // Le mot de passe correspond
+        #recuperation des numeros de serie
+        $serials = [];
+        $filename = LivraisonSerialFile::where('livraison_id',$request->input('livraison'))->first()->filename;
+        $serials =  $this->getSerialInFileText(config('serial_file.path')."/".$filename);
+        $serials = Arr::where($serials , function ($value, $key) {
+          return !empty($value);
+        });
+        $livraison = Livraison::where("id",$request->input('livraison'))->first();
+        $ravitaillementVendeur = $livraison->ravitaillementVendeurs();
+        #attribution des numeros de series au vendeur
+
+        foreach ($serials as $key => $value) {
+          Exemplaire::where('serial_number',$value)->update([
+            'vendeurs'  =>  $ravitaillementVendeur->vendeurs
+          ]);
+        }
+        #changement de status de livraison dans la table ravitaillement
+        RavitaillementVendeur::where('id_ravitaillement',$ravitaillementVendeur->id_ravitaillement)->update([
+          'livraison' =>  'confirmer'
+        ]);
+        return redirect('/user/commandes')->with('success',"Success!");
+      } else {
+        // Le mot de passe ne correspond pas
+        throw new AppException("Mot de passe incorrect!");
+      }
+    } catch (AppException $e) {
+      return back()->with("_errors",$e->getMessage());
+    }
   }
 }

@@ -276,6 +276,8 @@ listLivraisonToConfirm : function (adminPage, token ,url) {
         $("#vendeur-name").html(username.firstChild.nextSibling.innerText)
         // ####
         $logistique.getListSerialNumberOnValidation(token,"/user/commandes/get-serial-validation",$(this).attr('id'))
+        //
+        $("#id_livraison").val($(this).attr('id'))
       })
 
       // ajout du fichier au click sur le bouton Details
@@ -298,12 +300,12 @@ listLivraisonToConfirm : function (adminPage, token ,url) {
   form.submit()
 }
 ,
-getListSerialNumberOnValidation : function (token , url , ref) {
+getListSerialNumberOnValidation : function (token , url , ref) { //recuperation de la liste des numero de serie lors de la validation pour l'affichage
   var form = $adminPage.makeForm(token , url ,ref)
   form.on('submit',function (e) {
     e.preventDefault()
     $.ajax({
-      url : url ,
+      url : url,
       type : $(this).attr('method'),
       data : $(this).serialize(),
       dataType : 'json'
@@ -317,6 +319,28 @@ getListSerialNumberOnValidation : function (token , url , ref) {
     })
   })
   form.submit()
-}
+},
+// liste des numero de serie par vendeur
+listSerialByVendeur : function (token,url,ref) {
+  var form = $adminPage.makeForm(token,url,ref)
 
+  form.on('submit',function(e) {
+    e.preventDefault()
+    $.ajax({
+      url : url,
+      type : $(this).attr('method'),
+      data : $(this).serialize(),
+      dataType : 'json'
+    })
+    .done(function (data) {
+      $logistique.dataList(data,$("#serials-vendeurs"))
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href',"")
+    })
+  })
+
+  form.submit()
+}
 }

@@ -187,7 +187,6 @@ $adminPage.createTableData = function (sdata,champs=null,table) {
 						// list[i].addClass('uk-animation-scale-up');
 						for(var j=0;j<champs.length;j++) {
 							td[j] =$("<td></td>");
-							td[j].addClass('uk-animation-slide-top');
 						}
 						td[0].text(sdata[i].libelle);
 						td[0].addClass('uk-text-bold');
@@ -231,7 +230,6 @@ $adminPage.createTableClient = function (sdata,champs=null,table) {
 						// list[i].addClass('uk-animation-scale-up');
 						for(var j=0;j<champs.length;j++) {
 							td[j] =$("<td></td>");
-							td[j].addClass('uk-animation-shake');
 						}
 						td[0].text(sdata[i].nom);
 						td[1].text(sdata[i].prenom);
@@ -342,7 +340,6 @@ $adminPage.createTableInventaire = function (sdata,champs=null,table) {
 						// list[i].addClass('uk-animation-scale-up');
 						for(var j=0;j<champs.length;j++) {
 							td[j] =$("<td></td>");
-							td[j].addClass('uk-animation-shake');
 						}
 						td[0].text(sdata[i].libelle);
 						td[0].addClass('uk-text-bold');
@@ -550,7 +547,6 @@ $adminPage.createTableCommandRow = function (sdata,champs=null,table,linkDetails
 						// list[i].addClass('uk-animation-scale-up');
 						for(var j=0;j<champs.length;j++) {
 							td[j] =$("<td></td>");
-							td[j].addClass('uk-animation-shake');
 						}
 						td[0].text(sdata[i].date);
 						td[0].addClass('uk-text-bold');

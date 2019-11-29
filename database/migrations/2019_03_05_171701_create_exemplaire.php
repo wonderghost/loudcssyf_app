@@ -18,7 +18,7 @@ class CreateExemplaire extends Migration
             $table->string('serial_number');
             $table->primary('serial_number');
             $table->string('produit');
-            $table->string('vendeurs')->default('NULL');
+            $table->string('vendeurs')->nullable();
             $table->enum('status',['actif','inactif'])->default('inactif');
             $table->timestamps();
             $table->foreign('produit')->references('reference')->on('produits');
