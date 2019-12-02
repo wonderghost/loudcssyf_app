@@ -188,10 +188,11 @@ public function inventaireLivraison() {
   }
 // recuperation de la liste des livraisons a valider
   public function getListLivraisonToValidate(Request $request) {
-    $livraison = Livraison::where('status','livred')
-      ->whereIn('produits',Produits::select('reference')
-      ->where('with_serial',1)->get())
-      ->whereIn('ravitaillement',RavitaillementVendeur::select('id_ravitaillement')->where('livraison','non_confirmer')->get())->get();
+    $livraison = $this->livraisonStateRequest('unvalidate');
+    return $this->organizeLivraison($livraison);
+  }
+
+  public function organizeLivraison($livraison) {
     $all=[];
     $files = [];
     $ids = [];
@@ -219,6 +220,27 @@ public function inventaireLivraison() {
       'file'  =>  $files,
       'ids' =>  $ids
     ]);
+  }
+
+  public function getListLivraisonValidee(Request $request) {
+    $livraison = $this->livraisonStateRequest();
+    return $this->organizeLivraison($livraison);
+  }
+
+  // Livraison state request
+  public function livraisonStateRequest ($state = "validate") {
+    if($state == "validate") {
+
+    return Livraison::where('status','livred')
+      ->whereIn('produits',Produits::select('reference')
+      ->where('with_serial',1)->get())
+      ->whereIn('ravitaillement',RavitaillementVendeur::select('id_ravitaillement')->where('livraison','confirmer')->get())->get();
+    } else {
+      return Livraison::where('status','livred')
+        ->whereIn('produits',Produits::select('reference')
+        ->where('with_serial',1)->get())
+        ->whereIn('ravitaillement',RavitaillementVendeur::select('id_ravitaillement')->where('livraison','non_confirmer')->get())->get();
+    }
   }
 
   public function getSerialInFileText($filename) {

@@ -234,6 +234,7 @@ inputSerialValidate : function (adminPage,token,url) {
   // ####
 }
 ,
+// liste des livraisons restantes pour validation
 listLivraisonToConfirm : function (adminPage, token ,url) {
   var form = adminPage.makeForm(token,url,"")
   form.on('submit',function(e){
@@ -297,6 +298,51 @@ listLivraisonToConfirm : function (adminPage, token ,url) {
     })
   })
   // envoi du formulaire pour traitement de la requete
+  form.submit()
+}
+,
+// liste des livraison deja validee
+listLivraisonValidee : function (token , url) {
+  var form = $adminPage.makeForm(token , url, "")
+  form.on('submit',function(e) {
+    e.preventDefault()
+    $.ajax({
+      url : url ,
+      type : 'post',
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+      $logistique.dataList(data.all,$("#livraison-validee"))
+
+      var validate = $("<button></button>") , details = $("<button></button>")
+
+      details.text('details')
+      details.attr('uk-toggle','target : #modal-livraison-detail')
+      details.addClass('uk-button-default uk-border-rounded detail-livraison')
+      // ajout du button details
+
+      details.attr('uk-icon',"icon : more ; ratio : 0.7")
+
+
+      $('.row').append(details)
+
+      // ajout du fichier au click sur le bouton Details
+
+      $('.detail-livraison').each(function (index , element) {
+        $(element).attr('filename',data.file[index].filename)
+      })
+
+      $('.detail-livraison').on('click',function(e) {
+        $("#file-link").attr('href',"/livraison_serial_files/"+$(this).attr('filename'))
+        $("#file-link").attr('download',$(this).attr('filename'))
+      })
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href',"/")
+    })
+  })
   form.submit()
 }
 ,

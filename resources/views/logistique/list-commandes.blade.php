@@ -85,7 +85,20 @@
 					 <li>
 						 <a href="#" class="uk-accordion-title">Livraison validee</a>
 						 <div class="uk-accordion-content">
-							 
+							 <table class="uk-table uk-table-striped uk-table-hover uk-table-small">
+							 	<thead>
+							 		<tr>
+							 			<th>Date</th>
+							 			<th>Vendeur</th>
+							 			<th>ARTICLE</th>
+							 			<th>COMMANDE</th>
+							 			<th>QUANTITE</th>
+							 			<th>STATUS</th>
+										<th>-</th>
+							 		</tr>
+							 	</thead>
+								<tbody id="livraison-validee"></tbody>
+							 </table>
 						 </div>
 					 </li>
 			 </ul>
@@ -159,6 +172,8 @@
 
 		// recuperation de la liste des livraison a Valider
 		$logistique.listLivraisonToConfirm($adminPage,"{{csrf_token()}}","{{url('/user/commandes/livraison-validation')}}")
+		// recuperation de la liste des livraisons deja validee
+		$logistique.listLivraisonValidee("{{csrf_token()}}","{{url('/user/commandes/livraison-validee')}}")
 	});
 </script>
 @endsection
