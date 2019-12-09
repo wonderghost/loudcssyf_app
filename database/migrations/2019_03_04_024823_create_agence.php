@@ -17,12 +17,12 @@ class CreateAgence extends Migration
         Schema::create('agence',function(Blueprint $table) {
             $table->string('reference');
             $table->string('societe')->default('Loudcssyf-sarl');
-            $table->string('rccm')->default(NULL);
-            $table->string('adresse')->default(NULL);
+            $table->string('rccm')->nullable();
+            $table->string('adresse')->nullable();
             $table->string('ville')->default('Conakry');
             $table->primary('reference');
             $table->timestamps();
-            $table->string('num_dist')->default(NULL);
+            $table->string('num_dist')->nullable();
         });
     }
 

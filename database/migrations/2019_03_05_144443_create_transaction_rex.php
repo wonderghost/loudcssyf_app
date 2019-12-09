@@ -17,7 +17,7 @@ class CreateTransactionRex extends Migration
         Schema::create('transaction_rex',function(Blueprint $table) {
             $table->increments('code_transaction');
             $table->string('rex');
-            $table->float('montant')->default(0);
+            $table->float('montant',8,0)->default(0);
             $table->timestamps();
             $table->foreign('rex')->references('numero')->on('compte_rex');
 

@@ -23,12 +23,12 @@ class CreateUsersTable extends Migration
             $table->enum('status',['blocked','unblocked'])->default('unblocked');
             $table->rememberToken();
             $table->timestamps();
-            $table->string('localisation')->default(null);
+            $table->string('localisation')->nullable();
             $table->unique('localisation');
 
-            $table->string('agence')->default(null);
+            $table->string('agence')->nullable();
             $table->foreign('agence')->references('reference')->on('agence');
-            $table->string('rex')->nullable(true);
+            $table->string('rex')->nullable();
             $table->foreign('rex')->references('numero')->on('compte_rex');
         });
     }

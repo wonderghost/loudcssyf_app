@@ -16,7 +16,6 @@ class CreateClients extends Migration
         //
         Schema::create('clients',function(Blueprint $table) {
             $table->increments('id');
-            // $table->string('code_client')->unique();
             $table->string('email')->unique()->default('undefined');
             $table->string('phone')->default('undefined');
             $table->string('adresse')->default('undefined');

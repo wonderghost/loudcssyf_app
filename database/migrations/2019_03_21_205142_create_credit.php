@@ -15,8 +15,8 @@ class CreateCredit extends Migration
     {
         //
         Schema::create('credit',function(Blueprint $table) {
-            $table->enum('designation',['cga','rex'])->primary()->default('cga');
-            $table->float('solde')->default(0);
+            $table->enum('designation',['cga','rex','afrocash'])->primary()->default('cga');
+            $table->float('solde',8,0)->default(0);
             $table->timestamps();
         });
     }

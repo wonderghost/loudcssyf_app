@@ -17,7 +17,7 @@ class CreateTransactionCga extends Migration
         Schema::create('transaction_cga',function(Blueprint $table) {
             $table->increments('code_transaction');
             $table->string('cga');
-            $table->float('montant')->default(0);
+            $table->float('montant',8,0)->default(0);
             $table->timestamps();
             $table->foreign('cga')->references('numero')->on('compte_cga');
         });

@@ -16,7 +16,7 @@ class CreateCompteRex extends Migration
         //
         Schema::create('compte_rex',function(Blueprint $table) {
             $table->string('numero')->primary();
-            $table->float('solde')->default(0);
+            $table->float('solde',8,0)->default(0);
             $table->timestamps();
         });
     }

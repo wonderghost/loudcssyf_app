@@ -16,7 +16,7 @@ class CreateCompteCga extends Migration
         //
         Schema::create('compte_cga',function(Blueprint $table) {
             $table->string('numero')->primary();
-            $table->float('solde')->default(0);
+            $table->float('solde',8,0)->default(0);
             $table->string('vendeur');
             $table->foreign('vendeur')->references('username')->on('users');
             $table->timestamps();
