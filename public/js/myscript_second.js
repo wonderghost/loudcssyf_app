@@ -389,4 +389,26 @@ listSerialByVendeur : function (token,url,ref) {
 
   form.submit()
 }
+,
+  getSoldeVendeur : function (token ,url) {
+    var form = $adminPage.makeForm(token ,url ,"")
+    form.on('submit',function(e) {
+      e.preventDefault()
+      $.ajax({
+        url : url ,
+        type : 'post',
+        data : $(this).serialize(),
+        dataType : 'json'
+      })
+      .done(function (data) {
+        $logistique.dataList(data,$("#solde-vendeur"))
+      })
+      .fail(function (data) {
+        alert(data.responseJSON.message)
+        $(location).attr('href',"/")
+      })
+    })
+    form.submit()
+}
+
 }

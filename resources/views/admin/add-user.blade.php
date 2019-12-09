@@ -6,21 +6,19 @@
 		<h3><a href="{{url('/admin')}}" uk-tooltip="tableau de bord" uk-icon="icon:arrow-left;ratio:1.5"></a> Nouvel Utilisateur</h3>
 
 		@if(session('success'))
-		<div class="uk-alert-success" uk-alert>
+		<div class="uk-alert-success uk-border-rounded uk-box-shadow-small" uk-alert>
 			<a href="#" class="uk-alert-close" uk-close></a>
 			<p>{{session('success')}}</p>
 		</div>
 		@endif
 
-		@if($errors->has('email') || $errors->has('phone') || $errors->has('type') || $errors->has('societe') || $errors->has('localisation') || $errors->has('num_dist'))
-		<div class="uk-alert uk-alert-danger">
-			<div>{{$errors->first('email')}}</div>
-			<div>{{$errors->first('phone')}}</div>
-			<div>{{$errors->first('type')}}</div>
-			<div>{{$errors->first('societe')}}</div>
-			<div>{{$errors->first('localisation')}}</div>
-			<div>{{$errors->first('num_dist')}}</div>
+		@if($errors->any())
+		@foreach($errors->all() as $error)
+		<div class="uk-alert-danger uk-border-rounded uk-box-shadow-small" uk-alert>
+			<a href="#" uk-close class="uk-alert-close"></a>
+			<p>{{$error}}</p>
 		</div>
+		@endforeach
 		@endif
 				{!!Form::open()!!}
 		<div class="uk-child-width-1-2@m">

@@ -58,7 +58,7 @@
                     <a href="#"><span uk-icon="icon:credit-card;ratio:0.9"></span> Compte Credit</a>
                     <ul class="uk-nav-sub">
                         <li><a href="{{url('/admin/add-account-credit')}}"><span uk-icon="icon:arrow-right"></span> Crediter</a></li>
-                        <li><a href="#"><span uk-icon="icon:arrow-right"></span> Creer un compte</a></li>
+                        <!-- <li><a href="#"><span uk-icon="icon:arrow-right"></span> Creer un compte</a></li> -->
                         <li><a href="#"><span uk-icon="icon:arrow-right"></span> Toutes les transactions</a></li>
                     </ul>
                 </li>

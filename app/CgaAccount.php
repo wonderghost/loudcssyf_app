@@ -8,4 +8,9 @@ class CgaAccount extends Model
 {
     //
     protected $table = 'compte_cga';
+
+    protected $keyType = 'string';
+    protected $primaryKey = 'numero';
+
+    
 }

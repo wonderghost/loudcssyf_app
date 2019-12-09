@@ -28,10 +28,22 @@ class User extends Authenticatable
     ];
 
     public function agence() {
-      return $this->belongsTo('App\Agence');
+      return $this->belongsTo('App\Agence','agence','reference')->first();
     }
 
     public function depot() {
       return $this->hasOne('App\Depots','vendeurs','username');
+    }
+
+    public function cgaAccount() {
+      return  CgaAccount::where('vendeur',$this->username)->first();
+    }
+
+    public function afroCash($type = 'courant') {
+      return $this->hasOne('App\Afrocash','vendeurs','username')->where("type",$type);
+    }
+
+    public function rexAccount() {
+      return RexAccount::where('numero',$this->rex);
     }
 }

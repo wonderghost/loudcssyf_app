@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'AgenceTableSeeder' => $baseDir . '/database/seeds/AgenceTableSeeder.php',
     'App\\Abonnement' => $baseDir . '/app/Abonnement.php',
+    'App\\Afrocash' => $baseDir . '/app/Afrocash.php',
     'App\\Agence' => $baseDir . '/app/Agence.php',
     'App\\CgaAccount' => $baseDir . '/app/CgaAccount.php',
     'App\\Client' => $baseDir . '/app/Client.php',
@@ -94,6 +95,7 @@ return array(
     'App\\Traits\\Livraisons' => $baseDir . '/app/Traits/Livraisons.php',
     'App\\Traits\\Recrutement' => $baseDir . '/app/Traits/Recrutement.php',
     'App\\Traits\\Similarity' => $baseDir . '/app/Traits/Similarity.php',
+    'App\\TransactionAfrocash' => $baseDir . '/app/TransactionAfrocash.php',
     'App\\TransactionCga' => $baseDir . '/app/TransactionCga.php',
     'App\\TransactionCredit' => $baseDir . '/app/TransactionCredit.php',
     'App\\TransactionRex' => $baseDir . '/app/TransactionRex.php',

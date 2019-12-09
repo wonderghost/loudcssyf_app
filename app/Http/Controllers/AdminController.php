@@ -6,10 +6,12 @@ use Illuminate\Http\Request;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserEditRequest;
 use App\Traits\Similarity;
+use App\Traits\Afrocashes;
 use App\User;
 use App\Produits;
 use App\Agence;
 use App\Depots;
+use App\Afrocash;
 use App\RavitaillementDepot;
 use App\CgaAccount;
 use App\RexAccount;
@@ -28,6 +30,7 @@ class AdminController extends Controller
 {
     //
     use Similarity;
+    use Afrocashes;
 
     // etat du depot central
     public function etatDepotCentral() {
@@ -134,7 +137,8 @@ class AdminController extends Controller
     		}
                 // die();
     			$user->save();
-                $this->createAccountCredit($user->username,'cga');
+          $this->createAccountCredit($user->username,'cga');
+          $this->newAccount($user->username);
     			return redirect("/admin/add-user")->with('success',"Nouvel utilisateur ajouté!");
     	} else {
     		// vendeurs standart
@@ -168,6 +172,8 @@ class AdminController extends Controller
                 $user->rex = $this->createAccountCredit(NULL,'rex');
                 $user->save();
                 $this->createAccountCredit($user->username,'cga');
+                $this->newAccount($user->username,'semi_grossiste');
+                $this->newAccount($user->username);
             } else {
                 $user->save();
             }

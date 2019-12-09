@@ -9,8 +9,11 @@ use App\Http\Requests\CgaRequest;
 use App\Http\Requests\RexRequest;
 use App\Credit;
 use App\Traits\Similarity;
+use App\Traits\Afrocashes;
+
 use App\User;
 use App\CgaAccount;
+use App\Afrocash;
 use App\RexAccount;
 use App\TransactionCga;
 use App\TransactionRex;
@@ -19,6 +22,7 @@ use App\Agence;
 class CreditController extends Controller
 {
 	use Similarity;
+	use Afrocashes;
     //SOLDE DES VENDEURS
 
 		public function soldeVendeur() {

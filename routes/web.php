@@ -15,6 +15,8 @@
 // });
 
 Route::middleware(['auth','admin'])->group(function () {
+	// recuperation des soldes vendeurs
+	Route::post('/admin/get-soldes','CreditController@getSoldesVendeurs');
 	// etat depot Central
 	Route::get('/admin/depot-central','AdminController@etatDepotCentral');
 	Route::post('/admin/depot-central','AdminController@getEtatDepotCentral');

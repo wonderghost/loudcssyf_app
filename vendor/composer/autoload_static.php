@@ -376,6 +376,7 @@ class ComposerStaticInit15d5dc02f650ad17553f69fb230f4dbd
     public static $classMap = array (
         'AgenceTableSeeder' => __DIR__ . '/../..' . '/database/seeds/AgenceTableSeeder.php',
         'App\\Abonnement' => __DIR__ . '/../..' . '/app/Abonnement.php',
+        'App\\Afrocash' => __DIR__ . '/../..' . '/app/Afrocash.php',
         'App\\Agence' => __DIR__ . '/../..' . '/app/Agence.php',
         'App\\CgaAccount' => __DIR__ . '/../..' . '/app/CgaAccount.php',
         'App\\Client' => __DIR__ . '/../..' . '/app/Client.php',
@@ -462,6 +463,7 @@ class ComposerStaticInit15d5dc02f650ad17553f69fb230f4dbd
         'App\\Traits\\Livraisons' => __DIR__ . '/../..' . '/app/Traits/Livraisons.php',
         'App\\Traits\\Recrutement' => __DIR__ . '/../..' . '/app/Traits/Recrutement.php',
         'App\\Traits\\Similarity' => __DIR__ . '/../..' . '/app/Traits/Similarity.php',
+        'App\\TransactionAfrocash' => __DIR__ . '/../..' . '/app/TransactionAfrocash.php',
         'App\\TransactionCga' => __DIR__ . '/../..' . '/app/TransactionCga.php',
         'App\\TransactionCredit' => __DIR__ . '/../..' . '/app/TransactionCredit.php',
         'App\\TransactionRex' => __DIR__ . '/../..' . '/app/TransactionRex.php',
