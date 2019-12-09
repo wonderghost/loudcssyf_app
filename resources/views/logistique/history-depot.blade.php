@@ -25,13 +25,13 @@
 				<h4><span uk-icon="icon:calendar"></span> Filter by Date</h4>
 				<div class="uk-child-width-1-2" uk-grid>
 					<div><input type="date" class="uk-input" name="" placeholder="From"></div>
-					<div><input type="date" class="uk-input" name="" placeholder="To"> 
+					<div><input type="date" class="uk-input" name="" placeholder="To">
 						<button class="uk-button-default uk-border-rounded">valider <span uk-icon="icon:check;ratio:.8"></span></button>
 					</div>
 				</div>
 			</div>
 		</div>
-		<table class="uk-table uk-table-divider">
+		<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
 			<thead>
 				<tr>
 					<th>Designation</th>

@@ -8,35 +8,46 @@
 			 Details de la commande</h3>
 			 <hr class="uk-divider-small">
 			 <input type="hidden" id="id-command" value="{{$id}}">
-			 <ul class="uk-list">
-			    <li><span>Materiel : </span><span class="uk-text-bold" id="id-commande">{{$id}}</span></li>
-			    <li><span>Materiel : </span><span class="uk-text-bold" id="materiel"></span></li>
-			    <li><span>Quantite : </span><span class="uk-text-bold" id="quantite"></span></li>
-			    <li><span>Numero du recu : </span><span class="uk-text-bold" id="numero-recu"></span></li>
-			    <li>
-			    	<span>Recu : </span>
-		    		<img id="img-recu" src="" class="uk-width-small" uk-img>
-			    	<div uk-lightbox>
-					    <a class="uk-button-default uk-border-rounded" id="recu" href="" data-caption="Piece jointe">cliquez pour agrandir</a>
-					</div>
-			    </li>
-			    <li><span>Parabole dû : </span><span id="parabole-du"></span></li>
-			    <li><span></span><span id="code-livraison" class=""></span></li>
-			</ul>
-			<!-- livraison -->
-			<table class="uk-table uk-table-hover uk-table-striped uk-table-small">
-			 <thead>
-				 <tr>
-					 <th>Article</th>
-					 <th>Quantite</th>
-					 <th>Status</th>
-					 <th>Code de Livraison</th>
-					 <th>Point de ravitaillement</th>
-					 <th class="uk-text-center" colspan="2">-</th>
-				 </tr>
-			 </thead>
-			 <tbody id="livraison"></tbody>
-			</table>
+			 <ul uk-tab>
+			     <li><a href="#">Details</a></li>
+			     <li><a href="#">Infos Livraison</a></li>
+			 </ul>
+
+			 <ul class="uk-switcher uk-margin">
+			     <li>
+						 <ul class="uk-list">
+						 	 <li><span>Materiel : </span><span class="uk-text-bold" id="id-commande">{{$id}}</span></li>
+						 	 <li><span>Materiel : </span><span class="uk-text-bold" id="materiel"></span></li>
+						 	 <li><span>Quantite : </span><span class="uk-text-bold" id="quantite"></span></li>
+						 	 <li><span>Numero du recu : </span><span class="uk-text-bold" id="numero-recu"></span></li>
+						 	 <li>
+						 		 <span>Recu : </span>
+						 		 <img id="img-recu" src="" class="uk-width-small" uk-img>
+						 		 <div uk-lightbox>
+						 			 <a class="uk-button-default uk-border-rounded" id="recu" href="" data-caption="Piece jointe">cliquez pour agrandir</a>
+						 	 </div>
+						 	 </li>
+						 	 <li><span>Parabole dû : </span><span id="parabole-du"></span></li>
+						 	 <li><span></span><span id="code-livraison" class=""></span></li>
+						 </ul>
+					 </li>
+					 <li>
+						 <!-- livraison -->
+						 <table class="uk-table uk-table-hover uk-table-striped uk-table-small">
+						  <thead>
+						 	 <tr>
+						 		 <th>Article</th>
+						 		 <th>Quantite</th>
+						 		 <th>Status</th>
+						 		 <th>Code de Livraison</th>
+						 		 <th>Point de ravitaillement</th>
+						 		 <th class="uk-text-center" colspan="2">-</th>
+						 	 </tr>
+						  </thead>
+						  <tbody id="livraison"></tbody>
+						 </table>
+					 </li>
+			 </ul>
 	</div>
 </div>
 @endsection

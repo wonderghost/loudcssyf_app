@@ -20,86 +20,81 @@
 				 <p>{{session("success")}}</p>
 			 </div>
 			 @endif
-			 <ul uk-accordion>
-			     <li class="uk-open">
-			         <a class="uk-accordion-title" href="#">En attente de confirmation</a>
-			         <div class="uk-accordion-content">
-								 <table class="uk-table uk-table-divider">
-								  <thead>
-								 	 <tr>
-								 		 <th>Date</th>
-								 		 <th>Vendeur</th>
-								 		 <th>Item</th>
-								 		 <th>Quantite</th>
-								 		 <th>Numero_Recu</th>
-								 		 <th>Paraboles a livrer</th>
-								 		 <th>Status</th>
-								 		 <th>Recu</th>
-								 		 <th class="uk-text-center" colspan="2">-</th>
-								 	 </tr>
-								  </thead>
-								  <tbody id="list-commands"></tbody>
-								 </table>
-							 </div>
-			     </li>
-					 <li>
-						 <a href="#" class="uk-accordion-title">Deja Confirmer</a>
-						 <div class="uk-accordion-content">
-							 <table class="uk-table uk-table-divider">
-							  <thead>
-							 	<tr>
-							 		<th>Date</th>
-							 		<th>Vendeur</th>
-							 		<th>Item</th>
-							 		<th>Quantite</th>
-							 		<th>Numero_Recu</th>
-							 		<th>Paraboles a livrer</th>
-							 		<th>Status</th>
-							 		<th>Recu</th>
-							 		<th class="uk-text-center" colspan="2">-</th>
-							 	</tr>
-							  </thead>
-							  <tbody id="list-command-confirm"></tbody>
-							 </table>
-						 </div>
+			 <ul uk-tab>
+			     <li><a href="#">En attente de confirmation</a></li>
+			     <li><a href="#">Deja confirmer</a></li>
+			     <li><a href="#">Livraison a valider</a></li>
+			     <li><a href="#">Livraison validee</a></li>
+			 </ul>
+
+			 <ul class="uk-switcher uk-margin">
+			     <li>
+						 <table class="uk-table uk-table-divider">
+						  <thead>
+						 	<tr>
+						 		<th>Date</th>
+						 		<th>Vendeur</th>
+						 		<th>Item</th>
+						 		<th>Quantite</th>
+						 		<th>Numero_Recu</th>
+						 		<th>Paraboles a livrer</th>
+						 		<th>Status</th>
+						 		<th>Recu</th>
+						 		<th class="uk-text-center" colspan="2">-</th>
+						 	</tr>
+						  </thead>
+						  <tbody id="list-commands"></tbody>
+						 </table>
 					 </li>
-					 <li>
-						 <a href="#" class="uk-accordion-title">Livraison a Valider</a>
-						 <div class="uk-accordion-content">
-							 <table class="uk-table uk-table-striped uk-table-hover uk-table-small">
-							 	<thead>
-							 		<tr>
-							 			<th>Date</th>
-							 			<th>Vendeur</th>
-							 			<th>ARTICLE</th>
-							 			<th>COMMANDE</th>
-							 			<th>QUANTITE</th>
-							 			<th>STATUS</th>
-										<th>-</th>
-							 		</tr>
-							 	</thead>
-								<tbody id="livraison-to-validate"></tbody>
-							 </table>
-						 </div>
+			     <li>
+						 <table class="uk-table uk-table-divider">
+						  <thead>
+						  <tr>
+						 	 <th>Date</th>
+						 	 <th>Vendeur</th>
+						 	 <th>Item</th>
+						 	 <th>Quantite</th>
+						 	 <th>Numero_Recu</th>
+						 	 <th>Paraboles a livrer</th>
+						 	 <th>Status</th>
+						 	 <th>Recu</th>
+						 	 <th class="uk-text-center" colspan="2">-</th>
+						  </tr>
+						  </thead>
+						  <tbody id="list-command-confirm"></tbody>
+						 </table>
 					 </li>
-					 <li>
-						 <a href="#" class="uk-accordion-title">Livraison validee</a>
-						 <div class="uk-accordion-content">
-							 <table class="uk-table uk-table-striped uk-table-hover uk-table-small">
-							 	<thead>
-							 		<tr>
-							 			<th>Date</th>
-							 			<th>Vendeur</th>
-							 			<th>ARTICLE</th>
-							 			<th>COMMANDE</th>
-							 			<th>QUANTITE</th>
-							 			<th>STATUS</th>
-										<th>-</th>
-							 		</tr>
-							 	</thead>
-								<tbody id="livraison-validee"></tbody>
-							 </table>
-						 </div>
+			     <li>
+						 <table class="uk-table uk-table-striped uk-table-hover uk-table-small">
+						  <thead>
+						 	 <tr>
+						 		 <th>Date</th>
+						 		 <th>Vendeur</th>
+						 		 <th>ARTICLE</th>
+						 		 <th>COMMANDE</th>
+						 		 <th>QUANTITE</th>
+						 		 <th>STATUS</th>
+						 		 <th>-</th>
+						 	 </tr>
+						  </thead>
+						  <tbody id="livraison-to-validate"></tbody>
+						 </table>
+					 </li>
+			     <li>
+						 <table class="uk-table uk-table-striped uk-table-hover uk-table-small">
+						  <thead>
+						 	 <tr>
+						 		 <th>Date</th>
+						 		 <th>Vendeur</th>
+						 		 <th>ARTICLE</th>
+						 		 <th>COMMANDE</th>
+						 		 <th>QUANTITE</th>
+						 		 <th>STATUS</th>
+						 		 <th>-</th>
+						 	 </tr>
+						  </thead>
+						  <tbody id="livraison-validee"></tbody>
+						 </table>
 					 </li>
 			 </ul>
 
