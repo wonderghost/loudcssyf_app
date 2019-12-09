@@ -27,46 +27,46 @@
        </div>
        @endforeach
        @endif
-       <ul uk-accordion="collapsible: false">
-           <li>
-               <a class="uk-accordion-title" href="#">Livraison en Attente</a>
-               <div class="uk-accordion-content">
-                 <table class="uk-table uk-table-hover uk-table-striped uk-table-small">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Vendeur</th>
-                      <th>Article</th>
-                      <th>Commande</th>
-                      <th>Quantite</th>
-                      <th>Status</th>
-                      <th class="uk-text-center">-</th>
-                    </tr>
-                  </thead>
-                  <tbody id="livraison"></tbody>
-                 </table>
-               </div>
-           </li>
-           <li>
-             <a href="#" class="uk-accordion-title">Livraison Confirmee</a>
-             <div class="uk-accordion-content">
-               <table class="uk-table uk-table-hover uk-table-striped uk-table-small">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Vendeur</th>
-                    <th>Article</th>
-                    <th>Commande</th>
-                    <th>Quantite</th>
-                    <th>Status</th>
-                    <!-- <th class="uk-text-center" colspan="2">-</th> -->
-                  </tr>
-                </thead>
-                <tbody id="livraison-confirmee"></tbody>
-               </table>
-             </div>
-           </li>
-         </ul>
+
+       <ul uk-tab>
+           <li><a href="#">Livraison en attente</a></li>
+           <li><a href="#">Livraison confirmee</a></li>
+       </ul>
+
+       <ul class="uk-switcher uk-margin">
+         <li>
+           <table class="uk-table uk-table-hover uk-table-striped uk-table-small">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Vendeur</th>
+                <th>Article</th>
+                <th>Commande</th>
+                <th>Quantite</th>
+                <th>Status</th>
+                <th class="uk-text-center">-</th>
+              </tr>
+            </thead>
+            <tbody id="livraison"></tbody>
+           </table>
+         </li>
+         <li>
+           <table class="uk-table uk-table-hover uk-table-striped uk-table-small">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Vendeur</th>
+                <th>Article</th>
+                <th>Commande</th>
+                <th>Quantite</th>
+                <th>Status</th>
+                <!-- <th class="uk-text-center" colspan="2">-</th> -->
+              </tr>
+            </thead>
+            <tbody id="livraison-confirmee"></tbody>
+           </table>
+         </li>
+       </ul>
        <!-- Confirmer le mot de passe et le code de confirmation -->
        <!-- Selection et saisi des numeros de series -->
        <div id="serials" uk-modal>

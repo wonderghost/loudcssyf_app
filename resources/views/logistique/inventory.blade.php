@@ -30,7 +30,7 @@
 			</div>
 		</div>
 		<div uk-spinner id="loader" style="display: none;"></div>
-		<table class="uk-table uk-table-divider">
+		<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
 			<thead>
 				<tr>
 					<th>Designation</th>

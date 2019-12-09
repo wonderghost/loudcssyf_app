@@ -18,7 +18,7 @@ class CreateRavitaillementDepots extends Migration
             $table->increments('id');
             $table->string('produit');
             $table->string('depot');
-            $table->string('origine')->nullable():
+            $table->string('origine')->nullable();
             $table->foreign('produit')->references('reference')->on('produits');
             $table->foreign('depot')->references('localisation')->on('depots');
             $table->foreign('origine')->references('localisation')->on('depots');

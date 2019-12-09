@@ -3,10 +3,10 @@
 @section('admin_content')
 <div class="uk-section uk-section-default">
 	<div class="uk-container">
-		<h3><a href="{{url('/admin')}}" uk-tooltip="tableau de bord" uk-icon="icon:arrow-left;ratio:1.5"></a> Compte Credit ( CGA / REX )</h3>
+		<h3><a href="{{url('/admin')}}" uk-tooltip="tableau de bord" uk-icon="icon:arrow-left;ratio:1.5"></a> Compte Credit ( CGA / REX / AFROCASH)</h3>
 		<hr class="uk-divider-small">
-		@if(session('success')) 
-		<div class="uk-alert uk-alert-success">
+		@if(session('success'))
+		<div class="uk-alert-success uk-border-rounded uk-box-shadow-small" uk-alert>
 			<button type="button" class="uk-align-right close-button"  uk-icon="icon:close"></button>
 			<div>{{session('success')}}</div>
 		</div>
@@ -23,26 +23,30 @@
 			</div>
 			<div id="">
 				<h4>Crediter les comptes</h4>
-				@if($errors->has('compte') || $errors->has('montant')) 
-				<div class="uk-alert uk-alert-danger">
-					<button type="button" class="uk-align-right close-button"  uk-icon="icon:close"></button>
-					<div>{{$errors->first('compte')}}</div>
-					<div>{{$errors->first('montant')}}</div>
+				@if($errors->any())
+				@foreach($errors->all() as $error)
+				<div class="uk-alert-danger uk-border-rounded uk-box-shadow-small" uk-alert>
+					<a href="#" class="uk-alert-close" uk-close></a>
+					<p>{{$error}}</p>
 				</div>
+				@endforeach
 				@endif
 				{!!Form::open()!!}
-				<label>	
+				<label>
 					{!!Form::radio('compte','cga',true,['class'=>'uk-radio'])!!} CGA
 				</label>
-				<label>	
+				<label>
 					{!!Form::radio('compte','rex','',['class'=>'uk-radio'])!!} REX
+				</label>
+				<label>
+					{!!Form::radio('compte','afrocash','',['class'=>'uk-radio'])!!} AFROCASH
 				</label>
 				{!!Form::text('montant','',['class'=>'uk-input uk-margin-small','placeholder'=>'Montant'])!!}
 				<button type="submit" class="uk-button-default uk-border-rounded">valider <span uk-icon="icon:check;ratio:.8"></span></button>
 				{!!Form::close()!!}
 			</div>
-		</div>		
-	</div>	
+		</div>
+	</div>
 </div>
 
 @endsection

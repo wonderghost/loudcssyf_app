@@ -6,7 +6,7 @@
     <h3><a href="{{url()->previous()}}" uk-tooltip="tableau de bord" uk-icon="icon:arrow-left;ratio:1.5"></a> Depot Central</h3>
 		<hr class="uk-divider-small"></hr>
     <div class="loader" uk-spinner> Patientez un instant ...  </div>
-    <table class="uk-table uk-table-divider">
+    <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
       <thead>
         <tr>
           <th>Designation</th>

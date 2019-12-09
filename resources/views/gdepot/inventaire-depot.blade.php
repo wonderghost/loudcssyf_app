@@ -7,41 +7,43 @@
 			<a href="{{url()->previous()}}" uk-tooltip="Retour" uk-icon="icon:arrow-left;ratio:1.5"></a>
 			 Inventaire</h3>
       <hr class="uk-divider-small">
-      <div class="uk-child-width-1-1@m" uk-grid>
-        <div class="">
-          <!-- inventaire -->
-          <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
-            <thead>
-              <tr>
-                <th>Designation</th>
-                <th>Quantite</th>
-                <th>Prix Initial</th>
-                <th>Prix ttc</th>
-                <th>Prix ht</th>
-                <th>Prix tva</th>
-                <th>Marge</th>
-              </tr>
-            </thead>
-            <tbody id="list-material"></tbody>
-          </table>
-        </div>
-        <div class="">
-          <!-- serial number -->
-          <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small" >
-            <thead>
-              <tr>
-                <th>Serials</th>
-                <th>Vendeurs</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="serials"></tbody>
-          </table>
-        </div>
-      </div>
 
+      <ul uk-tab>
+          <li><a href="#">Materiels</a></li>
+          <li><a href="#">Numero Materiel</a></li>
+      </ul>
 
-
+      <ul class="uk-switcher uk-margin">
+          <li>
+            <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+              <thead>
+                <tr>
+                  <th>Designation</th>
+                  <th>Quantite</th>
+                  <th>Prix Initial</th>
+                  <th>Prix ttc</th>
+                  <th>Prix ht</th>
+                  <th>Prix tva</th>
+                  <th>Marge</th>
+                </tr>
+              </thead>
+              <tbody id="list-material"></tbody>
+            </table>
+          </li>
+          <li>
+            <!-- serial number -->
+            <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small" >
+              <thead>
+                <tr>
+                  <th>Serials</th>
+                  <th>Vendeurs</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="serials"></tbody>
+            </table>
+          </li>
+      </ul>
 </div>
 </div>
 @endsection
@@ -64,7 +66,7 @@ $(function () {
       if(data) {
         $logistique.dataList(data.inventaire,$("#list-material"))
         $logistique.dataList(data.serials,$("#serials"))
-        
+
     }
   })
     .fail(function(data) {

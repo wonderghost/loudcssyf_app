@@ -31,6 +31,8 @@ class CreateUsersTable extends Migration
             $table->string('rex')->nullable();
             $table->foreign('rex')->references('numero')->on('compte_rex');
         });
+
+        Schema::disableForeignKeyConstraints();
     }
 
     /**

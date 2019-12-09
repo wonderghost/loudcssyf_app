@@ -14,8 +14,8 @@
 				{!!Form::select('filter',['All'=>'all','da'=>'Distributeur Agree','v_stand'=>'Vendeur Standart'],null,['class' => 'uk-select'])!!}
 			</div>
 		</div>
-			
-		<table class="uk-table uk-table-divider">
+
+		<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-hover">
 			<thead>
 				<tr>
 					<th>Username</th>
