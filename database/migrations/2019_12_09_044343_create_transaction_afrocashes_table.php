@@ -15,7 +15,7 @@ class CreateTransactionAfrocashesTable extends Migration
     {
         Schema::create('transaction_afrocashes', function (Blueprint $table) {
             $table->bigIncrements('code_transaction');
-            $table->string('compte_debite');
+            $table->string('compte_debite')->nullable();
             $table->string('compte_credite');
             $table->foreign('compte_debite')->references('numero_compte')->on('afrocashes');
             $table->foreign('compte_credite')->references('numero_compte')->on('afrocashes');

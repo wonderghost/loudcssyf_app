@@ -19,6 +19,8 @@ use App\TransactionCga;
 use App\TransactionRex;
 use App\TransactionCredit;
 use App\Agence;
+use App\CommandCredit;
+
 class CreditController extends Controller
 {
 	use Similarity;
@@ -28,16 +30,16 @@ class CreditController extends Controller
 		public function soldeVendeur() {
 			return view('credit.solde-vendeur');
 		}
-
+		// TOUTES LES COMMANDES
+		public function commandCredit() {
+			$commands = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','unvalidated')->get();
+			$command_validee = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','validated')->get();
+			return view('credit.commandes')->withCommandes($commands)->withValidate($command_validee);
+		}
+		//
 		public function getSoldeVendeur(Request $request) {
-			$accounts = CgaAccount::all();
-			$all = [];
-			foreach ($accounts as $key => $value) {
-				$user = User::where('username',$value->vendeur)->first();
-				$agence = Agence::where('reference',$user->agence)->first();
-				$all[$key]=$this->organizeSoldeVendeurs($value,$agence);
-			}
-			return response()->json($all);
+			$temp = $this->getSoldesVendeurs($request);
+			return response()->json($temp->original);
 		}
 
      // AJOUTER UN COMPTE
@@ -67,7 +69,9 @@ class CreditController extends Controller
     // CREDITER UN VENDEUR
     public function crediterVendeur() {
         $solde = Credit::select()->where('designation','cga')->first()->solde;
-        return view('credit.crediter-vendeur')->withSolde($solde);
+				$afrocash = Credit::where('designation','afrocash')->first()->solde;
+				$listVendeurs = User::where('type','v_standart')->get();
+        return view('credit.crediter-vendeur')->withSolde($solde)->withAfrocash($afrocash)->withVendeurs($listVendeurs);
     }
 
     // CREDITER UN VENDEUR EN REX
@@ -75,10 +79,6 @@ class CreditController extends Controller
         $solde = Credit::select()->where('designation','rex')->first()->solde;
         return view('credit.crediter-vendeur-rex')->withSolde($solde);
     }
-
-    // public function makeCrediterVendeur(CreditRequest $request) {
-    //     dd($request);
-    // }
 
     public function getListVendeur(Request $request) {
         $all = User::select()->where('type','v_da')->orWhere('type','v_standart')->get();
@@ -164,4 +164,6 @@ class CreditController extends Controller
             return redirect('/user/rex-credit')->with('_errors',"Montant invalide!");
         }
     }
+
+
 }

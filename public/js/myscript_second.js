@@ -410,5 +410,29 @@ listSerialByVendeur : function (token,url,ref) {
     })
     form.submit()
 }
+,
+// recuperation des soldes vendeurs chez le gcga
+  getSoldeVendeurCredit : function (token , url ) {
+    var form = $adminPage.makeForm(token , url)
+    form.on('submit',function(e) {
+      e.preventDefault()
+      $.ajax({
+        url : url,
+        type : 'post',
+        dataType : 'json',
+        data : $(this).serialize()
+      })
+      .done(function (data) {
+        $logistique.dataList(data,$("#solde-vendeur"))
+        // suppression de la colonne rex
+        $('#solde-vendeur .row .col:last-child').remove()
+      })
+      .fail(function(data) {
+        alert(data.responseJSON.message)
+        $(location).attr("href",'/')
+    })
+  })
+  form.submit()
+}
 
 }

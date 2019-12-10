@@ -13,20 +13,44 @@
 				 <p>{{session('_errors')}}</p>
 			 </div>
 			 @endif
-			 <table class="uk-table uk-table-divider">
-			 	<thead>
-			 		<tr>
-			 			<th>Date</th>
-			 			<th>Article</th>
-			 			<th>Quantite</th>
-			 			<th>Numero Recu</th>
-			 			<th>Status</th>
-			 			<th>id</th>
-			 			<th>-</th>
-			 		</tr>
-			 	</thead>
-			 	<tbody id="list-command"></tbody>
-			 </table>
+
+			 <ul uk-tab>
+			     <li><a href="#">Materiel</a></li>
+			     <li><a href="#">Cga</a></li>
+			     <li><a href="#">Rex</a></li>
+					 @if(Auth::user()->type == 'v_standart')
+			     <li><a href="#">Afrocash Semi Grossiste</a></li>
+					 @endif
+			 </ul>
+
+			 <ul class="uk-switcher uk-margin">
+			    <li>
+						<!-- COMMANDES MATERIELS -->
+						<table class="uk-table uk-table-divider">
+						 <thead>
+							 <tr>
+								 <th>Date</th>
+								 <th>Article</th>
+								 <th>Quantite</th>
+								 <th>Numero Recu</th>
+								 <th>Status</th>
+								 <th>id</th>
+								 <th>-</th>
+							 </tr>
+						 </thead>
+						 <tbody id="list-command"></tbody>
+						</table>
+					</li>
+					<li>
+						<!-- COMMANDES CGA -->
+					</li>
+					<li>
+						<!-- COMMANDES REX -->
+					</li>
+					<li>
+						<!-- AFRO CASH SEMI GROSSISTE -->
+					</li>
+			 </ul>
 	</div>
 </div>
 @endsection

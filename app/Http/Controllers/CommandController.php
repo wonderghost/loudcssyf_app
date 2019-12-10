@@ -15,6 +15,7 @@ use App\Livraison;
 use App\RavitaillementVendeur;
 use Carbon\Carbon;
 use App\Traits\Livraisons;
+use App\Exceptions\AppException;
 
 class CommandController extends Controller
 {
@@ -50,57 +51,64 @@ class CommandController extends Controller
 			'vendeurs'	=>	Auth::user()->username
 			])->get()->sum('quantite');
 		// dd($compense);
-		if($this->isExistCommandEnAttente()) {
-			return redirect('/user/list-command')->with('_errors',"Vous avez une commande en attente de confirmation!");
-		}
+		// if($this->isExistCommandEnAttente()) {
+		// 	return redirect('/user/list-command')->with('_errors',"Vous avez une commande en attente de confirmation!");
+		// }
 		return view('command.new-command')->withMaterial($material)->withMigration($migration)->withCompense($compense);
 	}
 	return redirect('user/list-command')->with("_errors","Indisponible pour le moment! Contactez l'administrateur");
 	}
 
 	public function sendCommand(CommandRequest $request) {
+		try {
+			if(!$this->isExistCommandEnAttente()) {
+				$command = new CommandMaterial;// CREATION DE LA COMMANDE
+				$command_produit = new CommandProduit;
+				$command_produit_parabole = new CommandProduit;
 
-		$command = new CommandMaterial;// CREATION DE LA COMMANDE
-		$command_produit = new CommandProduit;
-		$command_produit_parabole = new CommandProduit;
+				$command->id_commande = "CM-".time();
+				$command->numero_versement = $request->input('numero_versement');
+				$command->vendeurs = Auth::user()->username;
 
-		$command->id_commande = "CM-".time();
-		$command->numero_versement = $request->input('numero_versement');
-		$command->vendeurs = Auth::user()->username;
+				$command_produit->commande = $command->id_commande;
+				$command_produit_parabole->commande = $command->id_commande;
 
-		$command_produit->commande = $command->id_commande;
-		$command_produit_parabole->commande = $command->id_commande;
+				$command_produit_parabole->produit = Produits::where('libelle','Parabole')->first()->reference;
+				$command_produit->produit = $request->input('mat-reference');
 
-		$command_produit_parabole->produit = Produits::where('libelle','Parabole')->first()->reference;
-		$command_produit->produit = $request->input('mat-reference');
+				// QUANTITE DE PARABOLE A LIVRER
+				$migration = RapportVente::where('vendeurs',Auth::user()->username)->sum('quantite_migration');
+				$compense = Compense::where([
+					'vendeurs'	=>	Auth::user()->username,
+					'materiel'	=>	Produits::where('libelle','Parabole')->first()->reference
+					])->sum('quantite');
 
-		// QUANTITE DE PARABOLE A LIVRER
-		$migration = RapportVente::where('vendeurs',Auth::user()->username)->sum('quantite_migration');
-		$compense = Compense::where([
-			'vendeurs'	=>	Auth::user()->username,
-			'materiel'	=>	Produits::where('libelle','Parabole')->first()->reference
-			])->sum('quantite');
-
-		$parabole_a_livrer = $request->input('quantite') - ($migration + $compense);
+					$parabole_a_livrer = $request->input('quantite') - ($migration + $compense);
 
 
-		$command_produit_parabole->quantite_commande = $request->input('quantite');
-		$command_produit_parabole->parabole_a_livrer = $parabole_a_livrer;
+					$command_produit_parabole->quantite_commande = $request->input('quantite');
+					$command_produit_parabole->parabole_a_livrer = $parabole_a_livrer;
 
-		$command_produit->quantite_commande = $request->input('quantite');
-		$command_produit->parabole_a_livrer = $request->input('quantite');
+					$command_produit->quantite_commande = $request->input('quantite');
+					$command_produit->parabole_a_livrer = $request->input('quantite');
 
-		if($request->hasFile('recu')) {
+					if($request->hasFile('recu')) {
 
-			$tmp = $request->file('recu');
-			$extension = $tmp->getClientOriginalExtension();
-			$command->image = 'cmd'.time().'.'.$extension;
-	      if($request->file('recu')->move(config('image.path'),$command->image)) {
-	    	$command->save();
-				$command_produit->save();
-				$command_produit_parabole->save();
-	    	return redirect('/user/new-command')->with('success','Commande envoyée!');
-	    }
+						$tmp = $request->file('recu');
+						$extension = $tmp->getClientOriginalExtension();
+						$command->image = 'cmd'.time().'.'.$extension;
+						if($request->file('recu')->move(config('image.path'),$command->image)) {
+							$command->save();
+							$command_produit->save();
+							$command_produit_parabole->save();
+							return redirect('/user/new-command')->with('success','Commande envoyée!');
+						}
+					}
+			} else {
+				throw new AppException("Vous avez une commande en attente de confirmation!");
+			}
+		} catch (AppException $e) {
+			return back()->with('_error',$e->getMessage());
 		}
 	}
 

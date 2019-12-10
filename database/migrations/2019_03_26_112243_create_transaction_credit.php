@@ -16,7 +16,7 @@ class CreateTransactionCredit extends Migration
         //
         Schema::create('transaction_credit',function(Blueprint $table) {
             $table->increments('code_transation');
-            $table->enum('credits',['cga','rex'])->default('cga');
+            $table->enum('credits',['cga','rex','afrocash'])->default('cga');
             $table->float('montant',8,0)->default(0);
             $table->timestamps();
             $table->foreign('credits')->references('designation')->on('credit');

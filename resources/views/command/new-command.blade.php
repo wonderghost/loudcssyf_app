@@ -14,6 +14,12 @@
 			 	<p>{{session('success')}}</p>
 			 </div>
 			 @endif
+			 @if(session('_error'))
+			 <div class="uk-alert-danger uk-border-rounded uk-box-shadow-small" uk-alert>
+				 <a href="#" class="uk-alert-close" uk-close></a>
+			 	<p>{{session('_error')}}</p>
+			 </div>
+			 @endif
 			 @if($errors->any())
 			 @foreach($errors->all() as $error)
 			 <div class="uk-alert-danger uk-border-rounded uk-box-shadow-small" uk-alert>
@@ -25,9 +31,14 @@
 			 <ul class="" uk-tab="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
 			     <li><a class="" href="#">Materiel</a></li>
 			     <li><a class="" href="#">Credit CGA</a></li>
+			     <li><a class="" href="#">Credit REX</a></li>
+					 @if(Auth::user()->type == 'v_standart')
+			     <li><a class="" href="#">AFROCASH SEMI GROSSISTE</a></li>
+					 @endif
 			 </ul>
 			 <ul class="uk-switcher uk-margin">
 			     <li>
+						 <!-- COMMANDE MATERIEL -->
 						 {!!Form::open(['url'=>'/user/new-command/material','id'=>'command-form','files' => true])!!}
 
 						 {!!Form::hidden('compense',$compense,['id'=>'compense'])!!}
@@ -154,12 +165,39 @@
 							 {!!Form::close()!!}
 					 </li>
 			     <li>
+						 <!-- COMMANDE cga -->
 						 {!!Form::open(['user/new-command/cga'])!!}
 						 {!!Form::text('montant','',['class'=>'uk-input uk-margin-small','placeholder'=>'Montant Credit'])!!}
 						 <button type="submit" class="uk-button-default uk-border-rounded">valider<span uk-icon="icon:check;ratio:.8"></span></button>
 						 {!!Form::close()!!}
 					 </li>
-
+					 <li>
+						 <!-- COMMANDE REX -->
+					 </li>
+					 @if(Auth::user()->type == 'v_standart')
+					 <li>
+						 <!-- COMMANDE AFROCASH SEMI GROSSISTE -->
+						 {!!Form::open(['url'=>'/user/new-command/afrocash-sg','files'=>true])!!}
+						 <div class="">
+				        <div class="uk-inline uk-width-1-3@m">
+				            <span class="uk-form-icon" uk-icon="credit-card"></span>
+				            {!!Form::text("montant",'',['class'=>'uk-input uk-border-rounded','placeholder'=>'Montant'])!!}
+				        </div>
+								<div class="uk-inline uk-width-1-3@m">
+									<span class="uk-form-icon" uk-icon="check"></span>
+									{!!Form::text("numero_recu",'',['class'=>'uk-input uk-border-rounded','placeholder'=>'Numero Recu'])!!}
+								</div>
+								<div class="uk-margin">
+										<div uk-form-custom>
+											{!!Form::file("piece_jointe")!!}
+					             <button class="uk-button-default uk-padding-small uk-border-circle" type="button" tabindex="-1"><span uk-icon="image"></span></button>
+					         </div>
+								</div>
+								{!!Form::submit("Envoyer",['class'=>'uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
+				    </div>
+						 {!!Form::close()!!}
+					 </li>
+					 @endif
 			 </ul>
 	</div>
 </div>
@@ -167,44 +205,7 @@
 @section('script')
 <script type="text/javascript">
 	$(function() {
-		// ENVOI DE LA COMMAND AJAX
-		// $("#command-form").on('submit',function(e) {
-		// 	$("#loader").show(500);
-		// 	e.preventDefault();
 
-		// 	$.ajax({
-		// 		url : $(this).attr('action'),
-		// 		type  : $(this).attr('method'),
-		// 		data : $(this).serialize(),
-		// 		dataType : 'json'
-		// 	})
-		// 	.done(function (data) {
-		// 		if(data) {
-		// 			$("#loader").hide(500);
-		// 			UIkit.modal.alert("<div class='uk-alert uk-alert-success'>Commande envoyée !</div>");
-		// 		}
-		// 	})
-		// 	.fail(function (data) {
-		// 		$("#loader").hide(500);
-		// 		if(data) {
-		// 			if(data.responseJSON.errors.quantite && data.responseJSON.errors.numero_versement && data.responseJSON.errors.recu) {
-		// 				UIkit.modal.alert("<div class='uk-alert uk-alert-danger'>"+data.responseJSON.errors.numero_versement[0] +'<br>'+ data.responseJSON.errors.quantite[0]+'<br>'+data.responseJSON.errors.recu[0]+"</div>");
-		// 			} else if (data.responseJSON.errors.numero_versement) {
-		// 				UIkit.modal.alert(data.responseJSON.errors.numero_versement[0]);
-		// 			}
-		// 			else if (data.responseJSON.errors.quantite){
-		// 				UIkit.modal.alert(data.responseJSON.errors.quantite[0]);
-		// 			}
-		// 			else if(data.responseJSON.errors.recu) {
-		// 				UIkit.modal.alert(data.responseJSON.errors.recu[0]);
-		// 			}
-		// 			else {
-		// 				UIkit.modal.alert('Erreur de transmission!');
-		// 			}
-		// 		}
-		// 	});
-		// });
-		// $("#command-form").submit();
 		// ===
 		$(".qte").on('keyup focus blur change',function () {
 			if(parseInt($(this).val()) < 0 || $(this).val() == '') {

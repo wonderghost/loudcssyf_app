@@ -363,7 +363,7 @@ class LogistiqueController extends Controller
           $commande)) {
             if($this->isQuantiteValidInDepotCentral($request->input('produit'),$request->input('quantite'))) {
               // disponibilite de la quantite dans le depot central
-              if($this->isRavitaillementPossible ($commande,$request)) {
+              if($this->isRavitaillementPossible($commande,$request)) {
                 // verifier si le ravitaillement est possible pour ce vendeur
                 // ##@+++++
                 $ravitaillementVendeur = new RavitaillementVendeur;

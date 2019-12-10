@@ -6,7 +6,7 @@
     <h3><a href="{{url()->previous()}}" uk-tooltip="Nouveau materiel" uk-icon="icon:arrow-left;ratio:1.5"></a> Ravitailler un Depot</h3>
 		<hr class="uk-divider-small">
     @if(session('_errors'))
-    <div class="uk-alert-danger" uk-alert>
+    <div class="uk-alert-danger uk-border-rounded uk-box-shadow-small" uk-alert>
       <a href="#" class="uk-alert-close" uk-close></a>
       <p>{{session('_errors')}}</p>
     </div>
@@ -14,7 +14,7 @@
     <!-- FORMULAIRE DE RAVITAILLEMENT -->
     @if($errors->any())
     @foreach($errors->all() as $key =>  $error)
-    <div class="uk-alert-danger" uk-alert>
+    <div class="uk-alert-danger uk-border-rounded uk-box-shadow-small" uk-alert>
       <a href="#" class="uk-alert-close" uk-close></a>
       <p>{{ $error  }}</p>
     </div>

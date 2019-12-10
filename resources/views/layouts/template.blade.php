@@ -5,6 +5,8 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 	<!-- UIkit CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/css/uikit.min.css" />
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
 </head>
 <body>
 
@@ -179,14 +181,13 @@
                                 <!-- LOGISTIC ONLY -->
                                 <li><a href="{{url('user/cga-credit')}}"><span uk-icon="icon:arrow-right"></span> Crediter un Vendeur</a></li>
                                 <!-- // -->
-                                <li><a href="{{url('/user/vendeur-solde')}}"><span uk-icon="icon:arrow-right"></span> Solde Vendeur</a></li>
                                 <li><a href=""><span uk-icon="icon:arrow-right"></span> Historique</a></li>
                             </ul>
                         </li>
                         <li class="uk-parent">
                             <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Commandes</a>
                             <ul class="uk-nav-sub">
-                                <li><a href=""><span uk-icon="icon:arrow-right"></span> Toutes les Commandes</a></li>
+                                <li><a href="{{url('/user/credit-cga/commandes')}}"><span uk-icon="icon:arrow-right"></span> Toutes les Commandes</a></li>
                             </ul>
                         </li>
                         @endif
@@ -198,7 +199,6 @@
                                 <!-- LOGISTIC ONLY -->
                                 <li><a href="{{url('user/rex-credit')}}"><span uk-icon="icon:arrow-right"></span> Crediter un Vendeur</a></li>
                                 <!-- // -->
-                                <li><a href=""><span uk-icon="icon:arrow-right"></span> Solde Vendeur</a></li>
                                 <li><a href=""><span uk-icon="icon:arrow-right"></span> Historique</a></li>
                             </ul>
                         </li>
@@ -220,7 +220,6 @@
                                 <li><a href="{{url('/user/inventaire-depot')}}"><span uk-icon="icon:arrow-right"></span> Stock</a></li>
                                 <li><a href="{{url('/user/livraison')}}"><span uk-icon="icon:arrow-right"></span> Commandes</a></li>
                                 <!-- // -->
-                                <!-- <li><a href=""><span uk-icon="icon:history"></span> Solde Vendeur</a></li>
                                 <li><a href=""><span uk-icon="icon:history"></span> Historique</a></li> -->
                             </ul>
                         </li>

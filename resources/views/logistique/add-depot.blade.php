@@ -6,17 +6,34 @@
 		<h3><a href="{{url('/admin')}}" uk-tooltip="tableau de bord" uk-icon="icon:arrow-left;ratio:1.5"></a> Nouveau Depot/Materiel</h3>
 		<hr class="uk-divider-small"></hr>
 		@if(session('_errors'))
-			<div class="uk-alert uk-alert-danger">{{session('_errors')}} <button class="uk-align-right close-button"  uk-icon="icon:close"></button></div>
+			<div class="uk-alert-danger uk-border-rounded uk-box-shadow-small" uk-alert>
+				<a href="#" uk-close class="uk-alert-close"></a>
+				<p>
+					{{session('_errors')}}
+				</p>
+			</div>
 		@endif
 		@if(session('success'))
-			<div class="uk-alert uk-alert-success">{{session('success')}} <button class="uk-align-right close-button"  uk-icon="icon:close"></button></div>
+			<div class="uk-alert-success uk-border-rounded uk-box-shadow-small" uk-alert>
+				<a href="#" class="uk-alert-close" uk-close></a>
+				<p>
+					{{session('success')}}
+				</p>
+			</div>
 		@endif
 		<div class="uk-grid-collapse uk-grid-divider" uk-grid>
 			<div class="uk-width-1-2@m">
 				<h3>Nouveau Depot</h3>
 
-				@if($errors->has('localisation'))
-				<div class="uk-alert uk-alert-danger">{{$errors->first('localisation')}} <button class="uk-align-right close-button"  uk-icon="icon:close"></button></div>
+				@if($errors->any())
+				@foreach($errors->all() as $error)
+				<div class="uk-alert-danger uk-border-rounded uk-box-shadow-small" uk-alert >
+					<a href="#" class="uk-alert-close" uk-close></a>
+					<p>
+						{{$error}}
+					</p>
+				</div>
+				@endforeach
 				@endif
 				{!!Form::open()!!}
 				{!!Form::text('localisation','',['class'=>'uk-input uk-margin-small','placeholder'=>'Localisation'])!!}

@@ -77,7 +77,7 @@ Trait Similarity {
     }
   }
   //  Verifier si le ravitaillement est possbile
-  public function isRavitaillementPossible ($commande,$request) {
+  public function isRavitaillementPossible ($commande,Request $request) {
     $commande = CommandMaterial::where([
       'id_commande'  =>  $commande
     ])->first();
@@ -90,17 +90,11 @@ Trait Similarity {
       'commande'  =>  $commande->id_commande,
       'produit' =>  $request->input('produit')
     ])->first();
-
-    // die();
-    if($livraisons) {
-      if($comProd->quantite_commande >= ($livraisons+$request->input('quantite'))) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-    return true;
+    // $livraisons
+    //   dd($comProd->quantite_commande >= ($livraisons+$request->input('quantite')));
+      return ($comProd->quantite_commande >= ($livraisons+$request->input('quantite')));
   }
+
   public function CommandChangeStatus ($commande,$vendeur) {
     $flag = $this->isCommandStatusChanged($commande,$vendeur);
     // dump($flag);

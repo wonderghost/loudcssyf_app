@@ -154,6 +154,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// ----	ENVOI DES COMMANDES -----
 		// 	CREDIT CGA
 	Route::post('/user/new-command/cga','VendeurController@commandCga')->middleware('vendeur');
+	Route::post('/user/new-command/afrocash-sg','CreditController@sendCommandSemiGrossiste')->middleware('vendeur');
 		// MATERIEL
 	Route::post('/user/new-command/material','CommandController@sendCommand')->middleware('vendeur');
 	//
@@ -171,8 +172,11 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/get-client/','VendeurController@getListClient')->middleware('vendeur');
 	// GESTIONNAIRE CGA
 	Route::get('/user/cga-credit/','CreditController@crediterVendeur')->middleware('cga');
+	Route::get('/user/credit-cga/commandes','CreditController@commandCredit')->middleware('cga');
 	Route::post('/user/cga-credit/','CreditController@getListVendeur')->middleware('cga');
 	Route::post('/user/send-cga','CreditController@sendCga')->middleware('cga');
+	Route::post('/user/send-afrocash','CreditController@sendAfrocash')->middleware('cga');
+
 	#### SOLDE VENDEURS  #####
 	Route::get('/user/vendeur-solde','CreditController@soldeVendeur')->middleware('cga');
 	Route::post('/user/vendeur-solde','CreditController@getSoldeVendeur')->middleware('cga');
