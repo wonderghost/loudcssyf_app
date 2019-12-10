@@ -220,7 +220,8 @@
                                 <li><a href="{{url('/user/inventaire-depot')}}"><span uk-icon="icon:arrow-right"></span> Stock</a></li>
                                 <li><a href="{{url('/user/livraison')}}"><span uk-icon="icon:arrow-right"></span> Commandes</a></li>
                                 <!-- // -->
-                                <li><a href=""><span uk-icon="icon:history"></span> Historique</a></li> -->
+                                <li><a href=""><span uk-icon="icon:history"></span> Historique</a></li>
+																<!-- // -->
                             </ul>
                         </li>
                         @endif

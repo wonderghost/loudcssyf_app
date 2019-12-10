@@ -263,8 +263,8 @@ listLivraisonToConfirm : function (adminPage, token ,url) {
       validate.attr('uk-icon',"icon : check ; ratio : 0.7")
       details.attr('uk-icon',"icon : more ; ratio : 0.7")
 
-      $('.row').append(validate)
-      $('.row').append(details)
+      $('#livraison-to-validate .row').append(validate)
+      $('#livraison-to-validate .row').append(details)
 
       //
       $('.validate-button-livraison').each(function(index,element) {
@@ -283,7 +283,7 @@ listLivraisonToConfirm : function (adminPage, token ,url) {
 
       // ajout du fichier au click sur le bouton Details
 
-      $('.detail-livraison').each(function (index , element) {
+      $('#livraison-to-validate .detail-livraison').each(function (index , element) {
         $(element).attr('filename',data.file[index].filename)
       })
 
@@ -325,11 +325,11 @@ listLivraisonValidee : function (token , url) {
       details.attr('uk-icon',"icon : more ; ratio : 0.7")
 
 
-      $('.row').append(details)
+      $('#livraison-validee .row').append(details)
 
       // ajout du fichier au click sur le bouton Details
 
-      $('.detail-livraison').each(function (index , element) {
+      $('#livraison-validee .detail-livraison').each(function (index , element) {
         $(element).attr('filename',data.file[index].filename)
       })
 
