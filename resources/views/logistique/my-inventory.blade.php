@@ -29,6 +29,22 @@
 								</div>
 							</div>
 							@endif
+							@if($afrocashsm)
+							<div class="uk-text-lead">
+								<div class="uk-grid-small" uk-grid>
+										<div class="uk-width-expand" uk-leader="fill: -">AFROCASH GROSSISTE (GNF)</div>
+										<div>{{number_format($afrocashsm->solde)}}</div>
+								</div>
+							</div>
+							@endif
+							@if($afrocashcourant)
+							<div class="uk-text-lead">
+								<div class="uk-grid-small" uk-grid>
+										<div class="uk-width-expand" uk-leader="fill: -">AFROCASH COURANT (GNF)</div>
+										<div>{{number_format($afrocashcourant->solde)}}</div>
+								</div>
+							</div>
+							@endif
 							@if($rex)
 							<div class="uk-text-lead">
 								<div class="uk-grid-small" uk-grid>

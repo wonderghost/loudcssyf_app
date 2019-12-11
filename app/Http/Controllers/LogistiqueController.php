@@ -34,12 +34,14 @@ use App\RapportVente;
 use App\Compense;
 use App\CommandProduit;
 use App\Livraison;
+use App\Afrocash;
 //
 use App\Traits\Similarity;
 use App\Traits\Livraisons;
 //
 use App\Exceptions\CommandStatus;
 use App\Exceptions\AppException;
+
 
 class LogistiqueController extends Controller
 {
@@ -508,9 +510,13 @@ class LogistiqueController extends Controller
         // dd(Auth::user()->username);
         $soldeCga = CgaAccount::select()->where('vendeur',Auth::user()->username)->first();
         $soldeRex = RexAccount::select()->where('numero',Auth::user()->rex)->first();
+        $solde_afrocash_sm = Afrocash::where(['vendeurs'=>Auth::user()->username,'type'=>'semi_grossiste'])->first();
+        $solde_afrocash_courant = Afrocash::where(['vendeurs'=>Auth::user()->username,'type'=>'courant'])->first();
         // dd($soldeCga);
         return view('logistique.my-inventory')->withSolde($soldeCga)
-                                                ->withRex($soldeRex);
+                                                ->withRex($soldeRex)
+                                                ->withAfrocashsm($solde_afrocash_sm)
+                                                ->withAfrocashcourant($solde_afrocash_courant);
     }
 
     public function historyRavitaillement() {

@@ -159,7 +159,15 @@
                                 <li><a href="{{url('/user/list-client')}}"><span uk-icon="icon:arrow-right"></span> Repertoire</a></li>
                             </ul>
                         </li>
-
+												<!-- AFROCASH -->
+												<li class="uk-parent">
+													<a href="#"><span uk-icon="icon : credit-card"></span> Afrocash</a>
+													<ul class="uk-nav-sub">
+														<li><a href="{{url('/user/afrocash')}}"> <span uk-icon="icon : arrow-right"></span>	Operations</a> </li>
+														<li><a href="#"> <span uk-icon="icon : arrow-right"></span>	Toutes les Transactions</a> </li>
+													</ul>
+												</li>
+												<!-- // -->
                         <li class="uk-parent">
                             <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Commandes</a>
                             <ul class="uk-nav-sub">

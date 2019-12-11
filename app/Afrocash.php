@@ -12,5 +12,8 @@ class Afrocash extends Model
 
     protected $keyType = 'string';
     protected $primaryKey = 'numero_compte';
-    
+
+    public function vendeurs() {
+      return $this->belongsTo('App\User','vendeurs','username')->first();
+    }
 }

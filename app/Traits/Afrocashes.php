@@ -188,4 +188,104 @@ Trait Afrocashes {
 			return Credit::where('designation','rex')->first()->solde;
 		}
 	}
+	// OPERATIONS AFROCASH
+
+	public function afrocashOperation() {
+		$afrocash_compte = Afrocash::where('type','courant')->get();
+		return view('afrocash.operations')->withComptes($afrocash_compte);
+	}
+// ENVOI DES TRANSACTION AFROCASH
+	public function sendDepot(Request $request) {
+		$validation = $request->validate([
+				'type_operation'	=>	'required|string',
+				'numero_compte_courant'	=>	'required|string|exists:afrocashes,numero_compte',
+				'montant'	=>	'required',
+				'password'	=>	'required|string'
+		]);
+		try {
+			if($request->input('type_operation') == 'depot') {
+				if(!Afrocash::where([
+					'vendeurs'	=>	Auth::user()->username,
+					'type'	=>	'semi_grossiste'
+				])->first()) {
+					throw new AppException("Operation Indisponible pour ce type de compte !");
+				}
+				// depot
+				if($this->afrocashTypeAccount($request->input("numero_compte_courant")) == 'courant') { //verification de la validite du type de compte
+					if(Afrocash::where([
+						'vendeurs'	=>	Auth::user()->username,
+						'type'	=>	'semi_grossiste'
+						])->first()->solde >= $request->input('montant')) {
+							if(Hash::check($request->input('password'),Auth::user()->password)) {
+
+								// debiter l'expediteur
+
+								$new_solde_expediteur = Afrocash::where([
+									'vendeurs'	=>	Auth::user()->username,
+									'type'	=>	'semi_grossiste'
+								])->first()->solde - $request->input('montant');
+
+								Afrocash::where([
+									'vendeurs'	=>	Auth::user()->username,
+									'type'	=>	'semi_grossiste'
+								])->update([
+									'solde'	=>	$new_solde_expediteur
+								]);
+
+								// crediter le destinataire
+
+								$new_solde_destinataire = Afrocash::where('numero_compte',$request->input('numero_compte_courant'))->first()->solde + $request->input('montant');
+
+								Afrocash::where('numero_compte',$request->input("numero_compte_courant"))->update([
+									'solde'	=>	$new_solde_destinataire
+								]);
+								// enregistrement de la transaction
+								$transaction_depot = new TransactionAfrocash;
+								$transaction_depot->compte_debite = Afrocash::where([
+									'vendeurs'	=>	Auth::user()->username,
+									'type'	=>	'semi_grossiste'
+									])->first()->numero_compte;
+									$transaction_depot->compte_credite = $request->input('numero_compte_courant');
+									$transaction_depot->montant	=	$request->input('montant');
+									// enregistrement dans la table transaction credit
+									$transaction_credit	=	new TransactionCredit;
+									$transaction_credit->credits = 'afrocash';
+									$transaction_credit->montant	=	$request->input('montant');
+									// sauvegarde dans la base de donnees
+									$transaction_depot->save();
+									$transaction_credit->save();
+									return redirect('/user/afrocash')->withSuccess("Success!");
+
+							} else {
+								throw new AppException("Mot de passe Invalide!");
+							}
+					} else {
+						throw new AppException("Montant Indisponible!");
+					}
+				} else {
+					throw new AppException("Transaction indisponible pour ce type de compte!");
+				}
+			}
+			 else if($request->input('type_operation')	==	'transfert_courant') {
+				 // transfert courant
+				 dd($request);
+			 }
+			 else {
+				 // retrait
+				 dd($request);
+			 }
+		} catch (AppException $e) {
+				return back()->with('_error',$e->getMessage());
+		}
+
+	}
+
+	// type compte afrocash
+	public function afrocashTypeAccount($numero) {
+		return Afrocash::where('numero_compte',$numero)->first()->type;
+	}
+	//montant compte afrocash
+	public function montantAfrocashAccount($numero) {
+		return Afrocash::where('numero_compte',$numero)->first()->solde;
+	}
 }
