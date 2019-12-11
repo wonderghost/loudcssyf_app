@@ -34,14 +34,14 @@
     </ul>
 
     <ul class="uk-switcher uk-margin">
-      @if(Auth::user()->type = 'v_standart')
+      @if(Auth::user()->type == 'v_standart')
         <li>
           <!-- DEPOTS -->
           <h3>Effectuez un depot</h3>
           {!!Form::open(['url'=>'/user/afrocash/transaction','class'=>'uk-width-1-2@m'])!!}
           {!!Form::hidden('type_operation','depot')!!}
           {!!Form::label('Vendeur')!!}
-          <select class="uk-select uk-margin-small" name="numero_compte_courant">
+          <select class="uk-select uk-margin-small uk-border-rounded" name="numero_compte_courant">
             @if($comptes)
             @foreach($comptes as $value)
             <option value="{{$value->numero_compte}}">{{$value->vendeurs}}( {{$value->vendeurs()->localisation}} ) (compte No {{number_format($value->numero_compte,0,' '," ")}} )</option>
@@ -63,6 +63,8 @@
           {!!Form::open(['url'=>'/user/afrocash/transaction','class'=>'uk-width-1-2@m'])!!}
           {!!Form::hidden('type_operation','transfert_courant')!!}
           {!!Form::label('Vendeur')!!}
+
+          @if(Auth::user()->type == 'v_standart')
           <select class="uk-select uk-margin-small" name="numero_compte_courant">
             @if($comptes)
             @foreach($comptes as $value)
@@ -70,6 +72,10 @@
             @endforeach
             @endif
           </select>
+          @elseif(Auth::user()->type == 'v_da')
+          {!!Form::text('vendeurs','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>"Nom d'utilisateur (ex : LS-XXXX , DA-XXXX)"])!!}
+          @endif
+
           {!!Form::label('Montant')!!}
           {!!Form::text('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Montant de la transaction'])!!}
           {!!Form::label('Confirmez le mot de passe')!!}

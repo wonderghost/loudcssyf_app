@@ -196,14 +196,17 @@ Trait Afrocashes {
 	}
 // ENVOI DES TRANSACTION AFROCASH
 	public function sendDepot(Request $request) {
-		$validation = $request->validate([
-				'type_operation'	=>	'required|string',
-				'numero_compte_courant'	=>	'required|string|exists:afrocashes,numero_compte',
-				'montant'	=>	'required',
-				'password'	=>	'required|string'
-		]);
+
 		try {
 			if($request->input('type_operation') == 'depot') {
+
+				$validation = $request->validate([
+						'type_operation'	=>	'required|string',
+						'numero_compte_courant'	=>	'required|string|exists:afrocashes,numero_compte',
+						'montant'	=>	'required',
+						'password'	=>	'required|string'
+				]);
+
 				if(!Afrocash::where([
 					'vendeurs'	=>	Auth::user()->username,
 					'type'	=>	'semi_grossiste'
@@ -268,7 +271,64 @@ Trait Afrocashes {
 			}
 			 else if($request->input('type_operation')	==	'transfert_courant') {
 				 // transfert courant
-				 dd($request);
+				 $validation = $request->validate([
+					 'vendeurs'	=>	'required|exists:users,username',
+					 'montant'	=>	'required',
+					 'password'	=>	'required|string'
+				 ]);
+				 // verification du compte courant
+				 if($this->getAfrocashAccountByUsername(Auth::user()->username) && $this->getAfrocashAccountByUsername($request->input('vendeurs'))) {
+					 if($this->montantAfrocashAccount($this->getAfrocashAccountByUsername(Auth::user()->username)->numero_compte)) {
+						 if(Hash::check($request->input('password'),Auth::user()->password)) {
+
+							 // debiter l'expediteur
+
+							 $new_solde_expediteur = Afrocash::where([
+								 'numero_compte'	=>	$this->getAfrocashAccountByUsername(Auth::user()->username)->numero_compte
+							 ])->first()->solde - $request->input('montant');
+
+							 Afrocash::where([
+								 'numero_compte'	=>	$this->getAfrocashAccountByUsername(Auth::user()->username)->numero_compte
+							 ])->update([
+								 'solde'	=>	$new_solde_expediteur
+							 ]);
+
+							 // crediter le destinataire
+
+							 $new_solde_destinataire = Afrocash::where('numero_compte',	$this->getAfrocashAccountByUsername($request->input('vendeurs'))->numero_compte)->first()->solde + $request->input('montant');
+
+							 Afrocash::where('numero_compte',$this->getAfrocashAccountByUsername($request->input('vendeurs'))->numero_compte)->update([
+								 'solde'	=>	$new_solde_destinataire
+							 ]);
+							 // enregistrement de la transaction
+							 $transaction_depot = new TransactionAfrocash;
+
+							 $transaction_depot->compte_debite = Afrocash::where([
+								 'numero_compte'	=>	$this->getAfrocashAccountByUsername(Auth::user()->username)->numero_compte
+								 ])->first()->numero_compte;
+
+								 $transaction_depot->compte_credite = $this->getAfrocashAccountByUsername($request->input('vendeurs'))->numero_compte;
+								 $transaction_depot->montant	=	$request->input('montant');
+								 // enregistrement dans la table transaction credit
+								 $transaction_credit	=	new TransactionCredit;
+								 $transaction_credit->credits = 'afrocash';
+								 $transaction_credit->montant	=	$request->input('montant');
+
+								 $transaction_depot->save();
+								 $transaction_credit->save();
+								 return redirect('/user/afrocash')->withSuccess("Success!");
+						 }
+						 else {
+							 throw new AppException("Mot de passe Invalide !");
+						 }
+					 }
+					 else {
+						 throw new AppException("Montant Indisponible !");
+					 }
+				 }
+				 else {
+					 throw new AppException("Operation Indisponible pour ce type de compte !");
+				 }
 			 }
 			 else {
 				 // retrait
@@ -287,5 +347,16 @@ Trait Afrocashes {
 	//montant compte afrocash
 	public function montantAfrocashAccount($numero) {
 		return Afrocash::where('numero_compte',$numero)->first()->solde;
+	}
+
+	public function getAfrocashAccountByUsername($username) {
+		$temp = Afrocash::where([
+			'vendeurs'	=>	$username,
+			'type'	=>	'courant'
+			])->first();
+			if($temp) {
+				return $temp;
+			}
+			return false;
 	}
 }
