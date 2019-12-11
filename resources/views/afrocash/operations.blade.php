@@ -65,10 +65,10 @@
           {!!Form::label('Vendeur')!!}
 
           @if(Auth::user()->type == 'v_standart')
-          <select class="uk-select uk-margin-small" name="numero_compte_courant">
+          <select class="uk-select uk-margin-small" name="vendeurs">
             @if($comptes)
             @foreach($comptes as $value)
-            <option value="{{$value->numero_compte}}">{{$value->vendeurs}}( {{$value->vendeurs()->localisation}} ) (compte No {{number_format($value->numero_compte,0,' '," ")}} )</option>
+            <option value="{{$value->vendeurs}}">{{$value->vendeurs}}( {{$value->vendeurs()->localisation}} ) (compte No {{number_format($value->numero_compte,0,' '," ")}} )</option>
             @endforeach
             @endif
           </select>
