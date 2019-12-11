@@ -434,5 +434,6 @@ listSerialByVendeur : function (token,url,ref) {
   })
   form.submit()
 }
+// 
 
 }

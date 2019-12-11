@@ -16,6 +16,7 @@ use App\RavitaillementVendeur;
 use Carbon\Carbon;
 use App\Traits\Livraisons;
 use App\Exceptions\AppException;
+use App\CommandCredit;
 
 class CommandController extends Controller
 {
@@ -114,7 +115,11 @@ class CommandController extends Controller
 
 
 	public function getList() {
-		return view('command.list-command');
+		$commandes = CommandCredit::where([
+			'vendeurs'	=>	Auth::user()->username,
+			'type'	=>	'afro_cash_sg'
+		])->get();
+		return view('command.list-command')->withCommandes($commandes);
 	}
 
 // LIST COMMANDES CHEZ LE VENDEURS

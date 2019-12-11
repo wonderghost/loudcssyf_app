@@ -49,6 +49,40 @@
 					</li>
 					<li>
 						<!-- AFRO CASH SEMI GROSSISTE -->
+						<table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover">
+							<thead>
+								<tr>
+									<th>Date</th>
+									<th>Montant</th>
+									<th>Type</th>
+									<th>Status</th>
+									<th>Numero Recu</th>
+									<th>Recu</th>
+								</tr>
+							</thead>
+							<tbody>
+								@if($commandes)
+								@foreach($commandes as $value)
+								@php
+								$date = new Carbon\Carbon($value->created_at);
+								$date->locale("fr_FR");
+								@endphp
+								<tr>
+									<td>{{$date->toFormattedDateString()}} ({{$date-> diffForHumans()}})</td>
+									<td>{{number_format($value->montant)}}</td>
+									<td>{{$value->type}}</td>
+									<td><span class="{{$value->status == 'validated'? 'uk-alert-success' : 'uk-alert-danger'}}">{{$value->status}}</span></td>
+									<td>{{$value->numero_recu}}</td>
+									<td>
+										<div uk-lightbox>
+		                    <a class="uk-button-default uk-border-rounded uk-box-shadow-small " href="{{asset('uploads/'.$value->recu)}}" data-caption="{{$value->numero_recu}}">voir le recu</a>
+		                </div>
+									</td>
+								</tr>
+								@endforeach
+								@endif
+							</tbody>
+						</table>
 					</li>
 			 </ul>
 	</div>
