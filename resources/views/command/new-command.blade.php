@@ -166,9 +166,10 @@
 					 </li>
 			     <li>
 						 <!-- COMMANDE cga -->
-						 {!!Form::open(['user/new-command/cga'])!!}
-						 {!!Form::text('montant','',['class'=>'uk-input uk-margin-small','placeholder'=>'Montant Credit'])!!}
-						 <button type="submit" class="uk-button-default uk-border-rounded">valider<span uk-icon="icon:check;ratio:.8"></span></button>
+						 {!!Form::open(['url'=>'user/new-command/cga','class'=>'uk-width-1-2@m'])!!}
+						 {!!Form::label('Montant')!!}
+						 {!!Form::text('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Montant Credit'])!!}
+						 {!!Form::submit('validez',['class'=>'uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
 						 {!!Form::close()!!}
 					 </li>
 					 <li>

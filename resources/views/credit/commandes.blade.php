@@ -123,6 +123,7 @@
           <p>Vous confirmez l'envoi de : <span id="validation-montant" class="uk-text-bold"></span> a : <span id="validation-vendeur" class="uk-text-bold"></span> </p>
           {!!Form::open(['url'=>'/user/send-afrocash'])!!}
           {!!Form::hidden('commande','',['id'=>'validation-commande'])!!}
+          {!!Form::hidden('type_commande','',['id'=>'validation-type-commande'])!!}
           {!!Form::label('Saisissez le montant')!!}
           {!!Form::text('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded'])!!}
           {!!Form::label('Confirmez le mot de passe')!!}
@@ -143,6 +144,7 @@
       $("#validation-montant").text(row.children().eq(2).text())
       $("#validation-vendeur").text(row.children().eq(1).text())
       $("#validation-commande").val($(this).attr('id'))
+      $("#validation-type-commande").val(row.children().eq(3).text())
     })
   })
 </script>

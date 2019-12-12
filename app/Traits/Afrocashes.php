@@ -11,7 +11,9 @@ use App\CommandCredit;
 use App\Exceptions\AppException;
 use App\Credit;
 use App\TransactionCredit;
+use App\TransactionCga;
 use App\TransactionAfrocash;
+use App\CgaAccount;
 
 Trait Afrocashes {
 
@@ -113,56 +115,98 @@ Trait Afrocashes {
 			'password_confirmed'	=>	'required'
 		]);
 		try {
+			// validation du mote de passe
+			if(!Hash::check($request->input("password_confirmed"),Auth::user()->password)) {
+				throw new AppException("Mauvais mot de passe !");
+			}
 			$commande = CommandCredit::where('id',$request->input('commande'))->first();
 			// tester l'invalidite de la commande
 			if($this->commandCreditState($commande->id) == 'unvalidated') {
-				//tester la disponibilite du montant
-				if($this->getSoldeGlobal("afrocash") >= $commande->montant) {
-					// tester la conformite du montant demande au montant saisi
-					if($commande->montant == $request->input('montant')) {
-						// validation du mote de passe
-						if(!Hash::check($request->input("password_confirmed"),Auth::user()->password)) {
-							throw new AppException("Mauvais mot de passe !");
+				// tester la conformite du montant demande au montant saisi
+				if($commande->montant == $request->input('montant')) {
+					switch ($request->input('type_commande')) {
+						case 'cga':
+						// tester la disponibilite du montant
+						if($this->getSoldeGlobal("cga") >= $commande->montant) {
+							$cga_account = CgaAccount::where('vendeur',$commande->vendeurs)->first();
+
+							// crediter le compte cga du vendeur
+							$new_solde_cga_vendeur = $cga_account->solde + $request->input('montant');
+							CgaAccount::where('numero',$cga_account->numero)->update([
+								'solde'	=>	$new_solde_cga_vendeur
+							]);
+
+							// debiter le compte central cga
+							$new_solde_cga_central	=	Credit::where('designation','cga')->first()->solde - $request->input('montant');
+							Credit::where('designation','cga')->update([
+								'solde'	=>	$new_solde_cga_central
+							]);
+
+							$transaction_cga	= new	TransactionCga;
+
+							$transaction_cga->cga	=	$cga_account->numero;
+							$transaction_cga->montant	=	$request->input('montant');
+							
+							$transaction_cga->save();
+							CommandCredit::where("id",$commande->id)->update([
+								'status'	=>	'validated'
+							]);
+							return redirect('/user/credit-cga/commandes')->withSuccess("Success!");
+						} else {
+							throw new AppException("Montant Indisponible!");
 						}
-						$afrocashAccount = Afrocash::where([
-							'vendeurs'	=>	$commande->vendeurs,
-							'type'	=>	'semi_grossiste'
-						])->first();
+							break;
+						case 'afro_cash_sg':
+						//tester la disponibilite du montant
+						if($this->getSoldeGlobal("afrocash") >= $commande->montant) {
+							$afrocashAccount = Afrocash::where([
+								'vendeurs'	=>	$commande->vendeurs,
+								'type'	=>	'semi_grossiste'
+							])->first();
 
-						$transaction = new TransactionAfrocash;
-						$transaction->compte_credite = $afrocashAccount->numero_compte;
-						$transaction->montant = $commande->montant;
+							$transaction = new TransactionAfrocash;
+							$transaction->compte_credite = $afrocashAccount->numero_compte;
+							$transaction->montant = $commande->montant;
 
-						$transaction_credit = new TransactionCredit;
-						$transaction_credit->credits = 'afrocash';
-						$transaction_credit->montant = $commande->montant;
+							$transaction_credit = new TransactionCredit;
+							$transaction_credit->credits = 'afrocash';
+							$transaction_credit->montant = $commande->montant;
 
-						$new_solde = Credit::where('designation','afrocash')->first()->solde -  $commande->montant ;
+							$new_solde = Credit::where('designation','afrocash')->first()->solde -  $commande->montant ;
 
-						Credit::where('designation','afrocash')->update([
-							'solde'	=>	$new_solde
-						]);
+							Credit::where('designation','afrocash')->update([
+								'solde'	=>	$new_solde
+							]);
 
-						$new_solde_vendeurs = Afrocash::where(['vendeurs'	=>	$commande->vendeurs,'type'	=>	'semi_grossiste'])->first()->solde + $request->input('montant');
+							$new_solde_vendeurs = Afrocash::where(['vendeurs'	=>	$commande->vendeurs,'type'	=>	'semi_grossiste'])->first()->solde + $request->input('montant');
 
-						Afrocash::where([
-							'vendeurs'	=>	$commande->vendeurs,
-							'type'	=>	'semi_grossiste'
-						])->update([
-							'solde'	=>	$new_solde_vendeurs
-						]);
+							Afrocash::where([
+								'vendeurs'	=>	$commande->vendeurs,
+								'type'	=>	'semi_grossiste'
+							])->update([
+								'solde'	=>	$new_solde_vendeurs
+							]);
 
-						$transaction->save();
-						$transaction_credit->save();
-						CommandCredit::where('id',$commande->id)->update([
-							'status'	=>	'validated'
-						]);
-						return redirect('/user/credit-cga/commandes')->withSuccess("Success!");
-					} else {
-						throw new AppException("Erreur sur le montant saisi !");
+							$transaction->save();
+							$transaction_credit->save();
+							CommandCredit::where('id',$commande->id)->update([
+								'status'	=>	'validated'
+							]);
+							return redirect('/user/credit-cga/commandes')->withSuccess("Success!");
+						} else {
+							throw new AppException("Montant Indisponible!");
+						}
+							break;
+						case 'rex':
+							// code...
+							break;
+						default:
+							// code...
+							break;
 					}
+
 				} else {
-					throw new AppException("Montant Indisponible!");
+					throw new AppException("Erreur sur le montant saisi !");
 				}
 			} else {
 				throw new AppException("Deja validee!");

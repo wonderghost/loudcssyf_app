@@ -153,7 +153,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// ==--
 	// ----	ENVOI DES COMMANDES -----
 		// 	CREDIT CGA
-	Route::post('/user/new-command/cga','VendeurController@commandCga')->middleware('vendeur');
+	Route::post('/user/new-command/cga','CreditController@commandCga')->middleware('vendeur');
 	Route::post('/user/new-command/afrocash-sg','CreditController@sendCommandSemiGrossiste')->middleware('vendeur');
 		// MATERIEL
 	Route::post('/user/new-command/material','CommandController@sendCommand')->middleware('vendeur');

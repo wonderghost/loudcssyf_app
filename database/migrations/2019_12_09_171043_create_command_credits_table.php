@@ -20,8 +20,8 @@ class CreateCommandCreditsTable extends Migration
             $table->enum('type',['cga','rex','afro_cash_sg'])->default('cga');
             $table->string('vendeurs');
             $table->foreign('vendeurs')->references('username')->on("users");
-            $table->string("numero_recu");
-            $table->string('recu');
+            $table->string("numero_recu")->nullable();
+            $table->string('recu')->nullable();
             $table->timestamps();
         });
     }

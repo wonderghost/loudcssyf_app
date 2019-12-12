@@ -12,5 +12,5 @@ class CgaAccount extends Model
     protected $keyType = 'string';
     protected $primaryKey = 'numero';
 
-    
+
 }
