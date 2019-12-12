@@ -8,7 +8,7 @@ use App\Formule;
 use App\CommandCredit;
 use App\Credit;
 use App\Afrocash;
-
+use App\Exceptions\AppException;
 Trait Cga {
 
 	// VERIFIER SI LE SOLDE CGA EST DISPONIBLE
