@@ -21,6 +21,7 @@ use App\TransactionRex;
 use App\TransactionCredit;
 use App\Agence;
 use App\CommandCredit;
+use App\Exceptions\AppException;
 
 class CreditController extends Controller
 {
