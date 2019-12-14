@@ -11,6 +11,12 @@
 			<div>{{session('success')}}</div>
 		</div>
 		@endif
+		@if(session('_error'))
+		<div class="uk-alert-success uk-border-rounded uk-box-shadow-small" uk-alert>
+			<button type="button" class="uk-align-right close-button"  uk-icon="icon:close"></button>
+			<div>{{session('_error')}}</div>
+		</div>
+		@endif
 		<!--  -->
 		<ul uk-tab>
 		    <li><a href="#">Comptes</a></li>
