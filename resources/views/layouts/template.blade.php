@@ -93,11 +93,6 @@
                             <a href="#"><span uk-icon="icon:cart;ratio:0.9"></span> Rapport Ventes</a>
                             <ul class="uk-nav-sub">
                                 <li><a href="{{url('admin/add-rapport')}}"><span uk-icon="icon:arrow-right"></span> Ajouter</a></li>
-                                <!-- <li><a href="#"><span uk-icon="icon:plus"></span> Recrutement</a></li> -->
-                                <!-- <li><a href="#"><span uk-icon="icon:refresh"></span> Reabonnement</a></li> -->
-                                <!-- <li><a href="#"><span uk-icon="icon:move"></span> Upgrade</a></li> -->
-                                <!-- <li><a href="#"><span uk-icon="icon:shrink"></span> Migration</a></li> -->
-                                <!-- <li><a href="#"><span uk-icon="icon:forward"></span> Libre</a></li> -->
                                 <li><a href="{{url('admin/all-rapport')}}"><span uk-icon="icon:arrow-right"></span> Toutes les ventes</a></li>
                             </ul>
                         </li>
@@ -135,13 +130,6 @@
                             <a href="#"><span uk-icon="icon:cart;ratio:0.9"></span> Ventes</a>
                             <ul class="uk-nav-sub">
                                 <li><a href="{{url('/user/rapport-ventes')}}"><span uk-icon="icon:plus"></span> Rapport de ventes</a></li>
-                                <!-- <li><a href="{{url('/user/recrutement')}}"><span uk-icon="icon:plus"></span> Recrutement</a></li> -->
-                                <!-- <li><a href="{{url('/user/abonnement')}}"><span uk-icon="icon:refresh"></span> Reabonnement</a></li>
-                                <li><a href="#"><span uk-icon="icon:move"></span> Upgrade</a></li>
-                                <li><a href="#"><span uk-icon="icon:shrink"></span> Migration</a></li>
-                                <li><a href="#"><span uk-icon="icon:forward"></span> Libre</a></li>
-                                <li><a href="{{url('/user/ventes')}}"><span uk-icon="icon:history"></span> Toutes les ventes</a></li>
-                                <li><a href="{{url('/user/commissions')}}"><span uk-icon=""></span> Commissions</a></li> -->
                             </ul>
                         </li>
                         <li class="uk-parent">
@@ -164,7 +152,7 @@
 													<a href="#"><span uk-icon="icon : credit-card"></span> Afrocash</a>
 													<ul class="uk-nav-sub">
 														<li><a href="{{url('/user/afrocash')}}"> <span uk-icon="icon : arrow-right"></span>	Operations</a> </li>
-														<li><a href="#"> <span uk-icon="icon : arrow-right"></span>	Toutes les Transactions</a> </li>
+														<li><a href="{{url('/user/afrocash/all-transactions')}}"> <span uk-icon="icon : arrow-right"></span>	Toutes les Transactions</a> </li>
 													</ul>
 												</li>
 												<!-- // -->
@@ -175,13 +163,6 @@
                                 <li><a href="{{url('/user/list-command')}}"><span uk-icon="icon:arrow-right"></span> Toutes les Commandes</a></li>
                             </ul>
                         </li>
-                        <!-- <li class="uk-parent">
-                            <a href="#"><span uk-icon="icon:minus;ratio:0.9"></span> Technicien</a>
-                            <ul class="uk-nav-sub">
-                                <li><a href="#"><span uk-icon="icon:check"></span> Installation</a></li>
-                                <li><a href="#"><span uk-icon="icon:check"></span> Intervention</a></li>
-                            </ul>
-                        </li> -->
                         @endif
                         <!-- CREDIT CGA -->
                         @if(Auth::user()->type == 'gcga')

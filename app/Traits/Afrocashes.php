@@ -408,4 +408,14 @@ Trait Afrocashes {
 		$transactions = TransactionAfrocash::select()->orderBy('created_at','desc')->paginate(10);
 		return view('afrocash.transactions')->withTransactions($transactions);
 	}
+
+	public function allTransactionAfrocashVendeur() {
+		$transactions = TransactionAfrocash::where([
+			'compte_debite'	=>	Afrocash::where('vendeurs',Auth::user()->username)->first()->numero_compte
+			])->orWhere([
+				'compte_credite'	=>	afroCash::where('vendeurs',Auth::user()->username)->first()->numero_compte
+			])->orderBy('created_at','desc')->get();
+
+		return view('afrocash.transactions')->withTransac($transactions);
+	}
 }
