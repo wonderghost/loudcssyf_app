@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'AfrocashSeeder' => $baseDir . '/database/seeds/AfrocashSeeder.php',
     'AgenceTableSeeder' => $baseDir . '/database/seeds/AgenceTableSeeder.php',
     'App\\Abonnement' => $baseDir . '/app/Abonnement.php',
     'App\\Afrocash' => $baseDir . '/app/Afrocash.php',
@@ -100,6 +101,7 @@ return array(
     'App\\TransactionAfrocash' => $baseDir . '/app/TransactionAfrocash.php',
     'App\\TransactionCga' => $baseDir . '/app/TransactionCga.php',
     'App\\TransactionCredit' => $baseDir . '/app/TransactionCredit.php',
+    'App\\TransactionCreditCentral' => $baseDir . '/app/TransactionCreditCentral.php',
     'App\\TransactionRex' => $baseDir . '/app/TransactionRex.php',
     'App\\User' => $baseDir . '/app/User.php',
     'Carbon\\Carbon' => $vendorDir . '/nesbot/carbon/src/Carbon/Carbon.php',

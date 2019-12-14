@@ -28,6 +28,10 @@
 								<div>{{number_format($values->solde)}}</div>
 						</div>
 						@endforeach
+						<div class="uk-grid-small uk-text-lead" uk-grid>
+							<div class="uk-width-expand uk-text-capitalize" uk-leader> TOTAL (GNF)</div>
+							<div class="">{{number_format($total)}}</div>
+						</div>
 					</div>
 					<div id="">
 						<h4>Crediter les comptes</h4>
@@ -45,9 +49,6 @@
 						</label>
 						<label>
 							{!!Form::radio('compte','rex','',['class'=>'uk-radio'])!!} REX
-						</label>
-						<label>
-							{!!Form::radio('compte','afrocash','',['class'=>'uk-radio'])!!} AFROCASH
 						</label>
 						{!!Form::text('montant','',['class'=>'uk-input uk-margin-small','placeholder'=>'Montant'])!!}
 						<button type="submit" class="uk-button-default uk-border-rounded">valider <span uk-icon="icon:check;ratio:.8"></span></button>

@@ -15,6 +15,8 @@
 // });
 
 Route::middleware(['auth','admin'])->group(function () {
+	Route::get('/admin/afrocash','AdminController@operationAfrocash');
+	Route::post('/admin/afrocash/apport','AdminController@apportCapital');
 	// recuperation des soldes vendeurs
 	Route::post('/admin/get-soldes','CreditController@getSoldesVendeurs');
 	// etat depot Central

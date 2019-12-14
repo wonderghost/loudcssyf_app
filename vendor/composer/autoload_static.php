@@ -374,6 +374,7 @@ class ComposerStaticInit15d5dc02f650ad17553f69fb230f4dbd
     );
 
     public static $classMap = array (
+        'AfrocashSeeder' => __DIR__ . '/../..' . '/database/seeds/AfrocashSeeder.php',
         'AgenceTableSeeder' => __DIR__ . '/../..' . '/database/seeds/AgenceTableSeeder.php',
         'App\\Abonnement' => __DIR__ . '/../..' . '/app/Abonnement.php',
         'App\\Afrocash' => __DIR__ . '/../..' . '/app/Afrocash.php',
@@ -468,6 +469,7 @@ class ComposerStaticInit15d5dc02f650ad17553f69fb230f4dbd
         'App\\TransactionAfrocash' => __DIR__ . '/../..' . '/app/TransactionAfrocash.php',
         'App\\TransactionCga' => __DIR__ . '/../..' . '/app/TransactionCga.php',
         'App\\TransactionCredit' => __DIR__ . '/../..' . '/app/TransactionCredit.php',
+        'App\\TransactionCreditCentral' => __DIR__ . '/../..' . '/app/TransactionCreditCentral.php',
         'App\\TransactionRex' => __DIR__ . '/../..' . '/app/TransactionRex.php',
         'App\\User' => __DIR__ . '/../..' . '/app/User.php',
         'Carbon\\Carbon' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Carbon.php',

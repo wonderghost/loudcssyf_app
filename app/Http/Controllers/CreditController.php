@@ -47,25 +47,50 @@ class CreditController extends Controller
      // AJOUTER UN COMPTE
     public function addAccount() {
     	$credits = Credit::all();
-        return view('admin.add-account-credit')->withCredit($credits);
+			$total = 0;
+			foreach ($credits as $key => $value) {
+				$total+=$value->solde;
+			}
+        return view('admin.add-account-credit')->withCredit($credits)->withTotal($total);
     }
 
     //
     public function makeAddAccount(CreditRequest $request) {
-    	// dd($request);
-    	$credit = new Credit;
-    	$credit->designation = $request->input('compte');
-    	$credit->solde = $request->input('montant');
-    	if($temp = $this->isExistCredit($credit->designation)) {
-    		$solde = $temp->solde + $credit->solde;
-    		Credit::select()->where('designation',$credit->designation)->update(
-    			[
-    				'solde' => $solde
-    			]);
-    	} else {
-	    	$credit->save();
-    	}
-    	return redirect('/admin/add-account-credit')->with('success',"Compte $credit->designation Credité de ".number_format($credit->solde)." GNF !");
+			try {
+				// dd($request);
+				$credit = new Credit;
+				$credit->designation = $request->input('compte');
+				$credit->solde = $request->input('montant');
+
+				$afrocash = Credit::where('designation','afrocash')->first();
+				if($afrocash) {
+					if($afrocash->solde < $request->input('montant')) {
+						throw new AppException("Fond Insuffisant!");
+					}
+				} else {
+					throw new AppException("Error!");
+				}
+
+				//
+				$new_solde_afrocash = Credit::where('designation','afrocash')->first()->solde - $request->input('montant');
+
+				Credit::where('designation','afrocash')->update([
+					'solde'	=>	$new_solde_afrocash
+				]);
+				//
+				if($temp = $this->isExistCredit($credit->designation)) {
+					$solde = $temp->solde + $credit->solde;
+					Credit::select()->where('designation',$credit->designation)->update(
+						[
+							'solde' => $solde
+						]);
+				} else {
+					$credit->save();
+				}
+				return redirect('/admin/add-account-credit')->with('success',"Compte $credit->designation Credité de ".number_format($credit->solde)." GNF !");
+			} catch (AppException $e) {
+					return back()->with('_error',$e->getMessage());
+			}
     }
 
     // CREDITER UN VENDEUR

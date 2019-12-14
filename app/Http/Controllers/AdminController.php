@@ -24,6 +24,7 @@ use App\RapportVente;
 use Illuminate\Support\Carbon;
 use App\StockVendeur;
 use App\Exemplaire;
+use App\Credit;
 
 
 class AdminController extends Controller
@@ -423,5 +424,22 @@ class AdminController extends Controller
             ];
         }
         return response()->json($all);
+    }
+
+    //
+    public function operationAfrocash() {
+      return view('admin.afrocash-credit');
+    }
+
+    //
+    public function apportCapital(Request $request) {
+      $validation = $request->validate([
+        'montant' =>  'required|numeric|min:1000000'
+      ]);
+      $new_solde = Credit::where('designation','afrocash')->first()->solde + $request->input('montant');
+      Credit::where('designation','afrocash')->update([
+        'solde' =>  $new_solde
+      ]);
+      return redirect('/admin/afrocash')->withSuccess("Success!");
     }
 }

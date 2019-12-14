@@ -8,12 +8,18 @@
 	<!-- UIkit CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/css/uikit.min.css" />
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-
+		<link rel="stylesheet" href="{{asset('css/style.css')}}">
 </head>
 <body>
-
+	<!-- loader -->
+	<div id="loader">
+		<div class="uk-border-rounded uk-dark uk-width-1-3@m uk-align-center uk-background-default uk-margin-xlarge-top uk-padding uk-flex uk-flex-center">
+			<div class="uk-margin-right" uk-spinner></div>  Patientez svp ...
+		</div>
+	</div>
+	<!-- // -->
 <!-- NAVBAR-->
-<div class="uk-navbar-container uk-box-shadow-small" uk-sticky uk-navbar>
+<div class="uk-navbar-container uk-box-shadow-small" id="entete" uk-sticky uk-navbar>
     <div class="uk-navbar-left">
         <button class="uk-navbar-item uk-button" uk-toggle="target:#side-nav" uk-icon="icon:menu"></button>
         <a href="" class="uk-navbar-item uk-logo">Loudcssyf-Sarl</a>
@@ -66,6 +72,13 @@
                         <li><a href="#"><span uk-icon="icon:arrow-right"></span> Toutes les transactions</a></li>
                     </ul>
                 </li>
+								<li class="uk-parent">
+									<a href="#"><span uk-icon="icon: credit-card;"></span> Afrocash</a>
+									<ul class="uk-nav-sub">
+										<li><a href="{{url('admin/afrocash')}}"><span uk-icon="icon :arrow-right;"></span> Operations</a>	</li>
+										<li><a href="#"><span uk-icon="icon : arrow-right;"></span> Toutes les transactions</a>	</li>
+									</ul>
+								</li>
                 <li class="uk-parent">
                     <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Depots</a>
                     <ul class="uk-nav-sub">
@@ -246,6 +259,7 @@
 
 
 
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <!-- UIkit JS -->
@@ -255,6 +269,9 @@
 <script type="text/javascript" src="{{asset('js/myscript_second.js')}}"></script>
 <script type="text/javascript">
 	$(function () {
+		$('form').on('submit',function () {
+			$("#loader").show()
+		})
         $(".close-button").on('click',function () {
             $(this).parent().hide(500);
         })
