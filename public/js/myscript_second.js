@@ -434,6 +434,79 @@ listSerialByVendeur : function (token,url,ref) {
   })
   form.submit()
 }
-// 
+,
+// recuperation de toutes les commandes chez gcga
+  getCommandForCga : function (token , url) {
+    var form = $adminPage.makeForm(token , url)
+    form.on('submit',function(e) {
+      e.preventDefault()
+      $.ajax({
+        url : url ,
+        type : 'post',
+        dataType : 'json',
+        data : $(this).serialize()
+      })
+      .done(function (data) {
+        $logistique.dataList(data.unvalidated,$("#unvalidated"))
+        $logistique.dataList(data.validated,$("#validated"))
+
+        $logistique.organizeCommandGcga(data.unvalidated)
+        $logistique.organizeCommandGcga(data.validated,'validated')
+
+        // click sur la validation
+        $(".validate-button").on('click',function () {
+          var row = $(this).parent().parent()
+          $("#validation-montant").text(row.children().eq(2).text())
+          $("#validation-vendeur").text(row.children().eq(1).text())
+          $("#validation-commande").val($(this).attr('id'))
+          $("#validation-type-commande").val(row.children().eq(3).text())
+          //
+        })
+      })
+      .fail(function (data) {
+        alert(data.responseJSON.message)
+        $(location).attr('href','/')
+      })
+    })
+    form.submit()
+  }
+  ,
+  organizeCommandGcga : function (data,table = 'unvalidated') {
+    data.forEach(function (element , index) {
+
+      var div = $("<div></div>") , diva = $("<a></a>")
+      div.attr('uk-lightbox','')
+      diva.addClass('uk-button-default uk-border-rounded uk-box-shadow-small')
+      diva.attr('href','/uploads/'+element.recu)
+      diva.attr('data-caption',element.numero_recu)
+      diva.text('recu')
+      div.html(diva)
+
+      var valider = $("<a></a>") , td = $("<td></td>") , retd = $("<td></td>")
+      valider.addClass('uk-button-primary uk-border-rounded uk-box-shadow-small validate-button')
+      valider.attr('uk-toggle','target: #modal-validation')
+      valider.attr('id',element.id)
+      valider.text('validez')
+      td.html(valider)
+
+      retd.html(div)
+
+      if(table == 'unvalidated') {
+
+        $("#unvalidated .row:eq("+index+")").children().eq(7).remove()
+        $("#unvalidated .row").eq(index).append(retd)
+        $("#unvalidated .row").eq(index).append(td)
+        $("#unvalidated .row:eq("+index+")").children().eq(0).remove()
+
+      } else {
+        
+        $("#validated .row").eq(index).append(retd)
+        $("#validated .row:eq("+index+")").children().eq(7).remove()
+        $("#validated .row:eq("+index+")").children().eq(0).remove()
+
+      }
+
+    })
+  }
 
 }

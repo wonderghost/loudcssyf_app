@@ -194,6 +194,12 @@
                                 <li><a href=""><span uk-icon="icon:arrow-right"></span> Historique</a></li>
                             </ul>
                         </li>
+												<li class="uk-parent">
+													<a href="#" ><span uk-icon="icon:credit-card"></span> Afrocash</a>
+													<ul class="uk-nav-sub">
+														<li><a href="{{url('user/afrocash/transactions')}}"><span uk-icon="icon : arrow-right"></span>  Toutes les Transactions</a> </li>
+													</ul>
+												</li>
                         <li class="uk-parent">
                             <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Commandes</a>
                             <ul class="uk-nav-sub">

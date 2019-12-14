@@ -46,33 +46,7 @@
               <th>-</th>
             </tr>
           </thead>
-          <tbody>
-            @if($commandes)
-            @foreach($commandes as $commande)
-            @php
-            $date = new Carbon\Carbon($commande->created_at);
-            $date->locale('fr_FR');
-            @endphp
-            <tr>
-
-            <td>{{$date->toFormattedDateString()}} ({{$date-> diffForHumans()}})</td>
-              <td>{{$commande->vendeurs}} ( {{$commande->vendeurs()->localisation}} )</td>
-              <td>{{number_format($commande->montant)}}</td>
-              <td>{{$commande->type}}</td>
-              <td><span class="{{$commande->status == 'unvalidated' ? 'uk-alert-danger': 'uk-alert-success'}} uk-border-rounded">{{$commande->status}}</span></td>
-              <td>{{$commande->numero_recu}}</td>
-              <td>
-                <div uk-lightbox>
-                    <a class="uk-button-default uk-border-rounded uk-box-shadow-small " href="{{asset('uploads/'.$commande->recu)}}" data-caption="{{$commande->numero_recu}}">voir le recu</a>
-                </div>
-              </td>
-              <td>
-                <a class="uk-button-primary uk-border-rounded uk-box-shadow-small validate-button" uk-toggle="target : #modal-validation" id="{{$commande->id}}">valider <span uk-icon="icon : check"></span> </a>
-              </td>
-            </tr>
-            @endforeach
-            @endif
-          </tbody>
+          <tbody id="unvalidated"></tbody>
         </table>
       </li>
       <li>
@@ -80,6 +54,7 @@
         <table class="uk-table uk-table-divider uk-table-striped uk-table-small uk-table-hover">
           <thead>
             <tr>
+
               <th>date</th>
               <th>vendeurs</th>
               <th>montant</th>
@@ -89,30 +64,7 @@
               <th>recu</th>
             </tr>
           </thead>
-          <tbody>
-            @if($validate)
-            @foreach($validate as $commande)
-            @php
-            $date = new Carbon\Carbon($commande->created_at);
-            $date->locale('fr_FR');
-            @endphp
-            <tr>
-
-            <td>{{$date->toFormattedDateString()}} ({{$date-> diffForHumans()}})</td>
-            <td>{{$commande->vendeurs}} ( {{$commande->vendeurs()->localisation}} )</td>
-            <td>{{number_format($commande->montant)}}</td>
-            <td>{{$commande->type}}</td>
-            <td><span class="{{$commande->status == 'unvalidated' ? 'uk-alert-danger': 'uk-alert-success'}} uk-border-rounded">{{$commande->status}}</span></td>
-            <td>{{$commande->numero_recu}}</td>
-            <td>
-              <div uk-lightbox>
-                  <a class="uk-button-default uk-border-rounded uk-box-shadow-small " href="{{asset('uploads/'.$commande->recu)}}" data-caption="{{$commande->numero_recu}}">voir le recu</a>
-              </div>
-            </td>
-          </tr>
-            @endforeach
-            @endif
-          </tbody>
+          <tbody id="validated"></tbody>
         </table>
       </li>
   </ul>
@@ -125,7 +77,7 @@
           {!!Form::hidden('commande','',['id'=>'validation-commande'])!!}
           {!!Form::hidden('type_commande','',['id'=>'validation-type-commande'])!!}
           {!!Form::label('Saisissez le montant')!!}
-          {!!Form::text('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded'])!!}
+          {!!Form::text('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded','autofocus'])!!}
           {!!Form::label('Confirmez le mot de passe')!!}
           {!!Form::password('password_confirmed',['class'=>'uk-input uk-margin-small uk-border-rounded'])!!}
           {!!Form::submit('validez',['class'=>'uk-button uk-button-primary uk-border-rounded  uk-box-shadow-small'])!!}
@@ -139,13 +91,11 @@
 @section('script')
 <script type="text/javascript">
   $(function () {
-    $(".validate-button").on('click',function () {
-      var row = $(this).parent().parent()
-      $("#validation-montant").text(row.children().eq(2).text())
-      $("#validation-vendeur").text(row.children().eq(1).text())
-      $("#validation-commande").val($(this).attr('id'))
-      $("#validation-type-commande").val(row.children().eq(3).text())
-    })
+    setInterval(function() {
+      $logistique.getCommandForCga("{{csrf_token()}}","{{url()->current()}}")
+		},10000);
+
+    $logistique.getCommandForCga("{{csrf_token()}}","{{url()->current()}}")
   })
 </script>
 @endsection

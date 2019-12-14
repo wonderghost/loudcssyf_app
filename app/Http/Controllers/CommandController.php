@@ -118,8 +118,13 @@ class CommandController extends Controller
 		$commandes = CommandCredit::where([
 			'vendeurs'	=>	Auth::user()->username,
 			'type'	=>	'afro_cash_sg'
-		])->get();
-		return view('command.list-command')->withCommandes($commandes);
+		])->orderBy('created_at','desc')->paginate(10);
+		$commandes_cga	=	CommandCredit::where([
+			'vendeurs'	=>	Auth::user()->username,
+			'type'	=>	'cga'
+		])->orderBy('created_at','desc')->paginate(10);
+		return view('command.list-command')->withCommandes($commandes)
+			->withCgacommande($commandes_cga);
 	}
 
 // LIST COMMANDES CHEZ LE VENDEURS

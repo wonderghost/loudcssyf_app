@@ -107,7 +107,7 @@ Trait Afrocashes {
 
 	}
 
-	// ENVOI DE CREDIT AFROCASH AU SEMI GROSSISTE
+	// ENVOI DE CREDIT AFROCASH ,CGA ET REX
 	public function sendAfrocash(Request $request) {
 		$validation = $request->validate([
 			'commande'	=> 'required|exists:command_credits,id',
@@ -146,7 +146,7 @@ Trait Afrocashes {
 
 							$transaction_cga->cga	=	$cga_account->numero;
 							$transaction_cga->montant	=	$request->input('montant');
-							
+
 							$transaction_cga->save();
 							CommandCredit::where("id",$commande->id)->update([
 								'status'	=>	'validated'
@@ -402,5 +402,10 @@ Trait Afrocashes {
 				return $temp;
 			}
 			return false;
+	}
+	// Toutes les transaction afrocash
+	public function allTransactionAfrocash() {
+		$transactions = TransactionAfrocash::select()->orderBy('created_at','desc')->paginate(10);
+		return view('afrocash.transactions')->withTransactions($transactions);
 	}
 }

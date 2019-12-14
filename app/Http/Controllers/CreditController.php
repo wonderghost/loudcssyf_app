@@ -167,5 +167,35 @@ class CreditController extends Controller
         }
     }
 
+		public function getListCommandGcga(Request $request) {
+			$commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','unvalidated')->orderBy('created_at','desc')->get();
+			$commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','validated')->orderBy('created_at','desc')->get();
+			$all_unvalidated = $this->organizeCommandGcga($commands_unvalidated);
 
+			$all_validated = $this->organizeCommandGcga($commands_validated);
+
+			return response()->json([
+				'unvalidated'	=>	$all_unvalidated,
+				'validated'	=>	$all_validated
+			]);
+		}
+
+		public function organizeCommandGcga($list) {
+			$temp = [];
+			foreach($list as $key => $value) {
+				$date = new \Carbon\Carbon($value->created_at);
+				$date->locale('fr_FR');
+				$temp[$key] = [
+					'id'	=>	$value->id,
+					'date'	=>	$date->toFormattedDateString()." (".$date-> diffForHumans()." )",
+					'vendeurs'	=>	$value->vendeurs." (".$value->vendeurs()->localisation." )",
+					'montant'	=>	number_format($value->montant),
+					'type'	=>	$value->type,
+					'status'	=>	$value->status,
+					'numero_recu'	=>	$value->numero_recu ? $value->numero_recu : 'undefined',
+					'recu'	=>	$value->recu ? $value->recu : 'undefined'
+				];
+			}
+			return $temp;
+		}
 }

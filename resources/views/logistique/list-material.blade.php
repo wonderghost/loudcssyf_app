@@ -82,7 +82,7 @@
 
 		//Liste des Numeros de SERIES
 
-		$logistique.ListSerialNumber($adminPage,"{{csrf_token()}}","{{url('/user/get-serialNumber')}}")
+		// $logistique.ListSerialNumber($adminPage,"{{csrf_token()}}","{{url('/user/get-serialNumber')}}")
 
 
 	});

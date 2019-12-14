@@ -73,6 +73,8 @@ Route::middleware(['auth','admin'])->group(function () {
 	// Editer les infos materiels
 	Route::get('/admin/edit-material/{reference}','LogistiqueController@editMaterial');
 	Route::post('/admin/edit-material/{reference}','LogistiqueController@makeEditMaterial');
+	//
+
 });
 
 Auth::routes();
@@ -173,6 +175,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// GESTIONNAIRE CGA
 	Route::get('/user/cga-credit/','CreditController@crediterVendeur')->middleware('cga');
 	Route::get('/user/credit-cga/commandes','CreditController@commandCredit')->middleware('cga');
+	Route::post('user/credit-cga/commandes','CreditController@getListCommandGcga')->middleware('cga');
 	Route::post('/user/cga-credit/','CreditController@getListVendeur')->middleware('cga');
 	Route::post('/user/send-cga','CreditController@sendCga')->middleware('cga');
 	Route::post('/user/send-afrocash','CreditController@sendAfrocash')->middleware('cga');
@@ -205,6 +208,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 
 	Route::get('/user/afrocash','CreditController@afrocashOperation')->middleware('vendeur');
 	Route::post('/user/afrocash/transaction','CreditController@sendDepot')->middleware("vendeur");
+	Route::get('/user/afrocash/transactions','CreditController@allTransactionAfrocash')->middleware('cga');
 });
 
 Route::middleware(['auth'])->group(function () {
