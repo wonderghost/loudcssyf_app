@@ -10,11 +10,11 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-// Route::get('/',function () {
-// 	return redirect('/login');
-// });
 
 Route::middleware(['auth','admin'])->group(function () {
+	// Depenses
+	Route::post('/admin/depenses/add','AdminController@addDepenses');
+	//
 	Route::get('/admin/afrocash','AdminController@operationAfrocash');
 	Route::post('/admin/afrocash/apport','AdminController@apportCapital');
 	// recuperation des soldes vendeurs
@@ -51,9 +51,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post("/admin/add-depot",'LogistiqueController@addDepot');
 	Route::post('/admin/add-material','LogistiqueController@addMaterial');
 	//
-	// Route::post('/admin/add-material/find-serial-number','LogistiqueController@findSerialNumber');
-	// Annuler un enregistrement
-	// Route::post('/admin/add-material/abort-registration','LogistiqueController@abortRegistration');
+
 	//
 	Route::post('/admin/add-depot/auto-complete','LogistiqueController@findMaterial');
 	// list des materieles

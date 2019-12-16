@@ -13,7 +13,7 @@
 <body>
 	<!-- loader -->
 	<div id="loader">
-		<div class="uk-border-rounded uk-dark uk-width-1-3@m uk-align-center uk-background-default uk-margin-xlarge-top uk-padding uk-flex uk-flex-center">
+		<div class="uk-border-rounded uk-dark uk-width-1-1@s uk-width-1-3@m uk-align-center uk-background-default uk-margin-xlarge-top uk-padding uk-flex uk-flex-middle uk-flex-center" style="margin-top : 10% !important;">
 			<div class="uk-margin-right" uk-spinner></div>  Patientez svp ...
 		</div>
 	</div>
@@ -269,8 +269,13 @@
 <script type="text/javascript" src="{{asset('js/myscript_second.js')}}"></script>
 <script type="text/javascript">
 	$(function () {
-		$('form').on('submit',function () {
+		$('form').on('submit',function (e) {
+
+			window.scrollTo({
+				top : 0
+			})
 			$("#loader").show()
+
 		})
         $(".close-button").on('click',function () {
             $(this).parent().hide(500);

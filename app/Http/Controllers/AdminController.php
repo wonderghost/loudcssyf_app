@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
 use App\StockVendeur;
 use App\Exemplaire;
 use App\Credit;
+use App\DepensesAfrocash;
 
 
 class AdminController extends Controller
@@ -428,7 +429,8 @@ class AdminController extends Controller
 
     //
     public function operationAfrocash() {
-      return view('admin.afrocash-credit');
+      $depenses = DepensesAfrocash::select()->orderBy('created_at','desc')->get();
+      return view('admin.afrocash-credit')->withDepenses($depenses);
     }
 
     //
@@ -440,6 +442,33 @@ class AdminController extends Controller
       Credit::where('designation','afrocash')->update([
         'solde' =>  $new_solde
       ]);
+      return redirect('/admin/afrocash')->withSuccess("Success!");
+    }
+
+    // AJOUTER UNE DEPENSES
+
+    public function addDepenses(Request $request) {
+      $validation = $request->validate([
+        'motif' =>  'required',
+        'montant' =>  'required|numeric|min:10000',
+        'description' =>  'string'
+      ],[
+        'required'  =>  'Veuillez remplir le champ :attribute',
+        'numeric' =>  'Le champs :attribute doit etre une valeur numerique',
+        'string'  =>  'Le champs :attribute doit etre une chaine de caractere'
+      ]);
+
+      $depenses = new DepensesAfrocash;
+      $depenses->motif  = $request->input('motif');
+      $depenses->description  = $request->input('description');
+      $depenses->montant  = $request->input('montant');
+      // debiter le solde afrocash central
+      $new_solde_afrocash = Credit::where('designation','afrocash')->first()->solde - $request->input('montant');
+      Credit::where('designation','afrocash')->update([
+        'solde' =>  $new_solde_afrocash
+      ]);
+
+      $depenses->save();
       return redirect('/admin/afrocash')->withSuccess("Success!");
     }
 }

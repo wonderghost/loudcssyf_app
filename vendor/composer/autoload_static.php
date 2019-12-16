@@ -387,6 +387,7 @@ class ComposerStaticInit15d5dc02f650ad17553f69fb230f4dbd
         'App\\Compense' => __DIR__ . '/../..' . '/app/Compense.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Credit' => __DIR__ . '/../..' . '/app/Credit.php',
+        'App\\DepensesAfrocash' => __DIR__ . '/../..' . '/app/DepensesAfrocash.php',
         'App\\Depots' => __DIR__ . '/../..' . '/app/Depots.php',
         'App\\Exceptions\\AppException' => __DIR__ . '/../..' . '/app/Exceptions/AppException.php',
         'App\\Exceptions\\CommandStatus' => __DIR__ . '/../..' . '/app/Exceptions/CommandStatus.php',

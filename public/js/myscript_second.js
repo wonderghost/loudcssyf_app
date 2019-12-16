@@ -499,7 +499,7 @@ listSerialByVendeur : function (token,url,ref) {
         $("#unvalidated .row:eq("+index+")").children().eq(0).remove()
 
       } else {
-        
+
         $("#validated .row").eq(index).append(retd)
         $("#validated .row:eq("+index+")").children().eq(7).remove()
         $("#validated .row:eq("+index+")").children().eq(0).remove()
@@ -508,5 +508,7 @@ listSerialByVendeur : function (token,url,ref) {
 
     })
   }
+
+  
 
 }

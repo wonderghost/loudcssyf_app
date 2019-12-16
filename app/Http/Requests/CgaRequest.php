@@ -30,4 +30,11 @@ class CgaRequest extends FormRequest
             'vendeur' => 'required|exists:users,username'
         ];
     }
+
+    public function messages() {
+      return [
+          'required'  =>  'Veuillez renseigner le champ :attribute',
+          'exists'  =>  ':attribute existe deja en base de donnees'
+      ];
+    }
 }

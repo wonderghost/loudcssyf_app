@@ -19,6 +19,7 @@ return array(
     'App\\Compense' => $baseDir . '/app/Compense.php',
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
     'App\\Credit' => $baseDir . '/app/Credit.php',
+    'App\\DepensesAfrocash' => $baseDir . '/app/DepensesAfrocash.php',
     'App\\Depots' => $baseDir . '/app/Depots.php',
     'App\\Exceptions\\AppException' => $baseDir . '/app/Exceptions/AppException.php',
     'App\\Exceptions\\CommandStatus' => $baseDir . '/app/Exceptions/CommandStatus.php',
