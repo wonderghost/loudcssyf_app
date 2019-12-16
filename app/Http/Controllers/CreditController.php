@@ -96,15 +96,15 @@ class CreditController extends Controller
 
     // CREDITER UN VENDEUR
     public function crediterVendeur() {
-        $solde = Credit::select()->where('designation','cga')->first()->solde;
-				$afrocash = Credit::where('designation','afrocash')->first()->solde;
+        $solde = Credit::select()->where('designation','cga')->first()->solde ? Credit::select()->where('designation','cga')->first()->solde : 0;
+				$afrocash = Credit::where('designation','afrocash')->first()->solde ? Credit::where('designation','afrocash')->first()->solde : 0;
 				$listVendeurs = User::where('type','v_standart')->get();
         return view('credit.crediter-vendeur')->withSolde($solde)->withAfrocash($afrocash)->withVendeurs($listVendeurs);
     }
 
     // CREDITER UN VENDEUR EN REX
     public function crediterVendeurRex() {
-        $solde = Credit::select()->where('designation','rex')->first()->solde;
+        $solde = Credit::select()->where('designation','rex')->first()->solde ? Credit::select()->where('designation','rex')->first()->solde: 0;
         return view('credit.crediter-vendeur-rex')->withSolde($solde);
     }
 

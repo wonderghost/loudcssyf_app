@@ -80,12 +80,11 @@
 									</ul>
 								</li>
                 <li class="uk-parent">
-                    <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Depots</a>
+                    <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Materiels</a>
                     <ul class="uk-nav-sub">
                         <li><a href="{{url('/admin/add-depot')}}"><span uk-icon="icon:arrow-right"></span> Nouveau Materiel</a></li>
-                        <li><a href="{{url('/admin/depot-central')}}"><span uk-icon="icon:arrow-right"></span> Depot Central</a></li>
+                        <li><a href="{{url('/admin/depot-central')}}"><span uk-icon="icon:arrow-right"></span> Entrepot</a></li>
                         <li><a href="{{url('/admin/list-material')}}"><span uk-icon="icon:arrow-right"></span> Tous les materiels</a></li>
-                        <!-- <li><a href="{{url('/admin/list-depot')}}"><span uk-icon="icon:list"></span> Tous les depots</a></li> -->
                         <li><a href="{{url('/admin/history-depot')}}"><span uk-icon="icon:arrow-right"></span> Historique </a></li>
                     </ul>
                 </li>
