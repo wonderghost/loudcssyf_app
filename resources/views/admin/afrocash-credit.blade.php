@@ -25,14 +25,57 @@
 
     <ul class="uk-switcher uk-margin">
         <li>
+          <button type="button" uk-toggle="target: #modal-apport" class="uk-width-1-6@m uk-button-primary  uk-border-rounded uk-box-shadow-small" name="button"><span uk-icon="icon : plus"></span> Effectuez un apport</button>
           <!-- AUGMENTATION CAPITAL / APPORT -->
-          {!!Form::open(['url'=>'/admin/afrocash/apport','class'=>'uk-width-1-2@m','id'=>'apport-form'])!!}
-          <div class="">
-            {!!Form::label('Montant')!!}
-            {!!Form::text('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded','required'=>''])!!}
+          <div id="modal-apport" uk-modal>
+              <div class="uk-modal-dialog uk-modal-body">
+                  <h3>Effectuez un apport</h3>
+                  <div class="uk-alert-info uk-border-rounded uk-box-shadow-small" uk-alert>
+                    <a href="#" class="uk-alert-close" uk-close></a>
+                    <p>Remplissez les champs vides!</p>
+                  </div>
+                  {!!Form::open(['url'=>'/admin/afrocash/apport','','id'=>'apport-form'])!!}
+                  <div class="">
+                    {!!Form::label('Montant')!!}
+                    {!!Form::text('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded','required'=>''])!!}
+                  </div>
+                  <div class="">
+                    {!!Form::label('Description')!!}
+                    {!!Form::textarea('description','',['class'=>'uk-textarea uk-border-rounded'])!!}
+                  </div>
+                  {!!Form::submit('validez',['class'=>'uk-button-primary uk-border-rounded uk-margin-small uk-box-shadow-small'])!!}
+                  {!!Form::close()!!}
+              </div>
           </div>
-          {!!Form::submit('validez',['class'=>'uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
-          {!!Form::close()!!}
+          <!-- HISTORIQUE DES APPORT -->
+          <hr class="uk-divider-small">
+          <h3>Historique des apports</h3>
+          <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Montant</th>
+                <th>Motif</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if($apports)
+              @foreach($apports as $value)
+              @php
+              $date = new \Carbon\Carbon($value->created_at);
+              $date->locale('fr_FR');
+              @endphp
+              <tr uk-tooltip="{{$value->description}}">
+                <td>{{$date->toFormattedDateString()}} ({{$date-> diffForHumans()}})</td>
+                <td>{{number_format($value->montant)}}</td>
+                <td>{{$value->motif}}</td>
+                <td>{{str_limit($value->description,100,'...')}}</td>
+              </tr>
+              @endforeach
+              @endif
+            </tbody>
+          </table>
         </li>
         <li>
           <!-- DEPENSES -->
@@ -53,7 +96,8 @@
                    'connection_internet'  =>  'Connection Internet',
                    'carburant'  =>  'Carburant',
                    'credit_appel' =>  'Credit Appel',
-                   'commission' =>  'Commission'
+                   'commission' =>  'Commission',
+                   'autres' =>  'Autres'
                   ],'paiement_salaire',['class'=>'uk-select uk-border-rounded uk-margin-small'])!!}
                   {!!Form::label('Montant')!!}
                   {!!Form::number('montant','',['class'=>'uk-input uk-border-rounded uk-margin-small','placeholder' =>  'Montant'])!!}
@@ -63,8 +107,11 @@
                   {!!Form::close()!!}
               </div>
           </div>
+
           <!-- // -->
           <!-- HISTORIQUE DES DEPENSES DU JOUR -->
+          <hr class="uk-divider-small">
+          <h3>Historique des depenses</h3>
           <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
             <thead>
               <tr>

@@ -25,7 +25,7 @@ use Illuminate\Support\Carbon;
 use App\StockVendeur;
 use App\Exemplaire;
 use App\Credit;
-use App\DepensesAfrocash;
+use App\TransactionCreditCentral;
 
 
 class AdminController extends Controller
@@ -429,19 +429,37 @@ class AdminController extends Controller
 
     //
     public function operationAfrocash() {
-      $depenses = DepensesAfrocash::select()->orderBy('created_at','desc')->get();
-      return view('admin.afrocash-credit')->withDepenses($depenses);
+      $depenses = TransactionCreditCentral::where('type','depense')->orderBy('created_at','desc')->get();
+      $apports = TransactionCreditCentral::where('type','apport')->orderBy('created_at','desc')->get();
+      return view('admin.afrocash-credit')->withDepenses($depenses)->withApports($apports);
     }
 
     //
     public function apportCapital(Request $request) {
+
       $validation = $request->validate([
-        'montant' =>  'required|numeric|min:1000000'
+        'montant' =>  'required|numeric|min:1000000',
+        'description' =>  'string',
+      ],[
+        'required'  =>  'Veuillez remplir le champ :attribute',
+        'string'  =>  ':attribute doit etre une chaine de caractere'
       ]);
+
       $new_solde = Credit::where('designation','afrocash')->first()->solde + $request->input('montant');
       Credit::where('designation','afrocash')->update([
         'solde' =>  $new_solde
       ]);
+
+      // ajout de la transaction dans l'historique
+
+      $transaction = new TransactionCreditCentral;
+      $transaction->destinataire  = 'afrocash';
+      $transaction->montant   = $request->input('montant');
+      $transaction->motif = 'autres';
+      $transaction->type = 'apport';
+      $transaction->description = $request->input('description');
+      $transaction->save();
+
       return redirect('/admin/afrocash')->withSuccess("Success!");
     }
 
@@ -458,10 +476,12 @@ class AdminController extends Controller
         'string'  =>  'Le champs :attribute doit etre une chaine de caractere'
       ]);
 
-      $depenses = new DepensesAfrocash;
+      $depenses = new TransactionCreditCentral;
       $depenses->motif  = $request->input('motif');
       $depenses->description  = $request->input('description');
       $depenses->montant  = $request->input('montant');
+      $depenses->expediteur =  'afrocash';
+      $depenses->type   = 'depense';
       // debiter le solde afrocash central
       $new_solde_afrocash = Credit::where('designation','afrocash')->first()->solde - $request->input('montant');
       Credit::where('designation','afrocash')->update([
