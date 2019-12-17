@@ -17,6 +17,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	//
 	Route::get('/admin/afrocash','AdminController@operationAfrocash');
 	Route::post('/admin/afrocash/apport','AdminController@apportCapital');
+	Route::get('/admin/afrocash/all-transactions','CreditController@allTransactionAfrocash');
 	// recuperation des soldes vendeurs
 	Route::post('/admin/get-soldes','CreditController@getSoldesVendeurs');
 	// etat depot Central
@@ -156,6 +157,9 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// ----	ENVOI DES COMMANDES -----
 		// 	CREDIT CGA
 	Route::post('/user/new-command/cga','CreditController@commandCga')->middleware('vendeur');
+	// CREDIT REX
+	Route::post('/user/new-command/rex','CreditController@commandRex')->middleware('vendeur');
+	// ##
 	Route::post('/user/new-command/afrocash-sg','CreditController@sendCommandSemiGrossiste')->middleware('vendeur');
 		// MATERIEL
 	Route::post('/user/new-command/material','CommandController@sendCommand')->middleware('vendeur');
@@ -181,12 +185,15 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/send-afrocash','CreditController@sendAfrocash')->middleware('cga');
 
 	#### SOLDE VENDEURS  #####
-	Route::get('/user/vendeur-solde','CreditController@soldeVendeur')->middleware('cga');
-	Route::post('/user/vendeur-solde','CreditController@getSoldeVendeur')->middleware('cga');
+	// Route::get('/user/vendeur-solde','CreditController@soldeVendeur')->middleware('cga');
+	Route::post('/user/cga-credit','CreditController@getSoldeVendeur')->middleware('cga');
+	Route::post('/user/rex-credit','CreditController@getSoldeVendeur')->middleware('rex');
 	// GESTIONNAIRE REX
-	Route::get('/user/rex-credit','CreditController@crediterVendeurRex')->middleware('rex');
-	Route::post('/user/rex-credit','CreditController@getListVendeur')->middleware('rex');
-	Route::post('/user/send-rex','CreditController@sendRex')->middleware('rex');
+	Route::get('/user/rex-credit','CreditController@crediterVendeur')->middleware('rex');
+	// Route::post('/user/rex-credit','CreditController@getListVendeur')->middleware('rex');
+	// Route::post('/user/send-rex','CreditController@sendRex')->middleware('rex');
+	Route::get('/user/credit-rex/commandes','CreditController@commandCredit')->middleware('rex');
+	Route::post('user/credit-rex/commandes','CreditController@getListCommandGrex')->middleware('rex');
 	// TOUTES LES VENTES
 	Route::get('/user/ventes','VendeurController@allVentes')->middleware('vendeur');
 	// ACTIVER UN ABONNEMENT

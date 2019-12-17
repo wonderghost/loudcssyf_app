@@ -3,7 +3,7 @@
 @section('user_content')
 <div class="uk-section uk-section-default">
 	<div class="uk-container">
-		<h3><a href="{{url('/admin')}}" uk-tooltip="tableau de bord" uk-icon="icon:arrow-left;ratio:1.5"></a> Compte Credit ( CGA / AFROCASH )</h3>
+		<h3><a href="{{url('/admin')}}" uk-tooltip="tableau de bord" uk-icon="icon:arrow-left;ratio:1.5"></a> Compte Credit ( CGA / AFROCASH / REX)</h3>
 		<hr class="uk-divider-small">
 		@if(session('success'))
 		<div class="uk-alert uk-alert-success">
@@ -23,6 +23,8 @@
 		</ul>
 
 		<ul class="uk-switcher uk-margin">
+
+			@if(Auth::user()->type == 'gcga')
 		    <li>
 					<!-- SOLDES DES COMPTES CGA ET AFROCASH -->
 					<div class="uk-child-width-1-1@m uk-grid-divider " uk-grid>
@@ -40,6 +42,19 @@
 						</div>
 					</div>
 				</li>
+				@elseif(Auth::user()->type == 'grex')
+				<li>
+					<div class="uk-child-width-1-1@m uk-grid-divider " uk-grid>
+						<div>
+
+							<div class="uk-grid-small uk-text-lead" uk-grid>
+									<div class="uk-width-expand uk-text-capitalize" uk-leader> REX (GNF)</div>
+									<div>{{number_format($rex)}}</div>
+							</div>
+						</div>
+					</div>
+				</li>
+				@endif
 				<li>
 					<!-- SOLDE VENDEURS -->
 					<table class="uk-table uk-tabl-divider uk-table-hover uk-table-striped uk-table-small">
@@ -49,6 +64,7 @@
 								<th>Afrocash Courant</th>
 								<th>Afrocash Semi Grossiste</th>
 								<th>Cga</th>
+								<th>Rex</th>
 							</tr>
 						</thead>
 						<tbody id="solde-vendeur"></tbody>
@@ -60,43 +76,23 @@
 
 @endsection
 @section('script')
+@if(Auth::user()->type == 'gcga')
 <script type="text/javascript">
 	$(function() {
-		$(".close-button").on('click',function () {
-			$(this).parent().hide(500);
-		});
-$("#tag").on('keyup',function () {
-	var form = $adminPage.makeForm("{{csrf_token()}}","{{url()->current()}}",'');
-
-		form.on('submit',function(e) {
-			e.preventDefault();
-			$.ajax({
-				url : $(this).attr('action'),
-				type : $(this).attr('method'),
-				dataType : 'json',
-				data : $(this).serialize()
-			})
-			.done(function(data) {
-				if(data) {
-					var tabUsers = [];
-					$(data).each(function (index,element) {
-						tabUsers.push(element.username);
-					})
-					$( "#tag" ).autocomplete({
-				      source: tabUsers
-				    });
-				}
-			})
-			.fail(function(data) {
-				console.log(data);
-			});
-		})
-		form.submit();
-});
 
 // #########
-	$logistique.getSoldeVendeurCredit("{{csrf_token()}}","{{url('/user/vendeur-solde')}}")
+	$logistique.getSoldeVendeurCredit("{{csrf_token()}}","{{url()->current()}}")
 
 	});
 </script>
+@elseif(Auth::user()->type == 'grex')
+<script type="text/javascript">
+	$(function() {
+
+// #########
+	$logistique.getSoldeVendeurCredit("{{csrf_token()}}","{{url()->current()}}")
+
+	});
+</script>
+@endif
 @endsection

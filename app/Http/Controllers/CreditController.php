@@ -11,6 +11,7 @@ use App\Credit;
 use App\Traits\Similarity;
 use App\Traits\Afrocashes;
 use App\Traits\Cga;
+use App\Traits\Rex;
 
 use App\User;
 use App\CgaAccount;
@@ -28,6 +29,7 @@ class CreditController extends Controller
 	use Similarity;
 	use Afrocashes;
 	use Cga;
+	use Rex;
     //SOLDE DES VENDEURS
 
 		public function soldeVendeur() {
@@ -35,9 +37,8 @@ class CreditController extends Controller
 		}
 		// TOUTES LES COMMANDES
 		public function commandCredit() {
-			$commands = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','unvalidated')->get();
-			$command_validee = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','validated')->get();
-			return view('credit.commandes')->withCommandes($commands)->withValidate($command_validee);
+
+			return view('credit.commandes');
 		}
 		//
 		public function getSoldeVendeur(Request $request) {
@@ -98,14 +99,9 @@ class CreditController extends Controller
     public function crediterVendeur() {
         $solde = Credit::select()->where('designation','cga')->first()->solde ? Credit::select()->where('designation','cga')->first()->solde : 0;
 				$afrocash = Credit::where('designation','afrocash')->first()->solde ? Credit::where('designation','afrocash')->first()->solde : 0;
+				$solde_rex = Credit::where('designation','rex')->first()->solde ? Credit::where('designation','rex')->first()->solde : 0;
 				$listVendeurs = User::where('type','v_standart')->get();
-        return view('credit.crediter-vendeur')->withSolde($solde)->withAfrocash($afrocash)->withVendeurs($listVendeurs);
-    }
-
-    // CREDITER UN VENDEUR EN REX
-    public function crediterVendeurRex() {
-        $solde = Credit::select()->where('designation','rex')->first()->solde ? Credit::select()->where('designation','rex')->first()->solde: 0;
-        return view('credit.crediter-vendeur-rex')->withSolde($solde);
+        return view('credit.crediter-vendeur')->withSolde($solde)->withAfrocash($afrocash)->withVendeurs($listVendeurs)->withRex($solde_rex);
     }
 
     public function getListVendeur(Request $request) {
@@ -196,6 +192,19 @@ class CreditController extends Controller
 		public function getListCommandGcga(Request $request) {
 			$commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','unvalidated')->orderBy('created_at','desc')->get();
 			$commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','validated')->orderBy('created_at','desc')->get();
+			$all_unvalidated = $this->organizeCommandGcga($commands_unvalidated);
+
+			$all_validated = $this->organizeCommandGcga($commands_validated);
+
+			return response()->json([
+				'unvalidated'	=>	$all_unvalidated,
+				'validated'	=>	$all_validated
+			]);
+		}
+
+		public function getListCommandGrex(Request $request) {
+			$commands_unvalidated = CommandCredit::whereIn('type',['rex'])->where('status','unvalidated')->orderBy('created_at','desc')->get();
+			$commands_validated = CommandCredit::whereIn('type',['rex'])->where('status','validated')->orderBy('created_at','desc')->get();
 			$all_unvalidated = $this->organizeCommandGcga($commands_unvalidated);
 
 			$all_validated = $this->organizeCommandGcga($commands_validated);

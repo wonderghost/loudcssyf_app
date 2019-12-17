@@ -49,7 +49,7 @@
             @endif
           </select>
           {!!Form::label('Montant')!!}
-          {!!Form::text('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Montant de la transaction'])!!}
+          {!!Form::number('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Montant de la transaction'])!!}
           {!!Form::label('Confirmez le mot de passe')!!}
           {!!Form::password('password',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Confirmez votre mot de passe'])!!}
           {!!Form::submit('validez',['class'=>'uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
@@ -77,7 +77,7 @@
           @endif
 
           {!!Form::label('Montant')!!}
-          {!!Form::text('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Montant de la transaction'])!!}
+          {!!Form::number('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Montant de la transaction'])!!}
           {!!Form::label('Confirmez le mot de passe')!!}
           {!!Form::password('password',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Confirmez votre mot de passe'])!!}
           {!!Form::submit('validez',['class'=>'uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}

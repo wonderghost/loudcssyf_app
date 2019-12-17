@@ -425,7 +425,7 @@ listSerialByVendeur : function (token,url,ref) {
       .done(function (data) {
         $logistique.dataList(data,$("#solde-vendeur"))
         // suppression de la colonne rex
-        $('#solde-vendeur .row .col:last-child').remove()
+        // $('#solde-vendeur .row .col:last-child').remove()
       })
       .fail(function(data) {
         alert(data.responseJSON.message)
@@ -509,6 +509,6 @@ listSerialByVendeur : function (token,url,ref) {
     })
   }
 
-  
+
 
 }

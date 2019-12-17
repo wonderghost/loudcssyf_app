@@ -89,6 +89,7 @@
 </div>
 @endsection
 @section('script')
+@if(Auth::user()->type == 'gcga')
 <script type="text/javascript">
   $(function () {
     setInterval(function() {
@@ -96,6 +97,18 @@
 		},10000);
 
     $logistique.getCommandForCga("{{csrf_token()}}","{{url()->current()}}")
+
   })
 </script>
+@elseif(Auth::user()->type == 'grex')
+<script type="text/javascript">
+  $(function() {
+    setInterval(function() {
+      $logistique.getCommandForCga("{{csrf_token()}}","{{url()->current()}}")
+    },10000);
+
+    $logistique.getCommandForCga("{{csrf_token()}}","{{url()->current()}}")
+  })
+</script>
+@endif
 @endsection

@@ -51,13 +51,10 @@ class CommandController extends Controller
 			'type'=>'debit',
 			'vendeurs'	=>	Auth::user()->username
 			])->get()->sum('quantite');
-		// dd($compense);
-		// if($this->isExistCommandEnAttente()) {
-		// 	return redirect('/user/list-command')->with('_errors',"Vous avez une commande en attente de confirmation!");
-		// }
 		return view('command.new-command')->withMaterial($material)->withMigration($migration)->withCompense($compense);
 	}
-	return redirect('user/list-command')->with("_errors","Indisponible pour le moment! Contactez l'administrateur");
+	return view('command.new-command');
+	// return redirect('user/list-command')->with("_errors","Indisponible pour le moment! Contactez l'administrateur");
 	}
 
 	public function sendCommand(CommandRequest $request) {

@@ -29,7 +29,13 @@
 			 @endforeach
 			 @endif
 			 <ul class="" uk-tab="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
+				 @php
+				 $test = App\Exemplaire::where('status','inactif')->first();
+				 $par = App\Produits::where("libelle",'parabole')->first();
+				 @endphp
+				 @if($test && $par)
 			     <li><a class="" href="#">Materiel</a></li>
+					 @endif
 			     <li><a class="" href="#">Credit CGA</a></li>
 			     <li><a class="" href="#">Credit REX</a></li>
 					 @if(Auth::user()->type == 'v_standart')
@@ -37,6 +43,7 @@
 					 @endif
 			 </ul>
 			 <ul class="uk-switcher uk-margin">
+				 @if($test && $par)
 			     <li>
 						 <!-- COMMANDE MATERIEL -->
 						 {!!Form::open(['url'=>'/user/new-command/material','id'=>'command-form','files' => true])!!}
@@ -164,16 +171,22 @@
 							 @endif
 							 {!!Form::close()!!}
 					 </li>
+					 @endif
 			     <li>
 						 <!-- COMMANDE cga -->
 						 {!!Form::open(['url'=>'user/new-command/cga','class'=>'uk-width-1-2@m'])!!}
 						 {!!Form::label('Montant')!!}
-						 {!!Form::text('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Montant Credit'])!!}
+						 {!!Form::number('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Montant Credit'])!!}
 						 {!!Form::submit('validez',['class'=>'uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
 						 {!!Form::close()!!}
 					 </li>
 					 <li>
 						 <!-- COMMANDE REX -->
+						 {!!Form::open(['url'=>'user/new-command/rex','class'=>'uk-width-1-2@m'])!!}
+						 {!!Form::label('Montant')!!}
+						 {!!Form::number('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Montant Credit'])!!}
+						 {!!Form::submit('validez',['class'=>'uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
+						 {!!Form::close()!!}
 					 </li>
 					 @if(Auth::user()->type == 'v_standart')
 					 <li>
@@ -182,7 +195,7 @@
 						 <div class="">
 				        <div class="uk-inline uk-width-1-3@m">
 				            <span class="uk-form-icon" uk-icon="credit-card"></span>
-				            {!!Form::text("montant",'',['class'=>'uk-input uk-border-rounded','placeholder'=>'Montant'])!!}
+				            {!!Form::number("montant",'',['class'=>'uk-input uk-border-rounded','placeholder'=>'Montant'])!!}
 				        </div>
 								<div class="uk-inline uk-width-1-3@m">
 									<span class="uk-form-icon" uk-icon="check"></span>

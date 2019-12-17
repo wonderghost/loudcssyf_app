@@ -3,37 +3,40 @@
 namespace App\Traits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\CgaAccount;
+use App\RexAccount;
 use App\Formule;
 use App\CommandCredit;
 use App\Credit;
 use App\Afrocash;
 use App\Exceptions\AppException;
-Trait Cga {
+
+Trait Rex {
 
 	// VERIFIER SI LE SOLDE CGA EST DISPONIBLE
+	//
+	// public function isAvailableSolde($formule) {
+	// 	$solde = Formule::select()->where('nom',$formule)->first()->prix;
+	// 	$user = Auth::user()->username;
+	// 	$temp = RexAccount::select()->where('vendeur',$user)->first();
+	// 	if($temp->solde >= $solde) {
+	// 		return $temp;
+	// 	}
+	//
+	// 	return false;
+	// }
 
-	public function isAvailableSolde($formule) {
-		$solde = Formule::select()->where('nom',$formule)->first()->prix;
-		$user = Auth::user()->username;
-		$temp = CgaAccount::select()->where('vendeur',$user)->first();
-		if($temp->solde >= $solde) {
-			return $temp;
-		}
-
-		return false;
-	}
-
-	public function commandCga(Request $request) {
+	public function commandRex(Request $request) {
 		$validation = $request->validate([
 			'montant'	=>	'required|numeric|min:50000'
 		]);
+
+		// dd($request);
 		try {
 			// verifier la disponibilite du montant dans le compte afrocash
 			$afrocash_account = $this->getAfrocashAccountByUsername(Auth::user()->username);
 			if($afrocash_account->solde >= $request->input('montant')) {
 				$commande = new CommandCredit;
-				$commande->type = 'cga';
+				$commande->type = 'rex';
 				$commande->vendeurs = Auth::user()->username;
 				$commande->montant = $request->input('montant');
 				// debite dans le compte afrocash courant

@@ -76,7 +76,7 @@
 									<a href="#"><span uk-icon="icon: credit-card;"></span> Afrocash</a>
 									<ul class="uk-nav-sub">
 										<li><a href="{{url('admin/afrocash')}}"><span uk-icon="icon :arrow-right;"></span> Operations</a>	</li>
-										<li><a href="#"><span uk-icon="icon : arrow-right;"></span> Toutes les transactions</a>	</li>
+										<li><a href="{{url('/admin/afrocash/all-transactions')}}"><span uk-icon="icon : arrow-right;"></span> Toutes les transactions</a>	</li>
 									</ul>
 								</li>
                 <li class="uk-parent">
@@ -182,7 +182,7 @@
                             <a href="#"><span uk-icon="icon:credit-card;ratio:0.9"></span> Credit</a>
                             <ul class="uk-nav-sub">
                                 <!-- LOGISTIC ONLY -->
-                                <li><a href="{{url('user/cga-credit')}}"><span uk-icon="icon:arrow-right"></span> Crediter un Vendeur</a></li>
+                                <li><a href="{{url('user/cga-credit')}}"><span uk-icon="icon:arrow-right"></span> Comptes</a></li>
                                 <!-- // -->
                                 <li><a href=""><span uk-icon="icon:arrow-right"></span> Historique</a></li>
                             </ul>
@@ -206,7 +206,7 @@
                             <a href="#"><span uk-icon="icon:credit-card;ratio:0.9"></span> Credit</a>
                             <ul class="uk-nav-sub">
                                 <!-- LOGISTIC ONLY -->
-                                <li><a href="{{url('user/rex-credit')}}"><span uk-icon="icon:arrow-right"></span> Crediter un Vendeur</a></li>
+                                <li><a href="{{url('user/rex-credit')}}"><span uk-icon="icon:arrow-right"></span> Comptes</a></li>
                                 <!-- // -->
                                 <li><a href=""><span uk-icon="icon:arrow-right"></span> Historique</a></li>
                             </ul>
@@ -214,7 +214,7 @@
                         <li class="uk-parent">
                             <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Commandes</a>
                             <ul class="uk-nav-sub">
-                                <li><a href=""><span uk-icon="icon:arrow-right"></span> Toutes les Commandes</a></li>
+                                <li><a href="{{url('/user/credit-rex/commandes')}}"><span uk-icon="icon:arrow-right"></span> Toutes les Commandes</a></li>
                             </ul>
                         </li>
                         @endif

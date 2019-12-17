@@ -57,6 +57,8 @@
                 <th>Montant</th>
                 <th>Motif</th>
                 <th>Description</th>
+                <th>Solde anterieur</th>
+                <th>Nouveau solde</th>
               </tr>
             </thead>
             <tbody>
@@ -71,6 +73,8 @@
                 <td>{{number_format($value->montant)}}</td>
                 <td>{{$value->motif}}</td>
                 <td>{{str_limit($value->description,100,'...')}}</td>
+                <td>{{number_format($value->solde_anterieur)}}</td>
+                <td>{{number_format($value->nouveau_solde)}}</td>
               </tr>
               @endforeach
               @endif
@@ -119,6 +123,8 @@
                 <th>Montant</th>
                 <th>Motif</th>
                 <th>Description</th>
+                <th>Solde Anterieur</th>
+                <th>Nouveau Solde</th>
               </tr>
             </thead>
             <tbody>
@@ -133,6 +139,8 @@
                 <td>{{number_format($value->montant)}}</td>
                 <td>{{$value->motif}}</td>
                 <td>{{str_limit($value->description,100,'...')}}</td>
+                <td>{{number_format($value->solde_anterieur)}}</td>
+                <td>{{number_format($value->nouveau_solde)}}</td>
               </tr>
               @endforeach
               @endif

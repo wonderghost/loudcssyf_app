@@ -12,8 +12,10 @@ use App\Exceptions\AppException;
 use App\Credit;
 use App\TransactionCredit;
 use App\TransactionCga;
+use App\TransactionRex;
 use App\TransactionAfrocash;
 use App\CgaAccount;
+use App\RexAccount;
 
 Trait Afrocashes {
 
@@ -198,7 +200,38 @@ Trait Afrocashes {
 						}
 							break;
 						case 'rex':
-							// code...
+						// tester la disponibilite du montant
+						if($this->getSoldeGlobal("rex") >= $commande->montant) {
+
+							// dd(User::where('username',$commande->vendeurs)->first());
+							$rex_account = RexAccount::where('numero',User::where('username',$commande->vendeurs)->first()->rex)->first();
+
+							// dd($rex_account);
+							// crediter le compte cga du vendeur
+							$new_solde_rex_vendeur = $rex_account->solde + $request->input('montant');
+							RexAccount::where('numero',$rex_account->numero)->update([
+								'solde'	=>	$new_solde_rex_vendeur
+							]);
+
+							// debiter le compte central cga
+							$new_solde_rex_central	=	Credit::where('designation','rex')->first()->solde - $request->input('montant');
+							Credit::where('designation','rex')->update([
+								'solde'	=>	$new_solde_rex_central
+							]);
+
+							$transaction_rex	= new	TransactionRex;
+
+							$transaction_rex->rex	=	$rex_account->numero;
+							$transaction_rex->montant	=	$request->input('montant');
+
+							$transaction_rex->save();
+							CommandCredit::where("id",$commande->id)->update([
+								'status'	=>	'validated'
+							]);
+							return redirect('/user/credit-cga/commandes')->withSuccess("Success!");
+						} else {
+							throw new AppException("Montant Indisponible!");
+						}
 							break;
 						default:
 							// code...

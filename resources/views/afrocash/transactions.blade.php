@@ -13,7 +13,7 @@
       <li>
         <!-- HISTORIQUE DES TRANSACTIONS -->
 
-        @if(Auth::user()->type == 'gcga')
+        @if(Auth::user()->type == 'gcga' || Auth::user()->type == 'admin')
         <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
           <thead>
             <tr>

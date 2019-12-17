@@ -21,6 +21,8 @@ class CreateTransactionCreditCentralsTable extends Migration
             $table->enum('motif',['paiement_salaire','loyers','connection_internet','carburant','credit_appel','commission','autres'])->nullable();
             $table->enum('type',['depense','apport'])->default('depense');
             $table->text('description')->nullable();
+            $table->float('solde_anterieur',8,0)->default(0);
+            $table->float('nouveau_solde',8,0)->default(0);
             $table->foreign('expediteur')->references('designation')->on('credit');
             $table->foreign('destinataire')->references('designation')->on('credit');
             $table->timestamps();
