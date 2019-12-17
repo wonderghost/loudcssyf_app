@@ -20,9 +20,11 @@ class CreateExemplaire extends Migration
             $table->string('produit');
             $table->string('vendeurs')->nullable();
             $table->enum('status',['actif','inactif'])->default('inactif');
+            $table->string('rapports',255)->nullable();
             $table->timestamps();
             $table->foreign('produit')->references('reference')->on('produits');
             $table->foreign('vendeurs')->references('username')->on('users');
+            
         });
     }
 

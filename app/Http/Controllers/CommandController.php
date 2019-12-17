@@ -120,8 +120,15 @@ class CommandController extends Controller
 			'vendeurs'	=>	Auth::user()->username,
 			'type'	=>	'cga'
 		])->orderBy('created_at','desc')->paginate(10);
-		return view('command.list-command')->withCommandes($commandes)
-			->withCgacommande($commandes_cga);
+		$command_rex = CommandCredit::where([
+			'vendeurs'	=>	Auth::user()->username,
+			'type'	=>	'rex'
+		])->orderBy('created_at','desc')->paginate(10);
+
+		return view('command.list-command')
+			->withCommandes($commandes)
+			->withCgacommande($commandes_cga)
+			->withRexCommande($command_rex);
 	}
 
 // LIST COMMANDES CHEZ LE VENDEURS

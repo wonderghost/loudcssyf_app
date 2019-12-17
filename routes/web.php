@@ -182,7 +182,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('user/credit-cga/commandes','CreditController@getListCommandGcga')->middleware('cga');
 	Route::post('/user/cga-credit/','CreditController@getListVendeur')->middleware('cga');
 	Route::post('/user/send-cga','CreditController@sendCga')->middleware('cga');
-	Route::post('/user/send-afrocash','CreditController@sendAfrocash')->middleware('cga');
+	Route::post('/user/send-afrocash','CreditController@sendAfrocash');
 
 	#### SOLDE VENDEURS  #####
 	// Route::get('/user/vendeur-solde','CreditController@soldeVendeur')->middleware('cga');

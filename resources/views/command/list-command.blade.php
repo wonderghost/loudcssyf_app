@@ -78,6 +78,37 @@
 					</li>
 					<li>
 						<!-- COMMANDES REX -->
+						<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+							<thead>
+								<tr>
+									<th>Date</th>
+									<th>Montant</th>
+									<th>Type</th>
+									<th>Status</th>
+									<th>Numero Recu</th>
+									<th>Recu</th>
+								</tr>
+							</thead>
+							<tbody>
+								@if($rexCommande)
+								@foreach($rexCommande as $value)
+								@php
+								$date = new Carbon\Carbon($value->created_at);
+								$date->locale("fr_FR");
+								@endphp
+								<tr>
+									<td>{{$date->toFormattedDateString()}} ({{$date-> diffForHumans()}})</td>
+									<td>{{$value->montant}}</td>
+									<td>{{$value->type}}</td>
+									<td><span class="{{$value->status == 'validated' ? 'uk-alert-success' : 'uk-alert-danger'}}">{{$value->status}}</span>	</td>
+									<td>-</td>
+									<td>-</td>
+								</tr>
+								@endforeach
+								@endif
+							</tbody>
+						</table>
+						{{$rexCommande->links()}}
 					</li>
 					<li>
 						<!-- AFRO CASH SEMI GROSSISTE -->

@@ -228,7 +228,7 @@ Trait Afrocashes {
 							CommandCredit::where("id",$commande->id)->update([
 								'status'	=>	'validated'
 							]);
-							return redirect('/user/credit-cga/commandes')->withSuccess("Success!");
+							return redirect('/user/credit-rex/commandes')->withSuccess("Success!");
 						} else {
 							throw new AppException("Montant Indisponible!");
 						}

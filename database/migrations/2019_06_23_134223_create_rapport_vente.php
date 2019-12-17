@@ -17,14 +17,20 @@ class CreateRapportVente extends Migration
         Schema::create('rapport_vente',function (Blueprint $table) {
             $table->string('id_rapport',255);
             $table->primary('id_rapport');
-            $table->string('vendeurs');
-            $table->unsignedInteger('quantite_recrutement')->default(0);
-            $table->unsignedInteger('quantite_migration')->default(0);
-            $table->float('ttc_recrutement')->default(0);
-            $table->float('ttc_reabonnement')->default(0);
+            $table->string('vendeurs')->nullable();
+            $table->unsignedInteger('quantite')->default(0);
+            $table->float('montant_ttc',8,0)->default(0);
+            $table->enum('type',['recrutement','reabonnement','migration'])->default('reabonnement');
+            $table->enum('credit_utilise',['cga','rex'])->nullable();
+
             $table->foreign('vendeurs')->references('username')->on('users');
+
             $table->date('date_rapport')->unique();
             $table->timestamps();
+        });
+
+        Schema::table('exemplaire',function (Blueprint $table) {
+          $table->foreign('rapports')->references('id_rapport')->on('rapport_vente');
         });
     }
 
