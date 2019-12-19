@@ -363,7 +363,8 @@ class LogistiqueController extends Controller
           $request->input('vendeur'),
           $request->input('produit'),
           $commande)) {
-            if($this->isQuantiteValidInDepotCentral($request->input('produit'),$request->input('quantite'))) {
+            if($this->isDisponibleInDepot($request->input('depot'),$request->input('produit'),$request->input('quantite'))) {
+
               // disponibilite de la quantite dans le depot central
               if($this->isRavitaillementPossible($commande,$request)) {
                 // verifier si le ravitaillement est possible pour ce vendeur
@@ -677,7 +678,7 @@ class LogistiqueController extends Controller
 
     public function getParaboleDu(Request $request) {
 
-        $migration = RapportVente::where('vendeurs',$request->input('ref'))->sum('quantite_migration');
+        $migration = RapportVente::where('vendeurs',$request->input('ref'))->where('type','migration')->sum('quantite');
 
         $compense   = Compense::where([
           'type'=>'debit',

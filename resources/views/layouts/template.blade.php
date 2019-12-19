@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html onselectstart="return false" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;">
 <head>
 	<title>{{config('app.name')}}-@yield('title')</title>
 			<meta charset="utf-8">
 			<meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 	<!-- UIkit CSS -->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/css/uikit.min.css" />
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 		<link rel="stylesheet" href="{{asset('css/style.css')}}">
+
 </head>
 <body>
 	<!-- loader -->
@@ -22,7 +24,7 @@
 <div class="uk-navbar-container uk-box-shadow-small" id="entete" uk-sticky uk-navbar>
     <div class="uk-navbar-left">
         <button class="uk-navbar-item uk-button" uk-toggle="target:#side-nav" uk-icon="icon:menu"></button>
-        <a href="" class="uk-navbar-item uk-logo">Loudcssyf-Sarl</a>
+        <a href="" class="uk-navbar-item uk-logo">LAYE DISTRIBUTION</a>
     </div>
     <div class="uk-navbar-right">
     	<a class="uk-button"><span class="" uk-icon="icon:bell"></span></a>
@@ -258,12 +260,17 @@
 
 
 
-
+<!-- FOOTER -->
+<div class="uk-section-default uk-flex uk-flex-center uk-flex-bottom">
+<p>Copyright &copy; {{date('Y')}}</p>
+</div>
+<!-- // -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <!-- UIkit JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/js/uikit.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/js/uikit-icons.min.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/2.27.5/js/uikit.js"></script> -->
 <script type="text/javascript" src="{{asset('js/myscript.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/myscript_second.js')}}"></script>
 <script type="text/javascript">
@@ -278,8 +285,9 @@
 		})
         $(".close-button").on('click',function () {
             $(this).parent().hide(500);
-        })
+
 	})
+})
 </script>
 @yield('script')
 </body>

@@ -59,4 +59,12 @@ Trait Cga {
 		}
 
 	}
+
+	public function isCgaDisponible($vendeur,$montant) {
+		$temp = CgaAccount::where('vendeur',$vendeur)->first();
+		if($temp && ($temp->solde >= $montant)) {
+			return $temp;
+		}
+		return false;
+	}
 }

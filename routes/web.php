@@ -28,8 +28,8 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/change-password','Settings@changePassword');
 	// AJOUT DE RAPPORT
 	Route::get('/admin/add-rapport','AdminController@addRapport');
-	Route::post('/admin/add-rapport','AdminController@forRapportgetVendeur');
-	Route::post('/admin/send-rapport','AdminController@sendRapport');
+	Route::post('/admin/send-rapport/{slug}','AdminController@sendRapport');
+	Route::post('/admin/rapport/check-serial','AdminController@checkSerial');
 	Route::get('/admin/all-rapport','AdminController@listRapport');
 	Route::post('/admin/get-rapport','AdminController@getRapport'); // recuperation de l'historique des rapports
 	// OPTION DE FORMULES

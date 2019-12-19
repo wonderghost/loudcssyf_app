@@ -1,5 +1,28 @@
 
 var $logistique = {
+  makeForm : function (formToken,url,reference = ['']) {
+    var form = $("<form></form>");form.attr('action',url);form.attr('method','post');
+		var token = $("<input/>");
+
+    for(var i =0 ;i < reference.length ; i++) {
+
+      var ref = $("<input/>");
+      ref.attr('type','hidden');
+      ref.attr('name','ref-'+i);
+      ref.val(reference[i]);
+      form.append(ref)
+
+    }
+
+
+		token.attr('type','hidden');
+		token.attr('name','_token');
+		token.val(formToken);
+		form.append(token);
+		form.append(ref);
+		return form;
+  }
+  ,
   ListSerialNumber : function (adminPage,token,url) {
 
     var form = adminPage.makeForm(token,url,"")
@@ -149,7 +172,7 @@ var $logistique = {
 
       inputs[i].attr('required','');
       inputs[i].attr('name','serial-number-'+(i+1));
-      inputs[i].addClass('uk-input uk-margin-small serial-input');
+      inputs[i].addClass('uk-input uk-margin-small serial-input uk-border-rounded');
       inputs[i].attr('placeholder','Serial Number-'+(i+1));
       div.append(inputs[i]);
       parent.append(div);
@@ -157,7 +180,7 @@ var $logistique = {
 
   }
 ,
-inputSerialValidate : function (adminPage,token,url) {
+inputSerialValidate : function (adminPage,token,url,actionButton = $('#confirm-button-livraison')) {
   // @@@@####
   var tabSerial = [];
   // pendant le focus
@@ -193,12 +216,12 @@ inputSerialValidate : function (adminPage,token,url) {
             status : 'danger',
             timeout : 800
           });
-          $("#confirm-button-livraison").attr('disabled','')
+          actionButton.attr('disabled','')
         } else {
 
           // le numero n'existe pas dans la base de donnees
           // verifier s'il n'existe pas de duplicat
-          $("#confirm-button-livraison").removeAttr('disabled')
+          actionButton.removeAttr('disabled')
           if($.inArray($.trim(serialNow.val()),tabSerial) == -1) {
             // la valeur n'existe pas dans le tableau , il faut l'ajouter
             tabSerial.push($.trim(serialNow.val()));
@@ -207,11 +230,87 @@ inputSerialValidate : function (adminPage,token,url) {
             if($.trim(serialNow.val()) == "")  {
               // UIkit.modal.alert("Ce champs ne peut etre vide!");
               alert("Ce champs ne peut etre vide!")
-              $("#confirm-button-livraison").attr('disabled','')
+              actionButton.attr('disabled','')
               return 0;
             }
             UIkit.modal.alert("Duplicat de numero!").then(function () {
-              $("#confirm-button-livraison").attr('disabled','')
+              actionButton.attr('disabled','')
+              tabSerial.splice(tabSerial.indexOf($.trim(serialNow.val())),1);
+              $('.serial-input').each(function (index, element) {
+                  if($.trim($(element).val()) == $.trim(serialNow.val())) {
+                    $(element).val('');
+                  }
+              });
+            });
+          }
+
+        }
+
+      })
+      .fail(function(data) {
+        alert(data.responseJSON.message)
+        $(location).attr('href',"")
+      });
+    });
+    form.submit();
+  });
+  // ####
+},
+CheckSerial : function (token,url,actionButton = $('#confirm-button-livraison'),username = '') {
+  // @@@@####
+  var tabSerial = [];
+  // pendant le focus
+  $(".serial-input").on('focus',function () {
+    var _serialNow = $(this);
+    if($.trim(_serialNow.val()) !== "" && $.inArray($.trim(_serialNow.val()),tabSerial) > -1) {
+      // existe dans le tableau
+      tabSerial.splice(tabSerial.indexOf($.trim(_serialNow.val())),1);
+    }
+
+  });
+  // apres le focus (verifier le duplicat et l'existence en base de donnees )
+  $(".serial-input").on('blur',function () {
+    // '/user/add-material/find-serial-number'
+    var form = $logistique.makeForm(token,url,[$(this).val(),username]);
+    var serialNow = $(this);
+
+
+    // verification de l'exitence dans la base de donnees | envoi de la requete ajax
+    form.on('submit',function(e) {
+      e.preventDefault();
+      $.ajax({
+        url : $(this).attr('action'),
+        type : $(this).attr('method'),
+        data : $(this).serialize(),
+        dataType : 'json'
+      })
+      .done(function (data) {
+        if(data && data !== 'success') {
+          // Erreur genere
+          UIkit.notification({
+            message : data,
+            status : 'danger',
+            timeout : 800
+          });
+          actionButton.attr('disabled','')
+        } else {
+
+          // le numero n'existe pas dans la base de donnees
+          // verifier s'il n'existe pas de duplicat
+          actionButton.removeAttr('disabled')
+          if($.inArray($.trim(serialNow.val()),tabSerial) == -1) {
+            // la valeur n'existe pas dans le tableau , il faut l'ajouter
+            tabSerial.push($.trim(serialNow.val()));
+          } else {
+            // la valeur existe dans le tableau
+            if($.trim(serialNow.val()) == "")  {
+              // UIkit.modal.alert("Ce champs ne peut etre vide!");
+              alert("Ce champs ne peut etre vide!")
+              actionButton.attr('disabled','')
+              return 0;
+            }
+            UIkit.modal.alert("Duplicat de numero!").then(function () {
+              actionButton.attr('disabled','')
               tabSerial.splice(tabSerial.indexOf($.trim(serialNow.val())),1);
               $('.serial-input').each(function (index, element) {
                   if($.trim($(element).val()) == $.trim(serialNow.val())) {
@@ -294,7 +393,7 @@ listLivraisonToConfirm : function (adminPage, token ,url) {
     })
     .fail(function (data){
       alert(data.responseJSON.message)
-      $(location).attr('href',"")
+      $(location).attr('href',"/")
     })
   })
   // envoi du formulaire pour traitement de la requete

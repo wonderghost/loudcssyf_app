@@ -404,16 +404,7 @@ public function isExistCommandOnly($command) {
   return false;
 }
 
-public function isExistRapportOnThisDate(Carbon $date,$vendeurs) {
-  $temp = RapportVente::where([
-    'date_rapport'  =>  $date->toDateTimeString(),
-    'vendeurs'  =>  $vendeurs
-    ])->first();
-  if($temp) {
-    return $temp;
-  }
-  return false;
-}
+
 // debit du stock
 public function debitStockCentral($depot,$produit,$newQuantite) {
   StockPrime::where([
@@ -441,7 +432,7 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
           'commande'  =>  $values->id_commande
           ])->first();
 
-          $migration = RapportVente::where('vendeurs',$values->vendeurs)->sum('quantite_migration');
+          $migration = RapportVente::where('vendeurs',$values->vendeurs)->where('type','migration')->sum('quantite');
           $compense = Compense::where([
             'vendeurs'	=>	Auth::user()->username,
             'materiel'	=>	Produits::where('libelle','Parabole')->first()->reference
@@ -463,6 +454,20 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
                 ];
     }
     return $all ;
+  }
+
+  public function isDisponibleInDepot($depot,$produit,$quantite) {
+    $temp = StockPrime::where([
+      'depot' =>  $depot,
+      'produit'  =>  $produit
+    ])->first();
+    if($temp) {
+      if($temp->quantite >= $quantite) {
+        return true;
+      }
+      return false;
+    }
+    return false;
   }
 
 }

@@ -12,8 +12,15 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/css/uikit.min.css" />
+    <link rel="stylesheet" href="{{asset('css/style.css')}}">
 </head>
 <body>
+  <!-- loader -->
+	<div id="loader">
+		<div class="uk-border-rounded uk-dark uk-width-1-1@s uk-width-1-3@m uk-align-center uk-background-default uk-margin-xlarge-top uk-padding uk-flex uk-flex-middle uk-flex-center" style="margin-top : 10% !important;">
+			<div class="uk-margin-right" uk-spinner></div>  Patientez svp ...
+		</div>
+	</div>
     <!-- NAVBAR-->
 <div class="uk-navbar-container" uk-sticky uk-navbar>
     <div class="uk-navbar-center">
@@ -23,9 +30,21 @@
 <!-- // -->
 @yield('content')
     <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
 <!-- UIkit JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/js/uikit.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/js/uikit-icons.min.js"></script>
+<script type="text/javascript">
+  $(function () {
+    $('form').on('submit',function (e) {
+
+			window.scrollTo({
+				top : 0
+			})
+			$("#loader").show()
+
+		})
+  })
+</script>
 </body>
 </html>

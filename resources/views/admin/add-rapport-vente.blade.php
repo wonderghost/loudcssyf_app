@@ -4,13 +4,13 @@
 <div class="uk-section uk-section-default">
 	<div class="uk-container">
 		<h3><a href="{{url('/admin')}}" uk-tooltip="tableau de bord" uk-icon="icon:arrow-left;ratio:1.5"></a> Nouveau Rapport</h3>
-		@if($errors->has('quantite_recrutement') || $errors->has('quantite_migration') || $errors->has('ttc_reabonnement') || $errors->has('vendeurs'))
-		<div class="uk-alert uk-alert-danger">
-			<div>{{$errors->first("quantite_recrutement")}}</div>
-			<div>{{$errors->first("quantite_migration")}}</div>
-			<div>{{$errors->first("ttc_reabonnement")}}</div>
-			<div>{{$errors->first("vendeurs")}}</div>
+		@if($errors->any())
+		@foreach($errors->all() as $error)
+		<div class="uk-alert-danger uk-border-rounded uk-box-shadow-small" uk-alert>
+			<a href="#" class="uk-alert-close" uk-close></a>
+			<p>{{$error}}</p>
 		</div>
+		@endforeach
 		@endif
 		@if(session('_errors'))
 		<div class="uk-alert-danger" uk-alert>
@@ -24,33 +24,81 @@
 			<p>{{session('success')}}</p>
 		</div>
 		@endif
-		{!!Form::open(['url'=>'/admin/send-rapport'])!!}
-		<label for="">Date</label>
-		<input type="text" name="date" id="la-date" class="uk-input uk-margin-small" placeholder="Date" value="">
-		<select name="vendeurs" id="vendeurs" class="uk-select"></select>
-		<ul uk-accordion="multiple: true">
-		    <li class="uk-open">
-		        <a class="uk-accordion-title" href="#">Recrutement</a>
-		        <div class="uk-accordion-content">
-		            {!!Form::text('quantite_recrutement','',['class'=>'uk-input uk-margin-small','placeholder'=>'Quantite recrutement'])!!}
-		            {!!Form::text('ttc_recrutement','',['class'=>'uk-input uk-margin-small','placeholder'=>'Montant TTC Recrutement'])!!}
-		        </div>
-		    </li>
-		    <li>
-		        <a class="uk-accordion-title" href="#">Migration</a>
-		        <div class="uk-accordion-content">
-		           {!!Form::text('quantite_migration','',['class'=>'uk-input uk-margin-small','placeholder'=>'Quantite Migration'])!!}
-		        </div>
-		    </li>
-		    <li>
-		        <a class="uk-accordion-title" href="#">Reabonnement</a>
-		        <div class="uk-accordion-content">
-		            {!!Form::text('ttc_reabonnement','',['class'=>'uk-input uk-margin-small','placeholder'=>'Montant TTC Reabonnement'])!!}
-		        </div>
-		    </li>
+		<div class="uk-width-1-2@m uk-width-1-1@s">
+		<!-- DATE RAPPORT -->
+		<label for="">Date Rapport</label>
+		<input type="text" class="uk-input uk-border-rounded" name="" value="" id="my-date"  data-uk-datepicker="{format:'DD.MM.YYYY'}">
+
+		<!-- // -->
+		<!-- CHOIS DU VENDEUR -->
+		<label for="">Vendeurs</label>
+		<select class="uk-select uk-margin-small uk-border-rounded" id="my-vendeurs" name="">
+			<option value="">--- Selectionnez un Vendeur ---</option>
+			@if($vendeurs)
+			@foreach($vendeurs as $value)
+			<option value="{{$value->username}}">{{$value->username}} ({{$value->agence()->societe}}_{{$value->localisation}})</option>
+			@endforeach
+			@endif
+		</select>
+
+		<!-- // -->
+	</div>
+		<ul uk-tab>
+		    <li><a href="#">Recrutement</a></li>
+		    <li><a href="#">Reabonnement</a></li>
+		    <li><a href="#">Migration</a></li>
 		</ul>
-		<button type="submit" class="uk-button-default uk-border-rounded"> valider<span uk-icon="check"></span></button>
-		{!!Form::close()!!}
+
+		<ul class="uk-switcher uk-margin">
+			<li>
+				<!-- RECRUTEMENT -->
+				{!!Form::open(['url'=>'/admin/send-rapport/recrutement','class'=>'uk-width-1-2@m uk-width-1-1@s','id'=>'recrutement-form'])!!}
+				<input type="hidden" name="date" value="" class="la-date">
+				<input type="hidden" name="vendeurs" value="" class="vendeurs">
+				{!!Form::label('Quantite Materiel')!!}
+				{!!Form::number('quantite_materiel','',['class'=>'uk-input uk-margin-small uk-border-rounded quantite-materiel','min'=>'1'])!!}
+				<div class="serial-inputs"></div>
+				{!!Form::label('Montant TTC')!!}
+				{!!Form::number('montant_ttc','',['class'=>'uk-input uk-margin-small uk-border-rounded'])!!}
+
+				{!!Form::submit('validez',['class'=>'uk-button-primary uk-border-rounded uk-box-shadow-small validation-button','id'=>'validation-recrutement'])!!}
+				{!!Form::close()!!}
+				<!-- // -->
+			</li>
+			<li>
+				<!-- REABONNEMENT -->
+				{!!Form::open(['url'=>'','class'=>'uk-width-1-2@m uk-width-1-1@s'])!!}
+				<input type="hidden" name="date" value="" class="la-date">
+				{!!Form::label('Montant TTC')!!}
+				{!!Form::number('montant_ttc','',['class'=>'uk-input uk-margin-small uk-border-rounded'])!!}
+
+
+				<div class="">
+					<div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
+            <label>
+							{!!Form::radio('type_credit','cga')!!}Cga
+						</label>
+            <label>
+							{!!Form::radio('type_credit','rex')!!}Rex
+						</label>
+        </div>
+			</div>
+			{!!Form::submit('validez',['class'=>'uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
+				{!!Form::close()!!}
+				<!-- // -->
+			</li>
+			<li>
+				<!-- MIGRATION -->
+				{!!Form::open(['url'=>'','class'=>'uk-width-1-2@m uk-width-1-1@s'])!!}
+				<input type="hidden" name="date" value="" class="la-date">
+				{!!Form::label('Quantite Materiel')!!}
+				{!!Form::number('quantite_materiel','',['class'=>'uk-input uk-margin-small uk-border-rounded quantite-materiel'])!!}
+				<div class="serial-inputs"></div>
+				{!!Form::submit('validez',['class'=>'uk-button-primary uk-border-rounded uk-box-shadow-sall validation-button'])!!}
+				{!!Form::close()!!}
+				<!-- // -->
+			</li>
+		</ul>
 	</div>
 </div>
 @endsection
@@ -58,38 +106,27 @@
 <script type="text/javascript">
 	$(function() {
 
-		var form = $adminPage.makeForm("{{csrf_token()}}","{{url()->current()}}","");
 
-		form.on('submit',function (e) {
-			e.preventDefault();
-			$("#vendeurs").html('');
-			$.ajax({
-				url : $(this).attr('action'),
-				type : 'post',
-				data : $(this).serialize(),
-				dataType : 'json'
+		$("#my-date").on('blur',function (e) {
+			$('.la-date').val($(this).val())
+		})
+
+		$("#my-vendeurs").on('focus change',function (e) {
+			$(".vendeurs").val($(this).val())
+
+			$(".quantite-materiel").on('keyup change keypress',function(e) {
+				$logistique.SerialInputCols($(this).val(),$(".serial-inputs"))
+				$logistique.CheckSerial("{{csrf_token()}}","{{url('/admin/rapport/check-serial')}}",$('.validation-button'),$('.vendeurs').val())
 			})
-			.done(function(data) {
-				//
-				var options = [];
-				$(data).each(function (index,element) {
-					options[index] = $("<option></option>");
-					options[index].html(element.username+' ( '+element.agence+' ) ');
-					options[index].val(element.username);
-					$("#vendeurs").append(options[index]);
-				});
-			}).
-			fail(function (data) {
-				console.log(data);
-			});
+		})
 
+// Generer des champs de saisie pour les numeros de serie
 
-		});
-		form.submit();
+	// $(".quantite-materiel").on('keyup change keypress',function(e) {
+	// 	$logistique.SerialInputCols($(this).val(),$(".serial-inputs"))
+	// 	$logistique.CheckSerial("{{csrf_token()}}","{{url('/admin/rapport/check-serial')}}",$('.validation-button'),$('.vendeurs').val())
+	// })
 
-		$("#la-date").datepicker({
-			dateFormat: "dd-mm-yy"
-		});
 	});
 </script>
 @endsection

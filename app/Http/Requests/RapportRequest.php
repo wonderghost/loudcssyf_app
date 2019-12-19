@@ -26,13 +26,17 @@ class RapportRequest extends FormRequest
         return [
             //
 
-            'quantite_recrutement'  =>  'required|min:1',
-            'ttc_recrutement'   =>  'required',
-            'quantite_migration'    =>  'required',
-            'ttc_reabonnement'  =>  'required',
+            'quantite_materiel'  =>  'required|min:1',
+            'montant_ttc' =>  'required|numeric',
             'vendeurs'   =>  'required|exists:users,username',
-            'date'  =>  'required|unique:rapport_vente,date_rapport'
-
+            // 'date'  =>  'required|before_or_equal:'.(date("d/m/Y",strtotime("now")))
         ];
+    }
+
+    public function messages() {
+      return [
+        'required'  =>  'Veuillez remplir le champ `:attribute`',
+        'numeric'  =>  '`:attribute` doit etre une valeur numeric'
+      ];
     }
 }

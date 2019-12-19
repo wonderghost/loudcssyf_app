@@ -46,7 +46,7 @@ class CommandController extends Controller
 
 		// $material = Produits::all();
 		$material = $terminal;
-		$migration = RapportVente::where('vendeurs',Auth::user()->username)->sum('quantite_migration');
+		$migration = RapportVente::where('vendeurs',Auth::user()->username)->where('type','migration')->sum('quantite');
 		$compense 	= Compense::where([
 			'type'=>'debit',
 			'vendeurs'	=>	Auth::user()->username
@@ -75,7 +75,7 @@ class CommandController extends Controller
 				$command_produit->produit = $request->input('mat-reference');
 
 				// QUANTITE DE PARABOLE A LIVRER
-				$migration = RapportVente::where('vendeurs',Auth::user()->username)->sum('quantite_migration');
+				$migration = RapportVente::where('vendeurs',Auth::user()->username)->where('type','migration')->sum('quantite');
 				$compense = Compense::where([
 					'vendeurs'	=>	Auth::user()->username,
 					'materiel'	=>	Produits::where('libelle','Parabole')->first()->reference
@@ -158,7 +158,7 @@ class CommandController extends Controller
 	public function getDetailsCommand(Request $request) {
 		$details = CommandMaterial::select()->where('id_commande',$request->input('ref'))->first();
 		$mat = CommandProduit::where('commande',$request->input('ref'))->first();
-		$migration = RapportVente::where('vendeurs',Auth::user()->username)->sum('quantite_migration');
+		$migration = RapportVente::where('vendeurs',Auth::user()->username)->where('type','migration')->sum('quantite');
 		$compense = Compense::where([
 			'vendeurs'	=>	Auth::user()->username,
 			'materiel'	=>	Produits::where('libelle','Parabole')->first()->reference
