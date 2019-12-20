@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html onselectstart="return false" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;">
+<!-- <html onselectstart="return false" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;"> -->
+<html>
 <head>
 	<title>{{config('app.name')}}-@yield('title')</title>
 			<meta charset="utf-8">
@@ -26,25 +27,14 @@
         <button class="uk-navbar-item uk-button" uk-toggle="target:#side-nav" uk-icon="icon:menu"></button>
         <a href="" class="uk-navbar-item uk-logo">LAYE DISTRIBUTION</a>
     </div>
-    <div class="uk-navbar-right">
-    	<a class="uk-button"><span class="" uk-icon="icon:bell"></span></a>
-    	<a class="uk-button"><span uk-icon="icon:comment"></span></a>
-        <a class="uk-button"><span uk-icon="icon:user"></span> <span>{{Auth::user()->username}}</span></a>
-        @if(Auth::user()->type != 'admin' && Auth::user()->type != 'logistique' && Auth::user()->type != 'commerciale' && Auth::user()->type !='gcga' && Auth::user()->type !='grex' && Auth::user()->type !=='gdepot')
-        <a class="uk-button"><span uk-icon="icon:location;ratio:.8"></span> <span>{{Auth::user()->localisation}}</span></a>
-        @endif
-        @if(Auth::user()->type == 'logistique' || Auth::user()->type =='gcga' || Auth::user()->type =='grex' || Auth::user()->type =='gdepot')
-    	<a class="uk-button"><span uk-icon="icon:location;ratio:.8"></span> <span>{{Auth::user()->type}}</span></a>
-        @endif
-				@if(Auth::user()->type == 'gdepot')
-				<a href="#" class="uk-button"><span uk-icon="icon:location;ratio:.8"></span>
-					@php
-					$temp = Auth::user();
-					@endphp
-					{{$temp->depot()->first()->localisation}}
-				</a>
-				@endif
+    <div class="uk-navbar-center">
+    	<a class="uk-button-primary uk-padding-small uk-border-circle uk-box-shadow-small uk-margin-left" href="{{url('/')}}" uk-tooltip="Tableau de bord"><span class="" uk-icon="icon:home"></span></a>
+    	<a class="uk-button-primary uk-padding-small uk-border-circle uk-box-shadow-small uk-margin-left"><span class="" uk-icon="icon:bell"></span></a>
+    	<a class="uk-button-primary uk-padding-small uk-border-circle uk-box-shadow-small uk-margin-left"><span uk-icon="icon:comment"></span></a>
     </div>
+		<div class="uk-navbar-right">
+			<a class="uk-button-primary uk-padding-small uk-border-circle uk-box-shadow-small uk-margin-left uk-margin-right"><span uk-icon="icon:user"></span></a>
+		</div>
 </div>
 <!-- // -->
     <!-- CONTENS -->
@@ -53,10 +43,27 @@
 </div>
 <!-- // -->
 	<!-- SIDENAV -->
-<div id="side-nav" uk-offcanvas="mode:slide;bg-close:true;">
-    <div class="uk-offcanvas-bar">
+<div id="side-nav"  uk-offcanvas="mode:push;bg-close:true;">
+    <div class="uk-offcanvas-bar side-nav">
         <ul class="uk-nav uk-nav-default uk-nav-parent-icon" uk-nav>
-            <li class="uk-nav-header">Navigation</li>
+            <li class="uk-nav-header">
+							<h5>LAYE DIST / CANAL+ AFROCASH <a href="#" class="uk-button uk-border-rounded uk-box-shadow-small"><span uk-icon="icon : user ; ratio : .8"></span> {{Auth::user()->username}}</a>
+								@if(Auth::user()->type != 'admin' && Auth::user()->type != 'logistique' && Auth::user()->type != 'commerciale' && Auth::user()->type !='gcga' && Auth::user()->type !='grex' && Auth::user()->type !=='gdepot')
+				        <a class="uk-button"><span uk-icon="icon:location;ratio:.8"></span> <span>{{Auth::user()->localisation}}</span></a>
+				        @endif
+				        @if(Auth::user()->type == 'logistique' || Auth::user()->type =='gcga' || Auth::user()->type =='grex' || Auth::user()->type =='gdepot')
+				    	<a class="uk-button"><span uk-icon="icon:location;ratio:.8"></span> <span>{{Auth::user()->type}}</span></a>
+				        @endif
+								@if(Auth::user()->type == 'gdepot')
+								<a href="#" class="uk-button"><span uk-icon="icon:location;ratio:.8"></span>
+									@php
+									$temp = Auth::user();
+									@endphp
+									{{$temp->depot()->first()->localisation}}
+								</a>
+								@endif
+							</h5>
+					</li>
                         <!-- ADMIN ONLY -->
                         @if(Auth::user()->type == 'admin')
                 <li class="uk-parent">
@@ -261,7 +268,7 @@
 
 
 <!-- FOOTER -->
-<div class="uk-section-default uk-flex uk-flex-center uk-flex-bottom">
+<div class="uk-section uk-section-muted uk-flex uk-flex-center uk-flex-bottom uk-margin-remove  uk-padding-remove">
 <p>Copyright &copy; {{date('Y')}}</p>
 </div>
 <!-- // -->
@@ -270,7 +277,7 @@
 <!-- UIkit JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/js/uikit.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/js/uikit-icons.min.js"></script>
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/2.27.5/js/uikit.js"></script> -->
+
 <script type="text/javascript" src="{{asset('js/myscript.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/myscript_second.js')}}"></script>
 <script type="text/javascript">
