@@ -40,7 +40,7 @@
 				{!!Form::text('adresse','XXX',['class'=>'uk-input uk-margin-small','placeholder'=>'Adresse'])!!}
 			</div>
 		</div>
-		<button type="submit" class="uk-button-default uk-border-rounded">valider <span uk-icon="icon:check"></span></button>
+		<button type="submit" class="uk-button uk-button-primary uk-border-rounded uk-box-shadow-small">valider <span uk-icon="icon:check"></span></button>
 				{!!Form::close()!!}
 
 

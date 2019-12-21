@@ -28,8 +28,8 @@ class MaterialRequest extends FormRequest
             'libelle'=>'required',
             'prix_initial'=>'required|numeric|min:0',
             'prix_unitaire'=>'required|numeric|min:0',
-            'quantite'=>'required|min:1',
-            'marge' => 'required|numeric|min:1'
+            'quantite'=>'required|min:0',
+            'marge' => 'required|numeric|min:0'
         ];
     }
 }

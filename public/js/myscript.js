@@ -49,7 +49,7 @@ var $adminPage = {
         span.attr("uk-icon","icon:pencil")
 
         edit.attr('id',data[i].reference)
-        edit.addClass('uk-button-primary uk-border-rounded edit-button')
+        edit.addClass('uk-button uk-button-primary uk-border-rounded edit-button')
         edit.text('edit')
         edit.append(span)
         td[7].append(edit)
@@ -200,7 +200,7 @@ $adminPage.createTableData = function (sdata,champs=null,table) {
 						var span = $("<span></span>");
 						var linkEdit = $("<button></button>");linkEdit.addClass('uk-border-rounded');
 						linkEdit.attr('type','button');
-						linkEdit.addClass('uk-button-primary edit-button');
+						linkEdit.addClass('uk-button uk-button-primary edit-button');
 						linkEdit.attr('id',sdata[i].reference);
 
 						linkEdit.text('edit')
@@ -393,7 +393,7 @@ $adminPage.createTableDataCommand = function (sdata,champs=null,table) {
 						var span = $("<span></span>");
 						var linkDetails = $("<button></button>");linkDetails.addClass('uk-border-rounded');
 						linkDetails.attr('type','button');
-						linkDetails.addClass('uk-button-default');
+						linkDetails.addClass('uk-button uk-button-default');
 
 						linkDetails.text('details')
 

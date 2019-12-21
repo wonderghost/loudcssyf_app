@@ -37,11 +37,11 @@
 					<td>{{$values->phone}}</td>
 					<td>{{$values->localisation}}</td>
 					<td><span class="{{$values->status == 'unblocked' ? 'uk-border-rounded uk-alert-success': 'uk-border-rounded uk-alert-danger'}}">{{$values->status}}</span></td>
-					<td><button type="button" class="uk-button-primary uk-border-rounded user-action" id="edit" title="{{$values->username}}">edit <span uk-icon="icon:pencil;ratio:.8"></span></button></td>
+					<td><button type="button" class="uk-button uk-button-primary uk-border-rounded user-action" id="edit" title="{{$values->username}}">edit <span uk-icon="icon:pencil;ratio:.8"></span></button></td>
 					@if($values->status == 'unblocked')
-					<td><button type="button" class="uk-button-danger uk-border-rounded user-action" id="blocked" title="{{$values->username}}">blocker <span uk-icon="icon:close;ratio:.8"></span></button></td>
+					<td><button type="button" class="uk-button uk-button-danger uk-border-rounded user-action" id="blocked" title="{{$values->username}}">blocker <span uk-icon="icon:close;ratio:.8"></span></button></td>
 					@else
-					<td><button type="button" class="uk-button-default uk-border-rounded uk-alert-success user-action" id="unblocked" title="{{$values->username}}">deblocker <span uk-icon="icon:check;ratio:.8"></span></button></td>
+					<td><button type="button" class="uk-button uk-button-default uk-border-rounded uk-alert-success user-action" id="unblocked" title="{{$values->username}}">deblocker <span uk-icon="icon:check;ratio:.8"></span></button></td>
 					@endif
 				</tr>
 				@endforeach

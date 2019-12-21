@@ -114,10 +114,15 @@ class AdminController extends Controller
           'da'  =>  User::where('type','v_da')->count(),
           'v_standart'  =>  User::where('type','v_standart')->count()
         ];
+        // MATERIELS
+        $materiel = [
+          'entrepot'  =>  Produits::all()
+        ];
         return view('admin.dashboard')
           ->withCga($cga)
           ->withAfrocash($afrocash)
-          ->withUsers($users);
+          ->withUsers($users)
+          ->withMateriels($materiel);
     }
     // AJOUTER UN USER
     public function getFormUser() {

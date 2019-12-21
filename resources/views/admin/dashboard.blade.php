@@ -117,21 +117,48 @@
       <div class="">
         <div class="uk-grid-small" uk-grid>
 
-          <div class="uk-card uk-card-default uk-border-rounded">
+          <div class="uk-card uk-card-default uk-border-rounded uk-width-1-1@m">
             <div class="uk-card-header">
               <h3><span class="uk-button-default uk-border-circle uk-padding-small uk-icon uk-icon-image" style="background-image : url('img/logistic-icon.svg')"></span> Materiels</h3>
             </div>
+
             <div class="uk-card-body uk-padding-small">
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+              <ul uk-accordion>
+                  <li>
+                      <a class="uk-accordion-title" href="#">ENTREPOT</a>
+                      <div class="uk-accordion-content">
+                        <ul class="uk-list uk-list-divider">
+                          @foreach($materiels['entrepot'] as $key => $value)
+                          <li>
+                            <span class="uk-text-bold">{{$value->libelle}}</span>
+                            <span class="uk-button uk-button-default uk-border-rounded uk-text-bold uk-float-right">{{$value->quantite_centrale}}</span>
+                          </li>
+                          @endforeach
+                        </ul>
+                      </div>
+                  </li>
+                  <li>
+                      <a class="uk-accordion-title" href="#">DEPOTS</a>
+                      <div class="uk-accordion-content">
+
+                      </div>
+                  </li>
+                  <li>
+                      <a class="uk-accordion-title" href="#">RESEAU</a>
+                      <div class="uk-accordion-content">
+
+                      </div>
+                  </li>
+              </ul>
             </div>
           </div>
 
-          <div class="uk-card uk-card-default uk-border-rounded">
+          <div class="uk-card uk-card-default uk-border-rounded uk-width-1-1@m">
             <div class="uk-card-header">
               <h3><span class="uk-button-default uk-border-circle uk-padding-small" uk-icon = "icon : shrink"></span> Transactions</h3>
             </div>
             <div class="uk-card-body uk-padding-small">
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
             </div>
           </div>
 

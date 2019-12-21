@@ -57,7 +57,7 @@
 							{!!Form::radio('compte','rex','',['class'=>'uk-radio'])!!} REX
 						</label>
 						{!!Form::text('montant','',['class'=>'uk-input uk-margin-small','placeholder'=>'Montant'])!!}
-						<button type="submit" class="uk-button-default uk-border-rounded">valider <span uk-icon="icon:check;ratio:.8"></span></button>
+						<button type="submit" class="uk-button uk-button-primary uk-border-rounded">valider <span uk-icon="icon:check;ratio:.8"></span></button>
 						{!!Form::close()!!}
 					</div>
 				</div>

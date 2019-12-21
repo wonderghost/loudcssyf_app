@@ -33,7 +33,7 @@
 				{!!Form::text('prix_unitaire',$material->prix_vente,['class'=>'uk-input uk-margin-small','placeholder'=>'Prix de Vente*','id'=>'mat-pu'])!!}
 				{!!Form::text('marge',$material->marge,['class'=>'uk-input uk-margin-small','placeholder'=>'Marge*','id'=>'mat-pu'])!!}
 
-				<button type="submit" class="uk-button-default uk-border-rounded uk-margin-small">valider<span uk-icon="icon:check"></span></button>
+				<button type="submit" class="uk-button uk-button-primary uk-border-rounded uk-margin-small">valider<span uk-icon="icon:check"></span></button>
 				@endif
 				{!!Form::close()!!}
 			</div>

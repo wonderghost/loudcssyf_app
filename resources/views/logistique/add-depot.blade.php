@@ -44,7 +44,7 @@
 					@endforeach
 					@endif
 				</select>
-				<button type="submit" class="uk-button-default uk-border-rounded">valider<span uk-icon="icon:check"></span></button>
+				<button type="submit" class="uk-button-primary uk-margin-small uk-button uk-border-rounded">valider<span uk-icon="icon:check"></span></button>
 				{!!Form::close()!!}
 			</div>
 			<div class="uk-width-1-2@m">
@@ -71,7 +71,7 @@
 					Avec S/N {!!Form::checkbox('with_serial',true,['class'=>'uk-checkbox'])!!}
 				</label>
 				</div>
-				<button type="submit" class="uk-button-default uk-border-rounded uk-margin-small">valider<span uk-icon="icon:check"></span></button>
+				<button type="submit" class="uk-button uk-button-primary uk-border-rounded uk-margin-small">valider<span uk-icon="icon:check"></span></button>
 				{!!Form::close()!!}
 			</div>
 		</div>

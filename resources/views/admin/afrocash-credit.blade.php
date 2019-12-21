@@ -25,7 +25,7 @@
 
     <ul class="uk-switcher uk-margin">
         <li>
-          <button type="button" uk-toggle="target: #modal-apport" class="uk-width-1-6@m uk-button-primary  uk-border-rounded uk-box-shadow-small" name="button"><span uk-icon="icon : plus"></span> Effectuez un apport</button>
+          <button type="button" uk-toggle="target: #modal-apport" class="uk-width-1-4@m uk-button uk-button-primary  uk-border-rounded uk-box-shadow-small" name="button"><span uk-icon="icon : plus"></span> Effectuez un apport</button>
           <!-- AUGMENTATION CAPITAL / APPORT -->
           <div id="modal-apport" uk-modal>
               <div class="uk-modal-dialog uk-modal-body">
@@ -83,7 +83,7 @@
         </li>
         <li>
           <!-- DEPENSES -->
-          <button type="button" uk-toggle="target: #modal-depenses" class="uk-width-1-6@m uk-button-primary  uk-border-rounded uk-box-shadow-small" name="button"><span uk-icon="icon : plus"></span> Ajouter une depense</button>
+          <button type="button" uk-toggle="target: #modal-depenses" class="uk-width-1-4@m uk-button uk-button-primary  uk-border-rounded uk-box-shadow-small" name="button"><span uk-icon="icon : plus"></span> Ajouter une depense</button>
 <!-- MODAL ADD DEPENSES -->
           <div id="modal-depenses" uk-modal>
               <div class="uk-modal-dialog uk-modal-body">
