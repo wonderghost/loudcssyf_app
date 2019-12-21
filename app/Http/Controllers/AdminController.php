@@ -96,7 +96,28 @@ class AdminController extends Controller
 
     // TABLEAU DE BORD
     public function dashboard() {
-        return view('admin.dashboard');
+      // recapitulatif solde cga
+      $cga = [
+        'solde_central' =>  Credit::where('designation','cga')->first()->solde,
+        'solde_vstandart' => CgaAccount::whereIn('vendeur',User::select('username')->where('type','v_standart')->get())->sum('solde'),
+        'solde_reseau'  =>  CgaAccount::whereIn('vendeur',User::select("username")->where("type",'v_da')->get())->sum('solde')
+        ] ;
+        // recapitulatif solde afrocash
+        $afrocash = [
+          'solde_central' =>  Credit::where('designation','afrocash')->first()->solde,
+          'solde_semigrossiste' =>  Afrocash::whereIn('vendeurs',User::select('username')->where('type','v_standart'))->where('type','semi_grossiste')->sum('solde'),
+          'solde_courant_reseau' =>  Afrocash::whereIn('vendeurs',User::select('username')->where('type','v_da'))->where('type','courant')->sum('solde'),
+          'solde_courant_vstandart' =>  Afrocash::whereIn('vendeurs',User::select('username')->where('type','v_standart'))->where('type','courant')->sum('solde')
+        ];
+        // Utilisateurs
+        $users = [
+          'da'  =>  User::where('type','v_da')->count(),
+          'v_standart'  =>  User::where('type','v_standart')->count()
+        ];
+        return view('admin.dashboard')
+          ->withCga($cga)
+          ->withAfrocash($afrocash)
+          ->withUsers($users);
     }
     // AJOUTER UN USER
     public function getFormUser() {
@@ -311,7 +332,7 @@ class AdminController extends Controller
               // verifier si le solde cga existe pour le vendeur
               if($this->isCgaDisponible($request->input("vendeurs"),$request->input('montant'))) {
                 // verification de l'existence des numeros de serie et de leur inactivite
-                
+
                 dd($request);
               } else {
                 throw new AppException("Solde Cga Indisponible!");

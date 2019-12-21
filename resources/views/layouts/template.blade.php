@@ -28,12 +28,12 @@
         <a href="" class="uk-navbar-item uk-logo">LAYE DISTRIBUTION</a>
     </div>
     <div class="uk-navbar-center">
-    	<a class="uk-button-primary uk-padding-small uk-border-circle uk-box-shadow-small uk-margin-left" href="{{url('/')}}" uk-tooltip="Tableau de bord"><span class="" uk-icon="icon:home"></span></a>
-    	<a class="uk-button-primary uk-padding-small uk-border-circle uk-box-shadow-small uk-margin-left"><span class="" uk-icon="icon:bell"></span></a>
-    	<a class="uk-button-primary uk-padding-small uk-border-circle uk-box-shadow-small uk-margin-left"><span uk-icon="icon:comment"></span></a>
+    	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left" href="{{url('/')}}" uk-tooltip="Tableau de bord"><span class="" uk-icon="icon:home ; "></span></a>
+    	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small  uk-margin-left"><span uk-icon="icon:bell "></span></a>
+    	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left"><span uk-icon="icon:comment "></span></a>
     </div>
 		<div class="uk-navbar-right">
-			<a class="uk-button-primary uk-padding-small uk-border-circle uk-box-shadow-small uk-margin-left uk-margin-right"><span uk-icon="icon:user"></span></a>
+			<!-- <a class="uk-button uk-button-default uk-padding-small uk-margin-left uk-margin-right"><span uk-icon="icon:user"></span></a> -->
 		</div>
 </div>
 <!-- // -->
@@ -47,7 +47,7 @@
     <div class="uk-offcanvas-bar side-nav">
         <ul class="uk-nav uk-nav-default uk-nav-parent-icon" uk-nav>
             <li class="uk-nav-header">
-							<h5>LAYE DIST / CANAL+ AFROCASH <a href="#" class="uk-button uk-border-rounded uk-box-shadow-small"><span uk-icon="icon : user ; ratio : .8"></span> {{Auth::user()->username}}</a>
+							<h5>LAYE DIST / CANAL+ AFROCASH <a href="#" class="uk-button"><span uk-icon="icon : user ; ratio : .8"></span> {{Auth::user()->username}}</a>
 								@if(Auth::user()->type != 'admin' && Auth::user()->type != 'logistique' && Auth::user()->type != 'commerciale' && Auth::user()->type !='gcga' && Auth::user()->type !='grex' && Auth::user()->type !=='gdepot')
 				        <a class="uk-button"><span uk-icon="icon:location;ratio:.8"></span> <span>{{Auth::user()->localisation}}</span></a>
 				        @endif
@@ -277,7 +277,7 @@
 <!-- UIkit JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/js/uikit.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/js/uikit-icons.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.js"></script>
 <script type="text/javascript" src="{{asset('js/myscript.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/myscript_second.js')}}"></script>
 <script type="text/javascript">
