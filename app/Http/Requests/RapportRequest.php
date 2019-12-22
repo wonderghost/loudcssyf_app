@@ -29,14 +29,15 @@ class RapportRequest extends FormRequest
             'quantite_materiel'  =>  'required|min:1',
             'montant_ttc' =>  'required|numeric',
             'vendeurs'   =>  'required|exists:users,username',
-            // 'date'  =>  'required|before_or_equal:'.(date("d/m/Y",strtotime("now")))
+            'date'  =>  'required|before_or_equal:'.(date("Y/m/d",strtotime("now")))
         ];
     }
 
     public function messages() {
       return [
         'required'  =>  'Veuillez remplir le champ `:attribute`',
-        'numeric'  =>  '`:attribute` doit etre une valeur numeric'
+        'numeric'  =>  '`:attribute` doit etre une valeur numeric',
+        'before_or_equal' =>  'Vous ne pouvez ajouter de rapport a cette date'
       ];
     }
 }

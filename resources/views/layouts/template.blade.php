@@ -29,12 +29,22 @@
         <a href="" class="uk-navbar-item uk-logo">LAYE DISTRIBUTION</a>
     </div>
     <div class="uk-navbar-center">
-    	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left" href="{{url('/')}}" uk-tooltip="Tableau de bord"><span class="" uk-icon="icon:home ; "></span></a>
-    	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small  uk-margin-left"><span uk-icon="icon:bell "></span></a>
-    	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left"><span uk-icon="icon:comment "></span></a>
+    	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left border-button" href="{{url('/')}}" uk-tooltip="Tableau de bord"><span class="" uk-icon="icon:home ; "></span></a>
+    	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small  uk-margin-left border-button"><span uk-icon="icon:bell "></span></a>
+    	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left border-button"><span uk-icon="icon:comment "></span></a>
     </div>
 		<div class="uk-navbar-right">
-			<!-- <a class="uk-button uk-button-default uk-padding-small uk-margin-left uk-margin-right"><span uk-icon="icon:user"></span></a> -->
+			@if(Auth::user()->type != 'admin' && Auth::user()->type != 'logistique' && Auth::user()->type != 'commerciale' && Auth::user()->type !='gcga' && Auth::user()->type !='grex' && Auth::user()->type !=='gdepot')
+			<a class="uk-button"><span uk-icon="icon:location;ratio:.8"></span> <span>{{Auth::user()->localisation}}</span></a>
+			@endif
+			@if(Auth::user()->type == 'logistique' || Auth::user()->type =='gcga' || Auth::user()->type =='grex' || Auth::user()->type =='gdepot')
+			<a class="uk-button"><span uk-icon="icon:location;ratio:.8"></span> <span>{{Auth::user()->type}}</span></a>
+			@endif
+
+			<a href="#" class="uk-button"><span uk-icon="icon : user ; ratio : .8"></span> {{Auth::user()->username}}</a>
+			{!!Form::open(['url'=>'/logout'])!!}
+			<button class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small border-button" type="submit" uk-tooltip="Deconnexion"><span uk-icon="icon:sign-out"></span></button>
+			{!!Form::close()!!}
 		</div>
 </div>
 <!-- // -->
@@ -53,7 +63,7 @@
 				        <a class="uk-button"><span uk-icon="icon:location;ratio:.8"></span> <span>{{Auth::user()->localisation}}</span></a>
 				        @endif
 				        @if(Auth::user()->type == 'logistique' || Auth::user()->type =='gcga' || Auth::user()->type =='grex' || Auth::user()->type =='gdepot')
-				    	<a class="uk-button"><span uk-icon="icon:location;ratio:.8"></span> <span>{{Auth::user()->type}}</span></a>
+					    	<a class="uk-button"><span uk-icon="icon:location;ratio:.8"></span> <span>{{Auth::user()->type}}</span></a>
 				        @endif
 								@if(Auth::user()->type == 'gdepot')
 								<a href="#" class="uk-button"><span uk-icon="icon:location;ratio:.8"></span>
@@ -269,9 +279,9 @@
 
 
 <!-- FOOTER -->
-<div class="uk-section uk-section-muted uk-flex uk-flex-center uk-flex-bottom uk-margin-remove  uk-padding-remove">
+<!-- <div  class="uk-position-fixed uk-position-bottom uk-position-z-index uk-text-center ">
 <p>Copyright &copy; {{date('Y')}}</p>
-</div>
+</div> -->
 <!-- // -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>

@@ -1,7 +1,6 @@
 html , body {
   margin : 0px;
   padding : 0px;
-  background : #f8f8f8;
 }
 
 
@@ -18,15 +17,21 @@ html , body {
 
 #entete {
   z-index: 1;
-  background : rgba(255,255,250,0.9);
+  background : rgba(255,255,250,1);
   color : #000 !important;
 }
 
 .side-nav {
-  background : rgba(0,30,100,0.7) !important;
+  /* background : rgba(0,30,100,0.7) !important; */
+  background : #1e87f0;
 }
 
 
 .side-nav  ul  li > a{
   color : #fff !important;
+}
+
+.border-button {
+  border-color : #1e87f0 !important;
+  color : #1e87f0 !important;
 }

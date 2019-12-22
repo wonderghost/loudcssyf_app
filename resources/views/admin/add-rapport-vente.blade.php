@@ -6,20 +6,20 @@
 		<h3><a href="{{url('/admin')}}" uk-tooltip="tableau de bord" uk-icon="icon:arrow-left;ratio:1.5"></a> Nouveau Rapport</h3>
 		@if($errors->any())
 		@foreach($errors->all() as $error)
-		<div class="uk-alert-danger uk-border-rounded uk-box-shadow-small" uk-alert>
+		<div class="uk-alert-danger uk-border-rounded uk-box-shadow-small uk-width-1-2@m" uk-alert>
 			<a href="#" class="uk-alert-close" uk-close></a>
 			<p>{{$error}}</p>
 		</div>
 		@endforeach
 		@endif
 		@if(session('_errors'))
-		<div class="uk-alert-danger" uk-alert>
+		<div class="uk-alert-danger uk-border-rounded uk-box-shadow-small uk-width-1-2@m" uk-alert>
 			<a href="" class="uk-alert-close" uk-close></a>
 			<p>{{session('_errors')}}</p>
 		</div>
 		@endif
 		@if(session('success'))
-		<div class="uk-alert-success" uk-alert>
+		<div class="uk-alert-success uk-border-rounded uk-box-shadow-small uk-width-1-2@m" uk-alert>
 			<a href="#" class="uk-alert-close" uk-close></a>
 			<p>{{session('success')}}</p>
 		</div>
@@ -27,7 +27,7 @@
 		<div class="uk-width-1-2@m uk-width-1-1@s">
 		<!-- DATE RAPPORT -->
 		<label for="">Date Rapport</label>
-		<input type="text" class="uk-input uk-border-rounded" name="" value="" id="my-date"  data-uk-datepicker="{format:'DD.MM.YYYY'}">
+		<input type="date" class="uk-input uk-border-rounded" name="" value="" id="my-date">
 
 		<!-- // -->
 		<!-- CHOIS DU VENDEUR -->
@@ -67,8 +67,9 @@
 			</li>
 			<li>
 				<!-- REABONNEMENT -->
-				{!!Form::open(['url'=>'','class'=>'uk-width-1-2@m uk-width-1-1@s'])!!}
+				{!!Form::open(['url'=>'/admin/send-rapport/reabonnement','class'=>'uk-width-1-2@m uk-width-1-1@s'])!!}
 				<input type="hidden" name="date" value="" class="la-date">
+				<input type="hidden" name="vendeurs" value="" class="vendeurs">
 				{!!Form::label('Montant TTC')!!}
 				{!!Form::number('montant_ttc','',['class'=>'uk-input uk-margin-small uk-border-rounded'])!!}
 
@@ -106,11 +107,8 @@
 <script type="text/javascript">
 	$(function() {
 
-		$("#my-date").datepicker({
-			dateFormat : "dd-mm-yy"
-		})
-
 		$("#my-date").on('blur',function (e) {
+			console.log($(this).val())
 			$('.la-date').val($(this).val())
 		})
 
@@ -122,13 +120,6 @@
 				$logistique.CheckSerial("{{csrf_token()}}","{{url('/admin/rapport/check-serial')}}",$('.validation-button'),$('.vendeurs').val())
 			})
 		})
-
-// Generer des champs de saisie pour les numeros de serie
-
-	// $(".quantite-materiel").on('keyup change keypress',function(e) {
-	// 	$logistique.SerialInputCols($(this).val(),$(".serial-inputs"))
-	// 	$logistique.CheckSerial("{{csrf_token()}}","{{url('/admin/rapport/check-serial')}}",$('.validation-button'),$('.vendeurs').val())
-	// })
 
 
 	});

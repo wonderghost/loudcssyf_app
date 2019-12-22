@@ -13,10 +13,11 @@ use Carbon\Carbon;
 use App\RapportVente;
 
 Trait Rapports {
-	public function isExistRapportOnThisDate(Carbon $date,$vendeurs) {
+	public function isExistRapportOnThisDate(Carbon $date,$vendeurs,$type = 'recrutement') {
 	  $temp = RapportVente::where([
 	    'date_rapport'  =>  $date->toDateTimeString(),
-	    'vendeurs'  =>  $vendeurs
+	    'vendeurs'  =>  $vendeurs,
+			'type'	=>	$type
 	    ])->first();
 	  if($temp) {
 	    return $temp;
