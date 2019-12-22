@@ -29,6 +29,7 @@ class CreateCompteRex extends Migration
     public function down()
     {
         //
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('compte_rex');
     }
 }

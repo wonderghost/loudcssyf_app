@@ -43,7 +43,8 @@ Route::middleware(['auth','admin'])->group(function () {
 
 	// admin routing
 	Route::get('/admin','AdminController@dashboard');
-
+	Route::post('/admin/transaction-for-dashboard','AdminController@getTransactionForDashboardView');
+// //
 	Route::get('/admin/add-user','AdminController@getFormUser');
 	Route::post('/admin/add-user','AdminController@addUser');
 	Route::get('/admin/list-users','AdminController@listUser');

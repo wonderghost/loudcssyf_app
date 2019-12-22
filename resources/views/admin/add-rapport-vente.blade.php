@@ -61,7 +61,7 @@
 				{!!Form::label('Montant TTC')!!}
 				{!!Form::number('montant_ttc','',['class'=>'uk-input uk-margin-small uk-border-rounded'])!!}
 
-				{!!Form::submit('validez',['class'=>'uk-button-primary uk-border-rounded uk-box-shadow-small validation-button','id'=>'validation-recrutement'])!!}
+				{!!Form::submit('validez',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-small validation-button','id'=>'validation-recrutement'])!!}
 				{!!Form::close()!!}
 				<!-- // -->
 			</li>
@@ -83,7 +83,7 @@
 						</label>
         </div>
 			</div>
-			{!!Form::submit('validez',['class'=>'uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
+			{!!Form::submit('validez',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
 				{!!Form::close()!!}
 				<!-- // -->
 			</li>
@@ -94,7 +94,7 @@
 				{!!Form::label('Quantite Materiel')!!}
 				{!!Form::number('quantite_materiel','',['class'=>'uk-input uk-margin-small uk-border-rounded quantite-materiel'])!!}
 				<div class="serial-inputs"></div>
-				{!!Form::submit('validez',['class'=>'uk-button-primary uk-border-rounded uk-box-shadow-sall validation-button'])!!}
+				{!!Form::submit('validez',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-sall validation-button'])!!}
 				{!!Form::close()!!}
 				<!-- // -->
 			</li>
@@ -106,6 +106,9 @@
 <script type="text/javascript">
 	$(function() {
 
+		$("#my-date").datepicker({
+			dateFormat : "dd-mm-yy"
+		})
 
 		$("#my-date").on('blur',function (e) {
 			$('.la-date').val($(this).val())
@@ -126,6 +129,7 @@
 	// 	$logistique.SerialInputCols($(this).val(),$(".serial-inputs"))
 	// 	$logistique.CheckSerial("{{csrf_token()}}","{{url('/admin/rapport/check-serial')}}",$('.validation-button'),$('.vendeurs').val())
 	// })
+
 
 	});
 </script>

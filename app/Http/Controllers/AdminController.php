@@ -25,6 +25,7 @@ use App\Http\Requests\RapportRequest;
 use App\RapportVente;
 use Illuminate\Support\Carbon;
 use App\StockVendeur;
+use App\StockPrime;
 use App\Exemplaire;
 use App\Credit;
 use App\TransactionCreditCentral;
@@ -115,8 +116,10 @@ class AdminController extends Controller
           'v_standart'  =>  User::where('type','v_standart')->count()
         ];
         // MATERIELS
+
         $materiel = [
-          'entrepot'  =>  Produits::all()
+          'entrepot'  =>  Produits::all(),
+          'depot' =>  StockPrime::select()->sum('quantite')
         ];
         return view('admin.dashboard')
           ->withCga($cga)
@@ -337,7 +340,7 @@ class AdminController extends Controller
               // verifier si le solde cga existe pour le vendeur
               if($this->isCgaDisponible($request->input("vendeurs"),$request->input('montant'))) {
                 // verification de l'existence des numeros de serie et de leur inactivite
-
+                
                 dd($request);
               } else {
                 throw new AppException("Solde Cga Indisponible!");
@@ -487,6 +490,16 @@ class AdminController extends Controller
         } else {
           throw new AppException("Numero invalide!");
         }
+      } catch (AppException $e) {
+        return response()->json($e->getMessage());
+      }
+
+    }
+
+    // Apercu de transaction sur le tableau de bord
+    public function getTransactionForDashboardView(Request $request) {
+      try {
+        return response()->json($request);
       } catch (AppException $e) {
         return response()->json($e->getMessage());
       }

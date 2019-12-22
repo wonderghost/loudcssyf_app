@@ -140,7 +140,7 @@
                   <li>
                       <a class="uk-accordion-title" href="#">DEPOTS</a>
                       <div class="uk-accordion-content">
-
+                        {{$materiels['depot']}}
                       </div>
                   </li>
                   <li>
@@ -158,7 +158,7 @@
               <h3><span class="uk-button-default uk-border-circle uk-padding-small" uk-icon = "icon : shrink"></span> Transactions</h3>
             </div>
             <div class="uk-card-body uk-padding-small">
-
+              <canvas id="myChart" width="400" height="100"></canvas>
             </div>
           </div>
 
@@ -168,4 +168,18 @@
   </div>
 </div>
 
+@endsection
+@section('script')
+<script type="text/javascript">
+  $(function () {
+    $logistique.transactionDashboardView("{{csrf_token()}}","{{url('/admin/transaction-for-dashboard')}}")
+    //
+    // var ctx = $("#myChart")
+    // var myChart = new Chart(ctx,{
+    //   type : 'line',
+    //   data : [20,10]
+    // })
+    // // console.log(ctx)
+  })
+</script>
 @endsection

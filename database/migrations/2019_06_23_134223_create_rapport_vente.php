@@ -20,11 +20,12 @@ class CreateRapportVente extends Migration
             $table->string('vendeurs')->nullable();
             $table->unsignedInteger('quantite')->default(0);
             $table->float('montant_ttc',8,0)->default(0);
+            $table->float('commission',8,0)->default(0);
             $table->enum('type',['recrutement','reabonnement','migration'])->default('reabonnement');
             $table->enum('credit_utilise',['cga','rex'])->nullable();
-
+            $table->boolean('promo')->default(false);
+            $table->string('id_rapport_promo')->nullable();
             $table->foreign('vendeurs')->references('username')->on('users');
-
             $table->date('date_rapport')->unique();
             $table->timestamps();
         });
@@ -42,6 +43,7 @@ class CreateRapportVente extends Migration
     public function down()
     {
         //
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('rapport_vente');
     }
 }

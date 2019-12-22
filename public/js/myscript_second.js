@@ -607,6 +607,31 @@ listSerialByVendeur : function (token,url,ref) {
 
     })
   }
+  ,
+
+transactionDashboardView : function (token,url) {
+  var form = $logistique.makeForm(token,url)
+  form.on('submit',function (e) {
+    e.preventDefault()
+    $.ajax({
+      url : url ,
+      type : 'post',
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+      var myChart = new Chart($("#myChart"),{
+        type : 'line',
+        data : [10,20]
+      })
+      console.log(data)
+    })
+    .fail(function (data) {
+      console.log(data)
+    })
+  })
+  form.submit()
+}
 
 
 
