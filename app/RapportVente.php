@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class RapportVente extends Model
 {
@@ -19,4 +20,35 @@ class RapportVente extends Model
       }
       return false;
     }
+
+    public function makeRapportId() {
+      do {
+        $this->id_rapport =  Str::random(10).'_'.time();
+      } while ($this->isExistRapportById());
+    }
+
+    public function calculCommission($type = 'recrutement') {
+
+      if($type == 'recrutement') {
+
+        $this->commission = ($this->montant_ttc / 1.18) * (12 / 100);
+
+      } elseif ($type == 'reabonnement') {
+
+        $this->commission = ($this->montant_ttc / 1.18) * (5.5 / 100);
+
+      }
+      else {
+
+        $this->commission = 0;
+
+      }
+      $this->commission = round($this->commission);
+
+    }
+
+    public function vendeurs() {
+      return  $this->belongsTo('App\User','vendeurs','username')->first();
+    }
+
 }

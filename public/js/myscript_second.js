@@ -632,7 +632,72 @@ transactionDashboardView : function (token,url) {
   })
   form.submit()
 }
+,
+getListRapportVente : function (token , url) {
+  var form = $logistique.makeForm(token,url)
+  form.on('submit',function(e) {
+    e.preventDefault()
 
+    $.ajax({
+      url : url,
+      type : 'post',
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+      console.log(data)
+      $logistique.dataList(data.recrutement,$("#recrutement-list"))
+      $logistique.dataList(data.reabonnement,$("#reabonnement-list"))
+      $logistique.dataList(data.migration,$("#migration-list"))
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href','')
+    })
+  })
+  form.submit()
+}
+,
 
+sendPromoForm : function () {
+  $("#promo-form").on('submit',function (e) {
+    e.preventDefault()
+    UIkit.modal($("#modal-promo")).hide();
+    $.ajax({
+      url : $(this).attr('action') ,
+      type : 'post',
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+      console.log(data)
+      UIkit.modal($("#modal-promo")).hide();
+      UIkit.modal.alert("Success!").then(function () {
+         $("#loader").hide()
+      })
+    })
+    .fail(function (data) {
+      UIkit.modal($("#modal-promo")).show();
+      $("#loader").hide()
+      if(data.responseJSON.errors) {
+        var dataErrors = data.responseJSON.errors
+
+        for(element in dataErrors){
+          UIkit.notification({
+              message: dataErrors[element][0],
+              status: 'danger',
+              timeout: 3000
+          });
+        }
+      } else {
+          UIkit.notification({
+            message : data.responseJSON,
+            status : 'danger',
+            timeout : 3000
+          })
+      }
+    })
+  })
+}
 
 }

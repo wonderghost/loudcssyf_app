@@ -24,82 +24,92 @@
 			<p>{{session('success')}}</p>
 		</div>
 		@endif
-		<div class="uk-width-1-2@m uk-width-1-1@s">
-		<!-- DATE RAPPORT -->
-		<label for="">Date Rapport</label>
-		<input type="date" class="uk-input uk-border-rounded" name="" value="" id="my-date">
 
-		<!-- // -->
-		<!-- CHOIS DU VENDEUR -->
-		<label for="">Vendeurs</label>
-		<select class="uk-select uk-margin-small uk-border-rounded" id="my-vendeurs" name="">
-			<option value="">--- Selectionnez un Vendeur ---</option>
-			@if($vendeurs)
-			@foreach($vendeurs as $value)
-			<option value="{{$value->username}}">{{$value->username}} ({{$value->agence()->societe}}_{{$value->localisation}})</option>
-			@endforeach
-			@endif
-		</select>
+		<div class="uk-grid-small" uk-grid>
+			<div class="uk-width-1-2@m uk-width-1-1@s">
+			<!-- DATE RAPPORT -->
+			<label for="">Date Rapport</label>
+			<input type="date" class="uk-input uk-border-rounded" name="" value="" id="my-date">
 
-		<!-- // -->
-	</div>
-		<ul uk-tab>
-		    <li><a href="#">Recrutement</a></li>
-		    <li><a href="#">Reabonnement</a></li>
-		    <li><a href="#">Migration</a></li>
-		</ul>
+			<!-- // -->
+			<!-- CHOIS DU VENDEUR -->
+			<label for="">Vendeurs</label>
+			<select class="uk-select uk-margin-small uk-border-rounded" id="my-vendeurs" name="">
+				<option value="">--- Selectionnez un Vendeur ---</option>
+				@if($vendeurs)
+				@foreach($vendeurs as $value)
+				<option value="{{$value->username}}">{{$value->username}} ({{$value->agence()->societe}}_{{$value->localisation}})</option>
+				@endforeach
+				@endif
+			</select>
 
-		<ul class="uk-switcher uk-margin">
-			<li>
-				<!-- RECRUTEMENT -->
-				{!!Form::open(['url'=>'/admin/send-rapport/recrutement','class'=>'uk-width-1-2@m uk-width-1-1@s','id'=>'recrutement-form'])!!}
-				<input type="hidden" name="date" value="" class="la-date">
-				<input type="hidden" name="vendeurs" value="" class="vendeurs">
-				{!!Form::label('Quantite Materiel')!!}
-				{!!Form::number('quantite_materiel','',['class'=>'uk-input uk-margin-small uk-border-rounded quantite-materiel','min'=>'1'])!!}
-				<div class="serial-inputs"></div>
-				{!!Form::label('Montant TTC')!!}
-				{!!Form::number('montant_ttc','',['class'=>'uk-input uk-margin-small uk-border-rounded'])!!}
+			<!-- // -->
 
-				{!!Form::submit('validez',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-small validation-button','id'=>'validation-recrutement'])!!}
-				{!!Form::close()!!}
-				<!-- // -->
-			</li>
-			<li>
-				<!-- REABONNEMENT -->
-				{!!Form::open(['url'=>'/admin/send-rapport/reabonnement','class'=>'uk-width-1-2@m uk-width-1-1@s'])!!}
-				<input type="hidden" name="date" value="" class="la-date">
-				<input type="hidden" name="vendeurs" value="" class="vendeurs">
-				{!!Form::label('Montant TTC')!!}
-				{!!Form::number('montant_ttc','',['class'=>'uk-input uk-margin-small uk-border-rounded'])!!}
+			<ul uk-tab>
+			    <li><a href="#">Recrutement</a></li>
+			    <li><a href="#">Reabonnement</a></li>
+			    <li><a href="#">Migration</a></li>
+			</ul>
+
+			<ul class="uk-switcher uk-margin">
+				<li>
+					<!-- RECRUTEMENT -->
+					{!!Form::open(['url'=>'/admin/send-rapport/recrutement','class'=>'uk-width-1-1@m uk-width-1-1@s','id'=>'recrutement-form'])!!}
+					<input type="hidden" name="date" value="" class="la-date">
+					<input type="hidden" name="vendeurs" value="" class="vendeurs">
+					{!!Form::label('Quantite Materiel')!!}
+					{!!Form::number('quantite_materiel','',['class'=>'uk-input uk-margin-small uk-border-rounded quantite-materiel','min'=>'1'])!!}
+					<div class="serial-inputs"></div>
+					{!!Form::label('Montant TTC')!!}
+					{!!Form::number('montant_ttc','',['class'=>'uk-input uk-margin-small uk-border-rounded'])!!}
+
+					{!!Form::submit('validez',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-small validation-button','id'=>'validation-recrutement'])!!}
+					{!!Form::close()!!}
+					<!-- // -->
+				</li>
+				<li>
+					<!-- REABONNEMENT -->
+					{!!Form::open(['url'=>'/admin/send-rapport/reabonnement','class'=>'uk-width-1-1@m uk-width-1-1@s'])!!}
+					<input type="hidden" name="date" value="" class="la-date">
+					<input type="hidden" name="vendeurs" value="" class="vendeurs">
+					{!!Form::label('Montant TTC')!!}
+					{!!Form::number('montant_ttc','',['class'=>'uk-input uk-margin-small uk-border-rounded'])!!}
 
 
-				<div class="">
-					<div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
-            <label>
-							{!!Form::radio('type_credit','cga')!!}Cga
-						</label>
-            <label>
-							{!!Form::radio('type_credit','rex')!!}Rex
-						</label>
-        </div>
-			</div>
-			{!!Form::submit('validez',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
-				{!!Form::close()!!}
-				<!-- // -->
-			</li>
-			<li>
-				<!-- MIGRATION -->
-				{!!Form::open(['url'=>'','class'=>'uk-width-1-2@m uk-width-1-1@s'])!!}
-				<input type="hidden" name="date" value="" class="la-date">
-				{!!Form::label('Quantite Materiel')!!}
-				{!!Form::number('quantite_materiel','',['class'=>'uk-input uk-margin-small uk-border-rounded quantite-materiel'])!!}
-				<div class="serial-inputs"></div>
-				{!!Form::submit('validez',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-sall validation-button'])!!}
-				{!!Form::close()!!}
-				<!-- // -->
-			</li>
-		</ul>
+					<div class="">
+						<div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
+	            <label>
+								{!!Form::radio('type_credit','cga')!!}Cga
+							</label>
+	            <label>
+								{!!Form::radio('type_credit','rex')!!}Rex
+							</label>
+	        </div>
+				</div>
+				{!!Form::submit('validez',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
+					{!!Form::close()!!}
+					<!-- // -->
+				</li>
+				<li>
+					<!-- MIGRATION -->
+					{!!Form::open(['url'=>'/admin/send-rapport/migration','class'=>'uk-width-1-1@m uk-width-1-1@s'])!!}
+					<input type="hidden" name="date" value="" class="la-date">
+					<input type="hidden" name="vendeurs" value="" class="vendeurs">
+					{!!Form::label('Quantite Materiel')!!}
+					{!!Form::number('quantite_materiel','',['class'=>'uk-input uk-margin-small uk-border-rounded quantite-materiel'])!!}
+					<div class="serial-inputs"></div>
+					{!!Form::submit('validez',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-sall validation-button'])!!}
+					{!!Form::close()!!}
+					<!-- // -->
+				</li>
+			</ul>
+		</div>
+
+		<div class="uk-width-1-2@m uk-width-1-1@s uk-padding">
+			<!--@@@@@@@@@@@@@@@@@@ -->
+		</div>
+		</div>
+
 	</div>
 </div>
 @endsection

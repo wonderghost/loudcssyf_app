@@ -12,6 +12,8 @@
 */
 
 Route::middleware(['auth','admin'])->group(function () {
+	// Promo
+	Route::post('/admin/promo/add','AdminController@addPromo');
 	// Depenses
 	Route::post('/admin/depenses/add','AdminController@addDepenses');
 	//
@@ -31,6 +33,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/send-rapport/{slug}','AdminController@sendRapport');
 	Route::post('/admin/rapport/check-serial','AdminController@checkSerial');
 	Route::get('/admin/all-rapport','AdminController@listRapport');
+	//
 	Route::post('/admin/get-rapport','AdminController@getRapport'); // recuperation de l'historique des rapports
 	// OPTION DE FORMULES
 	Route::post('/admin/add-option','AdminController@addOptionFormule');

@@ -22,6 +22,48 @@
 		</div>
 	</div>
 	<!-- // -->
+	<!-- MODAL PROMO -->
+	<div id="modal-promo" class="uk-flex-top uk-modal-container" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
+      <button class="uk-modal-close-default" type="button" uk-close></button>
+			<h3 class="">Parametre Promo</h3>
+			<hr class="uk-divider-small">
+			<div class="uk-grid-small uk-child-width-1-2@m" uk-grid>
+				<div class="">
+					{!!Form::open(['url'=>'/admin/promo/add','id'=>'promo-form','uk-grid'=>'','class'=>'uk-grid-small'])!!}
+					<div class="uk-width-1-2@m">
+						{!!Form::label('Debut de la promo')!!}
+						{!!Form::date('debut','',['class'=>'uk-input uk-margin-small uk-border-rounded'])!!}
+					</div>
+					<div class="uk-width-1-2@m">
+						{!!Form::label('Fin de la promo')!!}
+						{!!Form::date('fin','',['class'=>'uk-input uk-margin-small uk-border-rounded'])!!}
+					</div>
+					<div class="uk-width-1-2@m">
+						{!!Form::label('Intitule de la Promo')!!}
+						{!!Form::text('intitule','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Donnez un titre a la promo'])!!}
+					</div>
+					<div class="uk-width-1-2@m">
+						{!!Form::label('Subvention')!!}
+						{!!Form::number('subvention','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Entrez la Subvention'])!!}
+					</div>
+					<div class="uk-width-1-1@m">
+						{!!Form::label('Description')!!}
+						{!!Form::textarea('description','',['class'=>'uk-textarea uk-margin-small uk-border-rounded','placeholder'=>'Decrivez la promo'])!!}
+						{!!Form::submit('Validez',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-small uk-width-1-3@m uk-width-1-1@s','id'=>'button-submit'])!!}
+					</div>
+					{!!Form::close()!!}
+				</div>
+
+				<div class="">
+					<h4 class="uk-text-center">Promo en cours</h4>
+					
+				</div>
+			</div>
+
+    </div>
+	</div>
+	<!-- // -->
 <!-- NAVBAR-->
 <div class="uk-navbar-container uk-box-shadow-small" id="entete" uk-sticky uk-navbar>
     <div class="uk-navbar-left">
@@ -32,6 +74,7 @@
     	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left border-button" href="{{url('/')}}" uk-tooltip="Tableau de bord"><span class="" uk-icon="icon:home ; "></span></a>
     	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small  uk-margin-left border-button"><span uk-icon="icon:bell "></span></a>
     	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left border-button"><span uk-icon="icon:comment "></span></a>
+    	<a class="uk-button uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle>Promo %</a>
     </div>
 		<div class="uk-navbar-right">
 			@if(Auth::user()->type != 'admin' && Auth::user()->type != 'logistique' && Auth::user()->type != 'commerciale' && Auth::user()->type !='gcga' && Auth::user()->type !='grex' && Auth::user()->type !=='gdepot')
@@ -302,10 +345,15 @@
 			$("#loader").show()
 
 		})
-        $(".close-button").on('click',function () {
-            $(this).parent().hide(500);
 
-	})
+    $(".close-button").on('click',function () {
+      $(this).parent().hide(500);
+		})
+
+		// ##%%%
+
+		$logistique.sendPromoForm()
+		//
 })
 </script>
 @yield('script')

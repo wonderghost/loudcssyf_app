@@ -26,7 +26,8 @@ class CreateRapportVente extends Migration
             $table->boolean('promo')->default(false);
             $table->string('id_rapport_promo')->nullable();
             $table->foreign('vendeurs')->references('username')->on('users');
-            $table->date('date_rapport')->unique();
+            $table->date('date_rapport');
+            $table->enum('statut_paiement_commission',['paye','non_paye'])->default('non_paye');
             $table->timestamps();
         });
 

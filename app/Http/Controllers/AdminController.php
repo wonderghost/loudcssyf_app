@@ -32,6 +32,7 @@ use App\Exemplaire;
 use App\Credit;
 use App\TransactionCreditCentral;
 use App\Exceptions\AppException;
+use App\Promo;
 
 class AdminController extends Controller
 {
@@ -355,6 +356,9 @@ class AdminController extends Controller
                   $rapport->id_rapport =  Str::random(10).'_'.time();
                 } while ($rapport->isExistRapportById());
 
+                // dump($rapport->id_rapport);
+                // die();
+
                 $temp_date = new Carbon($request->input('date'));
                 $rapport->date_rapport = $temp_date->toDateTimeString();
                 $rapport->vendeurs  = $request->input('vendeurs');
@@ -362,23 +366,15 @@ class AdminController extends Controller
                 $rapport->quantite =  $request->input('quantite_materiel');
                 $rapport->credit_utilise  = 'cga';
                 $rapport->type = 'recrutement';
+                $rapport->calculCommission('recrutement');
 
-
-                // CHANGEMENT DE STATUS DES MATERIELS
-                for($i = 1 ; $i <= $request->input('quantite_materiel') ; $i++) {
-                  Exemplaire::where([
-                    'vendeurs'  =>  $request->input('vendeurs'),
-                    'serial_number' =>  $request->input('serial-number-'.$i),
-                    'status'  =>  'inactif'
-                  ])->update([
-                    'status'  =>  'actif'
-                  ]);
-                }
                 // DEBIT DU CREDIT CGA
                 $new_solde_cga = CgaAccount::where('vendeur',$request->input('vendeurs'))->first()->solde - $request->input('montant_ttc');
+
                 CgaAccount::where('vendeur',$request->input('vendeurs'))->update([
                   'solde' =>  $new_solde_cga
                 ]);
+
                 // DEBIT DE LA QUANTITE DANS LE STOCK DU VENDEURS
                 $new_quantite = StockVendeur::where([
                   'vendeurs'  =>  $request->input('vendeurs'),
@@ -390,7 +386,22 @@ class AdminController extends Controller
                   'quantite'  =>  $new_quantite
                 ]);
 
+                $id_rapport = $rapport->id_rapport;
                 $rapport->save();
+
+                // CHANGEMENT DE STATUS DES MATERIELS
+                for($i = 1 ; $i <= $request->input('quantite_materiel') ; $i++) {
+
+                  Exemplaire::where([
+                    'vendeurs'  =>  $request->input('vendeurs'),
+                    'serial_number' =>  $request->input('serial-number-'.$i),
+                    'status'  =>  'inactif'
+                  ])->update([
+                    'status'  =>  'actif',
+                    'rapports'  =>  $id_rapport
+                  ]);
+
+                }
                 // redirection
                 return redirect('/admin/add-rapport')->withSuccess("Success!");
               } else {
@@ -413,8 +424,27 @@ class AdminController extends Controller
               if(!$this->isExistRapportOnThisDate(new Carbon($request->input('date')),$request->input('vendeurs'),'reabonnement')) {
                 if(($request->input('type_credit') == "cga") && $this->isCgaDisponible($request->input("vendeurs"),$request->input('montant'))) {
 
-                  dd($request);
-                } else if(($request->input('type_credit') == "rex") ) {
+                  $rapport = new RapportVente;
+                  $rapport->makeRapportId();
+                  $rapport->vendeurs = $request->input('vendeurs');
+                  $rapport->montant_ttc = $request->input('montant_ttc');
+                  $rapport->type  = 'reabonnement';
+                  $rapport->credit_utilise  = $request->input('type_credit');
+                  $rapport->date_rapport  = $request->input('date');
+                  $rapport->calculCommission('reabonnement');
+                  // dump($rapport);
+                  // dump($request);
+                  // die();
+                  // DEBIT DU SOLDE INDIQUE
+                  $new_solde_cga = CgaAccount::where('vendeur',$request->input('vendeurs'))->first()->solde - $request->input('montant_ttc');
+
+                  CgaAccount::where('vendeur',$request->input('vendeurs'))->update([
+                    'solde' =>  $new_solde_cga
+                  ]);
+
+                  $rapport->save();
+                  return redirect('/admin/add-rapport')->withSuccess("Success!");
+                } else if(($request->input('type_credit') == "rex") && $this->isRexDisponible($request->input('vendeurs'),$request->input('montant')) ) {
                   dd($request);
                 } else {
                   throw new AppException("Solde Indisponible!");
@@ -424,11 +454,48 @@ class AdminController extends Controller
               }
             break;
             case 'migration':
+            echo "Migration";
+            if(!$this->isExistRapportOnThisDate(new Carbon($request->input('date')),$request->input('vendeurs'),'migration')) {
+              $rapport = new RapportVente;
+              $rapport->makeRapportId();
+              $rapport->date_rapport  = $request->input('date');
+              $rapport->vendeurs  = $request->input('vendeurs');
+              $rapport->quantite = $request->input('quantite_materiel');
+              $rapport->type = 'migration';
 
-            dd($request);
+              $id_rapport = $rapport->id_rapport;
+              $rapport->save();
+
+              // CHANGEMENT DE STATUS DES MATERIELS
+              for($i = 1 ; $i <= $request->input('quantite_materiel') ; $i++) {
+
+                Exemplaire::where([
+                  'vendeurs'  =>  $request->input('vendeurs'),
+                  'serial_number' =>  $request->input('serial-number-'.$i),
+                  'status'  =>  'inactif'
+                ])->update([
+                  'status'  =>  'actif',
+                  'rapports'  =>  $id_rapport
+                ]);
+              }
+
+              // DEBIT DE LA QUANTITE DANS LE STOCK DU VENDEURS
+              $new_quantite = StockVendeur::where([
+                'vendeurs'  =>  $request->input('vendeurs'),
+                'produit' =>  Produits::where('with_serial',1)->first()->reference
+              ])->first()->quantite - $request->input('quantite_materiel');
+
+              StockVendeur::where('vendeurs',$request->input('vendeurs'))->update([
+                'quantite'  =>  $new_quantite
+              ]);
+
+              return redirect('/admin/add-rapport')->withSuccess("Success!");
+            } else {
+              throw new AppException("Un rapport existe deja a cette date!");
+            }
             break;
             default:
-            // code...
+            die();
             break;
           }
         } else {
@@ -446,30 +513,31 @@ class AdminController extends Controller
     }
 // RECUPERATION DE L'HISTORIQUE DES RAPPORTS
     public function getRapport(Request $request) {
-        $allRapport =   RapportVente::all();
-        $all = [];
-        foreach($allRapport as $key =>  $value) {
-            $temp = User::where('username',$value->vendeurs)->first()->username;
-            $users = User::where('username',$value->vendeurs)->first();
-            $agence = Agence::where('reference',$users->agence)->first();
-            $date = new Carbon($value->created_at);
-            // calcul des commisisions
-            $commissionRecrutement  =   (12/100) * ($value->ttc_recrutement/1.18);
-            $commissionReabonnement =   (5.5/100) * ($value->ttc_reabonnement/1.18);
-            $commissionMigration    =   0;
-            $commissionTotal    =   $commissionRecrutement + $commissionReabonnement + $commissionMigration;
-            // ==+===
-            $all[$key] = [
-                'date'  =>  $date->toFormattedDateString().' | '.$date->toTimeString(),
-                'recrutement'   =>  number_format($value->ttc_recrutement).' ( '.$value->quantite_recrutement.' ) ',
-                'migration' =>  number_format($value->quantite_migration),
-                'reabonnement'  =>  number_format($value->ttc_reabonnement),
-                'vendeurs'  =>  $value->vendeurs.' ( '.$agence->societe.' ) ',
-                'agence'    =>  $users->localisation,
-                'comission' =>  number_format($commissionTotal)
-            ];
+      $recrutement = RapportVente::where('type','recrutement')->orderBy('date_rapport','desc')->get();
+      $reabonnement = RapportVente::where('type','reabonnement')->orderBy('date_rapport','desc')->get();
+      $migration = RapportVente::where('type','migration')->orderBy('date_rapport','desc')->get();
+      $rapports = [
+        'recrutement' =>  $recrutement,
+        'reabonnement'  => $reabonnement,
+        'migration' =>   $migration
+      ];
+      $all = [];
+
+      foreach ($rapports as $key => $value) {
+        foreach ($value as $_key => $_value) {
+
+          $all[$key][$_key] = [
+            'date'  =>  $_value->date_rapport,
+            'vendeurs'  =>  $_value->vendeurs." ( ".$_value->vendeurs()->localisation." )",
+            'type'  =>  $_value->type,
+            'credit'  =>  $_value->credit_utilise,
+            'quantite'  =>  $_value->quantite,
+            'montant_ttc' =>  number_format($_value->montant_ttc),
+            'commission'  =>  number_format($_value->commission)
+          ];
         }
-        return response()->json($all);
+      }
+      return response()->json($all);
     }
 
     //
@@ -574,6 +642,59 @@ class AdminController extends Controller
 
     }
 
-    //
+    //DISPONIBILITE DU CREDIT REX
 
+    public function isRexDisponible($vendeur,$montant) {
+  		$temp = RexAccount::where('numero',User::select('rex')->where('username',$vendeur))->first();
+  		if($temp && ($temp->solde >= $montant)) {
+  			return $temp;
+  		}
+  		return false;
+  	}
+// AJOUTER UNE PROMO
+  public function addPromo(Request $request) {
+    $validation = $request->validate([
+      'intitule' =>  'required|string',
+      'description'  =>  'string',
+      'debut' =>  'required|date|before:fin',
+      'fin' =>  'required|date'
+    ],[
+      'required'  =>  '`:attribute` ne peut etre vide',
+      'string'  =>  '`:attribute` est une chaine de caractere',
+      'date'  =>  '`:attribute` doit etre une date',
+      'before'  =>  'date de `:attribute` invalide'
+    ]);
+    try {
+      if(!$this->isExistPromo()) {
+        if(Produits::where('with_serial',1)->first()) {
+          $promo = new Promo;
+          $promo->intitule = $request->input('intitule');
+          $promo->debut = $request->input('debut');
+          $promo->fin = $request->input('fin');
+          $promo->subvention = $request->input('subvention');
+          $promo->description = $request->input('description');
+          $prix_vente_normal = Produits::where('with_serial',1)->first() ? Produits::where('with_serial',1)->first()->prix_vente : 0;
+          $promo->prix_vente = $prix_vente_normal - $request->input('subvention');
+          $promo->save();
+          return response()->json('done');
+        } else {
+          throw new AppException("Erreur ! Contatez l'administrateur");
+        }
+      } else {
+        throw new AppException("Une Promo est deja en cours!");
+      }
+    } catch (AppException $e) {
+      header("Unprocessable entity",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+
+  // VERIFIER SI UNE PROMO N'EST PAS DEJA ACTIVE
+  public function isExistPromo() {
+    $temp = Promo::where('status_promo','actif')->first();
+    if($temp) {
+      return $temp;
+    }
+    return false;
+  }
 }

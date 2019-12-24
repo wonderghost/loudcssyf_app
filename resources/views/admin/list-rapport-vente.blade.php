@@ -2,7 +2,7 @@
 
 @section('admin_content')
 <div class="uk-section uk-section-default">
-	<div class="uk-padding-small">
+	<div class="uk-container uk-container-large">
 		<h3><a href="{{url('/admin')}}" uk-tooltip="tableau de bord" uk-icon="icon:arrow-left;ratio:1.5"></a> Tous les Rapports</h3>
 		<hr class="uk-divider-small">
 
@@ -30,49 +30,78 @@
 		</div>
 		{!!Form::close()!!}
 
-		<table class="uk-table uk-table-divider">
-			<thead>
-				<tr>
-					<th>Date</th>
-					<th>Recrutement (GNF/ Qte)</th>
-					<th>Migration (Qte)</th>
-					<th>Reabonnement (GNF)</th>
-					<th>Vendeurs</th>
-					<th>agence</th>
-					<th>Commission (GNF)</th>
-					<th>-</th>
-				</tr>
-			</thead>
-			<tbody id="rapport-list"><div id="loader" uk-spinner></div></tbody>
-		</table>
+		<ul uk-tab>
+		    <li><a href="#">Recrutement</a></li>
+		    <li><a href="#">Reabonnement</a></li>
+		    <li><a href="#">Migration</a></li>
+		</ul>
+
+		<ul class="uk-switcher uk-margin">
+			<li>
+				<!-- RECRUTEMENT -->
+				<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Vendeurs</th>
+							<th>Type</th>
+							<th>Credit</th>
+							<th>Quantite</th>
+							<th>Montant Ttc</th>
+							<th>Commission</th>
+						</tr>
+					</thead>
+					<tbody id="recrutement-list"><div id="loader" uk-spinner></div></tbody>
+				</table>
+				<!-- // -->
+			</li>
+			<li>
+				<!-- REABONNEMENT -->
+				<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Vendeurs</th>
+							<th>Type</th>
+							<th>Credit</th>
+							<th>Quantite</th>
+							<th>Montant Ttc</th>
+							<th>Commission</th>
+						</tr>
+					</thead>
+					<tbody id="reabonnement-list"><div id="loader" uk-spinner></div></tbody>
+				</table>
+				<!-- // -->
+			</li>
+			<li>
+				<!-- MIGRATION -->
+				<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Vendeurs</th>
+							<th>Type</th>
+							<th>Credit</th>
+							<th>Quantite</th>
+							<th>Montant Ttc</th>
+							<th>Commission</th>
+						</tr>
+					</thead>
+					<tbody id="migration-list"><div id="loader" uk-spinner></div></tbody>
+				</table>
+				<!-- // -->
+			</li>
+		</ul>
+
 	</div>
 </div>
 @endsection
 @section("script")
 <script type="text/javascript">
 	$(function() {
-		var form = $adminPage.makeForm("{{csrf_token()}}","{{url('/admin/get-rapport')}}","");
-		form.on('submit',function (e) {
-			e.preventDefault();
 
-			$.ajax({
-				url  : $(this).attr('action'),
-				type : $(this).attr('method'),
-				data : $(this).serialize(),
-				dataType : 'json'
-			})
-			.done(function (data) {
-				$("#loader").hide(200);
-				$adminPage.createTableRapportVente(data,['date','recrutement','migration','reabonnement','vendeurs','commission','agence','details'],$("#rapport-list"));
-			})
-			.fail(function (data) {
-				console.log(data);
-			});
-		});
+		$logistique.getListRapportVente("{{csrf_token()}}","{{url('/admin/get-rapport')}}")
 
-		form.submit();
-
-		
 	});
 </script>
 @endsection
