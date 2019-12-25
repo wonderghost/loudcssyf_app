@@ -659,8 +659,9 @@ getListRapportVente : function (token , url) {
 }
 ,
 
-sendPromoForm : function () {
-  $("#promo-form").on('submit',function (e) {
+sendPromoForm : function (form = $("#promo-form")) {
+
+  form.on('submit',function (e) {
     e.preventDefault()
     UIkit.modal($("#modal-promo")).hide();
     $.ajax({
@@ -670,15 +671,17 @@ sendPromoForm : function () {
       data : $(this).serialize()
     })
     .done(function (data) {
-      console.log(data)
+
       UIkit.modal($("#modal-promo")).hide();
       UIkit.modal.alert("Success!").then(function () {
          $("#loader").hide()
+         $(location).attr('href','')
       })
     })
     .fail(function (data) {
       UIkit.modal($("#modal-promo")).show();
       $("#loader").hide()
+      console.log(data)
       if(data.responseJSON.errors) {
         var dataErrors = data.responseJSON.errors
 
@@ -701,7 +704,7 @@ sendPromoForm : function () {
 }
 ,
 
-getPromo : function (token, url) {
+getPromo : function (token, url,urlCancel) {
   var form = $logistique.makeForm(token,url)
   form.on('submit',function (e){
     e.preventDefault()
@@ -716,11 +719,19 @@ getPromo : function (token, url) {
         $("#new-promo").hide(200)
         $('.promo-inputs').attr('disabled','')
         $("#edit-submit").attr('disabled','')
+        $("#id-input").val(data.id)
         $("#debut-input").val(data.debut)
         $("#fin-input").val(data.fin)
         $("#intitule-input").val(data.intitule)
         $("#subvention-input").val(data.subvention)
         $("#description-input").val(data.description)
+
+        //
+        $("#delete-button").on('click',function () {
+          $logistique.interruptionPromo(token,urlCancel,$("#id-input").val())
+        })
+      } else {
+        $("#actif-promo").hide(200)
       }
     })
     .fail(function (data) {
@@ -728,6 +739,12 @@ getPromo : function (token, url) {
       $(location).attr('href','')
     })
   })
+  form.submit()
+}
+,
+interruptionPromo : function (token , url,idPromo) {
+  var form = $logistique.makeForm(token,url,idPromo)
+  $logistique.sendPromoForm(form)
   form.submit()
 }
 

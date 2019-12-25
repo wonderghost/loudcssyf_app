@@ -662,12 +662,13 @@ class AdminController extends Controller
       'intitule' =>  'required|string',
       'description'  =>  'string',
       'debut' =>  'required|date|before:fin',
-      'fin' =>  'required|date'
+      'fin' =>  'required|date|after_or_equal:'.(date("Y/m/d",strtotime("now")))
     ],[
       'required'  =>  '`:attribute` ne peut etre vide',
       'string'  =>  '`:attribute` est une chaine de caractere',
       'date'  =>  '`:attribute` doit etre une date',
-      'before'  =>  'date de `:attribute` invalide'
+      'before'  =>  'date de `:attribute` invalide',
+      'after_or_equal'  =>  'date de `:attribute` invalide'
     ]);
     try {
       if(!$this->isExistPromo()) {
@@ -713,6 +714,7 @@ class AdminController extends Controller
       $debut->setLocale('fr_FR');
       $fin->setLocale('fr_FR');
       $all = [
+        'id'  =>  $temp->id,
         'intitule'  =>  $temp->intitule,
         'debut' =>  $temp->debut,
         'fin' =>  $temp->fin,
@@ -730,6 +732,61 @@ class AdminController extends Controller
 
   // editer une promo
   public function editPromo(Request $request) {
-    
+    $validation = $request->validate([
+      'intitule' =>  'required|string',
+      'description'  =>  'string',
+      'debut' =>  'required|date|before:fin',
+      'fin' =>  'required|date|after_or_equal:'.(date("Y/m/d",strtotime("now")))
+    ],[
+      'required'  =>  '`:attribute` ne peut etre vide',
+      'string'  =>  '`:attribute` est une chaine de caractere',
+      'date'  =>  '`:attribute` doit etre une date',
+      'before'  =>  'date de `:attribute` invalide',
+      'after_or_equal'  =>  'date de `:attribute` invalide'
+    ]);
+
+    try {
+      $promo = Promo::find($request->input('id_promo'));
+      if($promo) {
+        $promo->intitule = $request->input('intitule');
+        $promo->debut = $request->input('debut');
+        $promo->fin = $request->input('fin');
+        $promo->description = $request->input('description');
+        $promo->subvention = $request->input('subvention');
+        $prix_vente_normal = Produits::where('with_serial',1)->first() ? Produits::where('with_serial',1)->first()->prix_vente : 0;
+        $promo->prix_vente = $prix_vente_normal - $request->input('subvention');
+        if($promo->prix_vente <= 0) {
+          throw new AppException("Valeur de la subvention invalide!");
+        }
+
+        $promo->save();
+        return response()->json('done');
+      } else {
+        throw new AppException("Error!");
+      }
+    } catch (AppException $e) {
+        header("Unprocessable entity",true,422);
+        die(json_encode($e->getMessage()));
+    }
+  }
+  // Interruption Promo
+
+  public function interruptionPromo(Request $request) {
+    $validation = $request->validate([
+      'ref-0' =>  'required|exists:promos,id'
+    ]);
+    try {
+      $promo = Promo::find($request->input('ref-0'));
+      if($promo) {
+        $promo->status_promo = 'inactif';
+        $promo->save();
+        return response()->json('done');
+      } else {
+        throw new AppException("Erreur!");
+      }
+    } catch (AppException $e) {
+      header("Unprocessable entity",true,422);
+      die(json_encode($e->getMessage()));
+    }
   }
 }

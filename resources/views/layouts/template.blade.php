@@ -46,7 +46,7 @@
 					</div>
 					<div class="uk-width-1-2@m">
 						{!!Form::label('Subvention')!!}
-						{!!Form::number('subvention','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Entrez la Subvention'])!!}
+						{!!Form::number('subvention','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Entrez la Subvention','min'=>'0'])!!}
 					</div>
 					<div class="uk-width-1-1@m">
 						{!!Form::label('Description')!!}
@@ -57,6 +57,7 @@
 				</div>
 				<div id="actif-promo">
 					{!!Form::open(['url'=>'/admin/promo/edit','id'=>'edit-form','uk-grid'=>'','class'=>'uk-grid-small'])!!}
+					<input type="hidden" name="id_promo" value="" id="id-input"/>
 					<div class="uk-width-1-2@m">
 						{!!Form::label('Debut de la promo')!!}
 						{!!Form::date('debut','',['class'=>'uk-input uk-margin-small uk-border-rounded promo-inputs','id'=>'debut-input'])!!}
@@ -71,13 +72,14 @@
 					</div>
 					<div class="uk-width-1-2@m">
 						{!!Form::label('Subvention')!!}
-						{!!Form::number('subvention','',['class'=>'uk-input uk-margin-small uk-border-rounded promo-inputs','id'=>'subvention-input','placeholder'=>'Entrez la Subvention'])!!}
+						{!!Form::number('subvention','',['class'=>'uk-input uk-margin-small uk-border-rounded promo-inputs','id'=>'subvention-input','placeholder'=>'Entrez la Subvention','min'=>'0'])!!}
 					</div>
 					<div class="uk-width-1-1@m">
 						{!!Form::label('Description')!!}
 						{!!Form::textarea('description','',['class'=>'uk-textarea uk-margin-small uk-border-rounded promo-inputs','id'=>'description-input','placeholder'=>'Decrivez la promo'])!!}
-						<button type="button" class="uk-button uk-button-default uk-border-rounded uk-box-shadow-small" name="button">Edit<span uk-icon="icon : pencil"></span> </button>
-						<button type="button" class="uk-button uk-button-danger uk-border-rounded uk-box-shadow-small" name="button">Interrompre<span uk-icon="icon : close"></span> </button>
+						<button type="button" class="uk-button uk-button-danger uk-border-rounded uk-box-shadow-small" style="display : none" id="reset-edit-button" name="button"><span uk-icon="icon : close"></span> Annuler</button>
+						<button type="button" class="uk-button uk-button-default uk-border-rounded uk-box-shadow-small" id="edit-button" name="button"><span uk-icon="icon : pencil"></span> Edit</button>
+						<button type="button" class="uk-button uk-button-danger uk-border-rounded uk-box-shadow-small" id="delete-button" name="button"><span uk-icon="icon : ban"></span> Interrompre</button>
 						{!!Form::submit('Validez',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-small uk-width-1-5@m uk-width-1-1@s','id'=>'edit-submit'])!!}
 					</div>
 					{!!Form::close()!!}
@@ -374,13 +376,30 @@
 
 		// ##%%%
 
-		setInterval(function () {
-			$logistique.getPromo("{{csrf_token()}}","{{url('/admin/promo/list')}}")
-		}, 3000);
 
-		$logistique.getPromo("{{csrf_token()}}","{{url('/admin/promo/list')}}")
+		$logistique.getPromo("{{csrf_token()}}","{{url('/admin/promo/list')}}","{{url('/admin/promo/interrompre')}}")
 		$logistique.sendPromoForm()
+		$logistique.sendPromoForm($("#edit-form"))
+
 		//
+
+		// edit
+		$("#edit-button").on('click',function () {
+			$(".promo-inputs").removeAttr('disabled')
+			$("#reset-edit-button").show(200)
+			$("#delete-button").hide(200)
+			$("#edit-submit").removeAttr('disabled')
+			$(this).hide(200)
+		})
+
+		// annuler l'edition
+		$("#reset-edit-button").on('click',function () {
+			$logistique.getPromo("{{csrf_token()}}","{{url('/admin/promo/list')}}","{{url('/admin/promo/interrompre')}}")
+			$('.promo-inputs').attr('disabled','')
+			$(this).hide(200)
+			$("#edit-button").show(200)
+			$("#delete-button").show(200)
+		})
 })
 </script>
 @yield('script')

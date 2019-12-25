@@ -16,6 +16,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/promo/add','AdminController@addPromo');
 	Route::post('/admin/promo/list','AdminController@getPromo');
 	Route::post('/admin/promo/edit','AdminController@editPromo');
+	Route::post('/admin/promo/interrompre','AdminController@interruptionPromo');
 	// Depenses
 	Route::post('/admin/depenses/add','AdminController@addDepenses');
 	//

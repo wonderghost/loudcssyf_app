@@ -83,7 +83,7 @@
         </li>
         <li>
           <!-- DEPENSES -->
-          <button type="button" uk-toggle="target: #modal-depenses" class="uk-width-1-4@m uk-button uk-button-primary  uk-border-rounded uk-box-shadow-small" name="button"><span uk-icon="icon : plus"></span> Ajouter une depense</button>
+          <button type="button" uk-toggle="target: #modal-depenses" class="uk-width-1-4@m uk-button uk-button-primary  uk-border-rounded uk-box-shadow-small" name="button"><span uk-icon="icon : minus"></span> Ajouter une depense</button>
 <!-- MODAL ADD DEPENSES -->
           <div id="modal-depenses" uk-modal>
               <div class="uk-modal-dialog uk-modal-body">
