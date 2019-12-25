@@ -681,7 +681,6 @@ sendPromoForm : function (form = $("#promo-form")) {
     .fail(function (data) {
       UIkit.modal($("#modal-promo")).show();
       $("#loader").hide()
-      console.log(data)
       if(data.responseJSON.errors) {
         var dataErrors = data.responseJSON.errors
 
@@ -726,7 +725,7 @@ getPromo : function (token, url,urlCancel) {
         $("#subvention-input").val(data.subvention)
         $("#description-input").val(data.description)
 
-        //
+        //  Interruption de la promo
         $("#delete-button").on('click',function () {
           $logistique.interruptionPromo(token,urlCancel,$("#id-input").val())
         })
@@ -743,9 +742,13 @@ getPromo : function (token, url,urlCancel) {
 }
 ,
 interruptionPromo : function (token , url,idPromo) {
-  var form = $logistique.makeForm(token,url,idPromo)
+  var form = $logistique.makeForm(token,url,[idPromo])
   $logistique.sendPromoForm(form)
-  form.submit()
+  UIkit.modal.confirm("Etes vous sur?").then(function() {
+    form.submit()
+  }, function () {
+      $(location).attr('href','')
+  });
 }
 
 }

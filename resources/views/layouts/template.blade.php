@@ -375,7 +375,7 @@
 		})
 
 		// ##%%%
-
+		
 
 		$logistique.getPromo("{{csrf_token()}}","{{url('/admin/promo/list')}}","{{url('/admin/promo/interrompre')}}")
 		$logistique.sendPromoForm()
