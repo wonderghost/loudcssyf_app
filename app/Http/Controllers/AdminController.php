@@ -212,10 +212,12 @@ class AdminController extends Controller
                 $this->createAccountCredit($user->username,'cga');
                 $this->newAccount($user->username,'semi_grossiste');
                 $this->newAccount($user->username);
+            } else if($user->type == 'logistique') {
+              $this->newAccount($user->username);
             } else {
                 $user->save();
             }
-            // dd($user);
+            
     		return redirect("/admin/add-user")->with('success',"Nouvel utilisateur ajouté!");
     	}
 

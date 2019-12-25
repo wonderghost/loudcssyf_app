@@ -30,6 +30,13 @@
 <script type="text/javascript">
   $(function () {
 
+    setInterval(function () {
+      // USER CHARTS
+      $logistique.userChart("{{csrf_token()}}","{{url('/admin/dashboard/user-data')}}")
+      // DEPOT CHARTS
+      $logistique.depotChart("{{csrf_token()}}","{{url('/admin/dashboard/depot-data')}}")
+    },5000);
+
     // USER CHARTS
     $logistique.userChart("{{csrf_token()}}","{{url('/admin/dashboard/user-data')}}")
     // DEPOT CHARTS

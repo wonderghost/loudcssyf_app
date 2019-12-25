@@ -6,7 +6,7 @@
 		<h3><a href="{{url('/admin')}}" uk-tooltip="tableau de bord" uk-icon="icon:arrow-left;ratio:1.5"></a> Nouvel Utilisateur</h3>
 
 		@if(session('success'))
-		<div class="uk-alert-success uk-border-rounded uk-box-shadow-small" uk-alert>
+		<div class="uk-alert-success uk-border-rounded uk-box-shadow-small uk-width-1-2@m" uk-alert>
 			<a href="#" class="uk-alert-close" uk-close></a>
 			<p>{{session('success')}}</p>
 		</div>
@@ -14,7 +14,7 @@
 
 		@if($errors->any())
 		@foreach($errors->all() as $error)
-		<div class="uk-alert-danger uk-border-rounded uk-box-shadow-small" uk-alert>
+		<div class="uk-alert-danger uk-border-rounded uk-box-shadow-small uk-width-1-2@m" uk-alert>
 			<a href="#" uk-close class="uk-alert-close"></a>
 			<p>{{$error}}</p>
 		</div>
@@ -24,19 +24,28 @@
 		<div class="uk-child-width-1-2@m">
 			<div>
 				<h4>Infos Utilisateur</h4>
-				{!!Form::email('email','',['class'=>'uk-input uk-margin-small','placeholder'=>'E-mail *'])!!}
-				{!!Form::number('phone','',['class'=>'uk-input','placeholder'=>'Telephone *'])!!}
-				{!!Form::select('type',['v_standart'=>'Vendeur standart','v_da'=>'Distibuteur Agree','commercial'=>'Responsable Commercial','logistique'=>'Responsable Logistique','gcga'=>'Gestionnaire Cga','grex'=>'Gestionnaire Rex','gdepot'=>'Gestionnaire Depot'],null,['class'=>'uk-select uk-margin-small','placeholder'=>"-- Niveau d'acces *--",'id'=>'user-type'])!!}
-				{!!Form::text('localisation',null,['class'=>'uk-input uk-margin-small','placeholder'=>'Agence','id'=>'localisation'])!!}
+				{!!Form::label("Email *")!!}
+				{!!Form::email('email','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'E-mail *'])!!}
+				{!!Form::label("Telephone")!!}
+				{!!Form::number('phone','',['class'=>'uk-input uk-border-rounded','placeholder'=>'Telephone *'])!!}
+				{!!Form::label('Niveau d\'access')!!}
+				{!!Form::select('type',['v_standart'=>'Vendeur standart','v_da'=>'Distibuteur Agree','commercial'=>'Responsable Commercial','logistique'=>'Responsable Logistique','gcga'=>'Gestionnaire Cga','grex'=>'Gestionnaire Rex','gdepot'=>'Gestionnaire Depot','controleur'=>'Controleur'],null,['class'=>'uk-select uk-margin-small','placeholder'=>"-- Niveau d'acces *--",'id'=>'user-type'])!!}
+				{!!Form::label('Agence')!!}
+				{!!Form::text('localisation',null,['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Agence','id'=>'localisation'])!!}
 				{!!Form::hidden('password','loudcssyf')!!}
 			</div>
 			<hr class="uk-divider-small">
 			<div id="agency-infos" style="display: none;">
 				<h4>Agence</h4>
+				{!!Form::label("Numero Distributeur")!!}
 				{!!Form::text('num_dist','XXX',['class'=>'uk-input uk-margin-small','placeholder'=>'Numero distributeur *'])!!}
+				{!!Form::label("Societe")!!}
 				{!!Form::text('societe','Loudcssyf-sarl',['class'=>'uk-input uk-margin-small','placeholder'=>'Societe *','id'=>'societe'])!!}
+				{!!Form::label("RCCM")!!}
 				{!!Form::text('rccm','XXX',['class'=>'uk-input uk-margin-small','placeholder'=>'RCCM'])!!}
+				{!!Form::label("Ville")!!}
 				{!!Form::text('ville','Conakry',['class'=>'uk-input uk-margin-small','placeholder'=>'Ville'])!!}
+				{!!Form::label("Adresse")!!}
 				{!!Form::text('adresse','XXX',['class'=>'uk-input uk-margin-small','placeholder'=>'Adresse'])!!}
 			</div>
 		</div>
