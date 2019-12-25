@@ -789,4 +789,40 @@ class AdminController extends Controller
       die(json_encode($e->getMessage()));
     }
   }
+
+  // DASHBOARD CONFIGURATION
+  public function dataForUserChart(Request $request) {
+    try {
+      $v_standart = User::where('type','v_standart')->get();
+      $da = User::where('type','v_da')->get();
+      return response()->json([
+        'v_standart'  =>  $v_standart->count(),
+        'v_da'  =>  $da->count(),
+      ]);
+    } catch (AppException $e) {
+      header("Unprocessable entity",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+
+  //
+  public function dataForDepotChart(Request $request) {
+    try {
+      $depots = Depots::all();
+      $all = [];
+      foreach($depots as $key => $value) {
+        $tmp = StockPrime::where('depot',$value->localisation)->where('produit',Produits::where('with_serial',1)->first()->reference)->first();
+        $qte = $tmp ? $tmp->quantite : 0 ;
+        $all[$key] = [
+          'depot' =>  $value->localisation,
+          'quantite_materiel' =>  $qte
+        ];
+      }
+      return response()->json($all);
+    } catch (AppException $e) {
+      header("Unprocessable entity",true,422);
+      die(json_encode($e->getMessage()));
+    }
+
+  }
 }

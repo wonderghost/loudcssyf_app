@@ -12,6 +12,9 @@
 */
 
 Route::middleware(['auth','admin'])->group(function () {
+	// DASHBOARD DATA
+	Route::post('/admin/dashboard/user-data','AdminController@dataForUserChart');
+	Route::post('/admin/dashboard/depot-data','AdminController@dataForDepotChart');
 	// Promo
 	Route::post('/admin/promo/add','AdminController@addPromo');
 	Route::post('/admin/promo/list','AdminController@getPromo');

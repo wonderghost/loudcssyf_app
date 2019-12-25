@@ -620,10 +620,10 @@ transactionDashboardView : function (token,url) {
       data : $(this).serialize()
     })
     .done(function (data) {
-      var myChart = new Chart($("#myChart"),{
-        type : 'line',
-        data : [10,20]
-      })
+      // var myChart = new Chart($("#myChart"),{
+      //   type : 'line',
+      //   data : [10,20]
+      // })
       console.log(data)
     })
     .fail(function (data) {
@@ -749,6 +749,104 @@ interruptionPromo : function (token , url,idPromo) {
   }, function () {
       $(location).attr('href','')
   });
+},
+// DASHBOARD CONFIGURATION
+dataChart : function (container, data = [50,20] ,labels =["Element1","Element2"],  background = ["#123","#098"]) {
+  var myChart = new Chart(container,{
+    "type":"doughnut",
+    "data":{
+      "labels":labels,
+      "datasets":[{
+        "data": data,
+        "backgroundColor": background
+      }]
+    }
+  });
+}
+,
+dataBarChart : function (container,labels=["El1","El2","El3"],data =[44,422,77],background = ["#109","#554","#981"]) {
+  var myChart = new Chart(container,{
+    "type":"bar",
+    "data":{
+      "labels": labels,
+      "datasets":[{
+        "label":"",
+        "data": data,
+        "fill":false,
+        "backgroundColor": background,
+        "borderColor": background,
+        "borderWidth":1
+      }]
+    },
+      "options":{
+
+      }
+    });
+}
+,
+dataLineChart : function () {
+  var myChart = new Chart(document.getElementById("chartjs-0"),{
+    "type":"line",
+    "data":{"labels":["January","February","March","April","May","June","July"],
+    "datasets":[{
+      "label":"My First Dataset",
+      "data":[65,59,80,81,56,55,40],
+      "fill":false,
+      "borderColor":"rgb(75, 192, 192)",
+      "lineTension":0.1
+    }]
+    },
+    "options":{}});
+}
+,
+userChart : function (token , url ) {
+  var form = $logistique.makeForm(token,url)
+  form.on('submit',function(e){
+    e.preventDefault()
+    $.ajax({
+      url : $(this).attr('action'),
+      type : 'post',
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+      $logistique.dataChart($("#userChart"),[data.v_standart,data.v_da,0],["Nos vendeurs","DA","Clients"])
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href',"")
+    })
+  })
+  form.submit()
+}
+,
+depotChart : function (token , url ) {
+  var form = $logistique.makeForm(token , url )
+  form.on('submit',function (e) {
+    e.preventDefault()
+    $.ajax({
+      url : $(this).attr('action'),
+      type : 'post',
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+
+      var labels = [] , datas = []
+      data.forEach(function (element) {
+        labels.push(element.depot)
+        datas.push(element.quantite_materiel)
+      })
+      console.log(labels)
+      console.log(datas)
+      $logistique.dataBarChart($("#depotChart"),labels,datas)
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href',"")
+    })
+  })
+  form.submit()
 }
 
 }
