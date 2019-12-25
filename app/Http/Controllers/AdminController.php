@@ -454,7 +454,12 @@ class AdminController extends Controller
               }
             break;
             case 'migration':
-            echo "Migration";
+            $validation = $request->validate([
+              'date_rapport'  =>  'required|date|before_or_equal :'.(date("Y/m/d",strtotime("now"))),
+              'vendeurs'  =>  'required|exists:users,username',
+              'quantite_materiel' =>  'required|min:1'
+            ]);
+
             if(!$this->isExistRapportOnThisDate(new Carbon($request->input('date')),$request->input('vendeurs'),'migration')) {
               $rapport = new RapportVente;
               $rapport->makeRapportId();
@@ -696,5 +701,35 @@ class AdminController extends Controller
       return $temp;
     }
     return false;
+  }
+
+  // /// recuperation de la promo active
+  public function getPromo(Request $request) {
+    $temp = $this->isExistPromo();
+    if($temp) {
+      $all = [];
+      $debut = new Carbon($temp->debut);
+      $fin = new Carbon($temp->fin);
+      $debut->setLocale('fr_FR');
+      $fin->setLocale('fr_FR');
+      $all = [
+        'intitule'  =>  $temp->intitule,
+        'debut' =>  $temp->debut,
+        'fin' =>  $temp->fin,
+        'subvention'  =>  $temp->subvention,
+        'prix_materiel' =>  $temp->prix_vente,
+        'description' =>  $temp->description
+      ];
+
+      return response()->json($all);
+    }
+    else {
+      return response()->json('fail');
+    }
+  }
+
+  // editer une promo
+  public function editPromo(Request $request) {
+    
   }
 }

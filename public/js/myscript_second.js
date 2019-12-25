@@ -699,5 +699,36 @@ sendPromoForm : function () {
     })
   })
 }
+,
+
+getPromo : function (token, url) {
+  var form = $logistique.makeForm(token,url)
+  form.on('submit',function (e){
+    e.preventDefault()
+    $.ajax({
+      url : url,
+      type : 'post',
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+      if(data !== 'fail') {
+        $("#new-promo").hide(200)
+        $('.promo-inputs').attr('disabled','')
+        $("#edit-submit").attr('disabled','')
+        $("#debut-input").val(data.debut)
+        $("#fin-input").val(data.fin)
+        $("#intitule-input").val(data.intitule)
+        $("#subvention-input").val(data.subvention)
+        $("#description-input").val(data.description)
+      }
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href','')
+    })
+  })
+  form.submit()
+}
 
 }

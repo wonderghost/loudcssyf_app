@@ -23,13 +23,14 @@
 	</div>
 	<!-- // -->
 	<!-- MODAL PROMO -->
-	<div id="modal-promo" class="uk-flex-top uk-modal-container" uk-modal>
+	<div id="modal-promo" class="uk-flex-top" uk-modal>
     <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">
       <button class="uk-modal-close-default" type="button" uk-close></button>
 			<h3 class="">Parametre Promo</h3>
 			<hr class="uk-divider-small">
-			<div class="uk-grid-small uk-child-width-1-2@m" uk-grid>
-				<div class="">
+
+				<div id="new-promo">
+					<h4>Nouvelle Promo</h4>
 					{!!Form::open(['url'=>'/admin/promo/add','id'=>'promo-form','uk-grid'=>'','class'=>'uk-grid-small'])!!}
 					<div class="uk-width-1-2@m">
 						{!!Form::label('Debut de la promo')!!}
@@ -50,19 +51,40 @@
 					<div class="uk-width-1-1@m">
 						{!!Form::label('Description')!!}
 						{!!Form::textarea('description','',['class'=>'uk-textarea uk-margin-small uk-border-rounded','placeholder'=>'Decrivez la promo'])!!}
-						{!!Form::submit('Validez',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-small uk-width-1-3@m uk-width-1-1@s','id'=>'button-submit'])!!}
+						{!!Form::submit('Validez',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-small uk-width-1-5@m uk-width-1-1@s','id'=>'button-submit'])!!}
 					</div>
 					{!!Form::close()!!}
 				</div>
-
-				<div class="">
-					<h4 class="uk-text-center">Promo en cours</h4>
-					
+				<div id="actif-promo">
+					{!!Form::open(['url'=>'/admin/promo/edit','id'=>'edit-form','uk-grid'=>'','class'=>'uk-grid-small'])!!}
+					<div class="uk-width-1-2@m">
+						{!!Form::label('Debut de la promo')!!}
+						{!!Form::date('debut','',['class'=>'uk-input uk-margin-small uk-border-rounded promo-inputs','id'=>'debut-input'])!!}
+					</div>
+					<div class="uk-width-1-2@m">
+						{!!Form::label('Fin de la promo')!!}
+						{!!Form::date('fin','',['class'=>'uk-input uk-margin-small uk-border-rounded promo-inputs','id'=>'fin-input'])!!}
+					</div>
+					<div class="uk-width-1-2@m">
+						{!!Form::label('Intitule de la Promo')!!}
+						{!!Form::text('intitule','',['class'=>'uk-input uk-margin-small uk-border-rounded promo-inputs','id'=>'intitule-input','placeholder'=>'Donnez un titre a la promo'])!!}
+					</div>
+					<div class="uk-width-1-2@m">
+						{!!Form::label('Subvention')!!}
+						{!!Form::number('subvention','',['class'=>'uk-input uk-margin-small uk-border-rounded promo-inputs','id'=>'subvention-input','placeholder'=>'Entrez la Subvention'])!!}
+					</div>
+					<div class="uk-width-1-1@m">
+						{!!Form::label('Description')!!}
+						{!!Form::textarea('description','',['class'=>'uk-textarea uk-margin-small uk-border-rounded promo-inputs','id'=>'description-input','placeholder'=>'Decrivez la promo'])!!}
+						<button type="button" class="uk-button uk-button-default uk-border-rounded uk-box-shadow-small" name="button">Edit<span uk-icon="icon : pencil"></span> </button>
+						<button type="button" class="uk-button uk-button-danger uk-border-rounded uk-box-shadow-small" name="button">Interrompre<span uk-icon="icon : close"></span> </button>
+						{!!Form::submit('Validez',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-small uk-width-1-5@m uk-width-1-1@s','id'=>'edit-submit'])!!}
+					</div>
+					{!!Form::close()!!}
 				</div>
 			</div>
-
     </div>
-	</div>
+
 	<!-- // -->
 <!-- NAVBAR-->
 <div class="uk-navbar-container uk-box-shadow-small" id="entete" uk-sticky uk-navbar>
@@ -74,7 +96,7 @@
     	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left border-button" href="{{url('/')}}" uk-tooltip="Tableau de bord"><span class="" uk-icon="icon:home ; "></span></a>
     	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small  uk-margin-left border-button"><span uk-icon="icon:bell "></span></a>
     	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left border-button"><span uk-icon="icon:comment "></span></a>
-    	<a class="uk-button uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle>Promo %</a>
+    	<a class="uk-button uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span> Promo</a>
     </div>
 		<div class="uk-navbar-right">
 			@if(Auth::user()->type != 'admin' && Auth::user()->type != 'logistique' && Auth::user()->type != 'commerciale' && Auth::user()->type !='gcga' && Auth::user()->type !='grex' && Auth::user()->type !=='gdepot')
@@ -352,6 +374,11 @@
 
 		// ##%%%
 
+		setInterval(function () {
+			$logistique.getPromo("{{csrf_token()}}","{{url('/admin/promo/list')}}")
+		}, 3000);
+
+		$logistique.getPromo("{{csrf_token()}}","{{url('/admin/promo/list')}}")
 		$logistique.sendPromoForm()
 		//
 })
