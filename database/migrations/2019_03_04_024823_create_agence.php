@@ -16,10 +16,10 @@ class CreateAgence extends Migration
         //
         Schema::create('agence',function(Blueprint $table) {
             $table->string('reference');
-            $table->string('societe')->default('Loudcssyf-sarl');
+            $table->string('societe')->default('Loudcssyf-sarl')->nullable();
             $table->string('rccm')->nullable();
             $table->string('adresse')->nullable();
-            $table->string('ville')->default('Conakry');
+            $table->string('ville')->default('Conakry')->nullable();
             $table->primary('reference');
             $table->timestamps();
             $table->string('num_dist')->nullable();
