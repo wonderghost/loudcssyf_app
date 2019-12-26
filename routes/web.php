@@ -91,6 +91,12 @@ Route::middleware(['auth','admin'])->group(function () {
 Auth::routes();
 
 Route::middleware(['auth','unblocked'])->group(function () {
+	// rapport pour controleur
+	Route::get('user/add-rapport','RapportControlleur@addRapport')->middleware('controleur');
+	Route::post('/user/send-rapport/{slug}','RapportControlleur@sendRapport')->middleware('controleur');
+	Route::post('/user/rapport/check-serial','RapportControlleur@checkSerial')->middleware('controleur');
+	Route::get('/user/all-rapport','RapportControlleur@listRapport')->middleware('controleur');
+	Route::post('/user/get-rapport','RapportControlleur@getRapport')->middleware('controleur'); // recuperation de l'historique des rapports
 	// ravitailler un depot
 	Route::get('/user/ravitailler-depot','LogistiqueController@ravitaillerDepot')->middleware('logistique');
 	Route::post('/user/ravitailler-depot','LogistiqueController@sendRavitaillementDepot')->middleware('logistique');

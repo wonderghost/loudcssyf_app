@@ -268,7 +268,7 @@ Trait Afrocashes {
 	// OPERATIONS AFROCASH
 
 	public function afrocashOperation() {
-		$afrocash_compte = Afrocash::where('type','courant')->get();
+		$afrocash_compte = Afrocash::where('type','courant')->whereIn('vendeurs',User::select('username')->whereIn('type',['v_da','v_standart']))->get();
 		return view('afrocash.operations')->withComptes($afrocash_compte);
 	}
 // ENVOI DES TRANSACTION AFROCASH

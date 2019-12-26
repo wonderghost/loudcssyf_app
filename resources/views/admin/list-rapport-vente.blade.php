@@ -6,6 +6,7 @@
 		<h3><a href="{{url('/admin')}}" uk-tooltip="tableau de bord" uk-icon="icon:arrow-left;ratio:1.5"></a> Tous les Rapports</h3>
 		<hr class="uk-divider-small">
 
+		<input type="hidden" id="user-type" value="{{Auth::user()->type}}">
 			{!!Form::open()!!}
 		<div class="uk-child-width-1-4@m" uk-grid>
 			<div>
@@ -99,8 +100,11 @@
 @section("script")
 <script type="text/javascript">
 	$(function() {
-
-		$logistique.getListRapportVente("{{csrf_token()}}","{{url('/admin/get-rapport')}}")
+		if($('#user-type').val() == 'admin') {
+			$logistique.getListRapportVente("{{csrf_token()}}","{{url('/admin/get-rapport')}}")
+		} else {
+			$logistique.getListRapportVente("{{csrf_token()}}","{{url('/user/get-rapport')}}")
+		}
 
 	});
 </script>

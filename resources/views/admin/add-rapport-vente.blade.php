@@ -50,11 +50,15 @@
 			    <li><a href="#">Reabonnement</a></li>
 			    <li><a href="#">Migration</a></li>
 			</ul>
-
+			<input type="hidden" id="user-type" value="{{Auth::user()->type}}">
 			<ul class="uk-switcher uk-margin">
 				<li>
 					<!-- RECRUTEMENT -->
+					@if(Auth::user()->type == 'admin')
 					{!!Form::open(['url'=>'/admin/send-rapport/recrutement','class'=>'uk-width-1-1@m uk-width-1-1@s','id'=>'recrutement-form'])!!}
+					@else
+					{!!Form::open(['url'=>'/user/send-rapport/recrutement','class'=>'uk-width-1-1@m uk-width-1-1@s','id'=>'recrutement-form'])!!}
+					@endif
 					<input type="hidden" name="date" value="" class="la-date">
 					<input type="hidden" name="vendeurs" value="" class="vendeurs">
 					{!!Form::label('Quantite Materiel')!!}
@@ -69,7 +73,11 @@
 				</li>
 				<li>
 					<!-- REABONNEMENT -->
+					@if(Auth::user()->type == 'admin')
 					{!!Form::open(['url'=>'/admin/send-rapport/reabonnement','class'=>'uk-width-1-1@m uk-width-1-1@s'])!!}
+					@else
+					{!!Form::open(['url'=>'/user/send-rapport/reabonnement','class'=>'uk-width-1-1@m uk-width-1-1@s'])!!}
+					@endif
 					<input type="hidden" name="date" value="" class="la-date">
 					<input type="hidden" name="vendeurs" value="" class="vendeurs">
 					{!!Form::label('Montant TTC')!!}
@@ -92,7 +100,11 @@
 				</li>
 				<li>
 					<!-- MIGRATION -->
+					@if(Auth::user()->type == 'admin')
 					{!!Form::open(['url'=>'/admin/send-rapport/migration','class'=>'uk-width-1-1@m uk-width-1-1@s'])!!}
+					@else
+					{!!Form::open(['url'=>'/user/send-rapport/migration','class'=>'uk-width-1-1@m uk-width-1-1@s'])!!}
+					@endif
 					<input type="hidden" name="date" value="" class="la-date">
 					<input type="hidden" name="vendeurs" value="" class="vendeurs">
 					{!!Form::label('Quantite Materiel')!!}
@@ -127,7 +139,11 @@
 
 			$(".quantite-materiel").on('keyup change keypress',function(e) {
 				$logistique.SerialInputCols($(this).val(),$(".serial-inputs"))
-				$logistique.CheckSerial("{{csrf_token()}}","{{url('/admin/rapport/check-serial')}}",$('.validation-button'),$('.vendeurs').val())
+				if($('#user-type').val() == 'admin') {
+					$logistique.CheckSerial("{{csrf_token()}}","{{url('/admin/rapport/check-serial')}}",$('.validation-button'),$('.vendeurs').val())
+				} else {
+					$logistique.CheckSerial("{{csrf_token()}}","{{url('/user/rapport/check-serial')}}",$('.validation-button'),$('.vendeurs').val())
+				}
 			})
 		})
 

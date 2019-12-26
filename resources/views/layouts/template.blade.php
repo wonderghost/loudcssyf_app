@@ -97,15 +97,16 @@
     	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left border-button" href="{{url('/')}}" uk-tooltip="Tableau de bord"><span class="" uk-icon="icon:home ; "></span></a>
     	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small  uk-margin-left border-button"><span uk-icon="icon:bell "></span></a>
     	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left border-button"><span uk-icon="icon:comment "></span></a>
+			
 			@if(Auth::user()->type == 'admin')
     	<a class="uk-button uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span> Promo</a>
 			@endif
     </div>
 		<div class="uk-navbar-right">
-			@if(Auth::user()->type != 'admin' && Auth::user()->type != 'logistique' && Auth::user()->type != 'commerciale' && Auth::user()->type !='gcga' && Auth::user()->type !='grex' && Auth::user()->type !=='gdepot')
+			@if(Auth::user()->type != 'admin' && Auth::user()->type != 'logistique' && Auth::user()->type != "controleur" && Auth::user()->type != 'commerciale' && Auth::user()->type !='gcga' && Auth::user()->type !='grex' && Auth::user()->type !=='gdepot')
 			<a class="uk-button"><span uk-icon="icon:location;ratio:.8"></span> <span>{{Auth::user()->localisation}}</span></a>
 			@endif
-			@if(Auth::user()->type == 'logistique' || Auth::user()->type =='gcga' || Auth::user()->type =='grex' || Auth::user()->type =='gdepot')
+			@if(Auth::user()->type == 'logistique' || Auth::user()->type =='gcga' || Auth::user()->type =='grex' || Auth::user()->type =='gdepot' || Auth::user()->type == 'controleur')
 			<a class="uk-button"><span uk-icon="icon:location;ratio:.8"></span> <span>{{Auth::user()->type}}</span></a>
 			@endif
 
@@ -198,6 +199,15 @@
                         </li>
                     @endif
                         <!-- // -->
+									@if(Auth::user()->type == 'controleur')
+									<li class="uk-parent">
+	                            <a href="#"><span uk-icon="icon:cart;ratio:0.9"></span> Rapport Ventes</a>
+	                            <ul class="uk-nav-sub">
+	                                <li><a href="{{url('user/add-rapport')}}"><span uk-icon="icon:arrow-right"></span> Ajouter</a></li>
+	                                <li><a href="{{url('user/all-rapport')}}"><span uk-icon="icon:arrow-right"></span> Toutes les ventes</a></li>
+	                            </ul>
+	                        </li>
+									@endif
                         <!-- LOGISTIC ONLY -->
                         @if(Auth::user()->type =='logistique')
                 <li class="uk-parent">
@@ -376,7 +386,7 @@
 		})
 
 		// ##%%%
-
+		@if(Auth::user()->type == 'admin')
 		$logistique.getPromo("{{csrf_token()}}","{{url('/admin/promo/list')}}","{{url('/admin/promo/interrompre')}}")
 		$logistique.sendPromoForm()
 		$logistique.sendPromoForm($("#edit-form"))
@@ -398,6 +408,7 @@
 			$("#edit-button").show(200)
 			$("#delete-button").show(200)
 		})
+		@endif
 })
 </script>
 @yield('script')
