@@ -646,9 +646,15 @@ getListRapportVente : function (token , url) {
     })
     .done(function (data) {
       console.log(data)
-      $logistique.dataList(data.recrutement,$("#recrutement-list"))
-      $logistique.dataList(data.reabonnement,$("#reabonnement-list"))
-      $logistique.dataList(data.migration,$("#migration-list"))
+      if(data.recrutement) {
+        $logistique.dataList(data.recrutement,$("#recrutement-list"))
+      }
+      if(data.reabonnement){
+        $logistique.dataList(data.reabonnement,$("#reabonnement-list"))
+      }
+      if(data.migration) {
+        $logistique.dataList(data.migration,$("#migration-list"))
+      }
     })
     .fail(function (data) {
       alert(data.responseJSON.message)
