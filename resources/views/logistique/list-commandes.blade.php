@@ -7,7 +7,12 @@
 			<a href="{{url('/user')}}" uk-tooltip="Dashboard" uk-icon="icon:arrow-left;ratio:1.5"></a>
 			 Toute les commandes</h3>
 			 <hr class="uk-divider-small">
-
+			 <div class="uk-flex uk-flex-right">
+				 	<div class="">
+				 		<label for="">Mon compte (GNF)</label>
+						<input type="text" name="" class="uk-input uk-width-1-1@m uk-border-rounded uk-text-center uk-text-lead" disabled  id="logistique-account-afrocash" value="{{number_format($compte->solde)}}">
+				 	</div>
+			 </div>
 			 @if(session("_errors"))
 			 <div class="uk-alert-danger uk-border-rounded uk-box-shadow-small" uk-alert>
 				 <a href="#" class="uk-alert-close" uk-close></a>
@@ -36,10 +41,8 @@
 						 		<th>Vendeur</th>
 						 		<th>Item</th>
 						 		<th>Quantite</th>
-						 		<th>Numero_Recu</th>
 						 		<th>Paraboles a livrer</th>
 						 		<th>Status</th>
-						 		<th>Recu</th>
 						 		<th class="uk-text-center" colspan="2">-</th>
 						 	</tr>
 						  </thead>
@@ -54,10 +57,8 @@
 						 	 <th>Vendeur</th>
 						 	 <th>Item</th>
 						 	 <th>Quantite</th>
-						 	 <th>Numero_Recu</th>
 						 	 <th>Paraboles a livrer</th>
 						 	 <th>Status</th>
-						 	 <th>Recu</th>
 						 	 <th class="uk-text-center" colspan="2">-</th>
 						  </tr>
 						  </thead>
@@ -151,8 +152,8 @@
 			})
 			.done(function (data) {
 				// recuperation des listes de commande [confrimer , non confirmer]
-				$adminPage.createTableCommandRowLogistique(data.unconfirmed,['date','vendeur','item','quantite','numero_recu','parabole','status','recu','confirm'],$("#list-commands"),"","{{url('/')}}");
-				$adminPage.createTableCommandRowLogistique(data.confirmed,['date','vendeur','item','quantite','numero_recu','parabole','status','recu','confirm'],$("#list-command-confirm"),"","{{url('/')}}");
+				$adminPage.createTableCommandRowLogistique(data.unconfirmed,['date','vendeur','item','quantite','parabole','status','confirm'],$("#list-commands"),"","{{url('/')}}");
+				$adminPage.createTableCommandRowLogistique(data.confirmed,['date','vendeur','item','quantite','parabole','status','confirm'],$("#list-command-confirm"),"","{{url('/')}}");
 			})
 			.fail(function (data) {
 				alert(data.responseJSON.message)
@@ -161,7 +162,7 @@
 		});
 
 		form.submit()
-		
+
 		setInterval(function() {
 			form.submit();
 		},20000);

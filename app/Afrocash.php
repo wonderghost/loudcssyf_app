@@ -16,4 +16,13 @@ class Afrocash extends Model
     public function vendeurs() {
       return $this->belongsTo('App\User','vendeurs','username')->first();
     }
+
+    // DEBIT DE COMPTE AFROCASH
+    public function debitAccountAfrocash($debitMontant) {
+      $this->solde-=$debitMontant;
+    }
+    // CREDIT DE COMPTE AFROCASH
+    public function creditAccountAfrocash($creditMontant) {
+      $this->solde+=$creditMontant;
+    }
 }

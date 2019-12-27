@@ -602,25 +602,14 @@ $adminPage.createTableCommandRow = function (sdata,champs=null,table,linkDetails
 						td[1].text(sdata[i].vendeurs);
 						td[2].text(sdata[i].item);
 						td[3].text(sdata[i].quantite);
-						td[4].text(sdata[i].numero_recu);
-						td[5].text(sdata[i].parabole_a_livrer);
-						td[6].text(sdata[i].status);
-						var img = $("<img/>");
-						var lightbox = $("<div></div>") , a = $("<a></a>");
-						a.attr('href',urlImage+'/uploads/'+sdata[i].image);
-						a.attr('data-caption','Numero Recu = '+sdata[i].numero_recu);
-						lightbox.attr('uk-lightbox','');
-						img.addClass('uk-icon-image');
-						img.attr('src',urlImage+'/uploads/'+sdata[i].image);
-						a.append(img);
-						lightbox.append(a);
-						td[7].append(lightbox);
+						td[4].text(sdata[i].parabole_a_livrer);
+						td[5].text(sdata[i].status);
 						// td[6].text(urlImage);
 
 						if(sdata[i].status == "en attente") {
-							td[6].addClass('uk-text-danger');
+							td[5].addClass('uk-text-danger');
 						} else {
-							td[6].addClass('uk-text-success');
+							td[5].addClass('uk-text-success');
 						}
 						// td[3].addClass('uk-text-success')
 						var a 	=	$("<a></a>");
@@ -637,7 +626,7 @@ $adminPage.createTableCommandRow = function (sdata,champs=null,table,linkDetails
 						a.text('confirm');
             a.attr('href',sdata[i].link);
 						// btnRavi.text('ravitailler');
-						td[8].append(a);
+						td[6].append(a);
 						// td[9].append(btnRavi);
 						//
 

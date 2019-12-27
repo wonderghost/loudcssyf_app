@@ -19,14 +19,6 @@
 						 	 <li><span>Commande : </span><span class="uk-text-bold" id="id-commande">{{$id}}</span></li>
 						 	 <li><span>Materiel : </span><span class="uk-text-bold" id="materiel"></span></li>
 						 	 <li><span>Quantite : </span><span class="uk-text-bold" id="quantite"></span></li>
-						 	 <li><span>Numero du recu : </span><span class="uk-text-bold" id="numero-recu"></span></li>
-						 	 <li>
-						 		 <span>Recu : </span>
-						 		 <img id="img-recu" src="" class="uk-width-small" uk-img>
-						 		 <div uk-lightbox>
-						 			 <a class="uk-button-default uk-border-rounded" id="recu" href="" data-caption="Piece jointe">cliquez pour agrandir</a>
-						 	 </div>
-						 	 </li>
 						 	 <li><span>Parabole dû : </span><span id="parabole-du"></span></li>
 						 	 <li><span></span><span id="code-livraison" class=""></span></li>
 						 </ul>

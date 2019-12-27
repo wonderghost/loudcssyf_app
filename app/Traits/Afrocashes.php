@@ -451,4 +451,5 @@ Trait Afrocashes {
 
 		return view('afrocash.transactions')->withTransac($transactions);
 	}
+	
 }

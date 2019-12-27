@@ -46,7 +46,7 @@
 				 @if($test && $par)
 			     <li>
 						 <!-- COMMANDE MATERIEL -->
-						 {!!Form::open(['url'=>'/user/new-command/material','id'=>'command-form','files' => true])!!}
+						 {!!Form::open(['url'=>'/user/new-command/material','id'=>'command-form'])!!}
 
 						 {!!Form::hidden('compense',$compense,['id'=>'compense'])!!}
 
@@ -59,8 +59,16 @@
 							 <div id="{{$material->reference}}">
 								 <label>Qte{!!Form::number('quantite',0,['class'=>'uk-input uk-text-center  qte','placeholder'=>'Quantite','id'=>'qte-'.$material->reference])!!}</label>
 								 {!!Form::hidden('mat-reference',$material->reference)!!}
+								 <!-- PRIX DE VENTE  -->
 								 {!!Form::hidden('',$material->prix_vente,['id'=>'prix-normal-'.$material->reference])!!}
+								 <!-- // -->
+								 <!-- PRIX D'ACHAT UNITAIRE -->
+								 @if(Auth::user()->type == 'v_da')
 								 {!!Form::hidden('',($material->prix_vente-($material->marge/1.18)),['class'=>'totaltopay','id'=>'totaltopay-'.$material->reference])!!}
+								 @else
+								 {!!Form::hidden('',($material->prix_vente-(0/1.18)),['class'=>'totaltopay','id'=>'totaltopay-'.$material->reference])!!}
+								 @endif
+								 <!-- // -->
 								 {!!Form::hidden('',0,['class'=>'all-somme','id'=>'somm-'.$material->reference])!!}
 							 </div>
 							 <div>
@@ -142,34 +150,19 @@
 								 {!!Form::text('',0,['class'=>'uk-input','disabled','id'=>'subv-topay'])!!}
 							 </div>
 						 </div>
-						 <div class="uk-grid-collapse" uk-grid>
-							 <div class="uk-width-5-6@m">
-								 <span>RECU DE VERSEMENT (No)</span>
-							 </div>
-							 <div class="uk-width-1-6@m">
-								 {!!Form::text('numero_versement','',['class'=>'uk-input','id'=>'numero-versement','placeholder'=>'XXX'])!!}
-							 </div>
-						 </div>
-						 <div class="uk-grid-collapse" uk-grid>
-							 <div class="uk-width-5-6@m">
-								 <span>PIECE JOINTE</span>
-							 </div>
-							 <div class="uk-width-1-6@m">
-								 {!!Form::file('recu')!!}
-							 </div>
-						 </div>
 						 <div class="uk-grid-collapse uk-text-lead" uk-grid>
 							 <div class="uk-width-5-6@m">
 								 <span>TOTAL A PAYER (GNF)</span>
 							 </div>
 							 <div class="uk-width-1-6@m">
 								 {!!Form::text('total',0,['class'=>'uk-input','disabled','id'=>'total-topay'])!!}
+								 {!!Form::hidden('prix_achat','',['id'=>'prix-achat'])!!}
 							 </div>
 						 </div>
 						 <hr class="uk-divider-small">
-						 <button type="" class="uk-button-default uk-border-rounded">valider<span uk-icon="icon:check;ratio:.8"></span></button>
-							 @endif
+						 <button type="submit" class="uk-button uk-button-primary uk-border-rounded uk-box-shadow-small">valider<span uk-icon="icon:check;ratio:.8"></span></button>
 							 {!!Form::close()!!}
+							 @endif
 					 </li>
 					 @endif
 			     <li>
@@ -281,6 +274,7 @@
 			tttt = tttt + parseInt(element.value);
 		});
 		$("#total-topay").val(lisibilite_nombre(tttt));
+		$("#prix-achat").val(tttt)
 	});
 		//
 

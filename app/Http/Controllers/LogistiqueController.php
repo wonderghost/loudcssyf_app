@@ -659,7 +659,11 @@ class LogistiqueController extends Controller
 
 
     public function allCommandes() {
-        return view('logistique.list-commandes');
+      $afrocashAccount = Afrocash::where([
+        'vendeurs'  =>  Auth::user()->username,
+        'type'  =>  'courant'
+      ])->first();
+      return view('logistique.list-commandes')->withCompte($afrocashAccount);
     }
 
 // recuperer les commandes non confirmer

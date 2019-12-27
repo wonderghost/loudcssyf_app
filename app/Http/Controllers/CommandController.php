@@ -15,13 +15,18 @@ use App\Livraison;
 use App\RavitaillementVendeur;
 use Carbon\Carbon;
 use App\Traits\Livraisons;
+use App\Traits\Cga;
 use App\Exceptions\AppException;
 use App\CommandCredit;
+use App\Afrocash;
+use App\User;
+use App\TransactionAfrocash;
 
 class CommandController extends Controller
 {
     //
 		use Livraisons;
+		use Cga;
 		// VERIFICATION S'IL N'EXISTE PAS UNE COMMANDE EN ATTENTE
 		public function isExistCommandEnAttente() {
 			$temp = CommandMaterial::where([
@@ -59,13 +64,18 @@ class CommandController extends Controller
 
 	public function sendCommand(CommandRequest $request) {
 		try {
+			// VERIFIER LA DISPONIBILITE DU CGA
+			if(!$this->isCgaDisponible(Auth::user()->username,$request->input('prix_achat'))) {
+				throw new AppException("Solde Afrocash Insuffisant!");
+			}
+
+			// @@@@@
 			if(!$this->isExistCommandEnAttente()) {
 				$command = new CommandMaterial;// CREATION DE LA COMMANDE
 				$command_produit = new CommandProduit;
 				$command_produit_parabole = new CommandProduit;
 
 				$command->id_commande = "CM-".time();
-				$command->numero_versement = $request->input('numero_versement');
 				$command->vendeurs = Auth::user()->username;
 
 				$command_produit->commande = $command->id_commande;
@@ -90,18 +100,37 @@ class CommandController extends Controller
 					$command_produit->quantite_commande = $request->input('quantite');
 					$command_produit->parabole_a_livrer = $request->input('quantite');
 
-					if($request->hasFile('recu')) {
 
-						$tmp = $request->file('recu');
-						$extension = $tmp->getClientOriginalExtension();
-						$command->image = 'cmd'.time().'.'.$extension;
-						if($request->file('recu')->move(config('image.path'),$command->image)) {
-							$command->save();
-							$command_produit->save();
-							$command_produit_parabole->save();
-							return redirect('/user/new-command')->with('success','Commande envoyée!');
-						}
-					}
+					$command->save();
+					$command_produit->save();
+					$command_produit_parabole->save();
+
+					// DEBIT DU COMPTE AFROCASH DU VENDEUR / DA
+					$afrocash_courant_vendeurs = Afrocash::where([
+						'vendeurs'	=>	Auth::user()->username,
+						'type'	=>	'courant'
+					])->first();
+
+					// CREDIT DU COMPOTE AFROCASH LOGISTIQUE
+					$afrocash_courant_logistique = Afrocash::where([
+						'vendeurs'	=>	User::where('type','logistique')->first()->username,
+						'type'	=>	'courant'
+					])->first();
+
+					$afrocash_courant_vendeurs->debitAccountAfrocash($request->input('prix_achat'));
+					$afrocash_courant_logistique->creditAccountAfrocash($request->input('prix_achat'));
+
+					$afrocash_courant_vendeurs->save();
+					$afrocash_courant_logistique->save();
+
+					$transaction = new TransactionAfrocash;
+					$transaction->compte_debite = $afrocash_courant_vendeurs->numero_compte;
+					$transaction->compte_credite = $afrocash_courant_logistique->numero_compte;
+					$transaction->montant = $request->input('prix_achat');
+
+					$transaction->save();
+
+					return redirect('/user/new-command')->with('success','Commande envoyée!');
 			} else {
 				throw new AppException("Vous avez une commande en attente de confirmation!");
 			}

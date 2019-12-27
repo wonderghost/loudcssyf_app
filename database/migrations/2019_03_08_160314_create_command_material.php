@@ -20,8 +20,6 @@ class CreateCommandMaterial extends Migration
 
           $table->string('id_commande')->unique();
           $table->enum('status',['confirmed','unconfirmed'])->default('unconfirmed');
-          $table->string('numero_versement');
-          $table->string('image');
           $table->string("vendeurs");
           $table->foreign('vendeurs')->references('username')->on('users');
 

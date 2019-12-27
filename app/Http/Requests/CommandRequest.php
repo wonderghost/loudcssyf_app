@@ -27,8 +27,14 @@ class CommandRequest extends FormRequest
             //
             'quantite'  =>  'required|numeric|min:1',
             'mat-reference'   =>  'required|string',
-            'numero_versement'  =>  'required|string',
-            'recu' => 'required|image'
+            'prix_achat'  =>  'required|numeric'
         ];
+    }
+
+    public function messages() {
+      return [
+        'required'  =>  'Champ `:attribute` Obligatoire',
+        'sting' =>  'Champ `:attribute` est une chaine de caratere'
+      ];
     }
 }
