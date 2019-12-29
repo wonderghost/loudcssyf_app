@@ -854,5 +854,37 @@ depotChart : function (token , url ) {
   })
   form.submit()
 }
+,
+// recuperer la liste des commandes pour le compte admin
+getListCommandes : function (token , url) {
+  var form = $logistique.makeForm(token,url)
+  form.on('submit',function (e) {
+    e.preventDefault()
+    $.ajax({
+      url : $(this).attr('action'),
+      type : 'post',
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+      console.log(data)
+      $logistique.dataList(data.unconfirmed,$("#non-confirm-commande"))
+      $logistique.dataList(data.confirmed,$("#confirm-commande"))
+
+      $(".command-table .col:last-child").remove()
+      $(".command-table .col:last-child").remove()
+      if($(".command-table .col:last-child").text() == "en attente") {
+        $(".command-table .col:last-child").addClass('uk-text-danger')
+      } else {
+        $(".command-table .col:last-child").addClass('uk-text-success')
+      }
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href','/')
+    })
+  })
+  form.submit()
+}
 
 }

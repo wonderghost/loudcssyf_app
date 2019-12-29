@@ -7,6 +7,7 @@ use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserEditRequest;
 use App\Traits\Similarity;
 use App\Traits\Afrocashes;
+use App\Traits\Livraisons;
 use App\Traits\Rapports;
 use App\Traits\Cga;
 use App\User;
@@ -33,6 +34,7 @@ use App\Credit;
 use App\TransactionCreditCentral;
 use App\Exceptions\AppException;
 use App\Promo;
+use App\CommandMaterial;
 
 class AdminController extends Controller
 {
@@ -41,6 +43,7 @@ class AdminController extends Controller
     use Afrocashes;
     use Rapports;
     use Cga;
+    use Livraisons;
 
     // etat du depot central
     public function etatDepotCentral() {
@@ -576,6 +579,36 @@ class AdminController extends Controller
         ];
       }
       return response()->json($all);
+    } catch (AppException $e) {
+      header("Unprocessable entity",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+
+  // Commandes
+  public function allCommandes() {
+    return view('admin.all-commandes');
+  }
+
+  public function getAllCommandes(Request $request) {
+    try {
+      $commands= CommandMaterial::where('status','unconfirmed')->orderBy('created_at','desc')->get();
+      $_commands = CommandMaterial::where("status",'confirmed')->orderBy('created_at','desc')->get();
+
+      $all =  $this->organizeCommandList($commands);
+      $_all = $this->organizeCommandList($_commands);
+      // recuperation des livraison
+      $livraison = $this->livraisonStateRequest('unvalidate');
+      $livraison = $this->organizeLivraison($livraison);
+
+      $_livraison = $this->livraisonStateRequest('validate');
+      $_livraison = $this->organizeLivraison($_livraison);
+      return response()->json([
+        'unconfirmed' =>  $all,
+        'confirmed' =>  $_all,
+        'livraison_unvalidate'  =>  $livraison,
+        'livraison_validate'  =>  $_livraison
+      ]);
     } catch (AppException $e) {
       header("Unprocessable entity",true,422);
       die(json_encode($e->getMessage()));

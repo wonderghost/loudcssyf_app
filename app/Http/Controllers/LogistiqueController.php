@@ -659,26 +659,20 @@ class LogistiqueController extends Controller
 
 
     public function allCommandes() {
-      $afrocashAccount = Afrocash::where([
-        'vendeurs'  =>  Auth::user()->username,
-        'type'  =>  'courant'
-      ])->first();
+      if(Auth::user()->type == 'logistique') {
+        $afrocashAccount = Afrocash::where([
+          'vendeurs'  =>  Auth::user()->username,
+          'type'  =>  'courant'
+          ])->first();
+      } else {
+        $afrocashAccount = Afrocash::where([
+          'vendeurs'  =>  User::where('type','logistique')->first()->username,
+          'type'  =>  'courant'
+        ])->first();
+      }
       return view('logistique.list-commandes')->withCompte($afrocashAccount);
     }
 
-// recuperer les commandes non confirmer
-    public function getAllCommandes(Request $request) {
-        $commands= CommandMaterial::where('status','unconfirmed')->orderBy('created_at','desc')->get();
-        $_commands = CommandMaterial::where("status",'confirmed')->orderBy('created_at','desc')->get();
-
-        $all =  $this->organizeCommandList($commands);
-        $_all = $this->organizeCommandList($_commands);
-
-        return response()->json([
-          'unconfirmed' =>  $all,
-          'confirmed' =>  $_all
-        ]);
-    }
 
     public function getParaboleDu(Request $request) {
 
@@ -729,5 +723,18 @@ class LogistiqueController extends Controller
         }
     }
 
+    // recuperer les commandes non confirmer
+        public function getAllCommandes(Request $request) {
+            $commands= CommandMaterial::where('status','unconfirmed')->orderBy('created_at','desc')->get();
+            $_commands = CommandMaterial::where("status",'confirmed')->orderBy('created_at','desc')->get();
+
+            $all =  $this->organizeCommandList($commands);
+            $_all = $this->organizeCommandList($_commands);
+
+            return response()->json([
+              'unconfirmed' =>  $all,
+              'confirmed' =>  $_all
+            ]);
+        }
 
 }

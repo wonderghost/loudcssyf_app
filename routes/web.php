@@ -12,6 +12,9 @@
 */
 
 Route::middleware(['auth','admin'])->group(function () {
+	// COMMANDES
+	Route::get('/admin/commandes','AdminController@allCommandes');
+	Route::post('/admin/commandes/all','AdminController@getAllCommandes');
 	// DASHBOARD DATA
 	Route::post('/admin/dashboard/user-data','AdminController@dataForUserChart');
 	Route::post('/admin/dashboard/depot-data','AdminController@dataForDepotChart');

@@ -97,7 +97,7 @@
     	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left border-button" href="{{url('/')}}" uk-tooltip="Tableau de bord"><span class="" uk-icon="icon:home ; "></span></a>
     	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small  uk-margin-left border-button"><span uk-icon="icon:bell "></span></a>
     	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left border-button"><span uk-icon="icon:comment "></span></a>
-			
+
 			@if(Auth::user()->type == 'admin')
     	<a class="uk-button uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span> Promo</a>
 			@endif
@@ -187,7 +187,7 @@
                 <li class="uk-parent">
                     <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Commandes</a>
                     <ul class="uk-nav-sub">
-                        <li><a href="{{url('/user/commandes')}}"><span uk-icon="icon:arrow-right"></span> Toutes les Commandes</a></li>
+                        <li><a href="{{url('/admin/commandes')}}"><span uk-icon="icon:arrow-right"></span> Toutes les Commandes</a></li>
                     </ul>
                 </li>
                 <li class="uk-parent">
