@@ -603,6 +603,7 @@ class AdminController extends Controller
 
       $_livraison = $this->livraisonStateRequest('validate');
       $_livraison = $this->organizeLivraison($_livraison);
+      
       return response()->json([
         'unconfirmed' =>  $all,
         'confirmed' =>  $_all,

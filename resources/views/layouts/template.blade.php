@@ -158,7 +158,7 @@
                     <ul class="uk-nav-sub">
                         <li><a href="{{url('/admin/add-account-credit')}}"><span uk-icon="icon:arrow-right"></span> Comptes</a></li>
                         <!-- <li><a href="#"><span uk-icon="icon:arrow-right"></span> Creer un compte</a></li> -->
-                        <li><a href="#"><span uk-icon="icon:arrow-right"></span> Toutes les transactions</a></li>
+                        <!-- <li><a href="#"><span uk-icon="icon:arrow-right"></span> Toutes les transactions</a></li> -->
                     </ul>
                 </li>
 								<li class="uk-parent">

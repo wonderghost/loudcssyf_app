@@ -871,13 +871,47 @@ getListCommandes : function (token , url) {
       $logistique.dataList(data.unconfirmed,$("#non-confirm-commande"))
       $logistique.dataList(data.confirmed,$("#confirm-commande"))
 
+      $logistique.dataList(data.livraison_unvalidate.original.all,$("#livraison-unvalidate"))
+      $logistique.dataList(data.livraison_validate.original.all,$("#livraison-validate"))
+
+      details = $("<button></button>")
+
+      details.text('details')
+      details.attr('uk-toggle','target : #modal-livraison-detail')
+      details.addClass('uk-button-default uk-border-rounded detail-livraison')
+      // ajout du button details
+
+      details.attr('uk-icon',"icon : more ; ratio : 0.7")
+
+
+      $('#livraison-validate .row').append(details)
+
+      // ajout du fichier au click sur le bouton Details
+
+      $('#livraison-validate .detail-livraison').each(function (index , element) {
+        $(element).attr('filename',data.livraison_validate.original.file[index].filename)
+      })
+
+      $('.detail-livraison').on('click',function(e) {
+        $("#file-link").attr('href',"/livraison_serial_files/"+$(this).attr('filename'))
+        $("#file-link").attr('download',$(this).attr('filename'))
+      })
+
+      // ///
+
       $(".command-table .col:last-child").remove()
       $(".command-table .col:last-child").remove()
-      if($(".command-table .col:last-child").text() == "en attente") {
-        $(".command-table .col:last-child").addClass('uk-text-danger')
-      } else {
-        $(".command-table .col:last-child").addClass('uk-text-success')
-      }
+
+      $('.command-table .col:last-child').each(function (index , element) {
+        if(element.innerText == 'en attente') {
+          $(element).addClass('uk-text-success')
+        }
+        else {
+          console.log(element)
+          $(element).addClass('uk-text-danger')
+        }
+      })
+
     })
     .fail(function (data) {
       alert(data.responseJSON.message)
