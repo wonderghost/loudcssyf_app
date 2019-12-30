@@ -18,9 +18,7 @@
 
 		<ul uk-tab>
 		    <li><a href="#">Materiel</a></li>
-		    <li><a href="#">Cga</a></li>
-		    <li><a href="#">Rex</a></li>
-		    <li><a href="#">Afrocash Semi Grossiste</a></li>
+		    <li><a href="#">Credit</a></li>
 		</ul>
 
 		<ul class="uk-switcher uk-margin">
@@ -104,56 +102,51 @@
 			</li>
 			<li>
 				<!-- CGA -->
-				<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
-					<thead>
-						<tr>
-							<th>Date</th>
-							<th>Vendeurs</th>
-							<th>Type</th>
-							<th>Credit</th>
-							<th>Quantite</th>
-							<th>Montant Ttc</th>
-							<th>Commission</th>
-						</tr>
-					</thead>
-					<tbody id="reabonnement-list"><div id="loader" uk-spinner></div></tbody>
-				</table>
-				<!-- // -->
-			</li>
-			<li>
-				<!-- REX -->
-				<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
-					<thead>
-						<tr>
-							<th>Date</th>
-							<th>Vendeurs</th>
-							<th>Type</th>
-							<th>Credit</th>
-							<th>Quantite</th>
-							<th>Montant Ttc</th>
-							<th>Commission</th>
-						</tr>
-					</thead>
-					<tbody id="migration-list"><div id="loader" uk-spinner></div></tbody>
-				</table>
-				<!-- // -->
-			</li>
-			<li>
-				<!-- AFROCASH -->
-				<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
-					<thead>
-						<tr>
-							<th>Date</th>
-							<th>Vendeurs</th>
-							<th>Type</th>
-							<th>Credit</th>
-							<th>Quantite</th>
-							<th>Montant Ttc</th>
-							<th>Commission</th>
-						</tr>
-					</thead>
-					<tbody id="migration-list"><div id="loader" uk-spinner></div></tbody>
-				</table>
+				<div uk-grid>
+          <div class="uk-width-auto@m">
+              <ul class="uk-tab-left" uk-tab="connect: #cga-tab-left; animation: uk-animation-fade">
+                  <li><a href="#">En attente de confirmation</a></li>
+                  <li><a href="#">Deja confirmee</a></li>
+
+              </ul>
+          </div>
+          <div class="uk-width-expand@m">
+              <ul id="cga-tab-left" class="uk-switcher">
+                  <li>
+										<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+											<thead>
+												<tr>
+													<th>Date</th>
+													<th>Vendeurs</th>
+													<th>Type</th>
+													<th>Montant</th>
+													<th>status</th>
+													<th>Numero Recu</th>
+													<th>Recu</th>
+												</tr>
+											</thead>
+											<tbody id="credit-unvalidate-commande"><div id="loader" uk-spinner></div></tbody>
+										</table>
+									</li>
+                  <li>
+										<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+											<thead>
+												<tr>
+													<th>Date</th>
+													<th>Vendeurs</th>
+													<th>Type</th>
+													<th>Montant</th>
+													<th>status</th>
+													<th>Numero Recu</th>
+													<th>Recu</th>
+												</tr>
+											</thead>
+											<tbody id="credit-validate-commande"><div id="loader" uk-spinner></div></tbody>
+										</table>
+									</li>
+              </ul>
+          </div>
+      </div>
 				<!-- // -->
 			</li>
 		</ul>
@@ -165,6 +158,7 @@
 <script type="text/javascript">
 	$(function() {
 		$logistique.getListCommandes("{{csrf_token()}}","{{url('/admin/commandes/all')}}")
+		$logistique.getCommandes("{{csrf_token()}}","{{url('/admin/commandes/credit-all')}}")
 	});
 </script>
 @endsection

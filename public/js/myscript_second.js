@@ -570,7 +570,7 @@ listSerialByVendeur : function (token,url,ref) {
     form.submit()
   }
   ,
-  organizeCommandGcga : function (data,table = 'unvalidated') {
+  organizeCommandGcga : function (data,table = 'unvalidated',container='unvalidated',secondContainer="validated") {
     data.forEach(function (element , index) {
 
       var div = $("<div></div>") , diva = $("<a></a>")
@@ -589,20 +589,22 @@ listSerialByVendeur : function (token,url,ref) {
       td.html(valider)
 
       retd.html(div)
-
+      // console.log(container)
+      // console.log(secondContainer)
       if(table == 'unvalidated') {
 
-        $("#unvalidated .row:eq("+index+")").children().eq(7).remove()
-        $("#unvalidated .row").eq(index).append(retd)
-        $("#unvalidated .row").eq(index).append(td)
-        $("#unvalidated .row:eq("+index+")").children().eq(0).remove()
+        $("#"+container+" .row:eq("+index+")").children().eq(7).remove()
+        $("#"+container+" .row").eq(index).append(retd)
+        $("#"+container+" .row").eq(index).append(td)
+        $("#"+container+" .row:eq("+index+")").children().eq(0).remove()
+        $("#"+container+" .row:eq("+index+")").children().eq(4).addClass('uk-text-danger')
 
       } else {
 
-        $("#validated .row").eq(index).append(retd)
-        $("#validated .row:eq("+index+")").children().eq(7).remove()
-        $("#validated .row:eq("+index+")").children().eq(0).remove()
-
+        $("#"+secondContainer+" .row").eq(index).append(retd)
+        $("#"+secondContainer+" .row:eq("+index+")").children().eq(7).remove()
+        $("#"+secondContainer+" .row:eq("+index+")").children().eq(0).remove()
+        $("#"+secondContainer+" .row:eq("+index+")").children().eq(4).addClass('uk-text-success')
       }
 
     })
@@ -867,7 +869,7 @@ getListCommandes : function (token , url) {
       data : $(this).serialize()
     })
     .done(function (data) {
-      console.log(data)
+
       $logistique.dataList(data.unconfirmed,$("#non-confirm-commande"))
       $logistique.dataList(data.confirmed,$("#confirm-commande"))
 
@@ -907,10 +909,37 @@ getListCommandes : function (token , url) {
           $(element).addClass('uk-text-danger')
         }
         else {
-          console.log(element)
           $(element).addClass('uk-text-success')
         }
       })
+
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href','/')
+    })
+  })
+  form.submit()
+}
+
+// list des commandes pour l 'administrateur
+,
+getCommandes : function (token , url) {
+  var form = $logistique.makeForm(token,url)
+  form.on('submit',function (e) {
+    e.preventDefault()
+    $.ajax({
+      url : url ,
+      type : 'post',
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+      $logistique.dataList(data.unvalidated,$("#credit-unvalidate-commande"))
+      $logistique.dataList(data.validated,$("#credit-validate-commande"))
+
+      $logistique.organizeCommandGcga(data.unvalidated,'unvalidated','credit-unvalidate-commande','')
+      $logistique.organizeCommandGcga(data.validated,'validated','','credit-validate-commande')
 
     })
     .fail(function (data) {

@@ -233,4 +233,15 @@ class CreditController extends Controller
 			}
 			return $temp;
 		}
+
+	// RECUPERATION DE LA LISTE DE TOUTES LES COMMANES , POUR L'ADMINISTRATEUR
+	public function getAllCommandes(Request $request) {
+		$commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg','rex'])->where('status','unvalidated')->orderBy('created_at','desc')->get();
+		$commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg','rex'])->where('status','validated')->orderBy('created_at','desc')->get();
+		return response()->json([
+			'unvalidated'	=>	$this->organizeCommandGcga($commands_unvalidated),
+			'validated'	=>	$this->organizeCommandGcga($commands_validated)
+		]);
+	}
+
 }
