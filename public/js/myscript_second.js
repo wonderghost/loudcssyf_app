@@ -904,11 +904,11 @@ getListCommandes : function (token , url) {
 
       $('.command-table .col:last-child').each(function (index , element) {
         if(element.innerText == 'en attente') {
-          $(element).addClass('uk-text-success')
+          $(element).addClass('uk-text-danger')
         }
         else {
           console.log(element)
-          $(element).addClass('uk-text-danger')
+          $(element).addClass('uk-text-success')
         }
       })
 

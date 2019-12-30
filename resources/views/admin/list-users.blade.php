@@ -7,11 +7,11 @@
 		<div class="uk-grid-collapse uk-grid-divider" uk-grid>
 			<div class="uk-width-1-2@m">
 				<h4><span uk-icon="icon:search"></span> Search</h4>
-				{!!Form::text('search','',['class'=>'uk-input','placeholder'=>'...'])!!}
+				{!!Form::text('search','',['class'=>'uk-input uk-border-rounded','placeholder'=>'...'])!!}
 			</div>
 			<div class="uk-width-1-2@m">
 				<h4><span uk-icon="icon:more-vertical"></span> Filter </h4>
-				{!!Form::select('filter',['All'=>'all','da'=>'Distributeur Agree','v_stand'=>'Vendeur Standart'],null,['class' => 'uk-select'])!!}
+				{!!Form::select('filter',['All'=>'all','da'=>'Distributeur Agree','v_stand'=>'Vendeur Standart'],null,['class' => 'uk-select uk-border-rounded'])!!}
 			</div>
 		</div>
 
