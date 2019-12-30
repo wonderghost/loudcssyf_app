@@ -647,7 +647,8 @@ getListRapportVente : function (token , url) {
       data : $(this).serialize()
     })
     .done(function (data) {
-      console.log(data)
+      
+      $("#commission-jour").val(data.commission)
       if(data.recrutement) {
         $logistique.dataList(data.recrutement,$("#recrutement-list"))
       }

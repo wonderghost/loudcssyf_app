@@ -13,20 +13,20 @@
 
 				<span uk-icon="icon:search"></span> {!!Form::label('Search')!!}
 
-				{!!Form::text('search','',['class'=>'uk-input uk-margin-small','placeholder'=>'Search...'])!!}
+				{!!Form::text('search','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Search...'])!!}
 			</div>
 			<div>
 				<span uk-icon="icon:calendar"></span> {!!Form::label('Date')!!}
-				{!!Form::text('date','',['class'=>'uk-input uk-margin-small', 'placeholder'=>'date...'])!!}
+				{!!Form::text('date','',['class'=>'uk-input uk-margin-small uk-border-rounded', 'placeholder'=>'date...'])!!}
 			</div>
 			<div>
 				<span uk-icon="icon:location"></span> {!!Form::label('Vendeurs')!!}
-				<select name="vendeurs" class="uk-select uk-margin-small">
+				<select name="vendeurs" class="uk-select uk-margin-small uk-border-rounded">
 				</select>
 			</div>
 			<div>
 				{!!Form::label('Commission du jour (GNF)')!!}
-				{!!Form::text('commission_jour','N/A',['class'=>'uk-input uk-margin-small uk-text-center','disabled'])!!}
+				{!!Form::text('commission_jour','N/A',['class'=>'uk-input uk-margin-small uk-text-center uk-border-rounded','disabled','id'=>'commission-jour'])!!}
 			</div>
 		</div>
 		{!!Form::close()!!}
@@ -100,12 +100,20 @@
 @section("script")
 <script type="text/javascript">
 	$(function() {
+		setInterval(function () {
+			if($('#user-type').val() == 'admin') {
+				$logistique.getListRapportVente("{{csrf_token()}}","{{url('/admin/get-rapport')}}")
+			} else {
+				$logistique.getListRapportVente("{{csrf_token()}}","{{url('/user/get-rapport')}}")
+			}
+		}, 3000);
+		
 		if($('#user-type').val() == 'admin') {
 			$logistique.getListRapportVente("{{csrf_token()}}","{{url('/admin/get-rapport')}}")
 		} else {
 			$logistique.getListRapportVente("{{csrf_token()}}","{{url('/user/get-rapport')}}")
 		}
-
+		//
 	});
 </script>
 @endsection

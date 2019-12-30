@@ -277,6 +277,7 @@ Trait Rapports {
 	        'reabonnement'  => $reabonnement,
 	        'migration' =>   $migration
 	      ];
+				$commission = number_format(RapportVente::whereIn('type',['recrutement','reabonnement'])->sum('commission'));
 	      $all = [];
 
 	      foreach ($rapports as $key => $value) {
@@ -293,6 +294,8 @@ Trait Rapports {
 	          ];
 	        }
 	      }
+
+				$all['commission'] = $commission;
 	      return response()->json($all);
 	    }
 
