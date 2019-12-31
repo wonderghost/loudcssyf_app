@@ -977,6 +977,7 @@ ajaxSearch : function (token , url,wordSearch) {
 usersList : function (token , url , userType = "") {
   var form = $logistique.makeForm(token, url ,[userType])
   form.on('submit',function (e) {
+    $("#table-loader").show(200)
     e.preventDefault()
     $.ajax({
       url : url ,
@@ -985,6 +986,7 @@ usersList : function (token , url , userType = "") {
       dataType : 'json'
     })
     .done(function (data){
+      $("#table-loader").hide(200)
       $logistique.dataList(data,$("#list-users"))
       $logistique.organizeUsersList(data)
 

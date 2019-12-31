@@ -5,16 +5,19 @@
 		<h3><a href="{{url('/admin')}}" uk-tooltip="tableau de bord" uk-icon="icon:arrow-left;ratio:1.5"></a> Tous les utilisateurs</h3>
 		<hr class="uk-divider-small"></hr>
 		<div class="uk-grid-collapse uk-grid-divider" uk-grid>
-			<div class="uk-width-1-2@m">
+			<div class="uk-width-1-3@m">
 				<h4><span uk-icon="icon:search"></span> Search</h4>
 				{!!Form::text('search','',['class'=>'uk-input uk-border-rounded','placeholder'=>'...','id'=>'users-search'])!!}
 			</div>
-			<div class="uk-width-1-2@m">
+			<div class="uk-width-1-3@m">
 				<h4><span uk-icon="icon:more-vertical"></span> Filter </h4>
 				{!!Form::select('filter',['all'=>'All','v_da'=>'Distributeur Agree','v_standart'=>'Vendeur Standart','logistique'=>"Logistique",'gcga'=>"Gestionnaire Cga"],null,['class' => 'uk-select uk-border-rounded','id'=>'type-filter'])!!}
 			</div>
-		</div>
+			<div class="uk-width-1-3@m">
 
+			</div>
+		</div>
+		<div id="table-loader" style="display: none;" uk-spinner></div>
 		<table  class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-hover">
 			<thead>
 				<tr>
