@@ -31,6 +31,9 @@ Trait Cga {
 		try {
 			// verifier la disponibilite du montant dans le compte afrocash
 			$afrocash_account = $this->getAfrocashAccountByUsername(Auth::user()->username);
+			if(!$afrocash_account) {
+				throw new AppException("Compte Afrocash inexistant!");
+			}
 			if($afrocash_account->solde >= $request->input('montant')) {
 				$commande = new CommandCredit;
 				$commande->type = 'cga';
