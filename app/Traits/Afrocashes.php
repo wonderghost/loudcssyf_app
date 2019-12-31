@@ -59,10 +59,10 @@ Trait Afrocashes {
 				$solde_rex = 'inexistant';
 			}
 			$all[$key]	=	[
-				'vendeurs'	=>	$value->username." ( ".$agence->societe." )",
-				'afrocash_courant'=>	number_format($value->afroCash()->first()->solde),
+				'vendeurs'	=>	$value->username." ( ".$value->localisation." )",
+				'afrocash_courant'=>	$value->afroCash()->first() ? number_format($value->afroCash()->first()->solde) : 'null',
 				'afrocash_semi_grossiste'	=>	$solde_ac_sm,
-				'cga'	=>	number_format($value->cgaAccount()->solde),
+				'cga'	=>	$value->cgaAccount() ?	number_format($value->cgaAccount()->solde) : 'null',
 				'rex'	=> $solde_rex
 			];
 		}
@@ -451,5 +451,5 @@ Trait Afrocashes {
 
 		return view('afrocash.transactions')->withTransac($transactions);
 	}
-	
+
 }
