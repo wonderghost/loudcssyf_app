@@ -467,6 +467,25 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
     }
     return false;
   }
-  // /
+  // /AJAX REQUEST FOR SEARCH
+
+  public function searchText(Request $request,$slug) {
+    try {
+      $result = "";
+      switch ($slug) {
+        case 'users':
+        
+          break;
+        default:
+          throw new AppException("Erreur !");
+          break;
+      }
+      return response()->json($result);
+    } catch (AppException $e) {
+      header("Unprocessibilyt entity",true,422);
+      die($e->getMessage());
+    }
+
+  }
 
 }

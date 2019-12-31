@@ -1,4 +1,3 @@
-
 var $logistique = {
   makeForm : function (formToken,url,reference = ['']) {
     var form = $("<form></form>");form.attr('action',url);form.attr('method','post');
@@ -647,7 +646,7 @@ getListRapportVente : function (token , url) {
       data : $(this).serialize()
     })
     .done(function (data) {
-      
+
       $("#commission-jour").val(data.commission)
       if(data.recrutement) {
         $logistique.dataList(data.recrutement,$("#recrutement-list"))
@@ -949,6 +948,102 @@ getCommandes : function (token , url) {
     })
   })
   form.submit()
-}
+},
 
+// fonction de recherche rapide
+
+ajaxSearch : function (token , url,wordSearch) {
+  var form = $logistique.makeForm(token , url ,[wordSearch])
+  form.on('submit',function (e) {
+    e.preventDefault()
+    $.ajax({
+      url : url ,
+      type : 'post',
+      data : $(this).serialize(),
+      dataType : 'json'
+    })
+    .done(function (data) {
+      console.log(data)
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href','/')
+    })
+  })
+  form.submit()
+}
+,
+// LIST DES UTILISATEURS
+usersList : function (token , url , userType = "") {
+  var form = $logistique.makeForm(token, url ,[userType])
+  form.on('submit',function (e) {
+    e.preventDefault()
+    $.ajax({
+      url : url ,
+      type : 'post',
+      data : $(this).serialize(),
+      dataType : 'json'
+    })
+    .done(function (data){
+      $logistique.dataList(data,$("#list-users"))
+      $logistique.organizeUsersList(data)
+
+      })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href','/')
+    })
+  })
+  form.submit()
+}
+,
+organizeUsersList : function (data) {
+  // ajout des bouttons editer et supprimer
+
+  data.forEach(function (element ,index) {
+    var edit = $("<a></a>") , stateButton = $("<a></a>")
+    edit.attr('href','edit-users/'+element.username)
+    edit.attr('uk-icon','icon : pencil')
+    edit.addClass('uk-button uk-button-small uk-button-primary uk-border-rounded uk-text-capitalize uk-box-shadow-small')
+    edit.text("Editer")
+
+    $("#list-users .row:eq("+index+")").append(edit)
+
+    stateButton.addClass('uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-text-capitalize state-action')
+    stateButton.attr('title',element.username)
+    stateButton.attr('data-state',element.status)
+
+    if(element.status == "unblocked") {
+      $("#list-users .row:eq("+index+") .col").eq(5).addClass('uk-text-success')
+      stateButton.addClass('uk-button-danger')
+      stateButton.text("blocker")
+      stateButton.attr('uk-icon','icon : lock')
+      $("#list-users .row:eq("+index+")").append(stateButton)
+    } else {
+      $("#list-users .row:eq("+index+") .col").eq(5).addClass('uk-text-danger')
+      stateButton.addClass('uk-button-default')
+      stateButton.attr('style','background : rgba(100,200,100) ; color : #fff')
+      stateButton.text('debloquer')
+      stateButton.attr('uk-icon','icon : unlock')
+      $("#list-users .row:eq("+index+")").append(stateButton)
+    }
+
+  })
+
+  $('.state-action').on('click',function (e){
+    var user = $(this).attr('title')
+
+    if($(this).attr('data-state') == 'blocked') {
+      UIkit.modal.confirm("Etes vous sur de vouloir debloquer cet utilisateur ?").then(function () {
+        $adminPage.unblockUser(token,"/admin/unblock-user",user);
+      })
+    } else {
+      UIkit.modal.confirm("Etes vous sur de vouloir bloquer cet utilisateur ?").then(function () {
+        $adminPage.blockUser(token,"/admin/block-user",user);
+      })
+    }
+
+  })
+
+},
 }
