@@ -8,23 +8,26 @@
 		<div class="uk-grid-collapse uk-grid-divider uk-child-width-1-2@m" uk-grid>
 			<div>
 				<h3>Nouvelle Formule</h3>
-				@if($errors->has('nom') || $errors->has('prix')) 
-				<div class="uk-alert uk-alert-danger">
-					<button class="uk-align-right close-button"  uk-icon="icon:close"></button>
-					<div>{{$errors->first('nom')}}</div>
-					<div>{{$errors->first('prix')}}</div>
+
+				@if($errors->any())
+				@foreach($errors->all() as $error)
+				<div class="uk-alert-danger uk-border-rounded uk-box-shadow-small" uk-alert>
+					<a href="#" class="uk-alert-close" uk-close></a>
+					<p>{{$error}}</p>
 				</div>
+				@endforeach
 				@endif
-				@if(session('success')) 
-				<div class="uk-alert uk-alert-success">
-					<button class="uk-align-right close-button"  uk-icon="icon:close"></button>
-					{{session('success')}}
+
+				@if(session('success'))
+				<div class="uk-alert-success uk-border-rounded uk-box-shadow-small" uk-alert>
+					<a href="#" class="uk-alert-close" uk-close></a>
+					<p>{{session('success')}}</p>
 				</div>
 				@endif
 				{!!Form::open()!!}
 				{!!Form::text('nom','',['class'=>'uk-input uk-margin-small','placeholder'=>'Nom de la formule'])!!}
 				{!!Form::text('prix','',['class'=>'uk-input uk-margin-small','placeholder'=>'Prix'])!!}
-				<button class="uk-button-default uk-border-rounded" type="submit">valider <span uk-icon="icon:check;ratio:.8"></span></button>
+				<button class="uk-button-primary uk-button uk-button-small uk-box-shadow-small uk-border-rounded" type="submit">valider <span uk-icon="icon:check;ratio:.8"></span></button>
 				{!!Form::close()!!}
 			</div>
 			<div>
@@ -46,7 +49,7 @@
 				{!!Form::open(['url'=>'/admin/add-option'])!!}
 				{!!Form::text('nom','',['class'=>'uk-input uk-margin-small','placeholder'=>"Nom de l'option"])!!}
 				{!!Form::text('prix','',['class'=>'uk-input uk-margin-small', 'placeholder'=>"Prix de l'option"])!!}
-				<button type="submit" class="uk-button-default uk-border-rounded">valider <span uk-icon="icon:check;ratio:.8"></span></button>
+				<button type="submit" class="uk-button-primary uk-button uk-button-small uk-box-shadow-small uk-border-rounded">valider <span uk-icon="icon:check;ratio:.8"></span></button>
 				{!!Form::close()!!}
 			</div>
 			<div>

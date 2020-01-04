@@ -51,7 +51,7 @@
 					<div class="uk-width-1-1@m">
 						{!!Form::label('Description')!!}
 						{!!Form::textarea('description','',['class'=>'uk-textarea uk-margin-small uk-border-rounded','placeholder'=>'Decrivez la promo'])!!}
-						{!!Form::submit('Validez',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-small uk-width-1-5@m uk-width-1-1@s','id'=>'button-submit'])!!}
+						{!!Form::submit('Validez',['class'=>'uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-width-1-5@m uk-width-1-1@s','id'=>'button-submit'])!!}
 					</div>
 					{!!Form::close()!!}
 				</div>
@@ -77,10 +77,10 @@
 					<div class="uk-width-1-1@m">
 						{!!Form::label('Description')!!}
 						{!!Form::textarea('description','',['class'=>'uk-textarea uk-margin-small uk-border-rounded promo-inputs','id'=>'description-input','placeholder'=>'Decrivez la promo'])!!}
-						<button type="button" class="uk-button uk-button-danger uk-border-rounded uk-box-shadow-small" style="display : none" id="reset-edit-button" name="button"><span uk-icon="icon : close"></span> Annuler</button>
-						<button type="button" class="uk-button uk-button-default uk-border-rounded uk-box-shadow-small" id="edit-button" name="button"><span uk-icon="icon : pencil"></span> Edit</button>
-						<button type="button" class="uk-button uk-button-danger uk-border-rounded uk-box-shadow-small" id="delete-button" name="button"><span uk-icon="icon : ban"></span> Interrompre</button>
-						{!!Form::submit('Validez',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-small uk-width-1-5@m uk-width-1-1@s','id'=>'edit-submit'])!!}
+						<button type="button" class="uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small" style="display : none" id="reset-edit-button" name="button"><span uk-icon="icon : close"></span> Annuler</button>
+						<button type="button" class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small" id="edit-button" name="button"><span uk-icon="icon : pencil"></span> Edit</button>
+						<button type="button" class="uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small" id="delete-button" name="button"><span uk-icon="icon : ban"></span> Interrompre</button>
+						{!!Form::submit('Validez',['class'=>'uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-width-1-5@m uk-width-1-1@s','id'=>'edit-submit'])!!}
 					</div>
 					{!!Form::close()!!}
 				</div>
@@ -95,12 +95,12 @@
         <a href="" class="uk-navbar-item uk-logo">LAYE DISTRIBUTION</a>
     </div>
     <div class="uk-navbar-center">
-    	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left border-button" href="{{url('/')}}" uk-tooltip="Tableau de bord"><span class="" uk-icon="icon:home ; "></span></a>
-    	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small  uk-margin-left border-button"><span uk-icon="icon:bell "></span></a>
-    	<a class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left border-button"><span uk-icon="icon:comment "></span></a>
+    	<a class="uk-button uk-button-small uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left border-button" href="{{url('/')}}" uk-tooltip="Tableau de bord"><span class="" uk-icon="icon:home ; "></span></a>
+    	<a class="uk-button uk-button-small uk-button-default uk-border-pill uk-box-shadow-hover-small  uk-margin-left border-button"><span uk-icon="icon:bell "></span></a>
+    	<a class="uk-button uk-button-small uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left border-button"><span uk-icon="icon:comment "></span></a>
 
 			@if(Auth::user()->type == 'admin')
-    	<a class="uk-button uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span> Promo</a>
+    	<a class="uk-button uk-button-small uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span> Promo</a>
 			@endif
     </div>
 		<div class="uk-navbar-right">
@@ -113,7 +113,7 @@
 
 			<a href="#" class="uk-button"><span uk-icon="icon : user ; ratio : .8"></span> {{Auth::user()->username}}</a>
 			{!!Form::open(['url'=>'/logout'])!!}
-			<button class="uk-button uk-button-default uk-border-pill uk-box-shadow-hover-small border-button" type="submit" uk-tooltip="Deconnexion"><span uk-icon="icon:sign-out"></span></button>
+			<button class="uk-button uk-button-small uk-margin-right uk-button-default uk-border-pill uk-box-shadow-hover-small border-button" type="submit" uk-tooltip="Deconnexion"><span uk-icon="icon:sign-out"></span></button>
 			{!!Form::close()!!}
 		</div>
 </div>

@@ -990,6 +990,20 @@ usersList : function (token , url , userType = "") {
       $logistique.dataList(data,$("#list-users"))
       $logistique.organizeUsersList(data)
 
+      $('.state-action').on('click',function (e){
+        var user = $(this).attr('title')
+
+        if($(this).attr('data-state') == 'blocked') {
+          UIkit.modal.confirm("Etes vous sur de vouloir debloquer cet utilisateur ?").then(function () {
+            $adminPage.unblockUser(token,"/admin/unblock-user",user);
+          })
+        } else {
+          UIkit.modal.confirm("Etes vous sur de vouloir bloquer cet utilisateur ?").then(function () {
+            $adminPage.blockUser(token,"/admin/block-user",user);
+          })
+        }
+
+      })
       })
     .fail(function (data) {
       alert(data.responseJSON.message)
@@ -1031,21 +1045,5 @@ organizeUsersList : function (data) {
     }
 
   })
-
-  $('.state-action').on('click',function (e){
-    var user = $(this).attr('title')
-
-    if($(this).attr('data-state') == 'blocked') {
-      UIkit.modal.confirm("Etes vous sur de vouloir debloquer cet utilisateur ?").then(function () {
-        $adminPage.unblockUser(token,"/admin/unblock-user",user);
-      })
-    } else {
-      UIkit.modal.confirm("Etes vous sur de vouloir bloquer cet utilisateur ?").then(function () {
-        $adminPage.blockUser(token,"/admin/block-user",user);
-      })
-    }
-
-  })
-
 },
 }

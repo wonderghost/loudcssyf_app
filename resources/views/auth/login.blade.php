@@ -25,7 +25,7 @@
                 {!!Form::open(['url'=>'/login'])!!}
                 {!!Form::text('username','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Username'])!!}
                 {!!Form::password('password',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Password'])!!}
-                {!!Form::submit('Login',['class'=>'uk-button uk-button-primary uk-border-rounded uk-box-shadow-small uk-width-1-3@m'])!!}
+                {!!Form::submit('Login',['class'=>'uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-width-1-3@m'])!!}
                 {!!Form::close()!!}
             </div>
             <div></div>

@@ -200,7 +200,7 @@ $adminPage.createTableData = function (sdata,champs=null,table) {
 						var span = $("<span></span>");
 						var linkEdit = $("<button></button>");linkEdit.addClass('uk-border-rounded');
 						linkEdit.attr('type','button');
-						linkEdit.addClass('uk-button uk-button-primary edit-button');
+						linkEdit.addClass('uk-button uk-button-small uk-button-primary edit-button');
 						linkEdit.attr('id',sdata[i].reference);
 
 						linkEdit.text('edit')
