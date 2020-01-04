@@ -46,11 +46,13 @@
 			$logistique.usersList("{{csrf_token()}}","{{url('admin/users/list')}}",$(this).val())
 		})
 		// AJAX SEARCH
-		// $("#users-search").on('keyup',function(e) {
-		// 	if($(this).val() !== "") {
-		// 		$logistique.ajaxSearch("{{csrf_token()}}","{{url('admin/search/users')}}",$(this).val())
-		// 	}
-		// })
+		$("#users-search").on('keyup',function(e) {
+			if($(this).val() !== "") {
+				$logistique.ajaxSearch("{{csrf_token()}}","{{url('admin/search/users')}}",$(this).val())
+			} else {
+				$logistique.usersList("{{csrf_token()}}","{{url('admin/users/list')}}","all")
+			}
+		})
 	});
 </script>
 @endsection

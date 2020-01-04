@@ -16,6 +16,7 @@ use App\RavitaillementVendeur;
 use Carbon\Carbon;
 use App\Traits\Livraisons;
 use App\Traits\Cga;
+use App\Traits\Afrocashes;
 use App\Exceptions\AppException;
 use App\CommandCredit;
 use App\Afrocash;
@@ -27,6 +28,7 @@ class CommandController extends Controller
     //
 		use Livraisons;
 		use Cga;
+		use Afrocashes;
 		// VERIFICATION S'IL N'EXISTE PAS UNE COMMANDE EN ATTENTE
 		public function isExistCommandEnAttente() {
 			$temp = CommandMaterial::where([
@@ -64,9 +66,14 @@ class CommandController extends Controller
 
 	public function sendCommand(CommandRequest $request) {
 		try {
-			// VERIFIER LA DISPONIBILITE DU CGA
-			if(!$this->isCgaDisponible(Auth::user()->username,$request->input('prix_achat'))) {
-				throw new AppException("Solde Afrocash Insuffisant!");
+			// VERIFIER LA DISPONIBILITE DE L'AFROCASH
+			// verifier la disponibilite du montant dans le compte afrocash
+			$afrocash_account = $this->getAfrocashAccountByUsername(Auth::user()->username);
+			if(!$afrocash_account) {
+				throw new AppException("Compte Afrocash inexistant!");
+			}
+			if($afrocash_account->solde < $request->input('montant')) {
+				throw new AppException("Solde Indisponible!");
 			}
 
 			// @@@@@

@@ -845,8 +845,6 @@ depotChart : function (token , url ) {
         labels.push(element.depot)
         datas.push(element.quantite_materiel)
       })
-      console.log(labels)
-      console.log(datas)
       $logistique.dataBarChart($("#depotChart"),labels,datas)
     })
     .fail(function (data) {
@@ -857,6 +855,8 @@ depotChart : function (token , url ) {
   form.submit()
 }
 ,
+
+
 // recuperer la liste des commandes pour le compte admin
 getListCommandes : function (token , url) {
   var form = $logistique.makeForm(token,url)
@@ -964,6 +964,8 @@ ajaxSearch : function (token , url,wordSearch) {
     })
     .done(function (data) {
       console.log(data)
+      $logistique.dataList(data,$("#list-users"))
+      $logistique.organizeUsersList(data)
     })
     .fail(function (data) {
       alert(data.responseJSON.message)
@@ -1046,4 +1048,26 @@ organizeUsersList : function (data) {
 
   })
 },
+// STATISTIQUE DE VENTES
+venteChart : function (token , url , vendeur) {
+  var form = $logistique.makeForm(token , url , [vendeur])
+  form.on('submit',function(e) {
+    e.preventDefault()
+    $.ajax({
+      url : url ,
+      type : 'post',
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+      var datas = [data.recrutement,data.reabonnement,data.migration]
+      $logistique.dataBarChart($("#resume-vente"),['recrutement','reabonnement','migration'],datas)
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href',"/")
+    })
+  })
+  form.submit()
+}
 }

@@ -160,7 +160,7 @@
 							 </div>
 						 </div>
 						 <hr class="uk-divider-small">
-						 <button type="submit" class="uk-button uk-button-primary uk-border-rounded uk-box-shadow-small">valider<span uk-icon="icon:check;ratio:.8"></span></button>
+						 <button type="submit" class="uk-button uk-button-primary uk-box-shadow-small uk-border-rounded uk-box-shadow-small">valider<span uk-icon="icon:check;ratio:.8"></span></button>
 							 {!!Form::close()!!}
 							 @endif
 					 </li>
@@ -170,7 +170,7 @@
 						 {!!Form::open(['url'=>'user/new-command/cga','class'=>'uk-width-1-2@m'])!!}
 						 {!!Form::label('Montant')!!}
 						 {!!Form::number('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Montant Credit'])!!}
-						 {!!Form::submit('validez',['class'=>'uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
+						 {!!Form::submit('validez',['class'=>'uk-button-primary uk-button uk-button-small uk-border-rounded uk-box-shadow-small'])!!}
 						 {!!Form::close()!!}
 					 </li>
 					 <li>
@@ -178,7 +178,7 @@
 						 {!!Form::open(['url'=>'user/new-command/rex','class'=>'uk-width-1-2@m'])!!}
 						 {!!Form::label('Montant')!!}
 						 {!!Form::number('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Montant Credit'])!!}
-						 {!!Form::submit('validez',['class'=>'uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
+						 {!!Form::submit('validez',['class'=>'uk-button-primary uk-button-small uk-button uk-border-rounded uk-box-shadow-small'])!!}
 						 {!!Form::close()!!}
 					 </li>
 					 @if(Auth::user()->type == 'v_standart')
@@ -200,7 +200,7 @@
 					             <button class="uk-button-default uk-padding-small uk-border-circle" type="button" tabindex="-1"><span uk-icon="image"></span></button>
 					         </div>
 								</div>
-								{!!Form::submit("Envoyer",['class'=>'uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
+								{!!Form::submit("Envoyer",['class'=>'uk-button-primary uk-button uk-button-small uk-border-rounded uk-box-shadow-small'])!!}
 				    </div>
 						 {!!Form::close()!!}
 					 </li>

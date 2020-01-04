@@ -451,5 +451,5 @@ Trait Afrocashes {
 
 		return view('afrocash.transactions')->withTransac($transactions);
 	}
-
+// VERIFIER LA DISPONIBILITE DU SOLDE AFROCASH POUR LA COMMANDE
 }

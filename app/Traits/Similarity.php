@@ -472,9 +472,18 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
   public function searchText(Request $request,$slug) {
     try {
       $result = "";
+      $search = "%".$request->input('ref-0')."%";
       switch ($slug) {
         case 'users':
-        
+            $users = User::where('type','<>','admin')->orderBy('localisation','desc')->get();
+            $userCollection = collect([]);
+
+            foreach ($users as $key => $element) {
+              if(str_contains(strtolower($element->localisation),strtolower($request->input('ref-0'))) || str_contains(strtolower($element->email),strtolower($request->input('ref-0')))) {
+                $userCollection->prepend($element->only(['username','type','email','phone','localisation','status']));
+              }
+            }
+            $result=$userCollection;
           break;
         default:
           throw new AppException("Erreur !");

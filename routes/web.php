@@ -97,6 +97,8 @@ Route::middleware(['auth','admin'])->group(function () {
 Auth::routes();
 
 Route::middleware(['auth','unblocked'])->group(function () {
+	// CONSTRUCTION DU TABLEAU DE BORD
+	Route::post('/user/dashboard/chart-vente','VendeurController@statistiqueVente');
 	// rapport pour controleur
 	Route::get('user/add-rapport','RapportControlleur@addRapport')->middleware('controleur');
 	Route::post('/user/send-rapport/{slug}','RapportControlleur@sendRapport')->middleware('controleur');
