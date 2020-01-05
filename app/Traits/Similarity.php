@@ -479,7 +479,11 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
             $userCollection = collect([]);
 
             foreach ($users as $key => $element) {
-              if(str_contains(strtolower($element->localisation),strtolower($request->input('ref-0'))) || str_contains(strtolower($element->email),strtolower($request->input('ref-0')))) {
+              if(
+                str_contains(strtolower($element->localisation),strtolower($request->input('ref-0'))) ||
+                str_contains(strtolower($element->email),strtolower($request->input('ref-0'))) ||
+                str_contains(strtolower($element->username),strtolower($request->input('ref-0')))
+              ) {
                 $userCollection->prepend($element->only(['username','type','email','phone','localisation','status']));
               }
             }

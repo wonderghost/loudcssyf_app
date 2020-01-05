@@ -11,7 +11,7 @@
 			</div>
 			<div class="uk-width-1-3@m">
 				<h4><span uk-icon="icon:more-vertical"></span> Filter </h4>
-				{!!Form::select('filter',['all'=>'All','v_da'=>'Distributeur Agree','v_standart'=>'Vendeur Standart','logistique'=>"Logistique",'gcga'=>"Gestionnaire Cga"],null,['class' => 'uk-select uk-border-rounded','id'=>'type-filter'])!!}
+				{!!Form::select('filter',['all'=>'All','v_da'=>'Distributeur Agree','v_standart'=>'Vendeur Standart','logistique'=>"Logistique",'gcga'=>"Gestionnaire Cga",'grex'=>"Gestionnaire Rex",'controleur'=>"Controleur",'gdepot'=>"Gestionnaire Depot"],null,['class' => 'uk-select uk-border-rounded','id'=>'type-filter'])!!}
 			</div>
 			<div class="uk-width-1-3@m">
 

@@ -224,8 +224,8 @@ class CreditController extends Controller
 					'id'	=>	$value->id,
 					'date'	=>	$date->toFormattedDateString()." (".$date-> diffForHumans()." )",
 					'vendeurs'	=>	$value->vendeurs." (".$value->vendeurs()->localisation." )",
-					'montant'	=>	number_format($value->montant),
 					'type'	=>	$value->type,
+					'montant'	=>	number_format($value->montant),
 					'status'	=>	$value->status,
 					'numero_recu'	=>	$value->numero_recu ? $value->numero_recu : 'undefined',
 					'recu'	=>	$value->recu ? $value->recu : 'undefined'
