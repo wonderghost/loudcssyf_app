@@ -35,6 +35,8 @@ use App\TransactionCreditCentral;
 use App\Exceptions\AppException;
 use App\Promo;
 use App\CommandMaterial;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -634,6 +636,22 @@ class AdminController extends Controller
       header("Unprocessable entity",true,422);
       die(json_encode($e->getMessage()));
     }
+  }
 
+  // REINITIALISER UN UTILISATEUR
+  public function resetUser(Request $request) {
+    try {
+      if(Hash::check($request->input('admin_password'),Auth::user()->password)) {
+        User::where('username',$request->input('user'))->update([
+          'password'  =>  bcrypt("loudcssyf")
+        ]);
+        return response()->json('done');
+      } else {
+        throw new AppException("Mot de passe incorrect!");
+      }
+    } catch (AppException $e) {
+      header("Unprocessible entity",true,422);
+      die(json_encode($e->getMessage()));
+    }
   }
 }

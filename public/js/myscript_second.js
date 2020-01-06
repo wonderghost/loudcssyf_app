@@ -1006,6 +1006,11 @@ usersList : function (token , url , userType = "") {
         }
 
       })
+
+      $('.reset-action').on('click',function (e) {
+        $("#users").html($(this).attr('data-localisation'))
+        $("#user-id").val($(this).attr('data-username'))
+      })
       })
     .fail(function (data) {
       alert(data.responseJSON.message)
@@ -1019,17 +1024,29 @@ organizeUsersList : function (data) {
   // ajout des bouttons editer et supprimer
 
   data.forEach(function (element ,index) {
-    var edit = $("<a></a>") , stateButton = $("<a></a>")
+    var edit = $("<a></a>") , stateButton = $("<a></a>") , reset = $("<a></a>")
     edit.attr('href','edit-users/'+element.username)
     edit.attr('uk-icon','icon : pencil')
-    edit.addClass('uk-button uk-button-small uk-button-primary uk-border-rounded uk-text-capitalize uk-box-shadow-small')
+    edit.addClass('uk-button uk-margin-small uk-margin-small-left uk-button-small uk-button-primary uk-border-rounded uk-text-capitalize uk-box-shadow-small')
     edit.text("Editer")
 
     $("#list-users .row:eq("+index+")").append(edit)
 
-    stateButton.addClass('uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-text-capitalize state-action')
-    stateButton.attr('title',element.username)
+    stateButton.addClass('uk-button uk-margin-small uk-margin-small-left uk-button-small uk-border-rounded uk-box-shadow-small uk-text-capitalize state-action')
+    stateButton.attr('title',element.localisation)
     stateButton.attr('data-state',element.status)
+
+    reset.addClass("uk-button uk-margin-small uk-margin-small-left uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small uk-text-capitalize reset-action")
+    reset.attr('uk-icon','icon : refresh')
+    reset.attr('href',"#modal-confirm-password")
+    reset.attr('uk-toggle','')
+    reset.attr('title',element.localisation)
+    reset.attr('data-username',element.username)
+    reset.attr('data-localisation',element.localisation)
+    reset.text("Reset")
+
+    $("#list-users .row:eq("+index+")").append(reset)
+
 
     if(element.status == "unblocked") {
       $("#list-users .row:eq("+index+") .col").eq(5).addClass('uk-text-success')
@@ -1071,9 +1088,10 @@ venteChart : function (token , url , vendeur) {
   form.submit()
 },
 // TOUTES LES TRANSACTIONS CHEZ LE RECOUVREUR
-allTransactionForRecouvrement : function (token , url ) {
-  var form = $logistique.makeForm(token,url)
+allTransactionForRecouvrement : function (token , url ,vendeurs = "all" , state = "all") {
+  var form = $logistique.makeForm(token,url,[vendeurs,state])
   form.on('submit',function (e) {
+    $('.loader').show(200)
     e.preventDefault()
     $.ajax({
       url : url ,
@@ -1082,6 +1100,7 @@ allTransactionForRecouvrement : function (token , url ) {
       data : $(this).serialize()
     })
     .done(function (data) {
+      $('.loader').hide(200)
       $logistique.dataList(data,$("#all-transactions"))
       data.forEach(function (element , index) {
         if(element.status == 'non effectue') {
@@ -1120,9 +1139,10 @@ getMontantDuRecouvrement : function (token , url , vendeur) {
   })
   form.submit()
 },
-allRecouvrement : function (token , url ) {
-  var form = $logistique.makeForm(token,url)
+allRecouvrement : function (token , url , vendeurs) {
+  var form = $logistique.makeForm(token,url , [vendeurs])
   form.on('submit',function(e) {
+    $('.loader').show(200)
     e.preventDefault()
     $.ajax({
       url : url ,
@@ -1131,6 +1151,7 @@ allRecouvrement : function (token , url ) {
       data : $(this).serialize()
     })
     .done(function (data) {
+      $('.loader').hide(200)
       $logistique.dataList(data,$("#all-recouvrement"))
     })
     .fail(function (data) {
@@ -1141,4 +1162,6 @@ allRecouvrement : function (token , url ) {
 
   form.submit()
 }
+,
+
 }

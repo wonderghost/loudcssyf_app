@@ -56,7 +56,28 @@ class RecouvrementController extends Controller
 
     public function allTransactions(Request $request) {
       try {
-        $transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('type','semi_grossiste')->get())->get();
+        if($request->input('ref-0') == "all") {
+          if($request->input('ref-1') == "all") {
+            $transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('type','semi_grossiste')->get())->get();
+          } else {
+            if($request->input('ref-1') == "recouvre") {
+              $transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('type','semi_grossiste')->get())->whereNotNull('recouvrement')->get();
+            } else {
+              $transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('type','semi_grossiste')->get())->whereNull('recouvrement')->get();
+            }
+          }
+        } else {
+          if($request->input('ref-1') == "all") {
+            $transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('vendeurs',$request->input('ref-0'))->where('type','semi_grossiste')->get())->get();
+          } else {
+            if($request->input('ref-1') == "recouvre") {
+              $transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('vendeurs',$request->input('ref-0'))->where('type','semi_grossiste')->get())->whereNotNull('recouvrement')->get();
+            } else {
+              $transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('vendeurs',$request->input('ref-0'))->where('type','semi_grossiste')->get())->whereNull('recouvrement')->get();
+            }
+          }
+          // $transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('type','semi_grossiste')->where('vendeurs',$request->input('ref-0'))->get())->get();
+        }
         $all = [];
         foreach($transactions as $key => $value) {
           $date = new Carbon($value->created_at);
@@ -96,7 +117,11 @@ class RecouvrementController extends Controller
     // TOUS LES RECOUVREMENTS
     public function allRecouvrement(Request $request) {
       try {
-        $recouvrement = Recouvrement::all();
+        if($request->input('ref-0') == "all") {
+          $recouvrement = Recouvrement::all();
+        } else {
+          $recouvrement = Recouvrement::where('vendeurs',$request->input('ref-0'))->get();
+        }
         $all=[];
         foreach($recouvrement as $key=>$value) {
           $date = new Carbon($value->created_at);

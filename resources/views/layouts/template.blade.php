@@ -12,7 +12,13 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.css" integrity="sha256-IvM9nJf/b5l2RoebiFno92E5ONttVyaEEsdemDC6iQA=" crossorigin="anonymous" />
 		<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.uikit.min.css">
 		<link rel="stylesheet" href="{{asset('css/style.css')}}">
-
+		<script type="text/javascript">
+		function noBack(){window.history.forward()}
+		noBack();
+		window.onload=noBack;
+		window.onpageshow=function(evt){if(evt.persisted)noBack()}
+		window.onunload=function(){void(0)}
+		</script>
 </head>
 <body>
 	<!-- loader -->

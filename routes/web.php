@@ -82,6 +82,8 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/unblock-user','AdminController@unblockUser');
 	Route::get('/admin/history-depot','LogistiqueController@historyDepot');
 	Route::post('/admin/history-depot','LogistiqueController@getHistoryDepot');
+	// Reinitialiser un utilisateur
+	Route::post('admin/reset-user','AdminController@resetUser');
 	// liste des depots
 	Route::get('/admin/list-depot','AdminController@listDepot');
 	//

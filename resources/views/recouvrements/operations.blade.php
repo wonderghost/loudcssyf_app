@@ -5,7 +5,6 @@
   <div class="uk-container">
     <h3><a href="" uk-tooltip="Nouveau Client" uk-icon="icon:arrow-left;ratio:1.5"></a> Recouvrements</h3>
 		<hr class="uk-divider-small">
-
     @if($errors->any())
     @foreach($errors->all() as $error)
     <div class="uk-alert-danger uk-border-rounded uk-box-shadow-small uk-width-1-2@m" uk-alert>
@@ -32,7 +31,6 @@
         <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Tous les recouvrements</a></li>
         <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Toutes les transactions</a></li>
     </ul>
-
     <ul class="uk-switcher uk-margin">
       <li>
         {!!Form::open(['url'=>'/user/recouvrement/add','class'=>'uk-width-1-2@m'])!!}
@@ -59,14 +57,14 @@
       <li>
         <!-- TOUS LES RECOUVREMENTS -->
         <div class="uk-grid-small uk-grid" uk-grid>
-          <div class="uk-width-1-2@m">
+          <div class="uk-width-1-4@m">
             <label for=""><span uk-icon= " icon : search"></span> Recherche</label>
             <input type="text" name="" value="" class="uk-input uk-border-rounded">
           </div>
-          <div class="uk-width-1-2@m">
+          <div class="uk-width-1-4@m">
             <label for=""><span uk-icon= " icon : users"></span> Vendeurs</label>
-            <select class="uk-select uk-border-rounded" name="">
-              <option value="">Tous les Vendeurs</option>
+            <select class="uk-select uk-border-rounded" name="" id="user-filter-recouvrement">
+              <option value="all">Tous les Vendeurs</option>
               @if($users)
               @foreach($users as $user)
               <option value="{{$user->username}}">{{$user->localisation}}</option>
@@ -74,7 +72,16 @@
               @endif
             </select>
           </div>
+          <div class="uk-width-1-4@m">
+            <label for=""><span uk-icon="icon : calendar"></span> Du</label>
+            <input type="date" name="debut" value="" class="uk-input uk-border-rounded">
+          </div>
+          <div class="uk-width-1-4@m">
+            <label for=""><span uk-icon="icon : calendar"></span> Au</label>
+            <input type="date" name="fin" value="" class="uk-input uk-border-rounded">
+          </div>
       </div>
+      <div uk-spinner class="loader" style="display : none;"></div>
         <table class="uk-table uk-table-small uk-table-divider uk-table-hover uk-table-striped">
           <thead>
             <tr>
@@ -90,11 +97,12 @@
         <!-- // -->
       </li>
       <li>
+        <!-- TOUTES LES TRANSACTIONS -->
         <div class="uk-grid-small uk-grid" uk-grid>
-          <div class="uk-width-1-2@m">
+          <div class="uk-width-1-4@m">
             <label for=""><span uk-icon= " icon : users"></span> Vendeurs</label>
-            <select class="uk-select uk-border-rounded  uk-margin-small" name="">
-              <option value="">Tous les Vendeurs</option>
+            <select class="uk-select uk-border-rounded " id="user-filter-transaction">
+              <option value="all">Tous les Vendeurs</option>
               @if($users)
               @foreach($users as $user)
               <option value="{{$user->username}}">{{$user->localisation}}</option>
@@ -102,16 +110,24 @@
               @endif
             </select>
           </div>
-          <div class="uk-width-1-2@m">
+          <div class="uk-width-1-4@m">
             <label for=""><span uk-icon= " icon : info"></span> Status</label>
-          <select class="uk-select uk-border-rounded uk-margin-small" name="">
-            <option value="">all</option>
-            <option value="">Recouvre</option>
-            <option value="">Non Recouvre</option>
+          <select class="uk-select uk-border-rounded" id="state-filter-transaction" name="">
+            <option value="all">all</option>
+            <option value="recouvre">Recouvre</option>
+            <option value="non_recouvre">Non Recouvre</option>
           </select>
         </div>
+        <div class="uk-width-1-4@m">
+          <label for=""> <span uk-icon="icon : calendar"></span> Du</label>
+          <input type="date" name="transaction-date-debut" value="" class="uk-input uk-border-rounded">
+        </div>
+        <div class="uk-width-1-4@m">
+          <label for=""> <span uk-icon="icon : calendar"></span> Au</label>
+          <input type="date" name="transaction-date-fin" value="" class="uk-input uk-border-rounded">
+        </div>
       </div>
-        <!-- TOUTES LES TRANSACTIONS -->
+      <div uk-spinner class="loader" style="display:none"></div>
         <table class="uk-table uk-table-striped uk-table-small uk-table-hover uk-table-divider">
           <thead>
             <tr>
@@ -136,14 +152,27 @@
 @section('script')
 <script type="text/javascript">
   $(function () {
-    $logistique.allTransactionForRecouvrement("{{csrf_token()}}","{{url('/user/recouvrement/all-transactions')}}")
+    $logistique.allTransactionForRecouvrement("{{csrf_token()}}","{{url('/user/recouvrement/all-transactions')}}","all")
 
-    $logistique.allRecouvrement("{{csrf_token()}}","{{url('/user/recouvrement/all-recouvrement')}}")
+    $logistique.allRecouvrement("{{csrf_token()}}","{{url('/user/recouvrement/all-recouvrement')}}","all")
     // RECUPERATION DU MONTANT DU
 
     $("#vendeurs").on('change',function(e) {
       $logistique.getMontantDuRecouvrement("{{csrf_token()}}","{{url('/user/recouvrement/get-montant-du')}}",$(this).val())
     })
+
+    // FILTRE UTILISATEURS POUR LE LISTING DES RECOUVREMENTS
+    $("#user-filter-recouvrement").on('change',function (e) {
+      $logistique.allRecouvrement("{{csrf_token()}}","{{url('/user/recouvrement/all-recouvrement')}}",$(this).val())
+    })
+
+    $("#user-filter-transaction").on('change',function (e) {
+      $logistique.allTransactionForRecouvrement("{{csrf_token()}}","{{url('/user/recouvrement/all-transactions')}}",$(this).val())
+    })
+    $("#state-filter-transaction").on('change',function (e) {
+      $logistique.allTransactionForRecouvrement("{{csrf_token()}}","{{url('/user/recouvrement/all-transactions')}}",$("#user-filter-transaction").val(),$(this).val())
+    })
+
 
   })
 </script>

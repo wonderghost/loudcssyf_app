@@ -482,7 +482,8 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
               if(
                 str_contains(strtolower($element->localisation),strtolower($request->input('ref-0'))) ||
                 str_contains(strtolower($element->email),strtolower($request->input('ref-0'))) ||
-                str_contains(strtolower($element->username),strtolower($request->input('ref-0')))
+                str_contains(strtolower($element->username),strtolower($request->input('ref-0'))) ||
+                str_contains(strtolower($element->phone),strtolower($request->input('ref-0')))
               ) {
                 $userCollection->prepend($element->only(['username','type','email','phone','localisation','status']));
               }
