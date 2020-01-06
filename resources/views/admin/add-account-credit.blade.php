@@ -18,9 +18,9 @@
 		</div>
 		@endif
 		<!--  -->
-		<ul uk-tab>
-		    <li><a href="#">Comptes</a></li>
-		    <li><a href="#">Soldes Vendeurs</a></li>
+		<ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-fade">
+		    <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Comptes</a></li>
+		    <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Soldes Vendeurs</a></li>
 		</ul>
 
 		<ul class="uk-switcher uk-margin">
@@ -63,6 +63,18 @@
 				</div>
 			</li>
 			<li>
+				<div class="uk-grid-small uk-grid" uk-grid>
+          <div class="uk-width-1-2@m">
+            <label for=""><span uk-icon= " icon : search"></span> Recherche</label>
+            <input type="text" name="" value="" class="uk-input uk-border-rounded">
+          </div>
+          <div class="uk-width-1-2@m">
+            <label for=""><span uk-icon= " icon : users"></span> Vendeurs</label>
+            <select class="uk-select uk-border-rounded" name="">
+              <option value="">Tous les Vendeurs</option>
+            </select>
+          </div>
+      </div>
 				<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
 					<thead>
 						<tr>

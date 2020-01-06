@@ -5,9 +5,9 @@
 	<div class="uk-container">
 		<h3><a href="{{url('/admin/add-depot')}}" uk-tooltip="Nouveau materiel" uk-icon="icon:arrow-left;ratio:1.5"></a> Tous les Materiels</h3>
 		<hr class="uk-divider-small">
-		<ul uk-tab>
-		    <li><a href="#">Inventaire</a></li>
-		    <li><a href="#">Numeros Materiels</a></li>
+		<ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-fade">
+		    <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Inventaire</a></li>
+		    <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Numeros Materiels</a></li>
 		</ul>
 
 		<ul class="uk-switcher uk-margin">
@@ -15,11 +15,11 @@
 					<div class="uk-grid-collapse uk-grid-divider uk-child-width-1-2@m" uk-grid>
 						<div>
 							<h4><span uk-icon="icon:search"></span> Search</h4>
-							{!!Form::text('search','',['class'=>'uk-input','placeholder'=>'...'])!!}
+							{!!Form::text('search','',['class'=>'uk-input uk-border-rounded','placeholder'=>'...'])!!}
 						</div>
 						<div>
 							<h4><span uk-icon="icon:more-vertical"></span> Filter by depots </h4>
-							<select class="uk-select" id="mat-filter">
+							<select class="uk-select uk-border-rounded" id="mat-filter">
 								<option value="all">Tous</option>
 								@if($depots)
 								@foreach($depots as $values)

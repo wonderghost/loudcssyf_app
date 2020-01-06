@@ -19,13 +19,12 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('password',255);
             $table->string('phone')->nullable();
-            $table->enum('type',['admin','v_standart','v_da','commercial','logistique','gcga','grex','gdepot','controleur'])->default('admin');
+            $table->enum('type',['admin','v_standart','v_da','commercial','logistique','gcga','grex','gdepot','controleur','coursier','technicien'])->default('admin');
             $table->enum('status',['blocked','unblocked'])->default('unblocked');
             $table->rememberToken();
             $table->timestamps();
             $table->string('localisation')->nullable();
             $table->unique('localisation');
-
             $table->string('agence')->nullable();
             $table->foreign('agence')->references('reference')->on('agence');
             $table->string('rex')->nullable();

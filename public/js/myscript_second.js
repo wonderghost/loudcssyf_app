@@ -1069,5 +1069,76 @@ venteChart : function (token , url , vendeur) {
     })
   })
   form.submit()
+},
+// TOUTES LES TRANSACTIONS CHEZ LE RECOUVREUR
+allTransactionForRecouvrement : function (token , url ) {
+  var form = $logistique.makeForm(token,url)
+  form.on('submit',function (e) {
+    e.preventDefault()
+    $.ajax({
+      url : url ,
+      type : 'post',
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+      $logistique.dataList(data,$("#all-transactions"))
+      data.forEach(function (element , index) {
+        if(element.status == 'non effectue') {
+          $("#all-transactions .row:eq("+index+") .col").eq(5).addClass('uk-text-danger uk-text-center')
+        } else {
+          $("#all-transactions .row:eq("+index+") .col").eq(5).addClass('uk-text-success uk-text-center')
+        }
+      })
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href','/')
+    })
+  })
+  form.submit()
+}
+,
+getMontantDuRecouvrement : function (token , url , vendeur) {
+  var form = $logistique.makeForm(token,url , [vendeur])
+  form.on('submit',function(e) {
+    e.preventDefault()
+    $.ajax({
+      url : url,
+      type : 'post',
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+      $("#montant-du").val(lisibilite_nombre(data))
+      $("#montantdu").val(data)
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href','/')
+    })
+  })
+  form.submit()
+},
+allRecouvrement : function (token , url ) {
+  var form = $logistique.makeForm(token,url)
+  form.on('submit',function(e) {
+    e.preventDefault()
+    $.ajax({
+      url : url ,
+      type : "post",
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+      $logistique.dataList(data,$("#all-recouvrement"))
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href',"/")
+    })
+  })
+
+  form.submit()
 }
 }

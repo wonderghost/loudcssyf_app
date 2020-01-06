@@ -264,7 +264,8 @@ Trait Rapports {
 	}
 	// LIST DES RAPPORTS
 	public function listRapport() {
-			return view('admin.list-rapport-vente');
+		$users = User::whereIn('type',['v_standart','v_da'])->get();
+			return view('admin.list-rapport-vente')->withUsers($users);
 	}
 
 	// RECUPERATION DE L'HISTORIQUE DES RAPPORTS

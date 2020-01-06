@@ -89,6 +89,7 @@ return array(
     'App\\RapportVente' => $baseDir . '/app/RapportVente.php',
     'App\\RavitaillementDepot' => $baseDir . '/app/RavitaillementDepot.php',
     'App\\RavitaillementVendeur' => $baseDir . '/app/RavitaillementVendeur.php',
+    'App\\Recouvrement' => $baseDir . '/app/Recouvrement.php',
     'App\\Recrutements' => $baseDir . '/app/Recrutements.php',
     'App\\Repertoire' => $baseDir . '/app/Repertoire.php',
     'App\\RexAccount' => $baseDir . '/app/RexAccount.php',

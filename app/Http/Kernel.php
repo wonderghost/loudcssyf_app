@@ -26,7 +26,8 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\IsRex::class,
         \App\Http\Middleware\isVendeur::class,
         \App\Http\Middleware\IsDepot::class,
-        \App\Http\Middleware\isControleur::class
+        \App\Http\Middleware\isControleur::class,
+        \App\Http\Middleware\isCoursier::class
     ];
 
     /**
@@ -72,6 +73,7 @@ class Kernel extends HttpKernel
         'rex' => \App\Http\Middleware\IsRex::class,
         'vendeur' => \App\Http\Middleware\isVendeur::class,
         'depot' =>  \App\Http\Middleware\IsDepot::class,
-        'controleur' =>  \App\Http\Middleware\isControleur::class
+        'controleur' =>  \App\Http\Middleware\isControleur::class,
+        'coursier' =>  \App\Http\Middleware\isCoursier::class
     ];
 }

@@ -29,7 +29,7 @@
 				{!!Form::label("Telephone")!!}
 				{!!Form::number('phone','',['class'=>'uk-input uk-border-rounded','placeholder'=>'Telephone *'])!!}
 				{!!Form::label('Niveau d\'access')!!}
-				{!!Form::select('type',['v_standart'=>'Vendeur standart','v_da'=>'Distibuteur Agree','commercial'=>'Responsable Commercial','logistique'=>'Responsable Logistique','gcga'=>'Gestionnaire Cga','grex'=>'Gestionnaire Rex','gdepot'=>'Gestionnaire Depot','controleur'=>'Controleur'],null,['class'=>'uk-select uk-margin-small','placeholder'=>"-- Niveau d'acces *--",'id'=>'user-type'])!!}
+				{!!Form::select('type',['v_standart'=>'Vendeur standart','v_da'=>'Distibuteur Agree','commercial'=>'Responsable Commercial','logistique'=>'Responsable Logistique','gcga'=>'Gestionnaire Cga','grex'=>'Gestionnaire Rex','gdepot'=>'Gestionnaire Depot','controleur'=>'Controleur','coursier'=>"Coursier"],null,['class'=>'uk-select uk-margin-small','placeholder'=>"-- Niveau d'acces *--",'id'=>'user-type'])!!}
 				{!!Form::label('Agence')!!}
 				{!!Form::text('localisation',null,['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Agence','id'=>'localisation'])!!}
 				{!!Form::hidden('password','loudcssyf')!!}

@@ -8,20 +8,28 @@
 
 		<input type="hidden" id="user-type" value="{{Auth::user()->type}}">
 			{!!Form::open()!!}
-		<div class="uk-child-width-1-4@m" uk-grid>
+		<div class="uk-child-width-1-5@m" uk-grid>
 			<div>
 
 				<span uk-icon="icon:search"></span> {!!Form::label('Search')!!}
-
 				{!!Form::text('search','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Search...'])!!}
 			</div>
 			<div>
-				<span uk-icon="icon:calendar"></span> {!!Form::label('Date')!!}
-				{!!Form::text('date','',['class'=>'uk-input uk-margin-small uk-border-rounded', 'placeholder'=>'date...'])!!}
+				<span uk-icon="icon:calendar"></span> {!!Form::label('Du')!!}
+				{!!Form::text('date_debut','',['class'=>'uk-input uk-margin-small uk-border-rounded', 'placeholder'=>'Du...'])!!}
+			</div>
+			<div>
+				<span uk-icon="icon:calendar"></span> {!!Form::label('Au')!!}
+				{!!Form::text('date_fin','',['class'=>'uk-input uk-margin-small uk-border-rounded', 'placeholder'=>'Au...'])!!}
 			</div>
 			<div>
 				<span uk-icon="icon:location"></span> {!!Form::label('Vendeurs')!!}
 				<select name="vendeurs" class="uk-select uk-margin-small uk-border-rounded">
+					@if($users)
+					@foreach($users as $user)
+					<option value="{{$user->username}}">({{$user->localisation}})</option>
+					@endforeach
+					@endif
 				</select>
 			</div>
 			<div>
@@ -107,7 +115,7 @@
 				$logistique.getListRapportVente("{{csrf_token()}}","{{url('/user/get-rapport')}}")
 			}
 		}, 3000);
-		
+
 		if($('#user-type').val() == 'admin') {
 			$logistique.getListRapportVente("{{csrf_token()}}","{{url('/admin/get-rapport')}}")
 		} else {

@@ -334,6 +334,18 @@
                         </li>
                         @endif
 												<!-- /// -->
+												<!-- COURSIER -->
+												@if(Auth::user()->type == 'coursier')
+												<li class="uk-parent">
+                            <a href="#"><span uk-icon="icon:cart;ratio:0.9"></span> Operations</a>
+                            <ul class="uk-nav-sub">
+                                <!-- LOGISTIC ONLY -->
+                                <li><a href="{{url('/user/recouvrement')}}"><span uk-icon="icon:arrow-right"></span> Recouvrement</a></li>
+                                <!-- <li><a href=""><span uk-icon="icon:arrow-right"></span> Toutes les transactions</a></li> -->
+																<!-- // -->
+                            </ul>
+                        </li>
+												@endif
                         <!-- // -->
                 <li class="uk-parent">
                     <a href="#"><span uk-icon="icon:settings;ratio:0.9"></span> Parametres</a>
