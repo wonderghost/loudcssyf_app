@@ -484,8 +484,6 @@ class LogistiqueController extends Controller
             }
             // return response()->json($all);
 
-
-
         } else {
              $stock = StockVendeur::select()->where('vendeurs',$request->input('ref'))->get();
              //

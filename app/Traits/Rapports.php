@@ -270,9 +270,9 @@ Trait Rapports {
 
 	// RECUPERATION DE L'HISTORIQUE DES RAPPORTS
 	    public function getRapport(Request $request) {
-	      $recrutement = RapportVente::where('type','recrutement')->orderBy('date_rapport','desc')->get();
-	      $reabonnement = RapportVente::where('type','reabonnement')->orderBy('date_rapport','desc')->get();
-	      $migration = RapportVente::where('type','migration')->orderBy('date_rapport','desc')->get();
+	      $recrutement = RapportVente::where('type','recrutement')->orderBy('date_rapport','desc')->limit(30)->get();
+	      $reabonnement = RapportVente::where('type','reabonnement')->orderBy('date_rapport','desc')->limit(30)->get();
+	      $migration = RapportVente::where('type','migration')->orderBy('date_rapport','desc')->limit(30)->get();
 	      $rapports = [
 	        'recrutement' =>  $recrutement,
 	        'reabonnement'  => $reabonnement,

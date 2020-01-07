@@ -97,10 +97,10 @@
 <script type="text/javascript">
 	$(function() {
 		setInterval(function() {
-			$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}",$('#mat-filter').val());
+			$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}","{{Auth::user()->username}}");
 		},20000);
 
-		$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}",$('#mat-filter').val());
+		$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}","{{Auth::user()->username}}");
 
 		$logistique.listSerialByVendeur("{{csrf_token()}}","{{url('/user/my-inventory/serials')}}","{{Auth::user()->username}}")
 	});

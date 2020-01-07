@@ -72,10 +72,9 @@ class CommandController extends Controller
 			if(!$afrocash_account) {
 				throw new AppException("Compte Afrocash inexistant!");
 			}
-			if($afrocash_account->solde < $request->input('montant')) {
+			if($afrocash_account->solde < $request->input('prix_achat')) {
 				throw new AppException("Solde Indisponible!");
 			}
-
 			// @@@@@
 			if(!$this->isExistCommandEnAttente()) {
 				$command = new CommandMaterial;// CREATION DE LA COMMANDE
