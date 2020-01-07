@@ -28,18 +28,18 @@
 			 </div>
 			 @endforeach
 			 @endif
-			 <ul class="" uk-tab="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
+			 <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-fade">
 				 @php
 				 $test = App\Exemplaire::where('status','inactif')->first();
 				 $par = App\Produits::where("libelle",'parabole')->first();
 				 @endphp
 				 @if($test && $par)
-			     <li><a class="" href="#">Materiel</a></li>
+			     <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiel</a></li>
 					 @endif
-			     <li><a class="" href="#">Credit CGA</a></li>
-			     <li><a class="" href="#">Credit REX</a></li>
+			     <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Credit CGA</a></li>
+			     <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Credit REX</a></li>
 					 @if(Auth::user()->type == 'v_standart')
-			     <li><a class="" href="#">AFROCASH SEMI GROSSISTE</a></li>
+			     <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">AFROCASH SEMI GROSSISTE</a></li>
 					 @endif
 			 </ul>
 			 <ul class="uk-switcher uk-margin">
@@ -57,7 +57,7 @@
 									 <label uk-tooltip="{{$material->libelle}}">Kit Complet</label>
 							 </div>
 							 <div id="{{$material->reference}}">
-								 <label>Qte{!!Form::number('quantite',0,['class'=>'uk-input uk-text-center  qte','placeholder'=>'Quantite','id'=>'qte-'.$material->reference])!!}</label>
+								 <label>Qte{!!Form::number('quantite',0,['class'=>'uk-input uk-text-center uk-border-rounded  qte','placeholder'=>'Quantite','id'=>'qte-'.$material->reference])!!}</label>
 								 {!!Form::hidden('mat-reference',$material->reference)!!}
 								 <!-- PRIX DE VENTE  -->
 								 {!!Form::hidden('',$material->prix_vente,['id'=>'prix-normal-'.$material->reference])!!}
@@ -160,7 +160,7 @@
 							 </div>
 						 </div>
 						 <hr class="uk-divider-small">
-						 <button type="submit" class="uk-button uk-button-primary uk-box-shadow-small uk-border-rounded uk-box-shadow-small">valider<span uk-icon="icon:check;ratio:.8"></span></button>
+						 <button type="submit" class="uk-button uk-button-small uk-button-primary uk-box-shadow-small uk-border-rounded uk-box-shadow-small uk-width-1-1@s uk-width-1-4@m">valider<span uk-icon="icon:check;ratio:.8"></span></button>
 							 {!!Form::close()!!}
 							 @endif
 					 </li>
@@ -170,7 +170,7 @@
 						 {!!Form::open(['url'=>'user/new-command/cga','class'=>'uk-width-1-2@m'])!!}
 						 {!!Form::label('Montant')!!}
 						 {!!Form::number('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Montant Credit'])!!}
-						 {!!Form::submit('validez',['class'=>'uk-button-primary uk-button uk-button-small uk-border-rounded uk-box-shadow-small'])!!}
+						 {!!Form::submit('validez',['class'=>'uk-button-primary uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-width-1-1@s uk-width-1-4@m'])!!}
 						 {!!Form::close()!!}
 					 </li>
 					 <li>
@@ -178,7 +178,7 @@
 						 {!!Form::open(['url'=>'user/new-command/rex','class'=>'uk-width-1-2@m'])!!}
 						 {!!Form::label('Montant')!!}
 						 {!!Form::number('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Montant Credit'])!!}
-						 {!!Form::submit('validez',['class'=>'uk-button-primary uk-button-small uk-button uk-border-rounded uk-box-shadow-small'])!!}
+						 {!!Form::submit('validez',['class'=>'uk-button-primary uk-button-small uk-button uk-border-rounded uk-box-shadow-small uk-width-1-1@s uk-width-1-4@m'])!!}
 						 {!!Form::close()!!}
 					 </li>
 					 @if(Auth::user()->type == 'v_standart')
@@ -200,7 +200,7 @@
 					             <button class="uk-button-default uk-padding-small uk-border-circle" type="button" tabindex="-1"><span uk-icon="image"></span></button>
 					         </div>
 								</div>
-								{!!Form::submit("Envoyer",['class'=>'uk-button-primary uk-button uk-button-small uk-border-rounded uk-box-shadow-small'])!!}
+								{!!Form::submit("Envoyer",['class'=>'uk-button-primary uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-width-1-1@s uk-width-1-4@m'])!!}
 				    </div>
 						 {!!Form::close()!!}
 					 </li>

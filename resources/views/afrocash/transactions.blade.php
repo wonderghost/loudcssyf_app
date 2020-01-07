@@ -50,7 +50,7 @@
         </table>
         {{$transactions->links()}}
         @else
-        <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+        <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small uk-table-responsive">
           <thead>
             <tr>
               <th>Date</th>

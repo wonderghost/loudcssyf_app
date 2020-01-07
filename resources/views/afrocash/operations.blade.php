@@ -25,12 +25,12 @@
       <p>{{session('_error')}}</p>
     </div>
     @endif
-    <ul uk-tab>
+    <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-fade">
       @if(Auth::user()->type == 'v_standart')
-        <li><a href="#"><span uk-icon="icon : arrow-down"></span> Depots</a></li>
+        <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small " href="#"><span uk-icon="icon : arrow-down"></span> Depots</a></li>
         @endif
-        <li><a href="#"><span uk-icon="icon : shrink"></span> Transfert Courant</a></li>
-        <li><a href="#"><span uk-icon="icon : arrow-up"></span> Retrait</a></li>
+        <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small " href="#"><span uk-icon="icon : shrink"></span> Transfert Courant</a></li>
+        <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small " href="#"><span uk-icon="icon : arrow-up"></span> Retrait</a></li>
     </ul>
 
     <ul class="uk-switcher uk-margin">
@@ -52,7 +52,7 @@
           {!!Form::number('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Montant de la transaction'])!!}
           {!!Form::label('Confirmez le mot de passe')!!}
           {!!Form::password('password',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Confirmez votre mot de passe'])!!}
-          {!!Form::submit('validez',['class'=>'uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
+          {!!Form::submit('validez',['class'=>'uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-width-1-1@s uk-width-1-4@m'])!!}
           {!!Form::close()!!}
           <!-- // -->
         </li>
@@ -80,7 +80,7 @@
           {!!Form::number('montant','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Montant de la transaction'])!!}
           {!!Form::label('Confirmez le mot de passe')!!}
           {!!Form::password('password',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Confirmez votre mot de passe'])!!}
-          {!!Form::submit('validez',['class'=>'uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
+          {!!Form::submit('validez',['class'=>'uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-width-1-1@s uk-width-1-4@m'])!!}
           {!!Form::close()!!}
           <!-- // -->
         </li>

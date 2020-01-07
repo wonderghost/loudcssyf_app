@@ -21,9 +21,27 @@
 		</script>
 </head>
 <body>
+	<!-- OPTIONS POUR L'AFFICHAGE RESPONSIVE (NOTIFICATION , MESSAGE , TABLEAU DE BORD) -->
+	<div class="uk-position-fixed uk-position-bottom uk-position-z-index uk-background-muted uk-padding-small uk-box-shadow uk-hidden@m" id="outils">
+		<div class="uk-child-1-3@s uk-flex uk-flex-center" uk-grid>
+			<div class="">
+				<a href="{{url('/')}}" class="uk-button uk-button-small uk-button-primary uk-border-pill uk-box-shadow-medium"> <span uk-icon="icon : home"></span> </a>
+			</div>
+			<div class="">
+				<a href="#" class="uk-button uk-button-small uk-button-primary uk-border-pill uk-box-shadow-medium"> <span uk-icon="icon : bell"></span> </a>
+			</div>
+			<div class="">
+				<a href="#" class="uk-button uk-button-small uk-button-primary uk-border-pill uk-box-shadow-medium"> <span uk-icon="icon : comment"></span> </a>
+			</div>
+		</div>
+	</div>
+	<!-- // -->
 	<!-- loader -->
 	<div id="loader">
-		<div class="uk-border-rounded uk-dark uk-width-1-1@s uk-width-1-3@m uk-align-center uk-background-default uk-margin-xlarge-top uk-padding uk-flex uk-flex-middle uk-flex-center" style="margin-top : 10% !important;">
+		<div class="uk-border-rounded uk-dark uk-width-1-2@s uk-width-1-3@m uk-align-center uk-background-default uk-margin-xlarge-top uk-padding uk-visible@m uk-flex uk-flex-middle uk-flex-center" style="margin-top : 20% !important;">
+			<div class="uk-margin-right" uk-spinner></div>  Patientez svp ...
+		</div>
+		<div class="uk-border-rounded uk-dark uk-width-1-2@s uk-width-1-3@m uk-align-center uk-background-default uk-margin-xlarge-top uk-padding uk-hidden@m uk-flex uk-flex-middle uk-flex-center" style="margin-top : 50% !important;">
 			<div class="uk-margin-right" uk-spinner></div>  Patientez svp ...
 		</div>
 	</div>
@@ -100,7 +118,8 @@
         <button class="uk-navbar-item uk-button" uk-toggle="target:#side-nav" uk-icon="icon:menu"></button>
         <a href="" class="uk-navbar-item uk-logo">LAYE DISTRIBUTION</a>
     </div>
-    <div class="uk-navbar-center">
+    <div class="uk-navbar-center uk-visible@m">
+
     	<a class="uk-button uk-button-small uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left border-button" href="{{url('/')}}" uk-tooltip="Tableau de bord"><span class="" uk-icon="icon:home ; "></span></a>
     	<a class="uk-button uk-button-small uk-button-default uk-border-pill uk-box-shadow-hover-small  uk-margin-left border-button"><span uk-icon="icon:bell "></span></a>
     	<a class="uk-button uk-button-small uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left border-button"><span uk-icon="icon:comment "></span></a>
@@ -109,7 +128,7 @@
     	<a class="uk-button uk-button-small uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span> Promo</a>
 			@endif
     </div>
-		<div class="uk-navbar-right">
+		<div class="uk-navbar-right uk-visible@m">
 			@if(Auth::user()->type != 'admin' && Auth::user()->type != 'logistique' && Auth::user()->type != "controleur" && Auth::user()->type != 'commerciale' && Auth::user()->type !='gcga' && Auth::user()->type !='grex' && Auth::user()->type !=='gdepot')
 			<a class="uk-button"><span uk-icon="icon:location;ratio:.8"></span> <span>{{Auth::user()->localisation}}</span></a>
 			@endif
@@ -125,7 +144,7 @@
 </div>
 <!-- // -->
     <!-- CONTENS -->
-<div>
+<div class="uk-margin-large-bottom">
     @yield('content')
 </div>
 <!-- // -->
@@ -246,7 +265,7 @@
                         <li class="uk-parent">
                             <a href="#"><span uk-icon="icon:cart;ratio:0.9"></span> Ventes</a>
                             <ul class="uk-nav-sub">
-                                <li><a href="{{url('/user/rapport-ventes')}}"><span uk-icon="icon:plus"></span> Rapport de ventes</a></li>
+                                <!-- <li><a href="{{url('/user/rapport-ventes')}}"><span uk-icon="icon:plus"></span> Rapport de ventes</a></li> -->
                             </ul>
                         </li>
                         <li class="uk-parent">

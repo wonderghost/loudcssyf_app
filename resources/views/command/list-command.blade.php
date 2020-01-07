@@ -14,19 +14,19 @@
 			 </div>
 			 @endif
 
-			 <ul uk-tab>
-			     <li><a href="#">Materiel</a></li>
-			     <li><a href="#">Cga</a></li>
-			     <li><a href="#">Rex</a></li>
+			 <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-fade">
+			     <li><a  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiel</a></li>
+			     <li><a  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Cga</a></li>
+			     <li><a  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Rex</a></li>
 					 @if(Auth::user()->type == 'v_standart')
-			     <li><a href="#">Afrocash Semi Grossiste</a></li>
+			     <li><a  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Afrocash Semi Grossiste</a></li>
 					 @endif
 			 </ul>
 
 			 <ul class="uk-switcher uk-margin">
 			    <li>
 						<!-- COMMANDES MATERIELS -->
-						<table class="uk-table uk-table-divider">
+						<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small uk-table-responsive">
 						 <thead>
 							 <tr>
 								 <th>Date</th>
@@ -43,7 +43,7 @@
 					</li>
 					<li>
 						<!-- COMMANDES CGA -->
-						<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+						<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small uk-table-responsive">
 							<thead>
 								<tr>
 									<th>Date</th>
@@ -78,7 +78,7 @@
 					</li>
 					<li>
 						<!-- COMMANDES REX -->
-						<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+						<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small uk-table-responsive">
 							<thead>
 								<tr>
 									<th>Date</th>
@@ -112,7 +112,7 @@
 					</li>
 					<li>
 						<!-- AFRO CASH SEMI GROSSISTE -->
-						<table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover">
+						<table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover uk-table-responsive">
 							<thead>
 								<tr>
 									<th>Date</th>

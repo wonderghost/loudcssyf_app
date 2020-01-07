@@ -7,56 +7,58 @@
 			<a href="{{url('/user')}}" uk-tooltip="Dashboard" uk-icon="icon:arrow-left;ratio:1.5"></a>
 			 Inventaire</h3>
 		<hr class="uk-divider-small">
-		<ul uk-tab>
-		    <li><a href="#">Materiel</a></li>
-		    <li><a href="#">Numero de Materiel</a></li>
+		<ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-fade">
+		    <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiel</a></li>
+		    <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Numero de Materiel</a></li>
 		</ul>
 		<ul class="uk-switcher uk-margin">
 		    <li>
-					<div class="uk-grid-collapse uk-grid-divider uk-child-width-1-2@m" uk-grid>
-						<div>
-							<h4><span uk-icon="icon:search"></span> Search</h4>
-							{!!Form::text('search','',['class'=>'uk-input','placeholder'=>'...'])!!}
-							<button class="uk-button-default uk-border-rounded">valider <span uk-icon="icon:check;ratio:.8"></span></button>
-						</div>
-						<div>
-							<input type="hidden" id="mat-filter" value="{{Auth::user()->username}}">
-							@if($solde)
-							<div class="uk-text-lead">
-								<div class="uk-grid-small" uk-grid>
-										<div class="uk-width-expand" uk-leader="fill: -">SOLDE CGA (GNF)</div>
-										<div>{{number_format($solde->solde)}}</div>
-								</div>
+					<!-- // -->
+					<div class="uk-grid-small uk-child-width-1-4@m uk-child-width-1-1@s" uk-grid>
+						@if($solde)
+						<div class="">
+						<div class="uk-card uk-card-primary uk-border-rounded uk-light">
+							<div class="uk-card-header">
+								<h3 class="uk-card-title uk-text-small">CGA (GNF)</h3>
 							</div>
-							@endif
-							@if($afrocashsm)
-							<div class="uk-text-lead">
-								<div class="uk-grid-small" uk-grid>
-										<div class="uk-width-expand" uk-leader="fill: -">AFROCASH GROSSISTE (GNF)</div>
-										<div>{{number_format($afrocashsm->solde)}}</div>
-								</div>
-							</div>
-							@endif
-							@if($afrocashcourant)
-							<div class="uk-text-lead">
-								<div class="uk-grid-small" uk-grid>
-										<div class="uk-width-expand" uk-leader="fill: -">AFROCASH COURANT (GNF)</div>
-										<div>{{number_format($afrocashcourant->solde)}}</div>
-								</div>
-							</div>
-							@endif
-							@if($rex)
-							<div class="uk-text-lead">
-								<div class="uk-grid-small" uk-grid>
-										<div class="uk-width-expand" uk-leader="fill: -">SOLDE REX (GNF)</div>
-										<div>{{number_format($rex->solde)}}</div>
-								</div>
-							</div>
-							@endif
+							<div class="uk-card-body uk-text-center uk-text-lead">{{number_format($solde->solde)}}</div>
 						</div>
 					</div>
+						@endif
+						@if($afrocashsm)
+						<div class="">
+						<div class="uk-card uk-card-primary uk-border-rounded uk-light">
+							<div class="uk-card-header">
+								<h3 class="uk-card-title uk-text-small">AFROCASH SEMI GROSSISTE (GNF)</h3>
+							</div>
+							<div class="uk-card-body uk-text-center uk-text-lead">{{number_format($afrocashsm->solde)}}</div>
+						</div>
+					</div>
+						@endif
+						@if($afrocashcourant)
+						<div class="">
+						<div class="uk-card uk-card-primary uk-border-rounded uk-light">
+							<div class="uk-card-header">
+								<h3 class="uk-card-title uk-text-small">AFROCASH COURANT (GNF)</h3>
+							</div>
+							<div class="uk-card-body uk-text-center uk-text-lead">{{number_format($afrocashcourant->solde)}}</div>
+						</div>
+					</div>
+						@endif
+						@if($rex)
+						<div class="">
+						<div class="uk-card uk-card-primary uk-border-rounded uk-light">
+							<div class="uk-card-header">
+								<h3 class="uk-card-title uk-text-small">REX (GNF)</h3>
+							</div>
+							<div class="uk-card-body uk-text-center uk-text-lead">{{number_format($rex->solde)}}</div>
+						</div>
+					</div>
+						@endif
+					</div>
+					<!-- // -->
 					<div uk-spinner id="loader" style="display: none;"></div>
-					<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+					<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small uk-table-responsive">
 						<thead>
 							<tr>
 								<th>Designation</th>
@@ -73,7 +75,7 @@
 				</li>
 				<li>
 					<!-- serial number -->
-					<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small" >
+					<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small uk-table-responsive">
 						<thead>
 							<tr>
 								<th>Serials</th>
