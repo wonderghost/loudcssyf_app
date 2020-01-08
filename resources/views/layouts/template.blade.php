@@ -120,10 +120,10 @@
     </div>
     <div class="uk-navbar-center uk-visible@m">
 
-    	<a class="uk-button uk-button-small border-button" href="{{url('/')}}" uk-tooltip="Tableau de bord"><span class="" uk-icon="icon:home ; "></span></a>
+    	<a class="uk-button uk-button-small border-button" href="{{url('/')}}" uk-tooltip="Tableau de bord"><i class="material-icons">home</i></a>
 			<!-- NOTIFICATION -->
 			<div class="uk-inline">
-				<a class="uk-button uk-button-small  border-button" uk-tooltip="Notifications"><span uk-icon="icon:bell "></span> <sup id="notification-count" class="uk-badge">0</sup></a>
+				<a class="uk-button uk-button-small  border-button" uk-tooltip="Notifications"><i class="material-icons">notifications</i><sup id="notification-count" class="uk-badge">0</sup></a>
 			    <!-- <button class="uk-button uk-button-default" type="button">Click</button> -->
 			    <div class="" uk-drop="mode: click ; animation: uk-animation-slide-top-small;">
 			        <div class="uk-card-default uk-box-shadow-small notification-container uk-overflow-auto" style="background : #fefefe !important;border : solid 1px #ddd !important; ">
@@ -135,7 +135,7 @@
 			<!-- TOUTES LES NOTIFICATIOS -->
 			<div id="all-notification" uk-modal="esc-close : false ; bg-close : false">
 			    <div class="uk-modal-dialog uk-modal-body">
-			        <h3 class="uk-modal-title"><span uk-icon = "icon : bell"></span> Toutes les notifications</h3>
+			        <h3 class="uk-modal-title"><i class="material-icons">notifications</i> Toutes les notifications</h3>
 							<ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-left-medium">
 							    <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Non Lues</a></li>
 							    <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Lues</a></li>
@@ -156,7 +156,9 @@
 			    </div>
 			</div>
 			<!-- // -->
-    	<a class="uk-button uk-button-small border-button"><span uk-icon="icon:comment "></span></a>
+    	<a class="uk-button uk-button-small border-button" uk-tooltip="Conversations"><i class="material-icons">message</i></a>
+    	<a class="uk-button uk-button-small border-button" uk-tooltip="Alarmes"><i class="material-icons">alarm</i></a>
+    	<!-- <a class="uk-button uk-button-small border-button" uk-tooltip="Alertes"><img style="color : yellow !important;" src="{{asset('img/alarm.svg')}}" alt=""></a> -->
 
 			@if(Auth::user()->type == 'admin')
     	<a class="uk-button uk-button-small uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span> Promo</a>
