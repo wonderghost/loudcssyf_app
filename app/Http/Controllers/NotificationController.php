@@ -14,18 +14,27 @@ class NotificationController extends Controller
 
     public function getList(Request $request) {
       try {
-        $_alert = Alert::where('vendeurs',$request->input('ref-0'))->where('status','unread')->orderBy('created_at','desc')->limit(4)->get();
-        $alert = Alert::where('vendeurs',$request->input('ref-0'))->where('status','unread')->orderBy('created_at','desc')->get();
-        $alert_read = Alert::where('vendeurs',$request->input('ref-0'))->where('status','read')->orderBy('created_at','desc')->get();
-        $alert_unread = Alert::where('vendeurs',$request->input('ref-0'))->where('status','unread')->orderBy('created_at','desc')->get();
         $all = [];
-        $_all = [];
-        $all = $this->organizeNotification($_alert);
-        $read = $this->organizeNotification($alert_read);
-        $unread = $this->organizeNotification($alert_unread);
+        $all = Notifications::where('status','unread')->where('vendeurs',Auth::user()->username)->orderBy('created_at','desc')->limit(4)->get();
+        $read = Notifications::where('status','read')->where('vendeurs',Auth::user()->username)->orderBy('created_at','desc')->get();
+        $unread = Notifications::where('status','unread')->where('vendeurs',Auth::user()->username)->orderBy('created_at','desc')->get();
+
+        $all->each(function ($element , $index) {
+          $element->humanDate();
+        });
+
+        $unread->each(function ($element, $index) {
+          $element->humanDate();
+        });
+
+        $read->each(function ($element , $index) {
+          $element->humanDate();
+        });
+
+
         return response()->json([
           'all' =>  $all,
-          'count' =>  $alert->count(),
+          'count' =>  $unread->count(),
           'all_read'  => $read,
           'all_unread'  => $unread
         ]);
@@ -38,19 +47,10 @@ class NotificationController extends Controller
 
     public function markAsRead(Request $request) {
       try {
-        $alert = Alert::where([
-          'vendeurs'  =>  Auth::user()->username,
-          'notification'  =>  $request->input('ref-0'),
-          'status'  =>  'unread'
-        ])->first();
-        if($alert) {
-          Alert::where([
-            'vendeurs'  =>  Auth::user()->username,
-            'notification'  =>  $request->input('ref-0'),
-            'status'  =>  'unread'
-          ])->update([
-            'status'  =>  'read'
-          ]);
+        $notification = Notifications::find($request->input('ref-0'));
+        if($notification) {
+          $notification->status = 'read';
+          $notification->save();
           return response()->json('done');
         } else {
           throw new AppException("Erreur !");
@@ -61,22 +61,5 @@ class NotificationController extends Controller
         die($e->getMessage());
       }
 
-    }
-
-    public function organizeNotification($data) {
-      $all=[];
-      foreach($data as $key => $value) {
-        $date = new Carbon($value->created_at);
-        $date->setLocale('fr_FR');
-
-        $all[$key] = [
-          'id'  =>  $value->notification,
-          'title' =>  $value->notifications()->titre,
-          'description' =>  $value->notifications()->description,
-          'status'  =>  $value->status,
-          'date'  =>  $date->diffForHumans()
-        ];
-      }
-      return $all;
     }
 }

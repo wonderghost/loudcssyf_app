@@ -51,4 +51,6 @@ class RapportVente extends Model
       return  $this->belongsTo('App\User','vendeurs','username')->first();
     }
 
+    
+
 }

@@ -18,6 +18,9 @@ class Notifications extends Migration
           $table->string('id')->primary();
           $table->string('titre');
           $table->text('description');
+          $table->enum('status',['read','unread'])->default('unread');
+          $table->string('vendeurs');
+          $table->foreign('vendeurs')->references('username')->on('users');
           $table->timestamps();
         });
     }

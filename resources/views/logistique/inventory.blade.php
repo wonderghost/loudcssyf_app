@@ -29,7 +29,7 @@
 				</select>
 			</div>
 		</div>
-		<div uk-spinner id="loader" style="display: none;"></div>
+		<div uk-spinner id="_loader" style="display: none;"></div>
 		<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
 			<thead>
 				<tr>
@@ -52,13 +52,14 @@
 @section('script')
 <script type="text/javascript">
 	$(function() {
+
 		setInterval(function() {
 			$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}",$('#mat-filter').val());
 		},10000);
 		$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}",$('#mat-filter').val());
 		// filtrer par depot
 		$('#mat-filter').on('change',function () {
-			$("#loader").show(100);
+			$("#_loader").show(100);
 			$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}",$('#mat-filter').val());
 		})
 	});

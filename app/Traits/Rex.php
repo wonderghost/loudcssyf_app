@@ -9,7 +9,7 @@ use App\CommandCredit;
 use App\Credit;
 use App\Afrocash;
 use App\Exceptions\AppException;
-
+use App\User;
 use App\Notifications;
 use App\Alert;
 use Illuminate\Support\Facades\DB;
@@ -45,7 +45,8 @@ Trait Rex {
 
 				$commande->save();
 				// ENVOI DE LA NOTIFICATION
-				$this->sendNotification("Commande Rex" , "Commande de Credit Rex est en attente de confirmation!",'grex');
+				$this->sendNotification("Commande Credit Rex" , "Vous avez envoye une commande Rex!",Auth::user()->username);
+				$this->sendNotification("Commande Credit Rex" , "Une Commande Rex est en attente de confirmation!",User::where('type','grex')->first()->username);
 				return redirect('/user/new-command')->withSuccess("Success !");
 			} else {
 				throw new AppException("Montant Indisponible!");

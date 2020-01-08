@@ -12,6 +12,7 @@ use App\Exceptions\AppException;
 use App\Notifications;
 use App\Alert;
 use Illuminate\Support\Facades\DB;
+use App\User;
 
 Trait Cga {
 
@@ -58,7 +59,8 @@ Trait Cga {
 
 				$commande->save();
 				// ENVOI DE LA NOTIFICATION
-				$this->sendNotification("Commande Credit Cga" , "Commande de Credit Cga est en attente de confirmation!",'gcga');
+				$this->sendNotification("Commande Credit Cga" , "Vous avez envoye une commande Cga!",Auth::user()->username);
+				$this->sendNotification("Commande Credit Cga" , "Une Commande Cga est en attente de confirmation!",User::where('type','gcga')->first()->username);
 				return redirect('/user/new-command')->withSuccess("Success !");
 			} else {
 				throw new AppException("Montant Indisponible!");

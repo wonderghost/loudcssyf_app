@@ -1224,7 +1224,7 @@ organizeNotification : function (data , content , state = 'unread') {
     luButton[index].text('Vu')
     deleteButton[index].text('Supprimer')
     date[index].text(element.date)
-    titles[index].text(element.title)
+    titles[index].text(element.titre)
     descriptions[index].text(element.description)
     descriptions[index].append(date[index])
     if(state == 'unread') {
@@ -1259,5 +1259,8 @@ changeStateOfNotification : function (token , url , idNotification) {
     })
   })
   form.submit()
-}
+},
+
+
+
 }

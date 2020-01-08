@@ -29,7 +29,7 @@
 							</select>
 						</div>
 					</div>
-					<div uk-spinner id="loader" style="display: none;"></div>
+					<div uk-spinner id="_loader" style="display: none;"></div>
 					<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
 						<thead>
 							<tr>
@@ -76,7 +76,7 @@
 		$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}",$('#mat-filter').val(),false);
 		// filtrer par depot
 		$('#mat-filter').on('change',function () {
-			$("#loader").show(500);
+			$("#_loader").show(500);
 			$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}",$('#mat-filter').val(),false);
 		});
 

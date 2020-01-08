@@ -20,7 +20,6 @@ use App\RexAccount;
 use App\Notifications;
 use App\Alert;
 use Illuminate\Support\Facades\DB;
-
 Trait Afrocashes {
 
 	public function  newAccount($username,$type = 'courant') {
@@ -98,7 +97,8 @@ Trait Afrocashes {
 					if($request->file('piece_jointe')->move(config('image.path'),$credit->recu)) {
 						$credit->save();
 						// CREATION DE LA NOTIFICATION
-						$this->sendNotification("Commande Afrocash" , "Commande de Credit Afrocash est en attente de confirmation!",'gcga');
+						$this->sendNotification("Commande Afrocash" , "Vous avez envoyer une command Afrocash Grossiste",Auth::user()->username);
+						$this->sendNotification("Commande Afrocash" , "Vous avez une commande Afrocash en attente de confirmation!",User::where('type','gcga')->first()->username);
 						return redirect('/user/new-command')->withSuccess("Success!");
 					} else {
 						throw new AppException("Erreur de telechargement !");
@@ -160,7 +160,8 @@ Trait Afrocashes {
 								'status'	=>	'validated'
 							]);
 							// ENVOI DE LA NOTIFICATION
-							$this->sendNotificationForGestionnaire("Commande Credit Cga" , "Commande Cga Validée!",$commande->vendeurs);
+							$this->sendNotification("Commande Credit Cga" , "Votre Commande cga a ete valide",$commande->vendeurs);
+							$this->sendNotification("Commande Credit Cga" , "Vous avez valide une commande cga",Auth::user()->username);
 
 							return redirect('/user/credit-cga/commandes')->withSuccess("Success!");
 						} else {
@@ -203,7 +204,9 @@ Trait Afrocashes {
 							CommandCredit::where('id',$commande->id)->update([
 								'status'	=>	'validated'
 							]);
-							$this->sendNotificationForGestionnaire("Commande Afrocash" , "Commande Afrocash Validée!",$commande->vendeurs);
+
+							$this->sendNotification("Commande Afrocash" , "Votre Commande Afrocash a ete valide!",$commande->vendeurs);
+							$this->sendNotification("Commande Afrocash" , "Vous avez valide une commande Afrocash!",Auth::user()->username);
 
 							return redirect('/user/credit-cga/commandes')->withSuccess("Success!");
 							// ENVOI DE LA NOTIFICATION
@@ -240,7 +243,8 @@ Trait Afrocashes {
 							CommandCredit::where("id",$commande->id)->update([
 								'status'	=>	'validated'
 							]);
-							$this->sendNotificationForGestionnaire("Commande Credit Rex" , "Commande Rex Validée!",$commande->vendeurs);
+							$this->sendNotification("Commande Credit Rex" , "Votre Commande rex a ete valide",$commande->vendeurs);
+							$this->sendNotification("Commande Credit Rex" , "Vous avez valide une commande rex",Auth::user()->username);
 							return redirect('/user/credit-rex/commandes')->withSuccess("Success!");
 						} else {
 							throw new AppException("Montant Indisponible!");
@@ -347,6 +351,10 @@ Trait Afrocashes {
 									// sauvegarde dans la base de donnees
 									$transaction_depot->save();
 									$transaction_credit->save();
+									$vendeurs = Afrocash::where('numero_compte',$request->input('numero_compte_courant'))->first()->vendeurs ;
+									// $this->sendNotificationForGestionnaire("Depot Afrocash" , "Depot de  ".number_format($request->input('montant'))." GNF effectué",$vendeurs);
+									$this->sendNotification("Depot Afrocash" , "Reception de ".number_format($request->input('montant'))." GNF de la part de ".Auth::user()->localisation,$vendeurs);
+									$this->sendNotification("Depot Afrocash" , "Vous avez effectue un depot de ".number_format($request->input('montant'))." GNF pour ".User::where('username',$vendeurs)->first()->localisation,Auth::user()->username);
 									return redirect('/user/afrocash')->withSuccess("Success!");
 
 							} else {
@@ -406,6 +414,9 @@ Trait Afrocashes {
 
 								 $transaction_depot->save();
 								 $transaction_credit->save();
+								 // $this->sendNotificationForGestionnaire("Transfert Afrocash" , "Transaction de  ".number_format($request->input('montant'))." GNF effectué",$request->input('vendeurs'));
+								 $this->sendNotification("Transfert Afrocash" , "Reception de ".number_format($request->input('montant'))." GNF de la part de ".Auth::user()->localisation,$request->input('vendeurs'));
+								 $this->sendNotification("Transfert Afrocash" , "Vous avez effectue un transfert de ".number_format($request->input('montant'))." GNF pour ".User::where('username',$request->input('vendeurs'))->first()->localisation,Auth::user()->username);
 								 return redirect('/user/afrocash')->withSuccess("Success!");
 						 }
 						 else {

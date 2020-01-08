@@ -341,11 +341,12 @@ class LogistiqueController extends Controller
       // recuperer le vendeurs qui a emis la commande
       $user = CommandMaterial::where('id_commande',$commande)->first()->vendeurs()->first();
 
+      // dump($this->CommandChangeStatus($commande,$user->username));
       $this->CommandChangeStatus($commande,$user->username);
       if($this->changeCommandStatusGlobale($commande)) {
         return redirect('/user/commandes');
       };
-      // die();
+      
       $agence = Agence::where('reference',$user->agence)->first();
       $materiel = Produits::all();
       $depots = Depots::all();

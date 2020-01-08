@@ -4,6 +4,8 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
+
 class Notifications extends Model
 {
     //
@@ -27,6 +29,12 @@ class Notifications extends Model
         return false;
       }
     }
-    
+
+    public function humanDate() {
+      $_date = new Carbon($this->date);
+      $_date->setLocale('fr_FR');
+      $this->date = $_date->diffForHumans();
+    }
+
 
 }

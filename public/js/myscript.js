@@ -423,7 +423,7 @@ $adminPage.getListMaterial = function (formToken,url,reference,opt=true) {
 			dataType : 'json'
 		})
 		.done(function (data) {
-			$("#loader").hide(500);
+			$("#_loader").hide(100);
 			if(!opt) {
 				$adminPage.createTableData(data,['libelle','quantite','prix_initial','prix_unitaire','ht','tva','marge','edit'],$("#mat-list"));
 			} else {
@@ -436,7 +436,8 @@ $adminPage.getListMaterial = function (formToken,url,reference,opt=true) {
 			//
 		})
 		.fail(function (data) {
-			console.log(data);
+			alert(data.responseJSON.message)
+      $(location).attr('href','/')
 		});
 	});
 	form.submit();

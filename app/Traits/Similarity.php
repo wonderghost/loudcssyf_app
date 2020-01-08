@@ -77,6 +77,7 @@ Trait Similarity {
       // done
       return true;
     }
+    return false;
   }
   //  Verifier si le ravitaillement est possbile
   public function isRavitaillementPossible ($commande,Request $request) {
@@ -127,11 +128,11 @@ Trait Similarity {
       $flag = [];
       foreach ($laCommande as $key => $item) {
         $rav = RavitaillementVendeur::select('id_ravitaillement')->where('commands',$commande)->where('vendeurs',$vendeur)->where('livraison','non_confirmer')->get();
-        $live[$key] = Livraison::where('status','unlivred')->whereIn('ravitaillement',$rav)->where('produits',$item->produit)->first();
+        $live[$key] = Livraison::where('status','unlivred')->whereIn('ravitaillement',$rav)->where('produits',$item->produit)->sum('quantite');
         if($live[$key]) {
           // dump($item->quantite_commande);
           // dump($live[$key]->quantite);
-          if($item->quantite_commande > $live[$key]->quantite) {
+          if($item->quantite_commande > $live[$key]) {
             // 0  => non_confirmer , 1  =>  confirmer
             $flag[$item->produit] = 0;
           } else {
@@ -505,40 +506,15 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
   }
 
   // ENVOI DE LA NOTIFICATION
-  public function sendNotification ($title , $description , $gestionnaire) {
+  public function sendNotification($title,$description , $vendeurs) {
     // ENVOI DE LA Notifications
     $notification = new Notifications;
     $notification->makeId();
     $notification->titre = $title;
     $notification->description = $description;
-
-    $notifId = $notification->id;
+    $notification->vendeurs = $vendeurs;
     // ENREGISTREMENT DE LA NOTIFICATION
     $notification->save();
-
-    DB::table('alertes')->insertOrIgnore([
-      ['notification'	=>	$notifId , 'vendeurs'	=>	Auth::user()->username , 'created_at'	=> Carbon::now() , 'updated_at'	=>	Carbon::now()],
-      ['notification'	=>	$notifId , 'vendeurs'	=>	User::where('type',$gestionnaire)->first()->username , 'created_at'	=>	now() , 'updated_at'	=>	Carbon::now()]
-    ]);
-  }
-
-
-  // ENVOI DE LA NOTIFICATION COTE GESTIONNAIRE
-  public function sendNotificationForGestionnaire($title,$description , $vendeurs) {
-    // ENVOI DE LA Notifications
-    $notification = new Notifications;
-    $notification->makeId();
-    $notification->titre = $title;
-    $notification->description = $description;
-
-    $notifId = $notification->id;
-    // ENREGISTREMENT DE LA NOTIFICATION
-    $notification->save();
-
-    DB::table('alertes')->insertOrIgnore([
-      ['notification'	=>	$notifId , 'vendeurs'	=>	Auth::user()->username , 'created_at'	=> Carbon::now() , 'updated_at'	=>	Carbon::now()],
-      ['notification'	=>	$notifId , 'vendeurs'	=>	$vendeurs , 'created_at'	=>	now() , 'updated_at'	=>	Carbon::now()]
-    ]);
   }
 
 }

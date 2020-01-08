@@ -123,7 +123,7 @@
     	<a class="uk-button uk-button-small border-button" href="{{url('/')}}" uk-tooltip="Tableau de bord"><span class="" uk-icon="icon:home ; "></span></a>
 			<!-- NOTIFICATION -->
 			<div class="uk-inline">
-				<a class="uk-button uk-button-small  border-button"><span uk-icon="icon:bell "></span> <sup id="notification-count" class="uk-badge">0</sup></a>
+				<a class="uk-button uk-button-small  border-button" uk-tooltip="Notifications"><span uk-icon="icon:bell "></span> <sup id="notification-count" class="uk-badge">0</sup></a>
 			    <!-- <button class="uk-button uk-button-default" type="button">Click</button> -->
 			    <div class="" uk-drop="mode: click ; animation: uk-animation-slide-top-small;">
 			        <div class="uk-card-default uk-box-shadow-small notification-container uk-overflow-auto" style="background : #fefefe !important;border : solid 1px #ddd !important; ">
@@ -299,7 +299,7 @@
                         <li class="uk-parent">
                             <a href="#"><span uk-icon="icon:cart;ratio:0.9"></span> Ventes</a>
                             <ul class="uk-nav-sub">
-                                <!-- <li><a href="{{url('/user/rapport-ventes')}}"><span uk-icon="icon:plus"></span> Rapport de ventes</a></li> -->
+                                <li><a href="{{url('/user/rapport-ventes')}}"><span uk-icon="icon:plus"></span> Rapport de ventes</a></li>
                             </ul>
                         </li>
                         <li class="uk-parent">

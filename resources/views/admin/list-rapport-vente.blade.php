@@ -58,6 +58,8 @@
 							<th>Quantite</th>
 							<th>Montant Ttc</th>
 							<th>Commission</th>
+							<th>Promo</th>
+							<th>Paiement Commission</th>
 						</tr>
 					</thead>
 					<tbody id="recrutement-list"><div id="loader" uk-spinner></div></tbody>
@@ -76,6 +78,8 @@
 							<th>Quantite</th>
 							<th>Montant Ttc</th>
 							<th>Commission</th>
+							<th>Promo</th>
+							<th>Paiement Commission</th>
 						</tr>
 					</thead>
 					<tbody id="reabonnement-list"><div id="loader" uk-spinner></div></tbody>
@@ -94,6 +98,7 @@
 							<th>Quantite</th>
 							<th>Montant Ttc</th>
 							<th>Commission</th>
+							<th>Promo</th>
 						</tr>
 					</thead>
 					<tbody id="migration-list"><div id="loader" uk-spinner></div></tbody>

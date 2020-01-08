@@ -14,6 +14,7 @@ use App\CommandProduit;
 use App\Livraison;
 use App\RavitaillementVendeur;
 use Carbon\Carbon;
+use App\Traits\Similarity;
 use App\Traits\Livraisons;
 use App\Traits\Cga;
 use App\Traits\Afrocashes;
@@ -29,6 +30,7 @@ use Illuminate\Support\Facades\DB;
 class CommandController extends Controller
 {
     //
+		use Similarity;
 		use Livraisons;
 		use Cga;
 		use Afrocashes;
@@ -146,12 +148,8 @@ class CommandController extends Controller
 
 					$notifId = $notification->id;
 					// ENREGISTREMENT DE LA NOTIFICATION
-					$notification->save();
-
-					DB::table('alertes')->insertOrIgnore([
-						['notification'	=>	$notifId , 'vendeurs'	=>	Auth::user()->username , 'created_at'	=> Carbon::now() , 'updated_at'	=>	Carbon::now()],
-						['notification'	=>	$notifId , 'vendeurs'	=>	User::where('type','logistique')->first()->username , 'created_at'	=>	now() , 'updated_at'	=>	Carbon::now()]
-					]);
+					$this->sendNotification("Commande Materiel" ,"Votre commande est en attente de confirmation!",Auth::user()->username);
+					$this->sendNotification("Commande Materiel" ,"Vous avez une commande en attente de la part de ".Auth::user()->localisation,User::where('type','logistique')->first()->username);
 
 					return redirect('/user/new-command')->with('success','Commande envoyée!');
 			} else {
