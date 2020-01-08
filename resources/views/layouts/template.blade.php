@@ -120,9 +120,43 @@
     </div>
     <div class="uk-navbar-center uk-visible@m">
 
-    	<a class="uk-button uk-button-small uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left border-button" href="{{url('/')}}" uk-tooltip="Tableau de bord"><span class="" uk-icon="icon:home ; "></span></a>
-    	<a class="uk-button uk-button-small uk-button-default uk-border-pill uk-box-shadow-hover-small  uk-margin-left border-button"><span uk-icon="icon:bell "></span></a>
-    	<a class="uk-button uk-button-small uk-button-default uk-border-pill uk-box-shadow-hover-small uk-margin-left border-button"><span uk-icon="icon:comment "></span></a>
+    	<a class="uk-button uk-button-small border-button" href="{{url('/')}}" uk-tooltip="Tableau de bord"><span class="" uk-icon="icon:home ; "></span></a>
+			<!-- NOTIFICATION -->
+			<div class="uk-inline">
+				<a class="uk-button uk-button-small  border-button"><span uk-icon="icon:bell "></span> <sup id="notification-count" class="uk-badge">0</sup></a>
+			    <!-- <button class="uk-button uk-button-default" type="button">Click</button> -->
+			    <div class="" uk-drop="mode: click ; animation: uk-animation-slide-top-small;">
+			        <div class="uk-card-default uk-box-shadow-small notification-container uk-overflow-auto" style="background : #fefefe !important;border : solid 1px #ddd !important; ">
+								<dl class="uk-description-list uk-description-list-divider" id="notification-list"><div uk-spinner></div></dl>
+								<a class="uk-button uk-button-link uk-text-capitalize uk-margin-small-left" href="#all-notification" uk-toggle>Tout voir</a>
+							</div>
+			    </div>
+			</div>
+			<!-- TOUTES LES NOTIFICATIOS -->
+			<div id="all-notification" uk-modal="esc-close : false ; bg-close : false">
+			    <div class="uk-modal-dialog uk-modal-body">
+			        <h3 class="uk-modal-title"><span uk-icon = "icon : bell"></span> Toutes les notifications</h3>
+							<ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-left-medium">
+							    <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Non Lues</a></li>
+							    <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Lues</a></li>
+							</ul>
+
+							<ul class="uk-switcher uk-margin">
+							    <li>
+										<dl class="uk-description-list uk-description-list-divider uk-overflow-auto uk-height-medium" id="notification-unread"></dl>
+									</li>
+							    <li>
+										<dl class="uk-description-list uk-description-list-divider uk-overflow-auto uk-height-medium" id="notification-read"></dl>
+									</li>
+							</ul>
+			        <p class="uk-text-right">
+			            <button class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-modal-close" type="button">Fermer</button>
+			            <!-- <button class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-primary" type="button">Save</button> -->
+			        </p>
+			    </div>
+			</div>
+			<!-- // -->
+    	<a class="uk-button uk-button-small border-button"><span uk-icon="icon:comment "></span></a>
 
 			@if(Auth::user()->type == 'admin')
     	<a class="uk-button uk-button-small uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span> Promo</a>
@@ -449,6 +483,10 @@
 			$("#delete-button").show(200)
 		})
 		@endif
+		setInterval(function () {
+			$logistique.notificationList("{{csrf_token()}}","{{url('/user/notification/getlist')}}","{{Auth::user()->username}}","{{url('/user/notification/mark-as-read')}}")
+		},5000);
+		$logistique.notificationList("{{csrf_token()}}","{{url('/user/notification/getlist')}}","{{Auth::user()->username}}","{{url('/user/notification/mark-as-read')}}")
 })
 </script>
 @yield('script')

@@ -17,6 +17,10 @@ use App\TransactionAfrocash;
 use App\CgaAccount;
 use App\RexAccount;
 
+use App\Notifications;
+use App\Alert;
+use Illuminate\Support\Facades\DB;
+
 Trait Afrocashes {
 
 	public function  newAccount($username,$type = 'courant') {
@@ -73,7 +77,7 @@ Trait Afrocashes {
 	public function sendCommandSemiGrossiste(Request $request) {
 		try {
 
-			if(CommandCredit::where('vendeurs',Auth::user()->username)->where('status','unvalidated')->first()) {
+			if(CommandCredit::where('vendeurs',Auth::user()->username)->where('status','unvalidated')->where('type','afrocash_cash_sg')->first()) {
 				throw new AppException("Une commande est deja en attente de validation !");
 			}
 
@@ -93,6 +97,8 @@ Trait Afrocashes {
 					$credit->recu =	Str::random()."_recu_".time().'.'.$extension;
 					if($request->file('piece_jointe')->move(config('image.path'),$credit->recu)) {
 						$credit->save();
+						// CREATION DE LA NOTIFICATION
+						$this->sendNotification("Commande Afrocash" , "Commande de Credit Afrocash est en attente de confirmation!",'gcga');
 						return redirect('/user/new-command')->withSuccess("Success!");
 					} else {
 						throw new AppException("Erreur de telechargement !");
@@ -153,6 +159,9 @@ Trait Afrocashes {
 							CommandCredit::where("id",$commande->id)->update([
 								'status'	=>	'validated'
 							]);
+							// ENVOI DE LA NOTIFICATION
+							$this->sendNotificationForGestionnaire("Commande Credit Cga" , "Commande Cga Validée!",$commande->vendeurs);
+
 							return redirect('/user/credit-cga/commandes')->withSuccess("Success!");
 						} else {
 							throw new AppException("Montant Indisponible!");
@@ -194,7 +203,10 @@ Trait Afrocashes {
 							CommandCredit::where('id',$commande->id)->update([
 								'status'	=>	'validated'
 							]);
+							$this->sendNotificationForGestionnaire("Commande Afrocash" , "Commande Afrocash Validée!",$commande->vendeurs);
+
 							return redirect('/user/credit-cga/commandes')->withSuccess("Success!");
+							// ENVOI DE LA NOTIFICATION
 						} else {
 							throw new AppException("Montant Indisponible!");
 						}
@@ -228,6 +240,7 @@ Trait Afrocashes {
 							CommandCredit::where("id",$commande->id)->update([
 								'status'	=>	'validated'
 							]);
+							$this->sendNotificationForGestionnaire("Commande Credit Rex" , "Commande Rex Validée!",$commande->vendeurs);
 							return redirect('/user/credit-rex/commandes')->withSuccess("Success!");
 						} else {
 							throw new AppException("Montant Indisponible!");

@@ -1163,5 +1163,101 @@ allRecouvrement : function (token , url , vendeurs) {
   form.submit()
 }
 ,
+notificationList : function (token , url ,vendeur , urlLuAction = "") {
+  var form = $logistique.makeForm(token , url ,[vendeur])
+  form.on('submit',function(e) {
+    e.preventDefault()
+    $.ajax({
+      url : url ,
+      type : 'post',
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+      $("#notification-count").html(data.count)
+      if(data.count !== 0 ) {
+        $logistique.organizeNotification(data.all,$("#notification-list"))
+        $logistique.organizeNotification(data.all_unread,$("#notification-unread"))
+        $logistique.organizeNotification(data.all_read,$("#notification-read"),'read')
+      } else {
+        $("#notification-list").html("<span class='uk-flex uk-flex-center uk-text-meta'>Aucune Notification !<span>")
+      }
+      // LU ACTION
+      $('.lu-action').on('click',function (e) {
+        $logistique.changeStateOfNotification(token , urlLuAction,$(this).attr('data-notification'))
+        $(this).parent().hide(200)
+      })
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href','/')
+    })
+  })
+  form.submit()
+}
+,
+// ORGANISATION DE LA NOTIFICATION
+organizeNotification : function (data , content , state = 'unread') {
+  // var
+  var titles = [] , descriptions = [] , container = [] , luButton = [] , date = [] , deleteButton = []
+  content.html('')
+  data.forEach(function (element , index) {
+    titles[index] = $("<dt></dt>")
+    descriptions[index] = $("<dd></dd>")
 
+    date[index] = $("<div></div>")
+    luButton[index] = $("<a></a>")
+    deleteButton[index] = $("<a></a>")
+    date[index].addClass('uk-text-meta')
+
+    descriptions[index].addClass('uk-text-small')
+
+    luButton[index].addClass('uk-button-link uk-button uk-text-capitalize uk-flex uk-flex-right uk-icon-link lu-action')
+    luButton[index].attr('uk-icon','icon : check ; ratio : .8')
+    luButton[index].attr('data-notification',element.id)
+    deleteButton[index].addClass('uk-button-link uk-button uk-text-capitalize uk-flex uk-flex-right uk-icon-link delete-action')
+    deleteButton[index].attr('data-notification',element.id)
+    deleteButton[index].attr('style','color : red')
+    deleteButton[index].attr('uk-icon','icon : close ; ratio : .8')
+
+
+    luButton[index].text('Vu')
+    deleteButton[index].text('Supprimer')
+    date[index].text(element.date)
+    titles[index].text(element.title)
+    descriptions[index].text(element.description)
+    descriptions[index].append(date[index])
+    if(state == 'unread') {
+      descriptions[index].append(luButton[index])
+    } else {
+      descriptions[index].append(deleteButton[index])
+    }
+
+    content.append(titles[index])
+    content.append(descriptions[index])
+  })
+}
+,
+changeStateOfNotification : function (token , url , idNotification) {
+  var form = $logistique.makeForm(token , url , [idNotification])
+  form.on('submit',function(e) {
+    e.preventDefault()
+    $.ajax({
+      url : url ,
+      type : "post",
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data){
+      if(data == "done") {
+        UIkit.modal.alert("Success!")
+      }
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href','/')
+    })
+  })
+  form.submit()
+}
 }

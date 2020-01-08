@@ -10,20 +10,11 @@ use App\Credit;
 use App\Afrocash;
 use App\Exceptions\AppException;
 
-Trait Rex {
+use App\Notifications;
+use App\Alert;
+use Illuminate\Support\Facades\DB;
 
-	// VERIFIER SI LE SOLDE CGA EST DISPONIBLE
-	//
-	// public function isAvailableSolde($formule) {
-	// 	$solde = Formule::select()->where('nom',$formule)->first()->prix;
-	// 	$user = Auth::user()->username;
-	// 	$temp = RexAccount::select()->where('vendeur',$user)->first();
-	// 	if($temp->solde >= $solde) {
-	// 		return $temp;
-	// 	}
-	//
-	// 	return false;
-	// }
+Trait Rex {
 
 	public function commandRex(Request $request) {
 		$validation = $request->validate([
@@ -53,6 +44,8 @@ Trait Rex {
 				]);
 
 				$commande->save();
+				// ENVOI DE LA NOTIFICATION
+				$this->sendNotification("Commande Rex" , "Commande de Credit Rex est en attente de confirmation!",'grex');
 				return redirect('/user/new-command')->withSuccess("Success !");
 			} else {
 				throw new AppException("Montant Indisponible!");

@@ -26,6 +26,8 @@ use App\SerialNumberTemp;
 use App\User;
 use App\Agence;
 use App\Compense;
+use App\Notifications;
+use App\Alert;
 
 Trait Similarity {
 
@@ -500,6 +502,43 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
       die($e->getMessage());
     }
 
+  }
+
+  // ENVOI DE LA NOTIFICATION
+  public function sendNotification ($title , $description , $gestionnaire) {
+    // ENVOI DE LA Notifications
+    $notification = new Notifications;
+    $notification->makeId();
+    $notification->titre = $title;
+    $notification->description = $description;
+
+    $notifId = $notification->id;
+    // ENREGISTREMENT DE LA NOTIFICATION
+    $notification->save();
+
+    DB::table('alertes')->insertOrIgnore([
+      ['notification'	=>	$notifId , 'vendeurs'	=>	Auth::user()->username , 'created_at'	=> Carbon::now() , 'updated_at'	=>	Carbon::now()],
+      ['notification'	=>	$notifId , 'vendeurs'	=>	User::where('type',$gestionnaire)->first()->username , 'created_at'	=>	now() , 'updated_at'	=>	Carbon::now()]
+    ]);
+  }
+
+
+  // ENVOI DE LA NOTIFICATION COTE GESTIONNAIRE
+  public function sendNotificationForGestionnaire($title,$description , $vendeurs) {
+    // ENVOI DE LA Notifications
+    $notification = new Notifications;
+    $notification->makeId();
+    $notification->titre = $title;
+    $notification->description = $description;
+
+    $notifId = $notification->id;
+    // ENREGISTREMENT DE LA NOTIFICATION
+    $notification->save();
+
+    DB::table('alertes')->insertOrIgnore([
+      ['notification'	=>	$notifId , 'vendeurs'	=>	Auth::user()->username , 'created_at'	=> Carbon::now() , 'updated_at'	=>	Carbon::now()],
+      ['notification'	=>	$notifId , 'vendeurs'	=>	$vendeurs , 'created_at'	=>	now() , 'updated_at'	=>	Carbon::now()]
+    ]);
   }
 
 }

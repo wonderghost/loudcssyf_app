@@ -114,7 +114,7 @@
 			} else {
 				$logistique.getListRapportVente("{{csrf_token()}}","{{url('/user/get-rapport')}}")
 			}
-		},10000);
+		},20000);
 
 		if($('#user-type').val() == 'admin') {
 			$logistique.getListRapportVente("{{csrf_token()}}","{{url('/admin/get-rapport')}}")

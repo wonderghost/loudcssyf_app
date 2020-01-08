@@ -17,41 +17,41 @@
 					<div class="uk-grid-small uk-child-width-1-4@m uk-child-width-1-1@s" uk-grid>
 						@if($solde)
 						<div class="">
-						<div class="uk-card uk-card-primary uk-border-rounded uk-light">
+						<div class="uk-card uk-card-primary uk-border-rounded uk-light uk-height-small">
 							<div class="uk-card-header">
-								<h3 class="uk-card-title uk-text-small">CGA (GNF)</h3>
+								<h3 class="uk-card-title">CGA (GNF)</h3>
+								<p class="uk-text-lead" style="color : #fff;">{{number_format($solde->solde)}}</p>
 							</div>
-							<div class="uk-card-body uk-text-center uk-text-lead">{{number_format($solde->solde)}}</div>
 						</div>
 					</div>
 						@endif
 						@if($afrocashsm)
 						<div class="">
-						<div class="uk-card uk-card-primary uk-border-rounded uk-light">
+						<div class="uk-card uk-card-primary uk-border-rounded uk-light uk-height-small">
 							<div class="uk-card-header">
-								<h3 class="uk-card-title uk-text-small">AFROCASH SEMI GROSSISTE (GNF)</h3>
+								<h3 class="uk-card-title ">AFROCASH GROSSISTE (GNF)</h3>
+								<p class="uk-text-lead" style="color : #fff;">{{number_format($afrocashsm->solde)}}</p>
 							</div>
-							<div class="uk-card-body uk-text-center uk-text-lead">{{number_format($afrocashsm->solde)}}</div>
 						</div>
 					</div>
 						@endif
 						@if($afrocashcourant)
 						<div class="">
-						<div class="uk-card uk-card-primary uk-border-rounded uk-light">
+						<div class="uk-card uk-card-primary uk-border-rounded uk-light uk-height-small">
 							<div class="uk-card-header">
-								<h3 class="uk-card-title uk-text-small">AFROCASH COURANT (GNF)</h3>
+								<h3 class="uk-card-title">AFROCASH COURANT (GNF)</h3>
+								<p class="uk-text-lead" style="color : #fff;">{{number_format($afrocashcourant->solde)}}</p>
 							</div>
-							<div class="uk-card-body uk-text-center uk-text-lead">{{number_format($afrocashcourant->solde)}}</div>
 						</div>
 					</div>
 						@endif
 						@if($rex)
 						<div class="">
-						<div class="uk-card uk-card-primary uk-border-rounded uk-light">
+						<div class="uk-card uk-card-primary uk-border-rounded uk-light uk-height-small">
 							<div class="uk-card-header">
-								<h3 class="uk-card-title uk-text-small">REX (GNF)</h3>
+								<h3 class="uk-card-title">REX (GNF)</h3>
+								<p class="uk-text-lead" style="color : #fff;">{{number_format($rex->solde)}}</p>
 							</div>
-							<div class="uk-card-body uk-text-center uk-text-lead">{{number_format($rex->solde)}}</div>
 						</div>
 					</div>
 						@endif

@@ -22,6 +22,9 @@ use App\CommandCredit;
 use App\Afrocash;
 use App\User;
 use App\TransactionAfrocash;
+use App\Notifications;
+use App\Alert;
+use Illuminate\Support\Facades\DB;
 
 class CommandController extends Controller
 {
@@ -135,6 +138,20 @@ class CommandController extends Controller
 					$transaction->montant = $request->input('prix_achat');
 
 					$transaction->save();
+					// ENVOI DE LA Notifications
+					$notification = new Notifications;
+					$notification->makeId();
+					$notification->titre = "Commande Materiel";
+					$notification->description = "Commande Materiel en attente de confirmation!";
+
+					$notifId = $notification->id;
+					// ENREGISTREMENT DE LA NOTIFICATION
+					$notification->save();
+
+					DB::table('alertes')->insertOrIgnore([
+						['notification'	=>	$notifId , 'vendeurs'	=>	Auth::user()->username , 'created_at'	=> Carbon::now() , 'updated_at'	=>	Carbon::now()],
+						['notification'	=>	$notifId , 'vendeurs'	=>	User::where('type','logistique')->first()->username , 'created_at'	=>	now() , 'updated_at'	=>	Carbon::now()]
+					]);
 
 					return redirect('/user/new-command')->with('success','Commande envoyée!');
 			} else {

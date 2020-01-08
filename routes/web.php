@@ -249,6 +249,9 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/recouvrement/all-transactions','RecouvrementController@allTransactions')->middleware('coursier');
 	Route::post('/user/recouvrement/get-montant-du','RecouvrementController@getMontantDuRecouvrement')->middleware('coursier');
 	Route::post('/user/recouvrement/all-recouvrement','RecouvrementController@allRecouvrement')->middleware('coursier');
+	// NOTIFICATIONS
+	Route::post('/user/notification/getlist','NotificationController@getList');
+	Route::post('/user/notification/mark-as-read','NotificationController@markAsRead');
 });
 
 Route::middleware(['auth'])->group(function () {

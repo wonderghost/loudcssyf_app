@@ -36,6 +36,11 @@ html , body {
   color : #1e87f0 !important;
 }
 
-#outils {
-  
+.notification-container:hover {
+  background : rgba(0 , 0 , 0 , 0.1) !important;
+}
+
+.notification-container {
+  border : solid 0.2px #ddd;
+  padding : 1% !important;
 }

@@ -24,6 +24,10 @@ use App\Agence;
 use App\CommandCredit;
 use App\Exceptions\AppException;
 
+use App\Notifications;
+use App\Alert;
+use Illuminate\Support\Facades\DB;
+
 class CreditController extends Controller
 {
 	use Similarity;
@@ -144,6 +148,8 @@ class CreditController extends Controller
                 $histo->cga = $cga->numero;
                 $histo->montant = $request->input('montant');
                 $histo->save();
+								// ENVOI DE LA NOTIFICATION
+								// $this->sendNotificationForGestionnaire("Commande Credit Cga" , "Command Cga Validée!",$request->input('vendeur'));
                 return redirect('/user/cga-credit')->with('success',"Transaction effectuée !");
             } else {
                 // MONTANT INDISPONIBLE
@@ -224,8 +230,8 @@ class CreditController extends Controller
 					'id'	=>	$value->id,
 					'date'	=>	$date->toFormattedDateString()." (".$date-> diffForHumans()." )",
 					'vendeurs'	=>	$value->vendeurs." (".$value->vendeurs()->localisation." )",
-					'type'	=>	$value->type,
 					'montant'	=>	number_format($value->montant),
+					'type'	=>	$value->type,
 					'status'	=>	$value->status,
 					'numero_recu'	=>	$value->numero_recu ? $value->numero_recu : 'undefined',
 					'recu'	=>	$value->recu ? $value->recu : 'undefined'
