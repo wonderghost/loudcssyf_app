@@ -31,7 +31,7 @@ class Notifications extends Model
     }
 
     public function humanDate() {
-      $_date = new Carbon($this->date);
+      $_date = new Carbon($this->created_at);
       $_date->setLocale('fr_FR');
       $this->date = $_date->diffForHumans();
     }
