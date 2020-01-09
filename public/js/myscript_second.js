@@ -1177,11 +1177,11 @@ notificationList : function (token , url ,vendeur , urlLuAction = "") {
       $("#notification-count").html(data.count)
       if(data.count !== 0 ) {
         $logistique.organizeNotification(data.all,$("#notification-list"))
-        $logistique.organizeNotification(data.all_unread,$("#notification-unread"))
-        $logistique.organizeNotification(data.all_read,$("#notification-read"),'read')
       } else {
         $("#notification-list").html("<span class='uk-flex uk-flex-center uk-text-meta'>Aucune Notification !<span>")
       }
+      $logistique.organizeNotification(data.all_unread,$("#notification-unread"))
+      $logistique.organizeNotification(data.all_read,$("#notification-read"),'read')
       // LU ACTION
       $('.lu-action').on('click',function (e) {
         $logistique.changeStateOfNotification(token , urlLuAction,$(this).attr('data-notification'))
@@ -1250,7 +1250,12 @@ changeStateOfNotification : function (token , url , idNotification) {
     })
     .done(function (data){
       if(data == "done") {
-        UIkit.modal.alert("Success!")
+        UIkit.notification({
+            message: 'Success!',
+            status: 'success',
+            pos: 'top-center',
+            timeout: 1000
+        });
       }
     })
     .fail(function (data) {

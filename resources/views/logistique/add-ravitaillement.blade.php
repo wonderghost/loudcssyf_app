@@ -6,25 +6,29 @@
 		<h3><a href="{{url('/user/commandes')}}" uk-tooltip="Toutes les commandes" uk-icon="icon:arrow-left;ratio:1.5"></a> Ravitailler un vendeur</h3>
 		<hr class="uk-divider-small"></hr>
 		@if(session('_errors'))
-			<div class="uk-alert uk-alert-danger">{{session('_errors')}} <button class="uk-align-right close-button"  uk-icon="icon:close"></button></div>
+			<div class="uk-alert-danger uk-border-rounded uk-box-shadow-small" uk-alert>
+				<a href="#" class="uk-alert-close" uk-close ></a>
+				<p>{{session('_errors')}}</p>
+			</div>
 		@endif
 		@if(session('success'))
-			<div class="uk-alert uk-alert-success">{{session('success')}} <button class="uk-align-right close-button"  uk-icon="icon:close"></button></div>
+			<div class="uk-alert-success uk-border-rounded uk-box-shadow-small" uk-alert>
+				<a href="#" class="uk-alert-close" uk-close></a>
+				<p>{{session('success')}}</p>
+			</div>
 		@endif
 
-
+		@if($errors->any())
+		@foreach($errors->all() as $error)
+		<div class="uk-alert-danger uk-border-rounded uk-box-shadow-small" uk-alert>
+			<a href="#" class="uk-alert-close" uk-close></a>
+			<p>{{$error}}</p>
+		</div>
+		@endforeach
+		@endif
 
 		<!-- FORMULAIRE DE RAVITAILLEMENT -->
 		{!!Form::open(['url'=> url()->current()])!!}
-		@if($errors->has('vendeur') || $errors->has('produit') || $errors->has('depot') || $errors->has('quantite'))
-		<div class="uk-alert uk-alert-danger">
-			<button type="button" class="uk-align-right close-button"  uk-icon="icon:close"></button>
-			<div>{{$errors->first('vendeur')}}</div>
-			<div>{{$errors->first('produit')}}</div>
-			<div>{{$errors->first('depot')}}</div>
-			<div>{{$errors->first('quantite')}}</div>
-		</div>
-		@endif
 		<!-- SELECT VENDEURS -->
 		<div class="" uk-grid>
 			<div class="uk-width-3-5@m">
@@ -78,7 +82,7 @@
 		</div>
 		{!!Form::label('Compense*')!!}
 		{!!Form::number('compense',0,['class'=>'uk-input uk-margin-small','placeholder'=>'Compense'])!!}
-		<button type="submit" class="uk-button-default uk-border-rounded">valider <span uk-icon="icon:check;ratio:.8"></span></button>
+		<button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small">valider <span uk-icon="icon:check;ratio:.8"></span></button>
 		{!!Form::close()!!}
 		<!-- // -->
 
