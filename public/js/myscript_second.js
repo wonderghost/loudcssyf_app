@@ -648,6 +648,7 @@ getListRapportVente : function (token , url) {
     .done(function (data) {
 
       $("#commission-jour").val(data.commission)
+      $("#commission-cumulee").val(data.commission)
       if(data.recrutement) {
         $logistique.dataList(data.recrutement,$("#recrutement-list"))
       }

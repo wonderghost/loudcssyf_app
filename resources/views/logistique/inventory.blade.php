@@ -12,25 +12,25 @@
 			 Inventaire</h3>
 		<hr class="uk-divider-small">
 		<div class="uk-grid-collapse uk-grid-divider uk-child-width-1-2@m" uk-grid>
-			<div>
+			<!-- <div>
 				<h4><span uk-icon="icon:search"></span> Search</h4>
 				{!!Form::text('search','',['class'=>'uk-input','placeholder'=>'...'])!!}
 				<button class="uk-button-default uk-border-rounded">Valider <span uk-icon="icon:check;ratio:.8"></span></button>
-			</div>
+			</div> -->
 			<div>
-				<h4><span uk-icon="icon:more-vertical"></span> Vendeurs </h4>
-				<select class="uk-select uk-text-bold" id="mat-filter">
+				<label><span uk-icon="icon:users"></span> Vendeurs </label>
+				<select class="uk-select uk-border-rounded" id="mat-filter">
 					<option value="all">Tous</option>
 					@if($users)
 					@foreach($users as $key => $values)
-					<option value="{{$values->username}}">{{$values->username.'('.$values->localisation.'/'.$agence[$key]->societe.')'}}</option>
+					<option value="{{$values->username}}">{{$values->localisation.'/'.$agence[$key]->societe}}</option>
 					@endforeach
 					@endif
 				</select>
 			</div>
 		</div>
 		<div uk-spinner id="_loader" style="display: none;"></div>
-		<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+		<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small uk-table-responsive">
 			<thead>
 				<tr>
 					<th>Designation</th>
