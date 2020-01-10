@@ -112,6 +112,42 @@
     </div>
 
 	<!-- // -->
+	<!-- MODAL PAIEMENT COMMISSION -->
+	@if(Auth::user()->type == "v_da")
+	<input type="hidden" name="" id="commission-for-user" value="{{Auth::user()->username}}">
+	<input type="hidden" name="" id="state-validate-button" value="without-validate-button">
+	@elseif(Auth::user()->type == "gcga")
+	<input type="hidden" name="" id="commission-for-user" value="all">
+	<input type="hidden" name="" id="state-validate-button" value="with-validate-button">
+	@elseif(Auth::user()->type == 'admin')
+	<input type="hidden" name="" id="commission-for-user" value="all">
+	<input type="hidden" name="" id="state-validate-button" value="without-validate-button">
+	@endif
+	<div id="modal-commission" class="uk-modal-container" uk-modal="esc-close : false ; bg-close : false;">
+	    <div class=" uk-modal-dialog">
+	        <div class="uk-modal-header">
+	            <h3 class="uk-modal-title"> <i class="material-icons">monetization_on</i> Paiement Commission</h3>
+	        </div>
+	        <div class="uk-modal-body uk-overflow-auto uk-height-medium">
+						<table class="uk-table uk-table-small uk-table-hover uk-table-striped uk-table-divider uk-table-responsive">
+							<thead>
+								<tr>
+									<th>Du</th>
+									<th>Au</th>
+									<th>Total</th>
+									<th>Status</th>
+									<th>Vendeurs</th>
+								</tr>
+							</thead>
+							<tbody id="pay-commission-list"><div class="loader" uk-spinner></div></tbody>
+						</table>
+	        </div>
+	        <div class="uk-modal-footer uk-text-right">
+	            <button class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-danger uk-modal-close" type="button">Fermer</button>
+	        </div>
+	    </div>
+	</div>
+	<!-- // -->
 <!-- NAVBAR-->
 <div class="uk-navbar-container uk-box-shadow-small" id="entete" uk-sticky uk-navbar>
     <div class="uk-navbar-left">
@@ -150,21 +186,23 @@
 									</li>
 							</ul>
 			        <p class="uk-text-right">
-			            <button class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-modal-close" type="button">Fermer</button>
-			            <!-- <button class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-primary" type="button">Save</button> -->
+			           <button class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-modal-close" type="button">Fermer</button>
 			        </p>
 			    </div>
 			</div>
 			<!-- // -->
     	<a class="uk-button uk-button-small border-button" uk-tooltip="Conversations"><i class="material-icons">message</i></a>
     	<a class="uk-button uk-button-small border-button" uk-tooltip="Alarmes"><i class="material-icons">alarm</i></a>
-    	<!-- <a class="uk-button uk-button-small border-button" uk-tooltip="Alertes"><img style="color : yellow !important;" src="{{asset('img/alarm.svg')}}" alt=""></a> -->
 
 			@if(Auth::user()->type == 'admin')
+			<a class="uk-button uk-button-small border-button" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
     	<a class="uk-button uk-button-small uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span> Promo</a>
 			@endif
 			@if(Auth::user()->type == 'gcga')
-			<a class="uk-button uk-button-small border-button" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
+			<a class="uk-button uk-button-small border-button" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
+			@endif
+			@if(Auth::user()->type == 'v_da')
+			<a class="uk-button uk-button-small border-button" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
 			@endif
     </div>
 		<div class="uk-navbar-right uk-visible@m">
@@ -489,6 +527,10 @@
 			$logistique.notificationList("{{csrf_token()}}","{{url('/user/notification/getlist')}}","{{Auth::user()->username}}","{{url('/user/notification/mark-as-read')}}")
 		},5000);
 		$logistique.notificationList("{{csrf_token()}}","{{url('/user/notification/getlist')}}","{{Auth::user()->username}}","{{url('/user/notification/mark-as-read')}}")
+
+		// RECUPERATION DE L'HISTORIQUE DE PAIEMENT DES COMISSIONS
+		console.log($("#commission-for-user").val())
+		$logistique.payCommissionList("{{csrf_token()}}","{{url('/user/rapport-ventes/get-pay-commission')}}",$("#commission-for-user").val())
 })
 </script>
 @yield('script')

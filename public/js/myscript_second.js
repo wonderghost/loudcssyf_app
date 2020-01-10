@@ -1316,6 +1316,47 @@ payCommission : function () {
     })
   })
 }
+,
+payCommissionList : function (token , url , vendeurs) {
+  var form=$logistique.makeForm(token,url,[vendeurs])
+  form.on('submit',function(e) {
+    e.preventDefault()
+    $.ajax({
+      url : url ,
+      type : 'post',
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+      $('.loader').hide(200)
+      $logistique.dataList(data,$("#pay-commission-list"))
 
+
+        data.forEach(function (element,index) {
+
+          if($("#state-validate-button").val() === "with-validate-button") {
+            var validate = $("<a></a>") , col = $("<td></td>")
+            validate.addClass('uk-button uk-button-small uk-icon-link uk-button-primary uk-border-rounded uk-box-shadow-small uk-text-capitalize')
+            validate.attr('uk-icon','icon : check ; ratio : .8')
+            validate.text("validez")
+            col.append(validate)
+            $("#pay-commission-list .row:eq("+index+")").append(col)
+        }
+
+        if(element.status == "unvalidated") {
+          $("#pay-commission-list .row:eq("+index+") .col:eq(3)").addClass('uk-text-danger')
+        } else {
+          $("#pay-commission-list .row:eq("+index+") .col:eq(3)").addClass('uk-text-success')
+        }
+
+        })
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href','/')
+    })
+  })
+  form.submit()
+}
 
 }

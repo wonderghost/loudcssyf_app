@@ -21,4 +21,8 @@ class PayCommission extends Model
       }
       return false;
     }
+
+    public function vendeurs() {
+      return $this->belongsTo('App\User','vendeurs','username')->first();
+    }
 }

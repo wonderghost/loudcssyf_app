@@ -184,6 +184,7 @@ class CommandController extends Controller
 // LIST COMMANDES CHEZ LE VENDEURS
 	public function getRequestList(Request $request) {
 		$commands= CommandMaterial::where('vendeurs',Auth::user()->username)->get();
+		$all = [];
 		foreach($commands as $key => $values) {
 			$produit = Produits::select()->where('reference',$values->produit)->first();
 			$comm_produit = CommandProduit::where('commande',$values->id_commande)->first();

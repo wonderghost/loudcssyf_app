@@ -131,4 +131,31 @@ public function payCommission(Request $request) {
 
 }
 
+// LIST DE PAIEMENT DES COMMISSIONS
+public function PayCommissionList(Request $request) {
+  try {
+    if($request->input('ref-0') == "all") {
+      $payCommission = PayCommission::all();
+    }
+    else {
+      $payCommission = PayCommission::where("vendeurs",$request->input("ref-0"))->get();
+    }
+    $all =[];
+    foreach($payCommission as $key  =>  $value) {
+      $all[$key]  = [
+        'du' => $value->debut,
+        'fin' =>  $value->fin,
+        'total' =>  number_format($value->montant_total),
+        'status'  =>  $value->status,
+        'vendeurs'  => $value->vendeurs()->localisation
+      ];
+    }
+
+    return response()->json($all);
+  } catch (AppException $e) {
+    header("unprocessible entity",true,422);
+    die(json_encode($e->getMessage()));
+  }
+
+}
 }
