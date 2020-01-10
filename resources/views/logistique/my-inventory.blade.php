@@ -74,6 +74,20 @@
 					</table>
 				</li>
 				<li>
+					<div class="uk-grid-small" uk-grid>
+						<div class="uk-width-1-4@m">
+							<label for=""> <span uk-icon="icon : search"></span> Recherche</label>
+							<input type="text" name="" value="" class="uk-input uk-border-rounded uk-margin-small" placeholder="...">
+						</div>
+						<div class="uk-width-1-4@m">
+							<label for=""> <span uk-icon ="icon : info"></span> Status</label>
+							<select class="uk-select uk-border-rounded uk-margin-small" name="">
+								<option value="">-- Status --</option>
+								<option value="actif">Actif</option>
+								<option value="inactif">Inactif</option>
+							</select>
+						</div>
+					</div>
 					<!-- serial number -->
 					<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small uk-table-responsive">
 						<thead>
@@ -82,6 +96,7 @@
 								<th>Article</th>
 								<th>Vendeurs</th>
 								<th>Status</th>
+								<th>Origine</th>
 							</tr>
 						</thead>
 						<tbody id="serials-vendeurs"></tbody>

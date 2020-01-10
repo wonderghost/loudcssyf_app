@@ -20,7 +20,7 @@ class Livraison extends Model
     }
 
     public function depot() {
-      return $this->belongsTo('App\Depots');
+      return $this->belongsTo('App\Depots','depot','localisation');
     }
 
     public function serialFile() {

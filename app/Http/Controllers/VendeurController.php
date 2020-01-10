@@ -91,8 +91,9 @@ class VendeurController extends Controller
         $all[$key]= [
           'serial'  =>  $value->serial_number,
           'article' =>  'Terminal Hd z4',
-          'vendeur' =>  $value->vendeurs,
-          'status'  =>  $value->status
+          'vendeur' =>  $value->vendeurs()->first()->localisation,
+          'status'  =>  $value->status,
+          'origin'  =>  $value->depot()->depot
         ];
       }
       return response()->json($all);

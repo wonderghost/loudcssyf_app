@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Arr;
 use App\Exceptions\AppException;
-
+use App\User;
 
 trait Livraisons {
 
@@ -146,13 +146,32 @@ public function inventaireLivraison() {
               $fileSerial->save();
             } else {
               // Les Numeros de Series n'existes pas
+              // VALIDATION DANS LE CAS DE LA PARABOLE
+              $_livraison = Livraison::find($request->input('livraison'));
+              $ravit = $_livraison->ravitaillementVendeurs();
+              $ravit->livraison = 'confirmer';
+              $ravit->save();
             }
+
+            $livraison = Livraison::find($request->input('livraison'));
+            // dump($livraison);
+            // dump($livraison->ravitaillementVendeurs()->vendeurs());
+            // die();
             // Changement de status de livraison
             Livraison::where([
               'id'  =>  $request->input('livraison')
               ])->update([
                 'status'  =>  'livred'
               ]);
+
+
+              // logistique
+              $this->sendNotification("Validation de la livraison" ,"Vous avez une livraison en attente de validation ",User::where('type','logistique')->first()->username);
+              // vendeurs
+              $this->sendNotification("Livraison Materiel" ,"Vous avez recu une livraison de : ".$livraison->depot,$livraison->ravitaillementVendeurs()->vendeurs);
+              // depot de livraison
+              $this->sendNotification("Livraison Materiel" ,"Vous avez effectue une livraison au compte de : ".$livraison->ravitaillementVendeurs()->vendeurs()->localisation,Auth::user()->username);
+
               return redirect('/user/livraison')->withSuccess("Success!");
           } else {
             throw new AppException("Le Code de confirmation est incorrect!",2);
@@ -307,6 +326,15 @@ public function inventaireLivraison() {
         RavitaillementVendeur::where('id_ravitaillement',$ravitaillementVendeur->id_ravitaillement)->update([
           'livraison' =>  'confirmer'
         ]);
+        //
+        // ENREGISTREMENT DE LA NOTIFICATION
+        // Logistique
+        $this->sendNotification("Validation de Livraison","Vous avez valide une livraison pour : ".$ravitaillementVendeur->vendeurs()->localisation,User::where('type','logistique')->first()->username);
+        // Vendeurs
+        $this->sendNotification("Validation de Livraison","Votre livraison a ete valide , les materiels ont ete transfere dans votre pack!",$ravitaillementVendeur->vendeurs);
+        // depot concerne
+        $this->sendNotification("Validation de Livraison","Livraison validee pour :".$ravitaillementVendeur->vendeurs()->localisation,$livraison->depot()->first()->vendeurs);
+        // //
         return redirect('/user/commandes')->with('success',"Success!");
       } else {
         // Le mot de passe ne correspond pas

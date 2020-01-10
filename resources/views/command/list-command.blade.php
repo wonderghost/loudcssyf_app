@@ -35,6 +35,7 @@
 								 <th>Numero Recu</th>
 								 <th>Status</th>
 								 <th>id</th>
+								 <th>Status de livraison</th>
 								 <th>-</th>
 							 </tr>
 						 </thead>
@@ -157,33 +158,52 @@
 <script type="text/javascript">
 	$(function () {
 		$('.pagination').addClass('uk-pagination uk-flex-center')
-
 		//
-		var form = $adminPage.makeForm("{{csrf_token()}}","{{url()->current()}}","");
-		form.on('submit',function(e) {
-			e.preventDefault();
-			$.ajax({
-				url : $(this).attr('action'),
-				type : $(this).attr('method'),
-				dataType : 'json',
-				data : $(this).serialize()
-			})
-			.done(function (data) {
-				$adminPage.createTableCommandRow(data,['date','item','quantite','numero_recu','status','id','details'],$("#list-command"));
-			})
-			.fail(function (data) {
-				Uikit.modal.alert(data).then(function () {
-					$(location).attr('href',"{{url()->current()}}");
+
+		function listMaterialCommande() {
+			var form = $adminPage.makeForm("{{csrf_token()}}","{{url()->current()}}","");
+			form.on('submit',function(e) {
+				e.preventDefault();
+				$.ajax({
+					url : $(this).attr('action'),
+					type : $(this).attr('method'),
+					dataType : 'json',
+					data : $(this).serialize()
 				})
+				.done(function (data) {
+
+					$logistique.dataList(data,$("#list-command"))
+					data.forEach(function (element , index) {
+						if(element.status == 'confirmer') {
+							console.log($("#list-command .row .col:nth-child(5)"))
+							$("#list-command .row:eq("+index+") .col:nth-child(5)").addClass('uk-text-success')
+						} else {
+							$("#list-command .row:eq("+index+") .col:nth-child(5)").addClass('uk-text-danger')
+						}
+						// creation du boutton details
+						var detail = $("<a></a>") , col = $("<td></td>")
+						detail.attr('href','/user/details-command/'+element.id_commande)
+						detail.attr('uk-icon','icon : more')
+						detail.addClass('uk-button uk-margin-small uk-button-small uk-button-default uk-box-shadow-small uk-border-rounded uk-text-capitalize')
+						col.addClass('col')
+						detail.text('details')
+						col.append(detail)
+						$("#list-command .row:eq("+index+")").append(col)
+					})
+
+				})
+				.fail(function (data) {
+					alert(data.responseJSON.message)
+					$(location).attr('href','/')
+				});
 			});
-		});
 
-		form.submit();
-		setTimeOut(function () {
 			form.submit();
-		});
-
-
+		}
+		setTimeout(function () {
+			listMaterialCommande()
+		}, 20000);
+		listMaterialCommande()
 	});
 </script>
 @endsection

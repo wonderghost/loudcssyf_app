@@ -6,26 +6,41 @@
 		<h3><a href="{{url('/')}}" uk-tooltip="Toutes les ventes" uk-icon="icon:arrow-left;ratio:1.5"></a> Rapport de vente</h3>
 		<hr class="uk-divider-small">
 
-		{!!Form::open()!!}
-	<div class="uk-child-width-1-4@m" uk-grid>
-		<div>
-
-			<span uk-icon="icon:search"></span> {!!Form::label('Search')!!}
-			{!!Form::text('search','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Search...'])!!}
+		<!-- This is the modal -->
+		<div id="paiement-commission" uk-modal="esc-close : false ; bg-close : false">
+		    <div class="uk-modal-dialog uk-modal-body">
+		        <h3 class="uk-modal-title"><i class="material-icons">monetization_on</i> Paiement commission</h3>
+		        {!!Form::open(['url'=>'/user/rapport-ventes/pay-commission','id'=>'pay-commission-form'])!!}
+						{!!Form::label('Montant total Cumule')!!}
+						{!!Form::text("commission_total",'',['class'=>'uk-input uk-margin-small uk-border-rounded','disabled','id'=>'commission-cumulee'])!!}
+						{!!Form::label('Confirmez le mot de passe')!!}
+						{!!Form::password('password_confirm',['class'=>'uk-input uk-border-rounded uk-margin-small','autofocus'])!!}
+						{!!Form::submit('validez',['class'=>'uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
+						{!!Form::close()!!}
+		        <p class="uk-text-right">
+		            <button class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-danger uk-modal-close" type="button">Annuler</button>
+		        </p>
+		    </div>
 		</div>
-		<div>
+		<!-- // -->
+		{!!Form::open()!!}
+	<div class="uk-grid-small" uk-grid>
+		<div class="uk-width-1-6@m">
 			<span uk-icon="icon:calendar"></span> {!!Form::label('Du')!!}
 			{!!Form::date('date_debut','',['class'=>'uk-input uk-margin-small uk-border-rounded', 'placeholder'=>'Du...'])!!}
 		</div>
-		<div>
+		<div class="uk-width-1-6@m">
 			<span uk-icon="icon:calendar"></span> {!!Form::label('Au')!!}
 			{!!Form::date('date_fin','',['class'=>'uk-input uk-margin-small uk-border-rounded', 'placeholder'=>'Au...'])!!}
+			<button type="button" name="button" class="uk-button uk-button-small uk-button-primary uk-box-shadow-small uk-border-rounded">Ok</button>
 		</div>
 
-		<div>
+		<div class="uk-width-1-6@m">
 			{!!Form::label('Commission (GNF)')!!}
 			{!!Form::text('commission_jour','N/A',['class'=>'uk-input uk-margin-small uk-text-center uk-border-rounded','disabled','id'=>'commission-jour'])!!}
+			<button type="button" name="button" class="uk-button uk-button-small uk-button-primary uk-box-shadow-small uk-border-rounded" uk-toggle="target: #paiement-commission">Paiement Commission</button>
 		</div>
+
 	</div>
 	{!!Form::close()!!}
 
@@ -104,6 +119,8 @@
 			$logistique.getListRapportVente("{{csrf_token()}}","{{url('/user/rapport-ventes/get-list')}}")
 		}, 10000);
 		$logistique.getListRapportVente("{{csrf_token()}}","{{url('/user/rapport-ventes/get-list')}}")
+		//
+		$logistique.payCommission()
 	});
 </script>
 @endsection

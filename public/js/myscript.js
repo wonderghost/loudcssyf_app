@@ -49,7 +49,7 @@ var $adminPage = {
         span.attr("uk-icon","icon:pencil")
 
         edit.attr('id',data[i].reference)
-        edit.addClass('uk-button uk-button-primary uk-border-rounded edit-button')
+        edit.addClass('uk-button uk-button-small uk-box-shadow-small uk-button-primary uk-border-rounded edit-button')
         edit.text('edit')
         edit.append(span)
         td[7].append(edit)
@@ -149,7 +149,7 @@ $adminPage.unblockUser = function ($formToken,$url,username) {
 }
 
 		 $adminPage.getAction = function (options=1,td,link,dashOption=false) {
-		 		var linkEdit = $("<a></a>");linkEdit.addClass('uk-button uk-button-link uk-text-capitalize');
+		 		var linkEdit = $("<a></a>");linkEdit.addClass('uk-button uk-button-small uk-button-link uk-text-capitalize');
 				var linkDetails = linkEdit.clone();
 		 	if(options==1) {
 		 		// make edit button
@@ -200,7 +200,7 @@ $adminPage.createTableData = function (sdata,champs=null,table) {
 						var span = $("<span></span>");
 						var linkEdit = $("<button></button>");linkEdit.addClass('uk-border-rounded');
 						linkEdit.attr('type','button');
-						linkEdit.addClass('uk-button uk-button-small uk-button-primary edit-button');
+						linkEdit.addClass('uk-button uk-button-border-rounded uk-box-shadow-small uk-button-small uk-button-primary edit-button');
 						linkEdit.attr('id',sdata[i].reference);
 
 						linkEdit.text('edit')
@@ -393,7 +393,7 @@ $adminPage.createTableDataCommand = function (sdata,champs=null,table) {
 						var span = $("<span></span>");
 						var linkDetails = $("<button></button>");linkDetails.addClass('uk-border-rounded');
 						linkDetails.attr('type','button');
-						linkDetails.addClass('uk-button uk-button-default');
+						linkDetails.addClass('uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small');
 
 						linkDetails.text('details')
 
@@ -522,7 +522,7 @@ $adminPage.createTableCommandRow = function (sdata,champs=null,table,linkDetails
 						var a 	=	$("<a></a>");
 						a.attr('href','/user/details-command/'+sdata[i].id_commande);
 						a.attr('uk-icon','icon:more');
-						a.addClass('uk-button-default uk-border-rounded');
+						a.addClass('uk-button uk-button-small uk-box-shadow-small uk-button-default uk-border-rounded uk-text-capitalize');
 						a.text('details ');
 						td[6].append(a);
 						//
@@ -620,7 +620,7 @@ $adminPage.createTableCommandRow = function (sdata,champs=null,table,linkDetails
 						a.attr('uk-icon','icon:check;ratio:.8');
 						// btnRavi.attr('uk-icon','icon:plus;ratio:.8');
 						// a.attr('target','_blank');
-						a.addClass('uk-button-default uk-border-rounded button-confirm');
+						a.addClass('uk-button uk-button-small uk-box-shadow-small uk-button-default uk-border-rounded button-confirm');
 						a.attr('id',sdata[i].id);
 						// btnRavi.addClass('uk-button-default uk-border-rounded');
 

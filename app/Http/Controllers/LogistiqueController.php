@@ -346,7 +346,7 @@ class LogistiqueController extends Controller
       if($this->changeCommandStatusGlobale($commande)) {
         return redirect('/user/commandes');
       };
-      
+
       $agence = Agence::where('reference',$user->agence)->first();
       $materiel = Produits::all();
       $depots = Depots::all();
@@ -424,7 +424,10 @@ class LogistiqueController extends Controller
 
                 $ravitaillementVendeur->save();
                 $livraison->save();
-
+                // ENREGISTREMENT DE LA NOTIFICATION
+      					$this->sendNotification("Ravitaillement Materiel" ,"Vous avez effectue un ravitaillement au compte de ".User::where("username",$request->input('vendeur'))->first()->localisation,Auth::user()->username);
+      					$this->sendNotification("Ravitaillement Materiel" ,"Votre commande materiel a ete confirme , rendez vous dans le depot : ".$request->input('depot'),$request->input('vendeur'));
+                $this->sendNotification("Livraison Materiel" ,"Vous avez une livraison a effectue au compte de : ".User::where('username',$request->input('vendeur'))->first()->localisation , Depots::where("localisation",$request->input("depot"))->first()->vendeurs);
                 return redirect('/user/ravitailler/'.$commande)->withSuccess("Success!");
               } else {
                 throw new AppException("Ravitaillement indisponible");

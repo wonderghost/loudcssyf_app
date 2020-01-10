@@ -143,10 +143,10 @@
 
 							<ul class="uk-switcher uk-margin">
 							    <li>
-										<dl class="uk-description-list uk-description-list-divider uk-overflow-auto uk-height-medium" id="notification-unread"></dl>
+										<dl class="uk-description-list uk-description-list-divider uk-overflow-auto uk-height-medium" id="notification-unread"><span class='uk-flex uk-flex-center uk-text-meta'>Aucune Notification !<span></dl>
 									</li>
 							    <li>
-										<dl class="uk-description-list uk-description-list-divider uk-overflow-auto uk-height-medium" id="notification-read"></dl>
+										<dl class="uk-description-list uk-description-list-divider uk-overflow-auto uk-height-medium" id="notification-read"><span class='uk-flex uk-flex-center uk-text-meta'>Aucune Notification !<span></dl>
 									</li>
 							</ul>
 			        <p class="uk-text-right">
@@ -163,6 +163,9 @@
 			@if(Auth::user()->type == 'admin')
     	<a class="uk-button uk-button-small uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span> Promo</a>
 			@endif
+			@if(Auth::user()->type == 'gcga')
+			<a class="uk-button uk-button-small border-button" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
+			@endif
     </div>
 		<div class="uk-navbar-right uk-visible@m">
 			@if(Auth::user()->type != 'admin' && Auth::user()->type != 'logistique' && Auth::user()->type != "controleur" && Auth::user()->type != 'commerciale' && Auth::user()->type !='gcga' && Auth::user()->type !='grex' && Auth::user()->type !=='gdepot')
@@ -171,10 +174,9 @@
 			@if(Auth::user()->type == 'logistique' || Auth::user()->type =='gcga' || Auth::user()->type =='grex' || Auth::user()->type =='gdepot' || Auth::user()->type == 'controleur')
 			<a class="uk-button"><span uk-icon="icon:location;ratio:.8"></span> <span>{{Auth::user()->type}}</span></a>
 			@endif
-
 			<a href="#" class="uk-button"><span uk-icon="icon : user ; ratio : .8"></span> {{Auth::user()->username}}</a>
 			{!!Form::open(['url'=>'/logout'])!!}
-			<button class="uk-button uk-button-small uk-margin-right uk-button-default uk-border-pill uk-box-shadow-hover-small border-button" type="submit" uk-tooltip="Deconnexion"><span uk-icon="icon:sign-out"></span></button>
+			<button class="uk-button uk-button-small uk-button-link uk-margin-right border-button" type="submit" uk-tooltip="Deconnexion"><i class="material-icons">power_settings_new</i></button>
 			{!!Form::close()!!}
 		</div>
 </div>

@@ -252,6 +252,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// RAPPORTS DE VENTES
 	Route::get('/user/rapport-ventes','RapportControlleur@getRapportByVendeurs')->middleware('vendeur');
 	Route::post('/user/rapport-ventes/get-list','RapportControlleur@getListRapport')->middleware('vendeur');
+	// ENVOI DE LA DEMANDE DE PAIEMENT DE COMMISSION
+	Route::post('/user/rapport-ventes/pay-commission','RapportControlleur@payCommission')->middleware('vendeur');
 	// NOTIFICATIONS
 	Route::post('/user/notification/getlist','NotificationController@getList');
 	Route::post('/user/notification/mark-as-read','NotificationController@markAsRead');

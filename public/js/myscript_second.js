@@ -82,7 +82,7 @@ var $logistique = {
           confirm.text('Confirmer')
           confirm.attr('type','button')
           confirm.attr('uk-toggle',"target : #serials")
-          confirm.addClass('uk-button-primary uk-border-rounded confirm-button-livraison')
+          confirm.addClass('uk-button uk-box-shadow-small uk-button-small uk-button-primary uk-border-rounded confirm-button-livraison')
           confirm.attr('id','')
           confirm.attr('uk-icon','icon : check ; ration : 0.7')
           $('.row').append(confirm)
@@ -350,13 +350,13 @@ listLivraisonToConfirm : function (adminPage, token ,url) {
 
       validate.text('valider')
       validate.attr('type','button')
-      validate.addClass(' uk-button-primary uk-border-rounded validate-button-livraison uk-margin-right')
+      validate.addClass('uk-button uk-button-small uk-box-shadow-small uk-button-primary uk-border-rounded validate-button-livraison uk-text-capitalize uk-margin-right')
       validate.attr('id','')
       validate.attr('uk-toggle','target : #modal-livraison-validate')
 
       details.text('details')
       details.attr('uk-toggle','target : #modal-livraison-detail')
-      details.addClass('uk-button-default uk-border-rounded detail-livraison')
+      details.addClass('uk-button uk-button-small uk-box-shadow-small uk-text-capitalize uk-button-default uk-border-rounded detail-livraison')
       // ajout du button details
       validate.attr('uk-icon',"icon : check ; ratio : 0.7")
       details.attr('uk-icon',"icon : more ; ratio : 0.7")
@@ -417,7 +417,7 @@ listLivraisonValidee : function (token , url) {
 
       details.text('details')
       details.attr('uk-toggle','target : #modal-livraison-detail')
-      details.addClass('uk-button-default uk-border-rounded detail-livraison')
+      details.addClass('uk-button uk-button-small uk-box-shadow-small uk-button-default uk-border-rounded detail-livraison')
       // ajout du button details
 
       details.attr('uk-icon',"icon : more ; ratio : 0.7")
@@ -581,7 +581,7 @@ listSerialByVendeur : function (token,url,ref) {
       div.html(diva)
 
       var valider = $("<a></a>") , td = $("<td></td>") , retd = $("<td></td>")
-      valider.addClass('uk-button-primary uk-border-rounded uk-box-shadow-small validate-button')
+      valider.addClass('uk-button uk-button-small uk-box-shadow-small uk-button-primary uk-border-rounded uk-box-shadow-small validate-button')
       valider.attr('uk-toggle','target: #modal-validation')
       valider.attr('id',element.id)
       valider.text('validez')
@@ -1180,6 +1180,7 @@ notificationList : function (token , url ,vendeur , urlLuAction = "") {
       } else {
         $("#notification-list").html("<span class='uk-flex uk-flex-center uk-text-meta'>Aucune Notification !<span>")
       }
+
       $logistique.organizeNotification(data.all_unread,$("#notification-unread"))
       $logistique.organizeNotification(data.all_read,$("#notification-read"),'read')
       // LU ACTION
@@ -1200,7 +1201,11 @@ notificationList : function (token , url ,vendeur , urlLuAction = "") {
 organizeNotification : function (data , content , state = 'unread') {
   // var
   var titles = [] , descriptions = [] , container = [] , luButton = [] , date = [] , deleteButton = []
-  content.html('')
+  if(data.length > 0) {
+    content.html('')
+  } else {
+    content.html("<span class='uk-flex uk-flex-center uk-text-meta'>Aucune Notification !<span>")
+  }
   data.forEach(function (element , index) {
     titles[index] = $("<dt></dt>")
     descriptions[index] = $("<dd></dd>")
@@ -1265,7 +1270,51 @@ changeStateOfNotification : function (token , url , idNotification) {
   })
   form.submit()
 },
-
+// envoi de la demande de paiement des commission
+payCommission : function () {
+  $("#pay-commission-form").on('submit',function (e) {
+    $("#loader").show(200)
+    UIkit.modal($("#paiement-commission")).hide(200)
+    e.preventDefault()
+    $.ajax({
+      url : $(this).attr('action'),
+      type : $(this).attr('method'),
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+      $("#loader").hide(200)
+      UIkit.modal.alert("Success!").then(function () {
+        $(location).attr('href','')
+      })
+    })
+    .fail(function (data) {
+      console.log(data.responseJSON)
+      // return 0
+      if(data.responseJSON && data.responseJSON.errors) {
+        $("#loader").hide(200)
+        UIkit.modal($("#paiement-commission")).show(200)
+        for (var element in data.responseJSON.errors) {
+          UIkit.notification({
+            message: data.responseJSON.errors[element],
+            status: 'danger',
+            pos: 'top-center',
+            timeout: 2000
+          })
+        }
+      } else {
+        $("#loader").hide(200)
+        UIkit.modal($("#paiement-commission")).show(200)
+        UIkit.notification({
+          message: data.responseJSON,
+          status: 'danger',
+          pos: 'top-center',
+          timeout: 2000
+        })
+    }
+    })
+  })
+}
 
 
 }

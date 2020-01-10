@@ -33,7 +33,7 @@
   <ul class="uk-switcher uk-margin">
       <li>
         <!-- COMMANDES EN ATTENTE DE VALIDATION -->
-        <table class="uk-table uk-table-divider uk-table-striped uk-table-small uk-table-hover">
+        <table class="uk-table uk-table-divider uk-table-striped uk-table-small uk-table-hover uk-table-responsive">
           <thead>
             <tr>
               <th>date</th>
@@ -51,7 +51,7 @@
       </li>
       <li>
         <!-- COMMANDES DEJA VALIDEE -->
-        <table class="uk-table uk-table-divider uk-table-striped uk-table-small uk-table-hover">
+        <table class="uk-table uk-table-divider uk-table-striped uk-table-small uk-table-hover uk-table-responsive">
           <thead>
             <tr>
 

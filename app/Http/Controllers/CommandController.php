@@ -188,13 +188,15 @@ class CommandController extends Controller
 			$produit = Produits::select()->where('reference',$values->produit)->first();
 			$comm_produit = CommandProduit::where('commande',$values->id_commande)->first();
 			$date = new Carbon($values->created_at);
+			$livraison = $values->ravitaillements();
 			$all [$key] = [
 				'date'	=>	$date->toFormattedDateString(),
 				'item' => 'Kit Complet',
 				'quantite' => $comm_produit->quantite_commande,
 				'numero_recu' => $values->numero_versement,
 				'status' =>  ($values->status == 'unconfirmed') ? 'en attente' : 'confirmer',
-				'id_commande' => $values->id_commande
+				'id_commande' => $values->id_commande,
+				'status_livraison'	=>	$livraison->count()
 			];
 		}
 		return response()->json($all);

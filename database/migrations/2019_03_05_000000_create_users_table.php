@@ -31,7 +31,7 @@ class CreateUsersTable extends Migration
             $table->foreign('rex')->references('numero')->on('compte_rex');
         });
 
-        Schema::disableForeignKeyConstraints();
+
     }
 
     /**
@@ -41,6 +41,7 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
+      Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('users');
     }
 }
