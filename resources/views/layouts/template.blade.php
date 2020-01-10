@@ -7,11 +7,11 @@
 			<meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 	<!-- UIkit CSS -->
+		<link rel="stylesheet" href="{{asset('css/uikit.min.css')}}">
+		<!-- <link rel="stylesheet" href="{{asset('css/uikit-rtl.min.css')}}"> -->
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.css" integrity="sha256-IvM9nJf/b5l2RoebiFno92E5ONttVyaEEsdemDC6iQA=" crossorigin="anonymous" />
 		<link rel="stylesheet" href="{{asset('css/style.css')}}">
-		<link rel="stylesheet" href="{{asset('css/uikit.min.css')}}">
-		<link rel="stylesheet" href="{{asset('css/uikit-rtl.min.css')}}">
 		<script type="text/javascript">
 		function noBack(){window.history.forward()}
 		noBack();
