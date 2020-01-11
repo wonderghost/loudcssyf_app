@@ -16,7 +16,7 @@ use App\TransactionRex;
 use App\TransactionAfrocash;
 use App\CgaAccount;
 use App\RexAccount;
-
+use Carbon\Carbon;
 use App\Notifications;
 use App\Alert;
 use Illuminate\Support\Facades\DB;
@@ -474,6 +474,32 @@ Trait Afrocashes {
 			])->orderBy('created_at','desc')->get();
 
 		return view('afrocash.transactions')->withTransac($transactions);
+	}
+
+	public function getAllTransactionAfrocashVendeur(Request $request) {
+		try {
+			$transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('vendeurs',Auth::user()->username)->get())
+				->orWhere(function ($query) {
+					$query->whereIn('compte_credite',Afrocash::select('numero_compte')->where('vendeurs',Auth::user()->username)->get());
+				})->get();
+
+				$all = [];
+				foreach($transactions as $key => $value) {
+					$date = new Carbon($value->created_at);
+					$date->setLocale('fr_FR');
+					$all[$key] = [
+						'date'	=>	$date->toFormattedDateString()."(".$date->diffForHumans().")",
+						'expediteur'	=> is_null($value->compte_debite) ? "Ravitaillment" : $value->afrocash()->vendeurs()->localisation,
+						'destinataire'	=>	$value->afrocashcredite()->vendeurs()->localisation,
+						'montant'	=>	number_format($value->montant)
+					];
+				}
+			return response()->json($all);
+		} catch (AppException $e) {
+			header("unprocessible entity",true,422);
+			die(json_encode($e->getMessage()));
+		}
+
 	}
 // VERIFIER LA DISPONIBILITE DU SOLDE AFROCASH POUR LA COMMANDE
 }

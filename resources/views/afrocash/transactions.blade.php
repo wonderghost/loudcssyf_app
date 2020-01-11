@@ -50,6 +50,7 @@
         </table>
         {{$transactions->links()}}
         @else
+
         <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small uk-table-responsive">
           <thead>
             <tr>
@@ -59,30 +60,7 @@
               <th>Montant</th>
             </tr>
           </thead>
-          <tbody>
-            @if($transac)
-            @foreach($transac as $value)
-            @php
-            $date = new \Carbon\Carbon($value->created_at);
-            $date->locale('fr_FR');
-            @endphp
-            <tr>
-              <td>{{$date->toFormattedDateString()}} ({{$date-> diffForHumans()}})</td>
-              @if($value->afrocash())
-              <td>{{$value->afrocash()->vendeurs}}-{{$value->afrocash()->vendeurs()->localisation}}</td>
-              @else
-              <td>-</td>
-              @endif
-              @if($value->afrocashcredite())
-              <td>{{$value->afrocashcredite()->vendeurs}}-{{$value->afrocashcredite()->vendeurs()->localisation}}</td>
-              @else
-              <td>-</td>
-              @endif
-              <td>{{number_format($value->montant)}}</td>
-            </tr>
-            @endforeach
-            @endif
-          </tbody>
+          <tbody id="list-transactions"></tbody>
         </table>
         @endif
       </li>
@@ -95,7 +73,7 @@
 @section('script')
 <script type="text/javascript">
   $(function (){
-    $('.pagination').addClass('uk-pagination uk-flex-center')
+    $logistique.getListTransactionAfrocashForVendeurs("{{csrf_token()}}","{{url('/user/afrocash/all-transactions')}}","{{Auth::user()->username}}")
   })
 </script>
 @endsection

@@ -1358,5 +1358,27 @@ payCommissionList : function (token , url , vendeurs) {
   })
   form.submit()
 }
-
+,
+// GET LIST TRANSACTION AFROCASH CHEZ LES VENDEURS
+getListTransactionAfrocashForVendeurs : function (token , url , vendeurs) {
+  var form = $logistique.makeForm(token , url , [vendeurs])
+  form.on('submit',function (e) {
+    e.preventDefault()
+    $.ajax({
+      url : url ,
+      type : 'post',
+      dataType  : 'json',
+      data : $(this).serialize()
+    })
+    .done(function(data) {
+      console.log(data)
+      $logistique.dataList(data,$("#list-transactions"))
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href',"/")
+    })
+  })
+  form.submit()
+}
 }
