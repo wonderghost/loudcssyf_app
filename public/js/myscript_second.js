@@ -1034,7 +1034,7 @@ organizeUsersList : function (data) {
     $("#list-users .row:eq("+index+")").append(edit)
 
     stateButton.addClass('uk-button uk-margin-small uk-margin-small-left uk-button-small uk-border-rounded uk-box-shadow-small uk-text-capitalize state-action')
-    stateButton.attr('title',element.localisation)
+    stateButton.attr('title',element.username)
     stateButton.attr('data-state',element.status)
 
     reset.addClass("uk-button uk-margin-small uk-margin-small-left uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small uk-text-capitalize reset-action")
