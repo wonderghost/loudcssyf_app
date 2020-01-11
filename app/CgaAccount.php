@@ -12,5 +12,7 @@ class CgaAccount extends Model
     protected $keyType = 'string';
     protected $primaryKey = 'numero';
 
-
+    public function setSolde($value) {
+  		$this->solde = $value;
+  	}
 }

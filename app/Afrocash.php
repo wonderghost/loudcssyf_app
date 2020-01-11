@@ -25,4 +25,8 @@ class Afrocash extends Model
     public function creditAccountAfrocash($creditMontant) {
       $this->solde+=$creditMontant;
     }
+
+    public function setSolde($value) {
+      $this->solde = $value;
+    }
 }
