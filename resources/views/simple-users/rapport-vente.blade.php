@@ -38,7 +38,9 @@
 		<div class="uk-width-1-5@m">
 			{!!Form::label('Commission (GNF)')!!}
 			{!!Form::text('commission_jour','N/A',['class'=>'uk-input uk-margin-small uk-text-center uk-border-rounded','disabled','id'=>'commission-jour'])!!}
+			@if(Auth::user()->type == 'v_da')
 			<button type="button" name="button" class="uk-button uk-button-small uk-button-primary uk-box-shadow-small uk-border-rounded" uk-toggle="target: #paiement-commission">Paiement Commission</button>
+			@endif
 		</div>
 
 	</div>
