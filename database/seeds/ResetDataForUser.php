@@ -14,7 +14,7 @@ class ResetDataForUser extends Seeder
      */
     public function run()
     {
-      // REINITIALISATION DES COMPTE AFROCASH
+      
       $afrocashAccount = Afrocash::all();
       $afrocashAccount->each(function ($element , $index) {
         $element->setSolde(0);
