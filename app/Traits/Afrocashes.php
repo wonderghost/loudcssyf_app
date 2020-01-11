@@ -481,7 +481,7 @@ Trait Afrocashes {
 			$transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('vendeurs',Auth::user()->username)->get())
 				->orWhere(function ($query) {
 					$query->whereIn('compte_credite',Afrocash::select('numero_compte')->where('vendeurs',Auth::user()->username)->get());
-				})->get();
+				})->orderBy('created_at','desc')->limit(30)->get();
 
 				$all = [];
 				foreach($transactions as $key => $value) {
