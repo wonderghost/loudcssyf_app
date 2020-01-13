@@ -16,7 +16,7 @@ class CreateCommandCreditsTable extends Migration
         Schema::create('command_credits', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->float('montant',8,0)->default(0);
-            $table->enum('status',['unvalidated','validated'])->default("unvalidated");
+            $table->enum('status',['unvalidated','validated','aborted'])->default("unvalidated");
             $table->enum('type',['cga','rex','afro_cash_sg'])->default('cga');
             $table->string('vendeurs');
             $table->foreign('vendeurs')->references('username')->on("users");

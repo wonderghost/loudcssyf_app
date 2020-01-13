@@ -534,7 +534,7 @@ listSerialByVendeur : function (token,url,ref) {
 }
 ,
 // recuperation de toutes les commandes chez gcga
-  getCommandForCga : function (token , url) {
+  getCommandForCga : function (token , url , urlAbort) {
     var form = $adminPage.makeForm(token , url)
     form.on('submit',function(e) {
       e.preventDefault()
@@ -560,6 +560,11 @@ listSerialByVendeur : function (token,url,ref) {
           $("#validation-type-commande").val(row.children().eq(3).text())
           //
         })
+        // click sur l'annulation
+        $(".reset-cga-commande").on('click',function () {
+          $(this).parent().parent().hide(200)
+          $logistique.abotCommande(token,urlAbort,$(this).attr('data-id'))
+        })
       })
       .fail(function (data) {
         alert(data.responseJSON.message)
@@ -580,12 +585,17 @@ listSerialByVendeur : function (token,url,ref) {
       diva.text('recu')
       div.html(diva)
 
-      var valider = $("<a></a>") , td = $("<td></td>") , retd = $("<td></td>")
-      valider.addClass('uk-button uk-button-small uk-box-shadow-small uk-button-primary uk-border-rounded uk-box-shadow-small validate-button')
+      var valider = $("<a></a>") , td = $("<td></td>") , retd = $("<td></td>") , annuler = $("<a></a>") , col = $("<td></td>")
+      valider.addClass('uk-button uk-button-small uk-box-shadow-small uk-button-primary uk-border-rounded validate-button')
       valider.attr('uk-toggle','target: #modal-validation')
       valider.attr('id',element.id)
       valider.text('validez')
       td.html(valider)
+      col.addClass('col')
+      col.append(annuler)
+      annuler.attr('data-id',element.id)
+      annuler.text('Annuler')
+      annuler.addClass('uk-button uk-button-small uk-box-shadow-small uk-button-danger uk-border-rounded reset-cga-commande')
 
       retd.html(div)
       // console.log(container)
@@ -595,6 +605,7 @@ listSerialByVendeur : function (token,url,ref) {
         $("#"+container+" .row:eq("+index+")").children().eq(7).remove()
         $("#"+container+" .row").eq(index).append(retd)
         $("#"+container+" .row").eq(index).append(td)
+        $("#"+container+" .row").eq(index).append(col)
         $("#"+container+" .row:eq("+index+")").children().eq(0).remove()
         $("#"+container+" .row:eq("+index+")").children().eq(4).addClass('uk-text-danger')
 
@@ -1377,6 +1388,33 @@ getListTransactionAfrocashForVendeurs : function (token , url , vendeurs) {
     .fail(function (data) {
       alert(data.responseJSON.message)
       $(location).attr('href',"/")
+    })
+  })
+  form.submit()
+},
+abotCommande : function (token , url, idCommande) {
+  var form = $logistique.makeForm(token , url , [idCommande])
+  form.on('submit',function (e) {
+    e.preventDefault()
+    $.ajax({
+      url : url ,
+      type : 'post',
+      data : $(this).serialize(),
+      dataType : 'json'
+    })
+    .done(function (data) {
+      if(data == 'done') {
+        UIkit.notification({
+          message: 'Commande Annulee!',
+          status: 'success',
+          pos: 'top-center',
+          timeout: 2000
+        })
+      }
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href','/')
     })
   })
   form.submit()

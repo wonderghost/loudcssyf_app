@@ -73,6 +73,7 @@
 @section('script')
 <script type="text/javascript">
   $(function (){
+    $(".pagination").addClass('uk-pagination uk-flex-center')
     $logistique.getListTransactionAfrocashForVendeurs("{{csrf_token()}}","{{url('/user/afrocash/all-transactions')}}","{{Auth::user()->username}}")
   })
 </script>

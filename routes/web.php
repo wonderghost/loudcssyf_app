@@ -209,6 +209,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/cga-credit/','CreditController@getListVendeur')->middleware('cga');
 	Route::post('/user/send-cga','CreditController@sendCga')->middleware('cga');
 	Route::post('/user/send-afrocash','CreditController@sendAfrocash');
+	Route::post('/user/credit-cga/abort-commandes','CreditController@abortCommande')->middleware('cga');
 
 	#### SOLDE VENDEURS  #####
 	// Route::get('/user/vendeur-solde','CreditController@soldeVendeur')->middleware('cga');

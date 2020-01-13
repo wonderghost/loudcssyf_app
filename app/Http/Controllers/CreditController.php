@@ -250,4 +250,39 @@ class CreditController extends Controller
 		]);
 	}
 
+	// ANNULATION D'UN COMMANDE CHEZ LA GESTIONNAIRE DE CREDIT CGA
+
+	public function abortCommande(Request $request) {
+		try {
+			$commande = CommandCredit::find($request->input('ref-0'));
+			if($commande) {
+				if($commande->status == "unvalidated") {
+					$central = Credit::find('afrocash');
+					$afrocash_courant = Afrocash::where([
+						'vendeurs'	=>	$commande->vendeurs,
+						'type'	=>	'courant'
+					])->first();
+					$central->solde-=$commande->montant;
+					$afrocash_courant->solde+=$commande->montant;
+					$commande->status = "aborted";
+					$central->save();
+					$afrocash_courant->save();
+					$commande->save();
+					// ENREGISTREMENT DE LA NOTIFICATION
+					$this->sendNotification("Commande Credit","Vous avez annulé une commande pour : ".$commande->vendeurs()->localisation,Auth::user()->username);
+					$this->sendNotification("Commande Credit","Votre commande a été annulé",$commande->vendeurs);
+					return response()->json('done');
+				} else {
+					throw new AppException("Commande deja validee!");
+				}
+			} else {
+					throw new AppException("ERREUR!");
+			}
+		} catch (AppException $e) {
+			header("unprocessible entity",true,422);
+			die(json_encode($e->getMessage()));
+		}
+
+	}
+
 }

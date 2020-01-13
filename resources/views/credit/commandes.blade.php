@@ -3,7 +3,7 @@
 
 @section('user_content')
 <div class="uk-section uk-section-default">
-<div class="uk-container">
+<div class="uk-container uk-container-large">
   <h3><a href="{{url('/admin')}}" uk-tooltip="tableau de bord" uk-icon="icon:arrow-left;ratio:1.5"></a> Commandes Credit</h3>
   <hr class="uk-divider-small">
   @if($errors->any())
@@ -93,10 +93,10 @@
 <script type="text/javascript">
   $(function () {
     setInterval(function() {
-      $logistique.getCommandForCga("{{csrf_token()}}","{{url()->current()}}")
+      $logistique.getCommandForCga("{{csrf_token()}}","{{url()->current()}}","{{url('/user/credit-cga/abort-commandes')}}")
 		},10000);
 
-    $logistique.getCommandForCga("{{csrf_token()}}","{{url()->current()}}")
+    $logistique.getCommandForCga("{{csrf_token()}}","{{url()->current()}}","{{url('/user/credit-cga/abort-commandes')}}")
 
   })
 </script>
