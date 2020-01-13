@@ -76,8 +76,8 @@
             <tr>
               <th>date</th>
               <th>vendeurs</th>
-              <th>montant (GNF)</th>
               <th>type</th>
+              <th>montant (GNF)</th>
               <th>status</th>
               <th>Numero recu</th>
               <th>recu</th>
@@ -98,8 +98,8 @@
 
               <th>date</th>
               <th>vendeurs</th>
-              <th>montant</th>
               <th>type</th>
+              <th>montant</th>
               <th>status</th>
               <th>Numero recu</th>
               <th>recu</th>
@@ -115,8 +115,8 @@
             <tr>
               <th>Date</th>
               <th>Vendeurs</th>
-              <th>montant</th>
               <th>type</th>
+              <th>montant</th>
               <th>status</th>
               <th>numero recu</th>
               <th>recu</th>

@@ -570,10 +570,10 @@ listSerialByVendeur : function (token,url,ref) {
         // click sur la validation
         $(".validate-button").on('click',function () {
           var row = $(this).parent().parent()
-          $("#validation-montant").text(row.children().eq(2).text())
+          $("#validation-montant").text(row.children().eq(3).text())
           $("#validation-vendeur").text(row.children().eq(1).text())
           $("#validation-commande").val($(this).attr('id'))
-          $("#validation-type-commande").val(row.children().eq(3).text())
+          $("#validation-type-commande").val(row.children().eq(2).text())
           //
         })
         // click sur l'annulation
