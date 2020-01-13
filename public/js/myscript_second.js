@@ -547,9 +547,11 @@ listSerialByVendeur : function (token,url,ref) {
       .done(function (data) {
         $logistique.dataList(data.unvalidated,$("#unvalidated"))
         $logistique.dataList(data.validated,$("#validated"))
+        $logistique.dataList(data.aborted,$("#aborted"))
 
         $logistique.organizeCommandGcga(data.unvalidated)
         $logistique.organizeCommandGcga(data.validated,'validated')
+        $logistique.organizeCommandGcga(data.aborted,"validated","","aborted")
 
         // click sur la validation
         $(".validate-button").on('click',function () {
@@ -598,8 +600,7 @@ listSerialByVendeur : function (token,url,ref) {
       annuler.addClass('uk-button uk-button-small uk-box-shadow-small uk-button-danger uk-border-rounded reset-cga-commande')
 
       retd.html(div)
-      // console.log(container)
-      // console.log(secondContainer)
+
       if(table == 'unvalidated') {
 
         $("#"+container+" .row:eq("+index+")").children().eq(7).remove()
@@ -610,11 +611,17 @@ listSerialByVendeur : function (token,url,ref) {
         $("#"+container+" .row:eq("+index+")").children().eq(4).addClass('uk-text-danger')
 
       } else {
-
-        $("#"+secondContainer+" .row").eq(index).append(retd)
-        $("#"+secondContainer+" .row:eq("+index+")").children().eq(7).remove()
-        $("#"+secondContainer+" .row:eq("+index+")").children().eq(0).remove()
-        $("#"+secondContainer+" .row:eq("+index+")").children().eq(4).addClass('uk-text-success')
+        if(secondContainer == 'aborted') {
+          $("#"+secondContainer+" .row").eq(index).append(retd)
+          $("#"+secondContainer+" .row:eq("+index+")").children().eq(7).remove()
+          $("#"+secondContainer+" .row:eq("+index+")").children().eq(0).remove()
+          $("#"+secondContainer+" .row:eq("+index+")").children().eq(4).addClass('uk-text-warning')
+        } else {
+          $("#"+secondContainer+" .row").eq(index).append(retd)
+          $("#"+secondContainer+" .row:eq("+index+")").children().eq(7).remove()
+          $("#"+secondContainer+" .row:eq("+index+")").children().eq(0).remove()
+          $("#"+secondContainer+" .row:eq("+index+")").children().eq(4).addClass('uk-text-success')
+      }
       }
 
     })

@@ -196,15 +196,20 @@ class CreditController extends Controller
     }
 
 		public function getListCommandGcga(Request $request) {
-			$commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','unvalidated')->orderBy('created_at','desc')->get();
-			$commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','validated')->orderBy('created_at','desc')->get();
+			$commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','unvalidated')->orderBy('created_at','desc')->limit(30)->get();
+			$commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','validated')->orderBy('created_at','desc')->limit(30)->get();
+			$commands_aborted = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','aborted')->orderBy('created_at','desc')->limit(30)->get();
+
 			$all_unvalidated = $this->organizeCommandGcga($commands_unvalidated);
 
 			$all_validated = $this->organizeCommandGcga($commands_validated);
 
+			$all_aborted = $this->organizeCommandGcga($commands_aborted);
+
 			return response()->json([
 				'unvalidated'	=>	$all_unvalidated,
-				'validated'	=>	$all_validated
+				'validated'	=>	$all_validated,
+				'aborted'	=>	$all_aborted
 			]);
 		}
 
@@ -262,6 +267,8 @@ class CreditController extends Controller
 						'vendeurs'	=>	$commande->vendeurs,
 						'type'	=>	'courant'
 					])->first();
+					if($commande->type == 'cga' || $commande->type == 'rex') {
+
 					$central->solde-=$commande->montant;
 					$afrocash_courant->solde+=$commande->montant;
 					$commande->status = "aborted";
@@ -272,6 +279,14 @@ class CreditController extends Controller
 					$this->sendNotification("Commande Credit","Vous avez annulé une commande pour : ".$commande->vendeurs()->localisation,Auth::user()->username);
 					$this->sendNotification("Commande Credit","Votre commande a été annulé",$commande->vendeurs);
 					return response()->json('done');
+				} else {
+					$commande->status = 'aborted';
+					$commande->save();
+					// ENREGISTREMENT DE LA NOTIFICATION
+					$this->sendNotification("Commande Credit","Vous avez annulé une commande pour : ".$commande->vendeurs()->localisation,Auth::user()->username);
+					$this->sendNotification("Commande Credit","Votre commande a été annulé",$commande->vendeurs);
+					return response()->json('done');
+				}
 				} else {
 					throw new AppException("Commande deja validee!");
 				}

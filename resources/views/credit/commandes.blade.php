@@ -29,6 +29,7 @@
   <ul uk-tab>
       <li><a href="#">Commandes en attente de validation</a></li>
       <li><a href="#">Commandes deja validee</a></li>
+      <li><a href="#">Commandes Annulee</a></li>
   </ul>
   <ul class="uk-switcher uk-margin">
       <li>
@@ -65,6 +66,23 @@
             </tr>
           </thead>
           <tbody id="validated"></tbody>
+        </table>
+      </li>
+      <li>
+        <!-- COMMANDES ANNULEE -->
+        <table class="uk-table uk-table-striped uk-table-hover uk-table-divider uk-table-small uk-table-responsive">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Vendeurs</th>
+              <th>montant</th>
+              <th>type</th>
+              <th>status</th>
+              <th>numero recu</th>
+              <th>recu</th>
+            </tr>
+          </thead>
+          <tbody id="aborted"></tbody>
         </table>
       </li>
   </ul>
