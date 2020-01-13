@@ -26,14 +26,51 @@
     <p>{{session("_error")}}</p>
   </div>
   @endif
-  <ul uk-tab>
-      <li><a href="#">Commandes en attente de validation</a></li>
-      <li><a href="#">Commandes deja validee</a></li>
-      <li><a href="#">Commandes Annulee</a></li>
+  <!-- FILTRE POUR LA RECHERCHE RAPIDE -->
+
+  {!!Form::open(['url'=>'','class'=>'uk-grid-small','uk-grid'])!!}
+  <div class="uk-width-1-6@m">
+    <label for=""><span uk-icon="icon : calendar"></span> Du</label>
+    {!!Form::date('debut_date','',['class'=>'uk-input uk-border-rounded uk-margin-small'])!!}
+  </div>
+  <div class="uk-width-1-6@m">
+    <label for=""><span uk-icon="icon : calendar"></span> Au</label>
+    {!!Form::date('fin_date','',['class'=>'uk-input uk-border-rounded uk-margin-small'])!!}
+  </div>
+  <div class="uk-width-1-6@m">
+    <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
+    <select class="uk-select uk-border-rounded uk-margin-small" name="">
+      <option value="">-- Selectionnez le Vendeurs --</option>
+      @if($users)
+      @foreach($users as $user)
+      <option value="{{$user->username}}">{{$user->localisation}}</option>
+      @endforeach
+      @endif
+    </select>
+  </div>
+  <div class="uk-width-1-6@m">
+    <label for=""><span uk-icon="icon : info"></span> Credit</label>
+    <select class="uk-select uk-border-rounded uk-margin-small" name="">
+      <option value="">-- Selectionnez le Credit --</option>
+      <option value="">AFROCASH</option>
+      <option value="">CGA</option>
+    </select>
+  </div>
+
+  {!!Form::close()!!}
+
+  <!-- // -->
+  <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-fade">
+      <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Commandes en attente de validation</a></li>
+      <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Commandes deja validee</a></li>
+      <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Commandes Annulee</a></li>
   </ul>
   <ul class="uk-switcher uk-margin">
       <li>
         <!-- COMMANDES EN ATTENTE DE VALIDATION -->
+        <div class="loader" uk-spinner>
+
+        </div>
         <table class="uk-table uk-table-divider uk-table-striped uk-table-small uk-table-hover uk-table-responsive">
           <thead>
             <tr>
@@ -52,6 +89,9 @@
       </li>
       <li>
         <!-- COMMANDES DEJA VALIDEE -->
+        <div class="loader" uk-spinner>
+
+        </div>
         <table class="uk-table uk-table-divider uk-table-striped uk-table-small uk-table-hover uk-table-responsive">
           <thead>
             <tr>

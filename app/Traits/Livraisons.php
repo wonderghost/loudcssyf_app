@@ -165,6 +165,7 @@ public function inventaireLivraison() {
               ]);
 
 
+              $this->sendNotification("Livraison Materiel" ,"Livraison effectuee pour : ".$livraison->ravitaillementVendeurs()->vendeurs()->localisation." de la part du depot de : ".$livraison->depot,User::where('type','admin')->first()->username);
               // logistique
               $this->sendNotification("Validation de la livraison" ,"Vous avez une livraison en attente de validation ",User::where('type','logistique')->first()->username);
               // vendeurs

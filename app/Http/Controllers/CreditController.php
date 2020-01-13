@@ -41,8 +41,8 @@ class CreditController extends Controller
 		}
 		// TOUTES LES COMMANDES
 		public function commandCredit() {
-
-			return view('credit.commandes');
+			$users = User::whereIn('type',['v_da','v_standart'])->orderBy('localisation','asc')->get();
+			return view('credit.commandes')->withUsers($users);
 		}
 		//
 		public function getSoldeVendeur(Request $request) {
@@ -247,11 +247,13 @@ class CreditController extends Controller
 
 	// RECUPERATION DE LA LISTE DE TOUTES LES COMMANES , POUR L'ADMINISTRATEUR
 	public function getAllCommandes(Request $request) {
-		$commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg','rex'])->where('status','unvalidated')->orderBy('created_at','desc')->get();
-		$commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg','rex'])->where('status','validated')->orderBy('created_at','desc')->get();
+		$commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg','rex'])->where('status','unvalidated')->orderBy('created_at','desc')->limit(30)->get();
+		$commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg','rex'])->where('status','validated')->orderBy('created_at','desc')->limit(30)->get();
+		$commands_aborted = CommandCredit::whereIn('type',['cga','afro_cash_sg','red'])->where('status','aborted')->orderBy('created_at','desc')->limit(30)->get();
 		return response()->json([
 			'unvalidated'	=>	$this->organizeCommandGcga($commands_unvalidated),
-			'validated'	=>	$this->organizeCommandGcga($commands_validated)
+			'validated'	=>	$this->organizeCommandGcga($commands_validated),
+			'aborted'	=>	$this->organizeCommandGcga($commands_aborted)
 		]);
 	}
 

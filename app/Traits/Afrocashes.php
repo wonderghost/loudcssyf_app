@@ -160,6 +160,7 @@ Trait Afrocashes {
 								'status'	=>	'validated'
 							]);
 							// ENVOI DE LA NOTIFICATION
+							$this->sendNotification("Commande Credit cga" ,"Une commande cga a ete valide",User::where('type','admin')->first()->username);
 							$this->sendNotification("Commande Credit Cga" , "Votre Commande cga a ete valide",$commande->vendeurs);
 							$this->sendNotification("Commande Credit Cga" , "Vous avez valide une commande cga",Auth::user()->username);
 
@@ -205,6 +206,7 @@ Trait Afrocashes {
 								'status'	=>	'validated'
 							]);
 
+							$this->sendNotification("Commande Afrocash" ,"Une Afrocash a ete valide",User::where('type','admin')->first()->username);
 							$this->sendNotification("Commande Afrocash" , "Votre Commande Afrocash a ete valide!",$commande->vendeurs);
 							$this->sendNotification("Commande Afrocash" , "Vous avez valide une commande Afrocash!",Auth::user()->username);
 
@@ -243,6 +245,7 @@ Trait Afrocashes {
 							CommandCredit::where("id",$commande->id)->update([
 								'status'	=>	'validated'
 							]);
+							$this->sendNotification("Commande Credit Rex" ,"Une commande Rex a ete valide",User::where('type','admin')->first()->username);
 							$this->sendNotification("Commande Credit Rex" , "Votre Commande rex a ete valide",$commande->vendeurs);
 							$this->sendNotification("Commande Credit Rex" , "Vous avez valide une commande rex",Auth::user()->username);
 							return redirect('/user/credit-rex/commandes')->withSuccess("Success!");

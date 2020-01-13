@@ -21,6 +21,7 @@
 		</script>
 </head>
 <body>
+	<input type="hidden" id="user-type" value="{{Auth::user()->type}}">
 	<!-- OPTIONS POUR L'AFFICHAGE RESPONSIVE (NOTIFICATION , MESSAGE , TABLEAU DE BORD) -->
 	<div class="uk-position-fixed uk-position-bottom uk-position-z-index uk-background-muted uk-padding-small uk-box-shadow uk-hidden@m" id="outils">
 		<div class="uk-child-1-3@s uk-flex uk-flex-center" uk-grid>

@@ -59,6 +59,7 @@ Trait Cga {
 
 				$commande->save();
 				// ENVOI DE LA NOTIFICATION
+				$this->sendNotification("Commande Credit Cga" ,"Il y a une commande en attente de confirmation pour : ".Auth::user()->localisation,User::where('type','admin')->first()->username);
 				$this->sendNotification("Commande Credit Cga" , "Vous avez envoye une commande Cga!",Auth::user()->username);
 				$this->sendNotification("Commande Credit Cga" , "Une Commande Cga est en attente de confirmation!",User::where('type','gcga')->first()->username);
 				return redirect('/user/new-command')->withSuccess("Success !");

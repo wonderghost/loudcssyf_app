@@ -107,6 +107,7 @@
               <ul class="uk-tab-left" uk-tab="connect: #cga-tab-left; animation: uk-animation-fade">
                   <li><a href="#">En attente de confirmation</a></li>
                   <li><a href="#">Deja confirmee</a></li>
+                  <li><a href="#">Commandes Annulee</a></li>
 
               </ul>
           </div>
@@ -142,6 +143,23 @@
 												</tr>
 											</thead>
 											<tbody id="credit-validate-commande"><div id="loader" uk-spinner></div></tbody>
+										</table>
+									</li>
+									<li>
+										<div class="loader" uk-spinner></div>
+										<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+											<thead>
+												<tr>
+													<th>Date</th>
+													<th>Vendeurs</th>
+													<th>Type</th>
+													<th>Montant</th>
+													<th>status</th>
+													<th>Numero Recu</th>
+													<th>Recu</th>
+												</tr>
+											</thead>
+											<tbody id="credit-aborted-commande"></tbody>
 										</table>
 									</li>
               </ul>

@@ -545,9 +545,23 @@ listSerialByVendeur : function (token,url,ref) {
         data : $(this).serialize()
       })
       .done(function (data) {
-        $logistique.dataList(data.unvalidated,$("#unvalidated"))
-        $logistique.dataList(data.validated,$("#validated"))
-        $logistique.dataList(data.aborted,$("#aborted"))
+
+         let contentData = {
+           "unvalidated" : $("#unvalidated"),
+           'validated'   : $("#validated"),
+           'aborted'   : $("#aborted")
+         }
+
+         for(element in data) {
+           if(data[element].length > 0) {
+             $(".loader").hide()
+             $logistique.dataList(data[element],contentData[element])
+           } else {
+             var contentNode = contentData[element].parent().parent()
+             contentData[element].hide()
+             contentNode.html("<div class='uk-text-center uk-text-meta'>Aucune donnees !</div>")
+           }
+         }
 
         $logistique.organizeCommandGcga(data.unvalidated)
         $logistique.organizeCommandGcga(data.validated,'validated')
@@ -605,13 +619,16 @@ listSerialByVendeur : function (token,url,ref) {
 
         $("#"+container+" .row:eq("+index+")").children().eq(7).remove()
         $("#"+container+" .row").eq(index).append(retd)
-        $("#"+container+" .row").eq(index).append(td)
-        $("#"+container+" .row").eq(index).append(col)
+        if($("#user-type").val() == 'gcga') {
+          $("#"+container+" .row").eq(index).append(td)
+          $("#"+container+" .row").eq(index).append(col)
+        }
+
         $("#"+container+" .row:eq("+index+")").children().eq(0).remove()
         $("#"+container+" .row:eq("+index+")").children().eq(4).addClass('uk-text-danger')
 
       } else {
-        if(secondContainer == 'aborted') {
+        if(secondContainer == 'aborted' || secondContainer == "credit-aborted-commande") {
           $("#"+secondContainer+" .row").eq(index).append(retd)
           $("#"+secondContainer+" .row:eq("+index+")").children().eq(7).remove()
           $("#"+secondContainer+" .row:eq("+index+")").children().eq(0).remove()
@@ -956,9 +973,11 @@ getCommandes : function (token , url) {
     .done(function (data) {
       $logistique.dataList(data.unvalidated,$("#credit-unvalidate-commande"))
       $logistique.dataList(data.validated,$("#credit-validate-commande"))
+      $logistique.dataList(data.aborted,$("#credit-aborted-commande"))
 
       $logistique.organizeCommandGcga(data.unvalidated,'unvalidated','credit-unvalidate-commande','')
       $logistique.organizeCommandGcga(data.validated,'validated','','credit-validate-commande')
+      $logistique.organizeCommandGcga(data.aborted,'validated','','credit-aborted-commande')
 
     })
     .fail(function (data) {
