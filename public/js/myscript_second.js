@@ -669,7 +669,7 @@ transactionDashboardView : function (token,url) {
   form.submit()
 }
 ,
-getListRapportVente : function (token , url) {
+getListRapportVente : function (token , url , urlRemoveRapp = "") {
   var form = $logistique.makeForm(token,url)
   form.on('submit',function(e) {
     e.preventDefault()
@@ -684,15 +684,43 @@ getListRapportVente : function (token , url) {
 
       $("#commission-jour").val(data.commission)
       $("#commission-cumulee").val(data.commission)
+
       if(data.recrutement) {
         $logistique.dataList(data.recrutement,$("#recrutement-list"))
+        data.recrutement.forEach(function (element , index) {
+          $("#recrutement-list .row:eq("+index+") .col").eq(0).remove()
+        })
       }
       if(data.reabonnement){
         $logistique.dataList(data.reabonnement,$("#reabonnement-list"))
+        data.reabonnement.forEach(function (element , index) {
+          // AJOUT DU BUTTON ANNULER CHEZ L'ADMIN UNIQUEMENT
+          if($("#user-type").val() == 'admin') {
+            var annuler = $("<a></a>")  ,col = $("<td></td>")
+            annuler.addClass('uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small uk-text-capitalize remove-rapport-button uk-icon-link')
+            annuler.attr('uk-icon','icon : trash ; ratio : .8')
+            annuler.attr('data-id',element.id)
+            annuler.text("Annuler")
+            col.append(annuler)
+            $("#reabonnement-list .row:eq("+index+")").append(col)
+          }
+          $("#reabonnement-list .row:eq("+index+") .col").eq(0).remove()
+        })
       }
       if(data.migration) {
         $logistique.dataList(data.migration,$("#migration-list"))
+        data.migration.forEach(function (element , index) {
+          $("#migration-list .row:eq("+index+") .col").eq(0).remove()
+        })
       }
+
+      $(".remove-rapport-button").on('click',function (e) {
+        let idRapport = $(this).attr('data-id')
+        UIkit.modal.confirm("Vous etes de vouloir annuler ce Rapport ?").then(function () {
+          $logistique.removeRapport(token,urlRemoveRapp,idRapport)
+        })
+      })
+
     })
     .fail(function (data) {
       alert(data.responseJSON.message)
@@ -702,7 +730,34 @@ getListRapportVente : function (token , url) {
   form.submit()
 }
 ,
-
+removeRapport : function (token , url , idrapport="") {
+  var form = $logistique.makeForm(token , url , [idrapport])
+  form.on('submit',function (e) {
+    e.preventDefault()
+    $.ajax({
+      url : url ,
+      type : 'post',
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+      if(data == 'done') {
+        UIkit.notification({
+          message: 'Success!',
+          status: 'success',
+          pos: 'top-center',
+          timeout: 2000
+      });
+      }
+    })
+    .fail(function (data) {
+      alert(data.responseJSON.message)
+      $(location).attr('href','/')
+    })
+  })
+  form.submit()
+}
+,
 sendPromoForm : function (form = $("#promo-form")) {
 
   form.on('submit',function (e) {

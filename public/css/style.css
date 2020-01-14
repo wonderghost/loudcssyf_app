@@ -44,3 +44,11 @@ html , body {
   border : solid 0.2px #ddd;
   padding : 1% !important;
 }
+
+#chat-button {
+  position : fixed;
+  right : 0;
+  bottom : 0;
+  margin-right : 0.5%;
+  margin-bottom : 1%;
+}

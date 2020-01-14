@@ -44,6 +44,8 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/send-rapport/{slug}','AdminController@sendRapport');
 	Route::post('/admin/rapport/check-serial','AdminController@checkSerial');
 	Route::get('/admin/all-rapport','AdminController@listRapport');
+	Route::post('/admin/rapport/remove-rapport','AdminController@removeRapport');
+
 	//
 	Route::post('/admin/get-rapport','AdminController@getRapport'); // recuperation de l'historique des rapports
 	// OPTION DE FORMULES
@@ -260,6 +262,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// NOTIFICATIONS
 	Route::post('/user/notification/getlist','NotificationController@getList');
 	Route::post('/user/notification/mark-as-read','NotificationController@markAsRead');
+	// CHAT SERVICES
+	Route::get('/user/chat-service/users-list','ChatController@UserList');
 });
 
 Route::middleware(['auth'])->group(function () {

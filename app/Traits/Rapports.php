@@ -285,6 +285,7 @@ Trait Rapports {
 	        foreach ($value as $_key => $_value) {
 
 	          $all[$key][$_key] = [
+							'id'	=>	$_value->id_rapport,
 	            'date'  =>  $_value->date_rapport,
 	            'vendeurs'  =>  $_value->vendeurs()->agence()->societe." ( ".$_value->vendeurs()->localisation." )",
 	            'type'  =>  $_value->type,

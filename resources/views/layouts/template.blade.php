@@ -468,7 +468,28 @@
     </div>
 </div>
 <!-- // -->
+<!-- CHATBOX -->
+<a  class="uk-button uk-button-small uk-padding-small uk-border-pill uk-button-primary" id="chat-button" href="#messages-chat-box" uk-toggle><i class="material-icons">chat</i></a>
 
+<div id="messages-chat-box" class="uk-modal-container" uk-modal="esc-close : false ; bg-close : false;">
+    <div class="uk-modal-dialog">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+				<div class="uk-modal-header">
+					<h3 class="uk-modal-title"> <i class="material-icons">forum</i> Demarrez une Conversation</h3>
+				</div>
+				<div class="uk-modal-body uk-grid-divider" uk-grid>
+					<div class="uk-width-2-3@m " >
+						ok
+					</div>
+					<div class="uk-width-1-3@m">
+						<!-- LIST DES UTILISATEURS -->
+						<ul class="uk-list  uk-list-divider uk-height-large uk-overflow-auto" id="chat-user-list"><span class="uk-text-meta">Patientez svp... <div uk-spinner></div></span></ul>
+						<!-- // -->
+					</div>
+				</div>
+    </div>
+</div>
+<!-- // -->
 
 
 <!-- FOOTER -->
@@ -485,6 +506,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js"></script>
 <script type="text/javascript" src="{{asset('js/myscript.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/myscript_second.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/myscript_third.js')}}"></script>
 <script type="text/javascript">
 	$(function () {
 		$('form').on('submit',function (e) {
@@ -530,8 +552,10 @@
 		$logistique.notificationList("{{csrf_token()}}","{{url('/user/notification/getlist')}}","{{Auth::user()->username}}","{{url('/user/notification/mark-as-read')}}")
 
 		// RECUPERATION DE L'HISTORIQUE DE PAIEMENT DES COMISSIONS
-		console.log($("#commission-for-user").val())
+		// console.log($("#commission-for-user").val())
 		$logistique.payCommissionList("{{csrf_token()}}","{{url('/user/rapport-ventes/get-pay-commission')}}",$("#commission-for-user").val())
+		// chat service
+		$chatService.openChatBox("{{url('/user/chat-service/users-list')}}")
 })
 </script>
 @yield('script')
