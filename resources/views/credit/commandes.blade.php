@@ -28,7 +28,7 @@
   @endif
   <!-- FILTRE POUR LA RECHERCHE RAPIDE -->
 
-  {!!Form::open(['url'=>'','class'=>'uk-grid-small','uk-grid'])!!}
+  {!!Form::open(['url'=>'/user/cga-credit/commande-filter','class'=>'uk-grid-small','uk-grid','id'=>'command-credit-filter'])!!}
   <div class="uk-width-1-6@m">
     <label for=""><span uk-icon="icon : calendar"></span> Du</label>
     {!!Form::date('debut_date','',['class'=>'uk-input uk-border-rounded uk-margin-small'])!!}
@@ -39,7 +39,7 @@
   </div>
   <div class="uk-width-1-6@m">
     <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
-    <select class="uk-select uk-border-rounded uk-margin-small" name="">
+    <select name="vendeurs" class="uk-select uk-border-rounded uk-margin-small" name="">
       <option value="">-- Selectionnez le Vendeurs --</option>
       @if($users)
       @foreach($users as $user)
@@ -50,13 +50,13 @@
   </div>
   <div class="uk-width-1-6@m">
     <label for=""><span uk-icon="icon : info"></span> Credit</label>
-    <select class="uk-select uk-border-rounded uk-margin-small" name="">
+    <select class="uk-select uk-border-rounded uk-margin-small" name="type_credit">
       <option value="">-- Selectionnez le Credit --</option>
-      <option value="">AFROCASH</option>
-      <option value="">CGA</option>
+      <option value="afro_cash_sg">AFROCASH</option>
+      <option value="cga">CGA</option>
     </select>
+    {!!Form::submit('ok',['class'=>'uk-button uk-button-primary uk-button-small uk-box-shadow-small uk-border-rounded uk-position-absolute uk-margin-small-top uk-margin-left'])!!}
   </div>
-
   {!!Form::close()!!}
 
   <!-- // -->
@@ -150,17 +150,19 @@
 @if(Auth::user()->type == 'gcga')
 <script type="text/javascript">
   $(function () {
-    setInterval(function() {
+
+  var intervalId =   setInterval(function() {
       $logistique.getCommandForCga("{{csrf_token()}}","{{url()->current()}}","{{url('/user/credit-cga/abort-commandes')}}")
 		},10000);
 
     $logistique.getCommandForCga("{{csrf_token()}}","{{url()->current()}}","{{url('/user/credit-cga/abort-commandes')}}")
-
+    $logistique.commandCreditFilter(intervalId)
   })
 </script>
 @elseif(Auth::user()->type == 'grex')
 <script type="text/javascript">
   $(function() {
+
     setInterval(function() {
       $logistique.getCommandForCga("{{csrf_token()}}","{{url()->current()}}")
     },10000);

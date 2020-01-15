@@ -561,9 +561,9 @@ listSerialByVendeur : function (token,url,ref) {
            }
          }
 
-        $logistique.organizeCommandGcga(data.unvalidated)
-        $logistique.organizeCommandGcga(data.validated,'validated')
-        $logistique.organizeCommandGcga(data.aborted,"validated","","aborted")
+         $logistique.organizeCommandGcga(data.unvalidated)
+         $logistique.organizeCommandGcga(data.validated,'validated')
+         $logistique.organizeCommandGcga(data.aborted,"validated","","aborted")
 
         // click sur la validation
         $(".validate-button").on('click',function () {
@@ -621,7 +621,6 @@ listSerialByVendeur : function (token,url,ref) {
           $("#"+container+" .row").eq(index).append(td)
           $("#"+container+" .row").eq(index).append(col)
         }
-
         $("#"+container+" .row:eq("+index+")").children().eq(0).remove()
         $("#"+container+" .row:eq("+index+")").children().eq(4).addClass('uk-text-danger')
 
@@ -1054,7 +1053,6 @@ ajaxSearch : function (token , url,wordSearch) {
       dataType : 'json'
     })
     .done(function (data) {
-      console.log(data)
       $logistique.dataList(data,$("#list-users"))
       $logistique.organizeUsersList(data)
     })
@@ -1497,5 +1495,65 @@ abotCommande : function (token , url, idCommande) {
     })
   })
   form.submit()
+},
+commandCreditFilter : function (intervalId = "") {
+  $("#command-credit-filter").on('submit',function (e) {
+    e.preventDefault()
+    $.ajax({
+      url : $(this).attr('action'),
+      type : 'post',
+      data : $(this).serialize(),
+      dataType : 'json'
+    })
+    .done(function (data) {
+      UIkit.modal($("#loader")).hide()
+      clearInterval(intervalId)
+      var contentData = {
+        "unvalidated" : $("#unvalidated"),
+        'validated'   : $("#validated"),
+        'aborted'   : $("#aborted")
+      }
+
+      for(element in data) {
+        if(data[element].length > 0) {
+          $(".loader").hide()
+          $logistique.dataList(data[element],contentData[element])
+        } else {
+          var contentNode = contentData[element].parent().parent()
+          contentData[element].hide()
+          contentNode.html("<div class='uk-text-center uk-text-meta'>Aucune donnees !</div>")
+        }
+      }
+      
+      $logistique.organizeCommandGcga(data.unvalidated)
+      $logistique.organizeCommandGcga(data.validated,'validated')
+      $logistique.organizeCommandGcga(data.aborted,"validated","","aborted")
+      // click sur la validation
+      $(".validate-button").on('click',function () {
+        var row = $(this).parent().parent()
+        $("#validation-montant").text(row.children().eq(3).text())
+        $("#validation-vendeur").text(row.children().eq(1).text())
+        $("#validation-commande").val($(this).attr('id'))
+        $("#validation-type-commande").val(row.children().eq(2).text())
+        //
+      })
+      // click sur l'annulation
+      $(".reset-cga-commande").on('click',function () {
+        $(this).parent().parent().hide(200)
+        $logistique.abotCommande(token,urlAbort,$(this).attr('data-id'))
+      })
+
+    })
+    .fail(function (data) {
+      UIkit.modal($("#loader")).hide()
+      UIkit.notification({
+        message : data.responseJSON.message,
+        status : 'danger',
+        pos : 'top-center',
+        timeout : 2000
+      })
+
+    })
+  })
 }
 }

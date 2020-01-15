@@ -30,6 +30,7 @@ use App\Agence;
 use App\Compense;
 use App\Notifications;
 use App\Alert;
+use App\CommandCredit;
 
 
 Trait Similarity {
@@ -511,6 +512,43 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
             $temp = $this->getSoldesVendeurs($request ,$userColl);
             return $temp;
           break;
+          case 'vendeurs-type-solde':
+            if($request->input('ref-0') == "") {
+              $users = User::whereIn("type",['v_da','v_standart'])->orderBy('localisation','asc')->get();
+            }
+            else {
+              $users = User::where('type',$request->input("ref-0"))->orderBy('localisation','asc')->get();
+            }
+            return $this->getSoldesVendeurs($request,$users);
+            break;
+            case 'commande-filter' :
+
+              if($request->input('debut_date') == "" && $request->input('fin_date') == "") {
+
+                $commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','unvalidated')->orderBy('created_at','desc')->limit(30)->get();
+          			$commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','validated')->orderBy('created_at','desc')->limit(30)->get();
+          			$commands_aborted = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','aborted')->orderBy('created_at','desc')->limit(30)->get();
+
+              } else {
+
+                $commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','unvalidated')->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])->orderBy('created_at','desc')->get();
+                $commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','validated')->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])->orderBy('created_at','desc')->get();
+                $commands_aborted = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','aborted')->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])->orderBy('created_at','desc')->get();
+
+              }
+
+              $all_unvalidated = $this->organizeCommandGcga($commands_unvalidated);
+
+        			$all_validated = $this->organizeCommandGcga($commands_validated);
+
+        			$all_aborted = $this->organizeCommandGcga($commands_aborted);
+
+              return response()->json([
+                'unvalidated' =>  $all_unvalidated,
+                'validated' =>  $all_validated,
+                'aborted' =>  $all_aborted
+              ]);
+          break;
         default:
           throw new AppException("Erreur !");
           break;
@@ -518,7 +556,7 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
       return response()->json($result);
     } catch (AppException $e) {
       header("Unprocessibilyt entity",true,422);
-      die($e->getMessage());
+      die(json_encode($e->getMessage()));
     }
 
   }

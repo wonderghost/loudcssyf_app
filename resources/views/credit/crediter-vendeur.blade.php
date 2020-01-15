@@ -60,7 +60,7 @@
 					<div class="" uk-grid>
 						<div class="uk-width-1-2@m">
 							<label for=""> <span uk-icon="icon : users"></span> Vendeurs</label>
-							<select class="uk-select uk-border-rounded" name="">
+							<select class="uk-select uk-border-rounded" id="type-filter">
 								<option value="">Tous</option>
 								<option value="v_da">Distributeur Agree</option>
 								<option value="v_standart">Vendeurs Standarts</option>
@@ -98,9 +98,15 @@
 
 // #########
 	$logistique.getSoldeVendeurCredit("{{csrf_token()}}","{{url()->current()}}")
+	// ajax search
 	$("#search-input").on('keyup',function (e) {
 		$logistique.getSoldeVendeurCredit("{{csrf_token()}}","{{url('/user/cga-credit/vendeurs-solde')}}",$(this).val())
 	})
+
+// type filter
+$("#type-filter").on('change',function (e) {
+	$logistique.getSoldeVendeurCredit("{{csrf_token()}}","{{url('/user/cga-credit/vendeurs-type-solde')}}",$(this).val())
+})
 	});
 </script>
 @elseif(Auth::user()->type == 'grex')
