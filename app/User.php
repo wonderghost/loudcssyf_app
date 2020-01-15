@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
+use Illuminate\Support\Str;
 class User extends Authenticatable
 {
     use Notifiable;
@@ -47,4 +47,5 @@ class User extends Authenticatable
     public function rexAccount() {
       return RexAccount::where('numero',$this->rex);
     }
+
 }

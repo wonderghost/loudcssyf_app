@@ -52,3 +52,20 @@ html , body {
   margin-right : 0.5%;
   margin-bottom : 1%;
 }
+
+.form-chat-text {
+  position : absolute;
+  bottom : 0;
+  /* width : 100%; */
+}
+
+.form-chat-text input {
+  border : solid 0px #000 !important;
+  border-bottom : solid 1px #ccc !important;
+
+}
+
+.form-chat-text button {
+  position : absolute ;
+  margin-left : 5% !important ;
+}

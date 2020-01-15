@@ -6,8 +6,8 @@ var $chatService = {
         $("#chat-user-list").html('')
         data.forEach(function (element , index) {
           var li = $("<li></li>") , username = $("<a></a>") , icon = $("<span></span>")
-          icon.addClass('uk-button-default uk-button-small uk-padding-remove uk-border-circle')
-          icon.attr('uk-icon','icon : user')
+          icon.addClass('uk-margin-small')
+          icon.attr('uk-icon','icon : user ; ratio : .8')
           li.addClass('')
           username.text(element.localisation)
           username.addClass('uk-button uk-button-small uk-padding-remove uk-text-capitalize uk-text-bold ')

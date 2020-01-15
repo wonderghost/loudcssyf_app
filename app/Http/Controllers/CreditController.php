@@ -104,8 +104,8 @@ class CreditController extends Controller
         $solde = Credit::select()->where('designation','cga')->first()->solde ? Credit::select()->where('designation','cga')->first()->solde : 0;
 				$afrocash = Credit::where('designation','afrocash')->first()->solde ? Credit::where('designation','afrocash')->first()->solde : 0;
 				$solde_rex = Credit::where('designation','rex')->first()->solde ? Credit::where('designation','rex')->first()->solde : 0;
-				$listVendeurs = User::where('type','v_standart')->get();
-        return view('credit.crediter-vendeur')->withSolde($solde)->withAfrocash($afrocash)->withVendeurs($listVendeurs)->withRex($solde_rex);
+				$listVendeurs = User::whereIn('type',['v_standart','v_da'])->orderBy('localisation','asc')->get();
+        return view('credit.crediter-vendeur')->withSolde($solde)->withAfrocash($afrocash)->withVendeurs($listVendeurs)->withRex($solde_rex)->withUsers($listVendeurs);
     }
 
     public function getListVendeur(Request $request) {

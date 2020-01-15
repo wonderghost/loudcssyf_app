@@ -208,19 +208,19 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/cga-credit/','CreditController@crediterVendeur')->middleware('cga');
 	Route::get('/user/credit-cga/commandes','CreditController@commandCredit')->middleware('cga');
 	Route::post('user/credit-cga/commandes','CreditController@getListCommandGcga')->middleware('cga');
-	Route::post('/user/cga-credit/','CreditController@getListVendeur')->middleware('cga');
 	Route::post('/user/send-cga','CreditController@sendCga')->middleware('cga');
 	Route::post('/user/send-afrocash','CreditController@sendAfrocash');
 	Route::post('/user/credit-cga/abort-commandes','CreditController@abortCommande')->middleware('cga');
+	Route::post('/user/cga-credit/','CreditController@getListVendeur')->middleware('cga');
 
 	#### SOLDE VENDEURS  #####
-	// Route::get('/user/vendeur-solde','CreditController@soldeVendeur')->middleware('cga');
+
 	Route::post('/user/cga-credit','CreditController@getSoldeVendeur')->middleware('cga');
+	Route::post("/user/cga-credit/{slug}",'CreditController@searchText')->middleware('cga');
 	Route::post('/user/rex-credit','CreditController@getSoldeVendeur')->middleware('rex');
 	// GESTIONNAIRE REX
 	Route::get('/user/rex-credit','CreditController@crediterVendeur')->middleware('rex');
-	// Route::post('/user/rex-credit','CreditController@getListVendeur')->middleware('rex');
-	// Route::post('/user/send-rex','CreditController@sendRex')->middleware('rex');
+
 	Route::get('/user/credit-rex/commandes','CreditController@commandCredit')->middleware('rex');
 	Route::post('user/credit-rex/commandes','CreditController@getListCommandGrex')->middleware('rex');
 	// TOUTES LES VENTES

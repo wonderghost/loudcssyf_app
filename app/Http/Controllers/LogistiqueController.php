@@ -121,10 +121,14 @@ class LogistiqueController extends Controller
 
             $newQuantite = $produit->quantite_centrale - $request->input('quantite');
             $produit->quantite_centrale = $newQuantite;
-
+            //
+         // ENVOI DE LA NOTIFICATION
+            $_depot = Depots::find($request->input('depot'));
+            $this->sendNotification("Ravitaillement Depot!","Ravitaillement effectue au compte de : ".$request->input('depot'),User::where('type','admin')->first()->username);
+            $this->sendNotification("Ravitaillement Depot!","Ravitaillement effectue au compte de : ".$request->input('depot'),Auth::user()->username);
+            $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".$request->input('depot'),$_depot->vendeurs);
             $entreeDepot->save();
             $produit->save();
-
             return redirect("/user/list-material")->withSuccess("Success!");
           }
         } else {
@@ -249,7 +253,12 @@ class LogistiqueController extends Controller
         // modification dans le depot central
         $newQuantite = $produit->quantite_centrale - session('quantite');
         $produit->quantite_centrale = $newQuantite;
+        // ENVOI DE LA NOTIFICATION
+        $_depot = Depots::find(session('depot'));
 
+        $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".session('depot'),Auth::user()->username);
+        $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".session('depot'),$_depot->vendeurs);
+        $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".session('depot'),User::where("type",'admin')->first()->username);
         $entreeDepot->save();
         $produit->save();
         session()->forget(['produit','quantite','depot']);
@@ -425,6 +434,7 @@ class LogistiqueController extends Controller
                 $ravitaillementVendeur->save();
                 $livraison->save();
                 // ENREGISTREMENT DE LA NOTIFICATION
+                $this->sendNotification("Ravitaillement Materiel","Ravitaillement materiel effectue au compte de :".User::where('username',$request->input('vendeur'))->first()->localisation,User::where('type','admin')->first()->username);
       					$this->sendNotification("Ravitaillement Materiel" ,"Vous avez effectue un ravitaillement au compte de ".User::where("username",$request->input('vendeur'))->first()->localisation,Auth::user()->username);
       					$this->sendNotification("Ravitaillement Materiel" ,"Votre commande materiel a ete confirme , rendez vous dans le depot : ".$request->input('depot'),$request->input('vendeur'));
                 $this->sendNotification("Livraison Materiel" ,"Vous avez une livraison a effectue au compte de : ".User::where('username',$request->input('vendeur'))->first()->localisation , Depots::where("localisation",$request->input("depot"))->first()->vendeurs);

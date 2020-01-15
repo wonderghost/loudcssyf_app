@@ -382,10 +382,9 @@
                         <li class="uk-parent">
                             <a href="#"><span uk-icon="icon:credit-card;ratio:0.9"></span> Credit</a>
                             <ul class="uk-nav-sub">
-                                <!-- LOGISTIC ONLY -->
+                                
                                 <li><a href="{{url('user/cga-credit')}}"><span uk-icon="icon:arrow-right"></span> Comptes</a></li>
                                 <!-- // -->
-                                <li><a href=""><span uk-icon="icon:arrow-right"></span> Historique</a></li>
                             </ul>
                         </li>
 												<li class="uk-parent">
@@ -475,14 +474,20 @@
     <div class="uk-modal-dialog">
         <button class="uk-modal-close-default" type="button" uk-close></button>
 				<div class="uk-modal-header">
-					<h3 class="uk-modal-title"> <i class="material-icons">forum</i> Demarrez une Conversation</h3>
+					<h3 class="uk-modal-title"> <i class="material-icons">forum</i></h3>
 				</div>
 				<div class="uk-modal-body uk-grid-divider" uk-grid>
-					<div class="uk-width-2-3@m " >
-						ok
+					<div class="uk-width-2-3@m">
+						{!!Form::open(['url'=>'','class'=>'uk-width-xlarge form-chat-text'])!!}
+							{!!Form::text('message_text','',['class'=>'uk-input','placeholder'=>'Votre message ici ...'])!!}
+							<button type="submit" class="uk-button uk-button-small uk-button-link uk-float uk-float-right" name="button"> <i class="material-icons">send</i> </button>
+						{!!Form::close()!!}
 					</div>
 					<div class="uk-width-1-3@m">
 						<!-- LIST DES UTILISATEURS -->
+						{!!Form::open(['url'=>''])!!}
+						{!!Form::text('search_user','',['class'=>'uk-input uk-border-rounded uk-box-shadow-hover-small','placeholder' => 'Trouvez un utilisateur','autofocus'])!!}
+						{!!Form::close()!!}
 						<ul class="uk-list  uk-list-divider uk-height-large uk-overflow-auto" id="chat-user-list"><span class="uk-text-meta">Patientez svp... <div uk-spinner></div></span></ul>
 						<!-- // -->
 					</div>

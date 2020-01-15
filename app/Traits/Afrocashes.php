@@ -41,9 +41,13 @@ Trait Afrocashes {
 	}
 
 	// recuperation des soldes vendeurs
-	public function getSoldesVendeurs(Request $request) {
+	public function getSoldesVendeurs(Request $request , $_vendeurs="") {
 		// recuperation de la liste des vendeurs
-		$vendeurs =	User::whereIn('type',['v_standart','v_da'])->get();
+		if($_vendeurs !== "") {
+			$vendeurs = $_vendeurs;
+		} else {
+			$vendeurs =	User::whereIn('type',['v_standart','v_da'])->get();
+		}
 		$all = [];
 		foreach($vendeurs as $key => $value) {
 			$agence = $value->agence();
@@ -61,8 +65,9 @@ Trait Afrocashes {
 			} else {
 				$solde_rex = 'inexistant';
 			}
+
 			$all[$key]	=	[
-				'vendeurs'	=>	$value->username." ( ".$value->localisation." )",
+				'vendeurs'	=>	$value->localisation,
 				'afrocash_courant'=>	$value->afroCash()->first() ? number_format($value->afroCash()->first()->solde) : 'null',
 				'afrocash_semi_grossiste'	=>	$solde_ac_sm,
 				'cga'	=>	$value->cgaAccount() ?	number_format($value->cgaAccount()->solde) : 'null',

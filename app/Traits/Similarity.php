@@ -2,6 +2,8 @@
 namespace App\Traits;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Http\Requests\DepotRequest;
 use App\Http\Requests\MaterialRequest;
@@ -28,6 +30,7 @@ use App\Agence;
 use App\Compense;
 use App\Notifications;
 use App\Alert;
+
 
 Trait Similarity {
 
@@ -478,7 +481,7 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
       $search = "%".$request->input('ref-0')."%";
       switch ($slug) {
         case 'users':
-            $users = User::where('type','<>','admin')->orderBy('localisation','desc')->get();
+            $users = User::where('type','<>','admin')->orderBy('localisation','asc')->get();
             $userCollection = collect([]);
 
             foreach ($users as $key => $element) {
@@ -492,6 +495,21 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
               }
             }
             $result=$userCollection;
+          break;
+          case 'vendeurs-solde' :
+          $users = User::whereIn("type",['v_da','v_standart'])->orderBy('localisation','asc')->get();
+          if(!$request->input('ref-0') == "") {
+            $userColl = collect([]);
+            foreach($users as $key => $value) {
+              if(str_contains(strtolower($value->localisation),strtolower($request->input('ref-0')))) {
+                $userColl->prepend($value);
+              }
+            }
+          } else {
+            $userColl = $users;
+          }
+            $temp = $this->getSoldesVendeurs($request ,$userColl);
+            return $temp;
           break;
         default:
           throw new AppException("Erreur !");

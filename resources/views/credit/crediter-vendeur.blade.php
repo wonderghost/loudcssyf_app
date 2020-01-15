@@ -17,9 +17,9 @@
 			<div>{{session('_errors')}}</div>
 		</div>
 		@endif
-		<ul uk-tab>
-		    <li><a href="#">Comptes</a></li>
-		    <li><a href="#">SOLDES VENDEURS</a></li>
+		<ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-fade">
+		    <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Comptes</a></li>
+		    <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">SOLDES VENDEURS</a></li>
 		</ul>
 
 		<ul class="uk-switcher uk-margin">
@@ -56,8 +56,24 @@
 				</li>
 				@endif
 				<li>
+					<!-- FILTRES -->
+					<div class="" uk-grid>
+						<div class="uk-width-1-2@m">
+							<label for=""> <span uk-icon="icon : users"></span> Vendeurs</label>
+							<select class="uk-select uk-border-rounded" name="">
+								<option value="">Tous</option>
+								<option value="v_da">Distributeur Agree</option>
+								<option value="v_standart">Vendeurs Standarts</option>
+							</select>
+						</div>
+						<div class="uk-width-1-2@m">
+							<label for=""> <span uk-icon="icon : search"></span> Recherche</label>
+							<input type="search" name="" value="" class="uk-input uk-border-rounded" placeholder="..." id="search-input"/>
+						</div>
+					</div>
+					<!-- // -->
 					<!-- SOLDE VENDEURS -->
-					<table class="uk-table uk-tabl-divider uk-table-hover uk-table-striped uk-table-small">
+					<table class="uk-table uk-tabl-divider uk-table-hover uk-table-striped uk-table-small uk-table-responsive">
 						<thead>
 							<tr>
 								<th>Vendeurs</th>
@@ -82,7 +98,9 @@
 
 // #########
 	$logistique.getSoldeVendeurCredit("{{csrf_token()}}","{{url()->current()}}")
-
+	$("#search-input").on('keyup',function (e) {
+		$logistique.getSoldeVendeurCredit("{{csrf_token()}}","{{url('/user/cga-credit/vendeurs-solde')}}",$(this).val())
+	})
 	});
 </script>
 @elseif(Auth::user()->type == 'grex')
@@ -90,7 +108,6 @@
 	$(function() {
 
 // #########
-	$logistique.getSoldeVendeurCredit("{{csrf_token()}}","{{url()->current()}}")
 
 	});
 </script>
