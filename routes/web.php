@@ -76,6 +76,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	// list des materieles
 	Route::get('/admin/list-material','LogistiqueController@listMaterial');
 	Route::post('/admin/list-material','LogistiqueController@getListMaterial');
+	Route::post('/admin/get-serialNumber','LogistiqueController@ListSerialNumber');
 	// editer les infos utilisateurs
 	Route::get('/admin/edit-users/{username}','AdminController@editUser');
 	Route::post('/admin/edit-users/{username}','AdminController@makeEditUser');
@@ -247,6 +248,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/afrocash/transactions','CreditController@allTransactionAfrocash')->middleware('cga');
 	Route::get('/user/afrocash/all-transactions','CreditController@allTransactionAfrocashVendeur')->middleware('vendeur');
 	Route::post("/user/afrocash/all-transactions",'CreditController@getAllTransactionAfrocashVendeur')->middleware('vendeur');
+	Route::post('/user/afrocash/filter-transactions','CreditController@filterTransactionAfrocash')->middleware('vendeur');
 	// RECOUVREMENTS
 	Route::get('user/recouvrement','RecouvrementController@operations')->middleware('coursier');
 	Route::post('/user/recouvrement/add','RecouvrementController@addRecouvrement')->middleware('coursier');
@@ -256,6 +258,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// RAPPORTS DE VENTES
 	Route::get('/user/rapport-ventes','RapportControlleur@getRapportByVendeurs')->middleware('vendeur');
 	Route::post('/user/rapport-ventes/get-list','RapportControlleur@getListRapport')->middleware('vendeur');
+	Route::post('user/rapport-ventes/filter','RapportControlleur@filterRapportList')->middleware('vendeur');
 	// ENVOI DE LA DEMANDE DE PAIEMENT DE COMMISSION
 	Route::post('/user/rapport-ventes/pay-commission','RapportControlleur@payCommission')->middleware('vendeur');
 	Route::post('/user/rapport-ventes/get-pay-commission','RapportControlleur@PayCommissionList');

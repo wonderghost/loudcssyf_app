@@ -31,16 +31,16 @@
   {!!Form::open(['url'=>'/user/cga-credit/commande-filter','class'=>'uk-grid-small','uk-grid','id'=>'command-credit-filter'])!!}
   <div class="uk-width-1-6@m">
     <label for=""><span uk-icon="icon : calendar"></span> Du</label>
-    {!!Form::date('debut_date','',['class'=>'uk-input uk-border-rounded uk-margin-small'])!!}
+    {!!Form::date('debut_date',"",['class'=>'uk-input uk-border-rounded uk-margin-small'])!!}
   </div>
   <div class="uk-width-1-6@m">
     <label for=""><span uk-icon="icon : calendar"></span> Au</label>
-    {!!Form::date('fin_date','',['class'=>'uk-input uk-border-rounded uk-margin-small'])!!}
+    {!!Form::date('fin_date',"",['class'=>'uk-input uk-border-rounded uk-margin-small'])!!}
   </div>
   <div class="uk-width-1-6@m">
     <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
     <select name="vendeurs" class="uk-select uk-border-rounded uk-margin-small" name="">
-      <option value="">-- Selectionnez le Vendeurs --</option>
+      <option value="all">Tous</option>
       @if($users)
       @foreach($users as $user)
       <option value="{{$user->username}}">{{$user->localisation}}</option>
@@ -51,14 +51,14 @@
   <div class="uk-width-1-6@m">
     <label for=""><span uk-icon="icon : info"></span> Credit</label>
     <select class="uk-select uk-border-rounded uk-margin-small" name="type_credit">
-      <option value="">-- Selectionnez le Credit --</option>
+      <option value="all">Tous</option>
       <option value="afro_cash_sg">AFROCASH</option>
       <option value="cga">CGA</option>
     </select>
     {!!Form::submit('ok',['class'=>'uk-button uk-button-primary uk-button-small uk-box-shadow-small uk-border-rounded uk-position-absolute uk-margin-small-top uk-margin-left'])!!}
   </div>
   {!!Form::close()!!}
-
+  <a href="{{url()->current()}}" uk-tooltip="retirer le filtre" class="uk-float uk-float-right"> <i class="material-icons">delete_sweep</i> </a>
   <!-- // -->
   <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-fade">
       <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Commandes en attente de validation</a></li>

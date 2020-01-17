@@ -24,6 +24,7 @@ use App\RavitaillementVendeur;
 use App\CommandProduit;
 use App\Exceptions\CommandStatus;
 use App\Exceptions\SerialException;
+use App\Exceptions\AppException;
 use App\SerialNumberTemp;
 use App\User;
 use App\Agence;
@@ -31,6 +32,7 @@ use App\Compense;
 use App\Notifications;
 use App\Alert;
 use App\CommandCredit;
+
 
 
 Trait Similarity {
@@ -523,19 +525,87 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
             break;
             case 'commande-filter' :
 
-              if($request->input('debut_date') == "" && $request->input('fin_date') == "") {
-
-                $commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','unvalidated')->orderBy('created_at','desc')->limit(30)->get();
-          			$commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','validated')->orderBy('created_at','desc')->limit(30)->get();
-          			$commands_aborted = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','aborted')->orderBy('created_at','desc')->limit(30)->get();
-
+            if($request->input('debut_date')) {
+              if($request->input('fin_date')) {
+                if($request->input('vendeurs') !== "all") {
+                  if($request->input('type_credit') !== "all") {
+                    // FILTRE AU COMPLET
+                    $commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
+                      ->where('status','unvalidated')
+                      ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
+                      ->where('vendeurs',$request->input('vendeurs'))
+                      ->where('type',$request->input('type_credit'))
+                      ->orderBy('created_at','desc')->get();
+                    $commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
+                      ->where('status','validated')
+                      ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
+                      ->where('vendeurs',$request->input('vendeurs'))
+                      ->where('type',$request->input('type_credit'))
+                      ->orderBy('created_at','desc')->get();
+                    $commands_aborted = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
+                      ->where('status','aborted')
+                      ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
+                      ->where('vendeurs',$request->input('vendeurs'))
+                      ->where('type',$request->input('type_credit'))
+                      ->orderBy('created_at','desc')->get();
+                  } else {
+                    $commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
+                      ->where('status','unvalidated')
+                      ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
+                      ->where('vendeurs',$request->input('vendeurs'))
+                      ->orderBy('created_at','desc')->get();
+                    $commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
+                      ->where('status','validated')
+                      ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
+                      ->where('vendeurs',$request->input('vendeurs'))
+                      ->orderBy('created_at','desc')->get();
+                    $commands_aborted = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
+                      ->where('status','aborted')
+                      ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
+                      ->where('vendeurs',$request->input('vendeurs'))
+                      ->orderBy('created_at','desc')->get();
+                  }
+                } else {
+                  if($request->input('type_credit') !== "all") {
+                    $commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
+                      ->where('status','unvalidated')
+                      ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
+                      ->where('type',$request->input('type_credit'))
+                      ->orderBy('created_at','desc')->get();
+                    $commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
+                      ->where('status','validated')
+                      ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
+                      ->where('type',$request->input('type_credit'))
+                      ->orderBy('created_at','desc')->get();
+                    $commands_aborted = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
+                      ->where('status','aborted')
+                      ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
+                      ->where('type',$request->input('type_credit'))
+                      ->orderBy('created_at','desc')->get();
+                  } else {
+                    $commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
+                    ->where('status','unvalidated')
+                    ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
+                    ->orderBy('created_at','desc')->get();
+                    $commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
+                    ->where('status','validated')
+                    ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
+                    ->orderBy('created_at','desc')->get();
+                    $commands_aborted = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
+                    ->where('status','aborted')
+                    ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
+                    ->orderBy('created_at','desc')->get();
+                  }
+                }
               } else {
-
-                $commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','unvalidated')->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])->orderBy('created_at','desc')->get();
-                $commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','validated')->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])->orderBy('created_at','desc')->get();
-                $commands_aborted = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','aborted')->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])->orderBy('created_at','desc')->get();
-
+                throw new AppException("Selectionnez les dates pour activer le filtre!");
               }
+            } else {
+              // date debut inexistant ## NE RIEN FAIRE ##
+              throw new AppException("Selectionnez les dates pour activer le filtre!");
+            }
+
+            #################################################################################33
 
               $all_unvalidated = $this->organizeCommandGcga($commands_unvalidated);
 

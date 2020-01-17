@@ -1,5 +1,5 @@
 <!doctype html>
-<title>Site Maintenance</title>
+<title>Plateform en Maintenance</title>
 <style>
   body { text-align: center; padding: 150px; }
   h1 { font-size: 50px; }
@@ -12,6 +12,6 @@
 <article>
     <h1>Maintence en cours ...</h1>
     <div>
-        <p>&mdash; la Team</p>
+        <p>&mdash; Veuillez contactez l'administrateur</p>
     </div>
 </article>

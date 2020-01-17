@@ -700,8 +700,8 @@ getListRapportVente : function (token , url , urlRemoveRapp = "") {
             annuler.text("Annuler")
             col.append(annuler)
             $("#reabonnement-list .row:eq("+index+")").append(col)
+            $("#reabonnement-list .row:eq("+index+") .col").eq(0).remove()
           }
-          $("#reabonnement-list .row:eq("+index+") .col").eq(0).remove()
         })
       }
       if(data.migration) {
@@ -1264,6 +1264,7 @@ notificationList : function (token , url ,vendeur , urlLuAction = "") {
     })
     .done(function (data) {
       $("#notification-count").html(data.count)
+      $("#notification-count-responsive").html(data.count)
       if(data.count !== 0 ) {
         $logistique.organizeNotification(data.all,$("#notification-list"))
       } else {
@@ -1459,7 +1460,6 @@ getListTransactionAfrocashForVendeurs : function (token , url , vendeurs) {
       data : $(this).serialize()
     })
     .done(function(data) {
-      console.log(data)
       $logistique.dataList(data,$("#list-transactions"))
     })
     .fail(function (data) {
@@ -1507,6 +1507,7 @@ commandCreditFilter : function (intervalId = "") {
     })
     .done(function (data) {
       UIkit.modal($("#loader")).hide()
+
       clearInterval(intervalId)
       var contentData = {
         "unvalidated" : $("#unvalidated"),
@@ -1514,17 +1515,33 @@ commandCreditFilter : function (intervalId = "") {
         'aborted'   : $("#aborted")
       }
 
-      for(element in data) {
-        if(data[element].length > 0) {
-          $(".loader").hide()
-          $logistique.dataList(data[element],contentData[element])
-        } else {
-          var contentNode = contentData[element].parent().parent()
-          contentData[element].hide()
-          contentNode.html("<div class='uk-text-center uk-text-meta'>Aucune donnees !</div>")
-        }
+      if(data.unvalidated) {
+        $('.loader').hide()
+        $logistique.dataList(data.unvalidated,$("#unvalidated"))
+      } else {
+        var contentNode = $("#unvalidated").parent().parent()
+        $("#unvalidated").hide(200)
+        contentNode.html("<div class='uk-text-center uk-text-meta'>Aucune donnees!</div>")
       }
-      
+
+      if(data.validated) {
+        $('.loader').hide()
+        $logistique.dataList(data.validated,$("#validated"))
+      } else {
+        var contentNode = $("#validated").parent().parent()
+        $("#validated").hide(200)
+        contentNode.html("<div class='uk-text-center uk-text-meta'>Aucune donnees!</div>")
+      }
+
+      if(data.aborted) {
+        $('.loader').hide()
+        $logistique.dataList(data.aborted,$("#aborted"))
+      } else {
+        var contentNode = $("#aborted").parent().parent()
+        $("#aborted").hide(200)
+        contentNode.html("<div class='uk-text-center uk-text-meta'>Aucune donnees!</div>")
+      }
+
       $logistique.organizeCommandGcga(data.unvalidated)
       $logistique.organizeCommandGcga(data.validated,'validated')
       $logistique.organizeCommandGcga(data.aborted,"validated","","aborted")
@@ -1547,12 +1564,96 @@ commandCreditFilter : function (intervalId = "") {
     .fail(function (data) {
       UIkit.modal($("#loader")).hide()
       UIkit.notification({
-        message : data.responseJSON.message,
+        message : data.responseJSON,
         status : 'danger',
         pos : 'top-center',
         timeout : 2000
       })
 
+    })
+  })
+}
+,
+// FILTRER LES RAPPORTS DE VENTES CHEZ LES VENDEURS
+filterRapportForVendeurs : function (intervalId) {
+  $("#filter-vendeur-rapport").on('submit',function (e) {
+    clearInterval(intervalId)
+    e.preventDefault()
+    $.ajax({
+      url : $(this).attr('action'),
+      type : 'post',
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+      $("#loader").hide(200)
+      $("#commission-jour").val(data.commission)
+      $("#commission-cumulee").val(data.commission)
+
+      if(data.recrutement) {
+        $logistique.dataList(data.recrutement,$("#recrutement-list"))
+        data.recrutement.forEach(function (element , index) {
+          $("#recrutement-list .row:eq("+index+") .col").eq(0).remove()
+        })
+      }
+      if(data.reabonnement){
+        $logistique.dataList(data.reabonnement,$("#reabonnement-list"))
+        data.reabonnement.forEach(function (element , index) {
+          // AJOUT DU BUTTON ANNULER CHEZ L'ADMIN UNIQUEMENT
+          if($("#user-type").val() == 'admin') {
+            var annuler = $("<a></a>")  ,col = $("<td></td>")
+            annuler.addClass('uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small uk-text-capitalize remove-rapport-button uk-icon-link')
+            annuler.attr('uk-icon','icon : trash ; ratio : .8')
+            annuler.attr('data-id',element.id)
+            annuler.text("Annuler")
+            col.append(annuler)
+            $("#reabonnement-list .row:eq("+index+")").append(col)
+            $("#reabonnement-list .row:eq("+index+") .col").eq(0).remove()
+          }
+        })
+      }
+      if(data.migration) {
+        $logistique.dataList(data.migration,$("#migration-list"))
+        data.migration.forEach(function (element , index) {
+          $("#migration-list .row:eq("+index+") .col").eq(0).remove()
+        })
+      }
+    })
+    .fail(function (data) {
+      $("#loader").hide(200)
+      UIkit.notification({
+        message : data.responseJSON,
+        status : 'danger',
+        pos : 'top-center',
+        timeout : 2000
+      })
+    })
+  })
+}
+,
+// FILTRER LES TRANSACTIONS AFROCASH PAR DATE
+filterAfrocashTransactionForVendeur : function () {
+  $("#filter-transaction-afrocash").on('submit',function (e) {
+    e.preventDefault()
+    $.ajax({
+      url : $(this).attr('action'),
+      type : "post",
+      dataType : 'json',
+      data : $(this).serialize()
+    })
+    .done(function (data) {
+      $("#loader").hide(200)
+      console.log(data)
+      $logistique.dataList(data,$("#list-transactions"))
+    })
+    .fail(function (data) {
+      $("#loader").hide(200)
+      UIkit.notification({
+        message : data.responseJSON,
+        status : 'danger',
+        pos : 'top-center',
+        timeout : 2000
+      })
     })
   })
 }

@@ -484,12 +484,21 @@ Trait Afrocashes {
 		return view('afrocash.transactions')->withTransac($transactions);
 	}
 
-	public function getAllTransactionAfrocashVendeur(Request $request) {
+	public function getAllTransactionAfrocashVendeur(Request $request , $filter = false) {
 		try {
-			$transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('vendeurs',Auth::user()->username)->get())
+			if($filter) {
+
+				$transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('vendeurs',Auth::user()->username)->get())
+				->whereBetween('created_at',[$request->input('date_debut'),$request->input('date_fin')])
+				->orWhere(function ($query) {
+					$query->whereIn('compte_credite',Afrocash::select('numero_compte')->where('vendeurs',Auth::user()->username)->get());
+				})->whereBetween('created_at',[$request->input('date_debut'),$request->input('date_fin')])->get();
+			} else {
+				$transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('vendeurs',Auth::user()->username)->get())
 				->orWhere(function ($query) {
 					$query->whereIn('compte_credite',Afrocash::select('numero_compte')->where('vendeurs',Auth::user()->username)->get());
 				})->orderBy('created_at','desc')->limit(30)->get();
+			}
 
 				$all = [];
 				foreach($transactions as $key => $value) {
@@ -509,5 +518,18 @@ Trait Afrocashes {
 		}
 
 	}
-// VERIFIER LA DISPONIBILITE DU SOLDE AFROCASH POUR LA COMMANDE
+// FILTRER L'HISTORIQUE DES TRANSACTIONS AFROCASH
+public function filterTransactionAfrocash(Request $request) {
+	try {
+		if($request->input('date_debut') && $request->input('date_fin')) {
+			return $this->getAllTransactionAfrocashVendeur($request,true);
+		} else {
+			throw new AppException("Selectionnez les dates pour activer le filtre!");
+		}
+	} catch (AppException $e) {
+		header("unprocessible entity",true,422);
+		die(json_encode($e->getMessage()));
+	}
+
+}
 }

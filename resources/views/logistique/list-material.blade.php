@@ -30,7 +30,7 @@
 						</div>
 					</div>
 					<div uk-spinner id="_loader" style="display: none;"></div>
-					<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+					<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small uk-table-responsive">
 						<thead>
 							<tr>
 								<th>Designation</th>
@@ -47,7 +47,7 @@
 					</table>
 				</li>
 				<li>
-					<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+					<table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small uk-table-responsive">
 						<thead>
 							<tr>
 								<th>Serial</th>
@@ -82,7 +82,7 @@
 
 		//Liste des Numeros de SERIES
 
-		$logistique.ListSerialNumber($adminPage,"{{csrf_token()}}","{{url('/user/get-serialNumber')}}")
+		$logistique.ListSerialNumber($adminPage,"{{csrf_token()}}","{{url('/admin/get-serialNumber')}}")
 
 
 	});

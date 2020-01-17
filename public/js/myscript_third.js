@@ -1,9 +1,10 @@
 
 var $chatService = {
   openChatBox : function (url) {
-    $("#chat-button").on('click',function () {
+    $("#chat-button,#chat-button-responsive").on('click',function () {
       $.get(url,function(data) {
         $("#chat-user-list").html('')
+        $("#chat-user-list-responsive").html('')
         data.forEach(function (element , index) {
           var li = $("<li></li>") , username = $("<a></a>") , icon = $("<span></span>")
           icon.addClass('uk-margin-small')
@@ -14,6 +15,7 @@ var $chatService = {
           li.append(icon)
           li.append(username)
           $("#chat-user-list").append(li)
+          $("#chat-user-list-responsive").append(li)
         })
       },'json')
     })

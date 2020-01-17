@@ -26,16 +26,18 @@
 	<div class="uk-position-fixed uk-position-bottom uk-position-z-index uk-background-muted uk-padding-small uk-box-shadow uk-hidden@m" id="outils">
 		<div class="uk-child-1-3@s uk-flex uk-flex-center" uk-grid>
 			<div class="">
-				<a href="{{url('/')}}" class="uk-button uk-button-small uk-button-primary uk-border-pill uk-box-shadow-medium"> <span uk-icon="icon : home"></span> </a>
+				<a href="{{url('/')}}" class=""> <i class="material-icons">home</i> </a>
 			</div>
 			<div class="">
-				<a href="#" class="uk-button uk-button-small uk-button-primary uk-border-pill uk-box-shadow-medium"> <span uk-icon="icon : bell"></span> </a>
+				<a href="#all-notification" uk-toggle class=""> <i class="material-icons">notifications</i> <sup id="notification-count-responsive" class="">0</sup></a>
 			</div>
 			<div class="">
-				<a href="#" class="uk-button uk-button-small uk-button-primary uk-border-pill uk-box-shadow-medium"> <span uk-icon="icon : comment"></span> </a>
+				<a href="#messages-chat-box" id="chat-button-responsive" uk-toggle class=""> <i class="material-icons">message</i> </a>
 			</div>
 		</div>
 	</div>
+
+
 	<!-- // -->
 	<!-- loader -->
 	<div id="loader">
@@ -161,7 +163,7 @@
 			<!-- NOTIFICATION -->
 			<div class="uk-inline">
 				<a class="uk-button uk-button-small  border-button" uk-tooltip="Notifications"><i class="material-icons">notifications</i><sup id="notification-count" class="uk-badge">0</sup></a>
-			    <!-- <button class="uk-button uk-button-default" type="button">Click</button> -->
+
 			    <div class="" uk-drop="mode: click ; animation: uk-animation-slide-top-small;">
 			        <div class="uk-card-default uk-box-shadow-small notification-container uk-overflow-auto" style="background : #fefefe !important;border : solid 1px #ddd !important; ">
 								<dl class="uk-description-list uk-description-list-divider" id="notification-list"><div uk-spinner></div></dl>
@@ -382,7 +384,7 @@
                         <li class="uk-parent">
                             <a href="#"><span uk-icon="icon:credit-card;ratio:0.9"></span> Credit</a>
                             <ul class="uk-nav-sub">
-                                
+
                                 <li><a href="{{url('user/cga-credit')}}"><span uk-icon="icon:arrow-right"></span> Comptes</a></li>
                                 <!-- // -->
                             </ul>
@@ -468,7 +470,7 @@
 </div>
 <!-- // -->
 <!-- CHATBOX -->
-<a  class="uk-button uk-button-small uk-padding-small uk-border-pill uk-button-primary" id="chat-button" href="#messages-chat-box" uk-toggle><i class="material-icons">chat</i></a>
+<a  class="uk-button uk-button-small uk-padding-small uk-border-pill uk-button-primary uk-visible@m" id="chat-button" href="#messages-chat-box" uk-toggle><i class="material-icons">chat</i></a>
 
 <div id="messages-chat-box" class="uk-modal-container" uk-modal="esc-close : false ; bg-close : false;">
     <div class="uk-modal-dialog">
@@ -476,7 +478,13 @@
 				<div class="uk-modal-header">
 					<h3 class="uk-modal-title"> <i class="material-icons">forum</i></h3>
 				</div>
-				<div class="uk-modal-body uk-grid-divider" uk-grid>
+				<div class="uk-modal-body uk-hidden@m">
+					{!!Form::open(['url'=>''])!!}
+					{!!Form::text('search_user','',['class'=>'uk-input uk-border-rounded uk-box-shadow-hover-small','placeholder' => 'Trouvez un utilisateur','autofocus'])!!}
+					{!!Form::close()!!}
+					<ul class="uk-list  uk-list-divider uk-height-large uk-overflow-auto" id="chat-user-list-responsive"><span class="uk-text-meta">Patientez svp... <div uk-spinner></div></span></ul>
+				</div>
+				<div class="uk-modal-body uk-grid-divider uk-visible@m" uk-grid>
 					<div class="uk-width-2-3@m">
 						{!!Form::open(['url'=>'','class'=>'uk-width-xlarge form-chat-text'])!!}
 							{!!Form::text('message_text','',['class'=>'uk-input','placeholder'=>'Votre message ici ...'])!!}
