@@ -4,7 +4,9 @@
 <div class="uk-section uk-section-default">
   <div class="uk-container">
     <h3><a href="{{url('/')}}" uk-tooltip="tableau de bord" uk-icon="icon:arrow-left;ratio:1.5"></a> Toutes les Transaction</h3>
-    <!-- FILTRE PAR DATE -->
+
+    @if(Auth::user()->type == 'v_da' || Auth::user()->type == 'v_standart')
+    <!-- FILTRE PAR DATE VISIBLE QUE POUR LES VENDEURS-->
     {!!Form::open(['url'=>'/user/afrocash/filter-transactions','uk-grid','id'=>'filter-transaction-afrocash'])!!}
     <div class="uk-width-1-3@m">
       <span uk-icon="icon : calendar"></span>{!!Form::label('Du')!!}
@@ -19,6 +21,7 @@
     {!!Form::close()!!}
     <a href="{{url()->current()}}" uk-tooltip="retirer le filtre" class="uk-float uk-float-right uk-visible@m"> <i class="material-icons">delete_sweep</i> </a>
     <a href="{{url()->current()}}" uk-tooltip="retirer le filtre" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-margin-small uk-hidden@m"> retirer le filtre </a>
+    @endif
     <!-- // -->
   <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-fade">
       <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Historique</a></li>

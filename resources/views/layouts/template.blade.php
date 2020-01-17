@@ -32,7 +32,7 @@
 				<a href="#all-notification" uk-toggle class=""> <i class="material-icons">notifications</i> <sup id="notification-count-responsive" class="">0</sup></a>
 			</div>
 			<div class="">
-				<a href="#messages-chat-box" id="chat-button-responsive" uk-toggle class=""> <i class="material-icons">message</i> </a>
+				<a href="#messages-chat-box" id="chat-button-responsive" class="chat-buttons" uk-toggle class=""> <i class="material-icons">message</i> </a>
 			</div>
 		</div>
 	</div>
@@ -470,7 +470,7 @@
 </div>
 <!-- // -->
 <!-- CHATBOX -->
-<a  class="uk-button uk-button-small uk-padding-small uk-border-pill uk-button-primary uk-visible@m" id="chat-button" href="#messages-chat-box" uk-toggle><i class="material-icons">chat</i></a>
+<a  class="uk-button uk-button-small uk-padding-small uk-border-pill uk-button-primary uk-visible@m chat-buttons" id="chat-button" href="#messages-chat-box" uk-toggle><i class="material-icons">chat</i></a>
 
 <div id="messages-chat-box" class="uk-modal-container" uk-modal="esc-close : false ; bg-close : false;">
     <div class="uk-modal-dialog">
@@ -482,7 +482,7 @@
 					{!!Form::open(['url'=>''])!!}
 					{!!Form::text('search_user','',['class'=>'uk-input uk-border-rounded uk-box-shadow-hover-small','placeholder' => 'Trouvez un utilisateur','autofocus'])!!}
 					{!!Form::close()!!}
-					<ul class="uk-list  uk-list-divider uk-height-large uk-overflow-auto" id="chat-user-list-responsive"><span class="uk-text-meta">Patientez svp... <div uk-spinner></div></span></ul>
+					<ul class="uk-list  uk-list-divider uk-height-large uk-overflow-auto chat-user-lists" id="chat-user-list-responsive"><span class="uk-text-meta">Patientez svp... <div uk-spinner></div></span></ul>
 				</div>
 				<div class="uk-modal-body uk-grid-divider uk-visible@m" uk-grid>
 					<div class="uk-width-2-3@m">
@@ -496,7 +496,7 @@
 						{!!Form::open(['url'=>''])!!}
 						{!!Form::text('search_user','',['class'=>'uk-input uk-border-rounded uk-box-shadow-hover-small','placeholder' => 'Trouvez un utilisateur','autofocus'])!!}
 						{!!Form::close()!!}
-						<ul class="uk-list  uk-list-divider uk-height-large uk-overflow-auto" id="chat-user-list"><span class="uk-text-meta">Patientez svp... <div uk-spinner></div></span></ul>
+						<ul class="uk-list  uk-list-divider uk-height-large uk-overflow-auto chat-user-lists" id="chat-user-list"><span class="uk-text-meta">Patientez svp... <div uk-spinner></div></span></ul>
 						<!-- // -->
 					</div>
 				</div>

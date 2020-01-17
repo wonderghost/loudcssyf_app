@@ -57,6 +57,13 @@
 						</thead>
 						<tbody id="serial-list"></tbody>
 					</table>
+
+					<ul class="uk-pagination">
+							<li><a><span>Page</span> <span id="page">1</span></a></li>
+							<li><a><span id="inf"></span></a></li>
+					    <li><a class="paginate-link" id="previous"> <span uk-pagination-previous></span> Precedent</a></li>
+					    <li><a class="paginate-link" id="next">Suivant <span uk-pagination-next></span></a></li>
+					</ul>
 				</li>
 		</ul>
 	</div>
@@ -71,17 +78,14 @@
 		// return 0;
 		setInterval(function() {
 			$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}",$('#mat-filter').val(),false);
-		},10000);
-
+		},50000);
 		$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}",$('#mat-filter').val(),false);
 		// filtrer par depot
 		$('#mat-filter').on('change',function () {
 			$("#_loader").show(500);
 			$adminPage.getListMaterial("{{csrf_token()}}","{{url()->current()}}",$('#mat-filter').val(),false);
 		});
-
 		//Liste des Numeros de SERIES
-
 		$logistique.ListSerialNumber($adminPage,"{{csrf_token()}}","{{url('/admin/get-serialNumber')}}")
 
 

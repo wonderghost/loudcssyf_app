@@ -120,14 +120,12 @@
 @section('script')
 <script type="text/javascript">
 	$(function() {
-		var intervalId = setInterval(function () {
-			$logistique.getListRapportVente("{{csrf_token()}}","{{url('/user/rapport-ventes/get-list')}}")
-		}, 10000);
-		$logistique.getListRapportVente("{{csrf_token()}}","{{url('/user/rapport-ventes/get-list')}}")
+
+		// $logistique.getListRapportVente("{{csrf_token()}}","{{url('/user/rapport-ventes/get-list')}}")
 		//
 		$logistique.payCommission()
 		//
-		$logistique.filterRapportForVendeurs(intervalId)
+		// $logistique.filterRapportForVendeurs(intervalId)
 	});
 </script>
 @endsection

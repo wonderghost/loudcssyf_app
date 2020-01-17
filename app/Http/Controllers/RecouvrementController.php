@@ -9,10 +9,13 @@ use App\Afrocash;
 use Carbon\Carbon;
 use App\Exceptions\AppException;
 use App\Recouvrement;
+use App\Traits\Similarity;
+use Illuminate\Support\Facades\Auth;
 
 class RecouvrementController extends Controller
 {
     //
+    use Similarity;
 
     public function operations() {
       $users = User::where('type','v_standart')->get();
@@ -36,6 +39,11 @@ class RecouvrementController extends Controller
 
           $temp = $recouvrement->id;
 
+          // ENVOI DE LA NOTIFICATION
+          $this->sendNotification("Recouvrement","Recouvrement de : ".number_format($recouvrement->montant)." GNF effectue !",$recouvrement->vendeurs);
+          $this->sendNotification("Recouvrement","Vous avez effectue un recouvrement de ".number_format($recouvrement->montant)." GNF pour : ".$recouvrement->vendeurs()->localisation,Auth::user()->username);
+          $this->sendNotification("Recouvrement","Recouvrement effectue au compte de : ".$recouvrement->vendeurs()->localisation,'admin');
+
           $recouvrement->save();
           // AJOUT DE L'ID DE RECOUVREMENT DANS LA TABLE TRANSACTIONS
           TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where([
@@ -44,7 +52,6 @@ class RecouvrementController extends Controller
           ])->get())->where('recouvrement',NULL)->update([
             'recouvrement'  =>  $temp
           ]);
-
           return redirect('user/recouvrement')->withSuccess("Success!");
         } else {
           throw new AppException("Erreur sur le montant!");

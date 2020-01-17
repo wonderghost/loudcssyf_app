@@ -47,7 +47,9 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/rapport/remove-rapport','AdminController@removeRapport');
 
 	//
-	Route::post('/admin/get-rapport','AdminController@getRapport'); // recuperation de l'historique des rapports
+	Route::get('/admin/rapport/list-reabonnement','AdminController@reabonnementRapport'); // recuperation de l'historique des rapports
+	Route::get('/admin/rapport/list-recrutement','AdminController@recrutementRapport'); // recuperation de l'historique des rapports
+	Route::get('/admin/rapport/list-migration','AdminController@migrationRapport'); // recuperation de l'historique des rapports
 	// OPTION DE FORMULES
 	Route::post('/admin/add-option','AdminController@addOptionFormule');
 	// FORMULES
@@ -76,7 +78,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	// list des materieles
 	Route::get('/admin/list-material','LogistiqueController@listMaterial');
 	Route::post('/admin/list-material','LogistiqueController@getListMaterial');
-	Route::post('/admin/get-serialNumber','LogistiqueController@ListSerialNumber');
+	Route::get('/admin/get-serialNumber','LogistiqueController@ListSerialNumber');
 	// editer les infos utilisateurs
 	Route::get('/admin/edit-users/{username}','AdminController@editUser');
 	Route::post('/admin/edit-users/{username}','AdminController@makeEditUser');

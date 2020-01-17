@@ -30,12 +30,40 @@ var $logistique = {
       e.preventDefault()
       $.ajax({
         url : url ,
-        type : $(this).attr('method'),
+        type : 'get',
         dataType : 'json',
         data : $(this).serialize() ,
       })
       .done(function(data) {
-        $logistique.dataList(data,$("#serial-list"))
+        if(data.serial.prev_page_url == null) {
+          $("#previous").hide(200)
+        }
+        $logistique.dataList(data.all,$("#serial-list"))
+        $("#inf").text("de "+data.serial.from+" a "+data.serial.to)
+        var i = 1;
+        $(".paginate-link").on('click',function (e) {
+          if($(this).attr('id') == "next") {
+              i++;
+          } else {
+              i--
+          }
+          $.ajax({
+            url : data.serial.path+"?page="+i,
+            type : 'get',
+            dataType : 'json'
+          })
+          .done(function (result) {
+            $logistique.dataList(result.all,$("#serial-list"))
+            $("#page").text(result.serial.current_page)
+            $("#inf").text("de "+result.serial.from+" a "+result.serial.to)
+            if(result.serial.prev_page_url == null) {
+              $("#previous").hide(200)
+            }
+            else {
+              $("#previous").show(200)
+            }
+          })
+        })
       })
       .fail(function (data) {
         alert(data.responseJSON.message)
@@ -139,7 +167,6 @@ var $logistique = {
   }
 ,
   dataList : function (data,content) {
-
     var row = [] , cols = [] ;
     content.html('')
     data.forEach(function (element,index) {
@@ -661,67 +688,6 @@ transactionDashboardView : function (token,url) {
     })
     .fail(function (data) {
       console.log(data)
-    })
-  })
-  form.submit()
-}
-,
-getListRapportVente : function (token , url , urlRemoveRapp = "") {
-  var form = $logistique.makeForm(token,url)
-  form.on('submit',function(e) {
-    e.preventDefault()
-
-    $.ajax({
-      url : url,
-      type : 'post',
-      dataType : 'json',
-      data : $(this).serialize()
-    })
-    .done(function (data) {
-
-      $("#commission-jour").val(data.commission)
-      $("#commission-cumulee").val(data.commission)
-
-      if(data.recrutement) {
-        $logistique.dataList(data.recrutement,$("#recrutement-list"))
-        data.recrutement.forEach(function (element , index) {
-          $("#recrutement-list .row:eq("+index+") .col").eq(0).remove()
-        })
-      }
-      if(data.reabonnement){
-        $logistique.dataList(data.reabonnement,$("#reabonnement-list"))
-        data.reabonnement.forEach(function (element , index) {
-          // AJOUT DU BUTTON ANNULER CHEZ L'ADMIN UNIQUEMENT
-          if($("#user-type").val() == 'admin') {
-            var annuler = $("<a></a>")  ,col = $("<td></td>")
-            annuler.addClass('uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small uk-text-capitalize remove-rapport-button uk-icon-link')
-            annuler.attr('uk-icon','icon : trash ; ratio : .8')
-            annuler.attr('data-id',element.id)
-            annuler.text("Annuler")
-            col.append(annuler)
-            $("#reabonnement-list .row:eq("+index+")").append(col)
-            $("#reabonnement-list .row:eq("+index+") .col").eq(0).remove()
-          }
-        })
-      }
-      if(data.migration) {
-        $logistique.dataList(data.migration,$("#migration-list"))
-        data.migration.forEach(function (element , index) {
-          $("#migration-list .row:eq("+index+") .col").eq(0).remove()
-        })
-      }
-
-      $(".remove-rapport-button").on('click',function (e) {
-        let idRapport = $(this).attr('data-id')
-        UIkit.modal.confirm("Vous etes de vouloir annuler ce Rapport ?").then(function () {
-          $logistique.removeRapport(token,urlRemoveRapp,idRapport)
-        })
-      })
-
-    })
-    .fail(function (data) {
-      alert(data.responseJSON.message)
-      $(location).attr('href','')
     })
   })
   form.submit()
@@ -1643,7 +1609,6 @@ filterAfrocashTransactionForVendeur : function () {
     })
     .done(function (data) {
       $("#loader").hide(200)
-      console.log(data)
       $logistique.dataList(data,$("#list-transactions"))
     })
     .fail(function (data) {
@@ -1657,4 +1622,79 @@ filterAfrocashTransactionForVendeur : function () {
     })
   })
 }
+// LISTING DES RAPPORT POUR L'ADMINISTRATEUR
+,
+reabonnementListForAdmin : function (url) {
+  $.get(url,function (data) {
+    if(data.length <= 0) {
+      $("#reabonnement-list").parent().hide()
+      $("#reabonnement-list").parent().parent().html("<div class='uk-flex uk-flex-center uk-text-meta'>Aucune donnee!</div>")
+    } else {
+    $logistique.dataList(data,$("#reabonnement-list"))
+    data.forEach(function (element , index) {
+      $("#reabonnement-list .row").eq(index).children().eq(0).remove()
+    })
+    $logistique.paginateData(url,$("#reabonnement-paginate .paginate-link"),$("#reabonnement-paginate #page"),$("#reabonnement-list"))
+  }
+  },'json')
+},
+recrutementListFormAdmin : function (url) {
+  $.get(url,function (data) {
+    if(data.length <= 0) {
+      $("#recrutement-list").parent().hide()
+      $("#recrutement-list").parent().parent().html("<div class='uk-flex uk-flex-center uk-text-meta'>Aucune donnee!</div>")
+    } else {
+      $logistique.dataList(data,$("#recrutement-list"))
+      data.forEach(function (element , index) {
+        $("#recrutement-list .row").eq(index).children().eq(0).remove()
+      })
+    }
+  },'json')
+},
+migrationListForAdmin : function (url) {
+  $.get(url,function (data) {
+    if(data.length <= 0) {
+      $("#migration-list").parent().hide()
+      $("#migration-list").parent().parent().html("<div class='uk-flex uk-flex-center uk-text-meta'>Aucune donnees!</div>")
+    }
+    else {
+      $logistique.dataList(data,$("#migration-list"))
+      data.forEach(function (element , index ) {
+        $("#migration-list .row").eq(index).children().eq(0).remove()
+      })
+    }
+  })
+}
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+,
+paginateData : function (paginateUrl,paginateLink,page,contentData) {
+  let i = 1;
+
+  paginateLink.on('click',function (e) {
+    var link = $(this)
+    if($(this).attr('data-id') == "next") {
+      i++
+    } else {
+      if(i > 1) {
+        i--
+      }
+    }
+    page.text(i)
+    $.get(paginateUrl+"?page="+i,function (paginateData) {
+      if(paginateData.length <= 0) {
+        paginateLink.eq(1).hide()
+      }
+      else {
+        paginateLink.eq(1).show()
+        $logistique.dataList(paginateData,contentData)
+        paginateData.forEach(function (element , index) {
+          // $("#reabonnement-list .row").eq(index).children().eq(0).remove()
+          // console.log(contentData)
+          contentData.children().eq(index).children().eq(0).remove()
+        })
+      }
+    },'json')
+  })
+}
+
 }

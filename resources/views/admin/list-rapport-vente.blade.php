@@ -63,7 +63,7 @@
 							<th>Paiement Commission</th>
 						</tr>
 					</thead>
-					<tbody id="recrutement-list"><div id="loader" uk-spinner></div></tbody>
+					<tbody id="recrutement-list"></tbody>
 				</table>
 				<!-- // -->
 			</li>
@@ -83,9 +83,16 @@
 							<th>Paiement Commission</th>
 						</tr>
 					</thead>
-					<tbody id="reabonnement-list"><div id="loader" uk-spinner></div></tbody>
+					<tbody id="reabonnement-list"></tbody>
 				</table>
 				<!-- // -->
+				<ul class="uk-pagination uk-flex uk-flex-center" id="reabonnement-paginate">
+						<li><a><span>Page : </span><span id="page">1</span> </a> </li>
+				    <li><a class="paginate-link" data-id="previous"><span uk-pagination-previous></span> Precedent</a></li>
+				    <li><a class="paginate-link" data-id="next">Suivant <span uk-pagination-next></span> </a></li>
+				</ul>
+
+
 			</li>
 			<li>
 				<!-- MIGRATION -->
@@ -114,19 +121,13 @@
 @section("script")
 <script type="text/javascript">
 	$(function() {
-		setInterval(function () {
 			if($('#user-type').val() == 'admin') {
-				$logistique.getListRapportVente("{{csrf_token()}}","{{url('/admin/get-rapport')}}","{{url('/admin/rapport/remove-rapport')}}")
+				$logistique.reabonnementListForAdmin("{{url('/admin/rapport/list-reabonnement')}}")
+				$logistique.recrutementListFormAdmin("{{url('admin/rapport/list-recrutement')}}")
+				$logistique.migrationListForAdmin("{{url('admin/rapport/list-migration')}}")
 			} else {
-				$logistique.getListRapportVente("{{csrf_token()}}","{{url('/user/get-rapport')}}")
-			}
-		},20000);
 
-		if($('#user-type').val() == 'admin') {
-			$logistique.getListRapportVente("{{csrf_token()}}","{{url('/admin/get-rapport')}}","{{url('/admin/rapport/remove-rapport')}}")
-		} else {
-			$logistique.getListRapportVente("{{csrf_token()}}","{{url('/user/get-rapport')}}")
-		}
+			}
 		//
 	});
 </script>

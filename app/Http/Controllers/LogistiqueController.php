@@ -51,17 +51,19 @@ class LogistiqueController extends Controller
 
     // liste des numeros de serie des materiels
     public function ListSerialNumber(Request $request) {
-      $serials = Exemplaire::all();
+      $serials = Exemplaire::select()->orderBy('serial_number','asc')->paginate(10);
       $all = [];
       foreach ($serials as $key => $element) {
         $all[$key] = [
           'serial_number' =>  $element->serial_number,
-          'vendeurs'  =>   $element->vendeurs()->first() ? $element->vendeurs()->first()->username : 'non attribuer' ,
+          'vendeurs'  =>   $element->vendeurs()->first() ? $element->vendeurs()->first()->localisation : 'non attribuer' ,
           'status'  =>  $element->status
         ];
 
       }
-      return response()->json($all);
+      return response()->json([
+        'all' => $all,
+        'serial' => $serials]);
     }
     // ravitailler un depot
     public function ravitaillerDepot() {
@@ -291,7 +293,6 @@ class LogistiqueController extends Controller
 
     public function getListMaterial(Request $request) {
         $produit = [];
-
         $all = [];
         if($request->input('ref') !== 'all') {
             $stockDe = StockPrime::select()->where('depot',$request->input('ref'))->get();
@@ -300,13 +301,11 @@ class LogistiqueController extends Controller
                     $produit[$key] = Produits::select()->where('reference',$value->produit)->first();
                 }
 
-            // return response()->json($produit);
         } else {
             $produit = Produits::all();
         }
 
         if($produit) {
-
             foreach($produit as $key => $values) {
                 if($request->input('ref') == 'all') {
                     $quantite = StockPrime::select()->where('produit',$values->reference)->sum('quantite');
@@ -316,8 +315,6 @@ class LogistiqueController extends Controller
                 $all[$key] = $this->organize($values,$quantite);
             }
         }
-        // $all = $this->organize($produit)
-
         return response()->json($all);
     }
 

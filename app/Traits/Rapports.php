@@ -270,37 +270,105 @@ Trait Rapports {
 
 	// RECUPERATION DE L'HISTORIQUE DES RAPPORTS
 	    public function getRapport(Request $request) {
-	      $recrutement = RapportVente::where('type','recrutement')->orderBy('date_rapport','desc')->limit(30)->get();
-	      $reabonnement = RapportVente::where('type','reabonnement')->orderBy('date_rapport','desc')->limit(30)->get();
-	      $migration = RapportVente::where('type','migration')->orderBy('date_rapport','desc')->limit(30)->get();
-	      $rapports = [
-	        'recrutement' =>  $recrutement,
-	        'reabonnement'  => $reabonnement,
-	        'migration' =>   $migration
-	      ];
-				$commission = number_format(RapportVente::whereIn('type',['recrutement','reabonnement'])->sum('commission'));
-	      $all = [];
+				try {
+					$recrutement = RapportVente::where('type','recrutement')->orderBy('date_rapport','desc')->paginate(5);
+					$reabonnement = RapportVente::where('type','reabonnement')->orderBy('date_rapport','desc')->paginate(5);
+					$migration = RapportVente::where('type','migration')->orderBy('date_rapport','desc')->paginate(5);
+					$rapports = [
+						'recrutement' =>  $recrutement,
+						'reabonnement'  => $reabonnement,
+						'migration' =>   $migration
+					];
+					$commission = number_format(RapportVente::whereIn('type',['recrutement','reabonnement'])->sum('commission'));
+					$all = [];
 
-	      foreach ($rapports as $key => $value) {
-	        foreach ($value as $_key => $_value) {
+					foreach ($rapports as $key => $value) {
+						foreach ($value as $_key => $_value) {
 
-	          $all[$key][$_key] = [
-							'id'	=>	$_value->id_rapport,
-	            'date'  =>  $_value->date_rapport,
-	            'vendeurs'  =>  $_value->vendeurs()->agence()->societe." ( ".$_value->vendeurs()->localisation." )",
-	            'type'  =>  $_value->type,
-	            'credit'  =>  $_value->credit_utilise,
-	            'quantite'  =>  $_value->quantite,
-	            'montant_ttc' =>  number_format($_value->montant_ttc),
-	            'commission'  =>  number_format($_value->commission),
-							'promo'	=>	$_value->promo > 0 ? '' : 'hors promo',
-							'paiement_commission' =>  $_value->statut_paiement_commission
-	          ];
-	        }
-	      }
+							$all[$key][$_key] = [
+								'id'	=>	$_value->id_rapport,
+								'date'  =>  $_value->date_rapport,
+								'vendeurs'  =>  $_value->vendeurs()->agence()->societe." ( ".$_value->vendeurs()->localisation." )",
+								'type'  =>  $_value->type,
+								'credit'  =>  $_value->credit_utilise,
+								'quantite'  =>  $_value->quantite,
+								'montant_ttc' =>  number_format($_value->montant_ttc),
+								'commission'  =>  number_format($_value->commission),
+								'promo'	=>	$_value->promo > 0 ? '' : 'hors promo',
+								'paiement_commission' =>  $_value->statut_paiement_commission
+							];
+						}
+					}
 
-				$all['commission'] = $commission;
-	      return response()->json($all);
+					// $all['commission'] = $commission;
+					// $all['paginate'] = [
+					// 	'recrutement'	=>	$recrutement,
+					// 	'reabonnement'	=>	$reabonnement,
+					// 	'migration'	=>	$migration
+					// ];
+					return response()->json($all);
+				} catch (AppException $e) {
+					header("unprocessible entity",true,422);
+					die(json_encode($e->getMessage()));
+				}
 	    }
+
+// HISTORIQUE DE REABONNE POUR L'ADMINISTRATEUR
+			public function reabonnementRapport() {
+				try {
+					$reabonnement = RapportVente::where('type','reabonnement')->orderBy('date_rapport','desc')->paginate(10);
+					$all=$this->organizeRapport($reabonnement);
+					return response()->json($all);
+				} catch (AppException $e) {
+					header("Erreur!",true,422);
+					die(json_encode($e->getMessage()));
+				}
+		}
+
+// HISTORIQUE DE RECRUTEMENT POUR L'ADMINISTRATEUR
+
+	public function recrutementRapport() {
+		try {
+			$recrutement = RapportVente::where('type','recrutement')->orderBy('date_rapport','desc')->paginate(10);
+			$all = $this->organizeRapport($recrutement);
+			return response()->json($all);
+		} catch (AppException $e) {
+			header("Erreur!",true,422);
+			die(json_encode($e->getMessage()));
+		}
+
+	}
+	// HISTORIQUE DE MIGRATION POUR L'ADMINISTRATEUR
+	public function migrationRapport() {
+		try {
+			$migration = RapportVente::where('type','migration')->orderBy('date_rapport','desc')->paginate(10);
+			$all = $this->organizeRapport($migration);
+			return response()->json($all);
+		} catch (AppException $e) {
+			header("Erreur!",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
+
+
+	public function organizeRapport($data) {
+		$all = [];
+		foreach ($data as $key => $value) {
+			$all[$key] = [
+				'id'	=>	$value->id_rapport,
+				'date'  =>  $value->date_rapport,
+				'vendeurs'  =>  $value->vendeurs()->agence()->societe." ( ".$value->vendeurs()->localisation." )",
+				'type'  =>  $value->type,
+				'credit'  =>  $value->credit_utilise,
+				'quantite'  =>  $value->quantite,
+				'montant_ttc' =>  number_format($value->montant_ttc),
+				'commission'  =>  number_format($value->commission),
+				'promo'	=>	$value->promo > 0 ? '' : 'hors promo',
+				'paiement_commission' =>  $value->statut_paiement_commission
+			];
+		}
+		return $all;
+	}
+
 
 }
