@@ -130,9 +130,9 @@
 				}, 10000);
 				$logistique.getCommissionCumulee("{{url('admin/rapport/commission-total')}}")
 			} else {
-				$logistique.reabonnementListForAdmin("{{url('user/rapport/list-reabonnement')}}")
-				$logistique.recrutementListFormAdmin("{{url('user/rapport/list-recrutement')}}")
-				$logistique.migrationListForAdmin("{{url('user/rapport/list-migration')}}")
+				$logistique.reabonnementListForAdmin("{{url('user/rapport/reabonnement-rapport')}}")
+				$logistique.recrutementListFormAdmin("{{url('user/rapport/recrutement-rapport')}}")
+				$logistique.migrationListForAdmin("{{url('user/rapport/migration-rapport')}}")
 				setInterval(function () {
 					$logistique.getCommissionCumulee("{{url('user/rapport/commission-total')}}")
 				}, 10000);

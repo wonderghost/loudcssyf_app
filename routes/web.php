@@ -112,9 +112,9 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/send-rapport/{slug}','RapportControlleur@sendRapport')->middleware('controleur');
 	Route::post('/user/rapport/check-serial','RapportControlleur@checkSerial')->middleware('controleur');
 	Route::get('/user/all-rapport','RapportControlleur@listRapport')->middleware('controleur');
-	Route::get('/user/rapport/list-reabonnement','RapportControlleur@reabonnementRapport')->middleware('controleur');// recuperation de l'historique des rapports
-	Route::get('/user/rapport/list-recrutement','RapportControlleur@recrutementRapport')->middleware('controleur');// recuperation de l'historique des rapports
-	Route::get('/user/rapport/list-migration','RapportControlleur@migrationRapport')->middleware('controleur');// recuperation de l'historique des rapports
+	Route::get('/user/rapport/reabonnement-rapport','RapportControlleur@reabonnementRapport')->middleware('controleur');// recuperation de l'historique des rapports
+	Route::get('/user/rapport/recrutement-rapport','RapportControlleur@recrutementRapport')->middleware('controleur');// recuperation de l'historique des rapports
+	Route::get('/user/rapport/migration-rapport','RapportControlleur@migrationRapport')->middleware('controleur');// recuperation de l'historique des rapports
 	Route::get('user/rapport/commission-total','RapportControlleur@totalCommission')->middleware('controleur');
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	Route::get('/user/rapport-ventes','RapportControlleur@getRapportByVendeurs')->middleware("vendeur");
