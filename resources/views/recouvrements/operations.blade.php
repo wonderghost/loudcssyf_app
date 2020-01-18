@@ -82,7 +82,7 @@
           </div>
       </div>
       <div uk-spinner class="loader" style="display : none;"></div>
-        <table class="uk-table uk-table-small uk-table-divider uk-table-hover uk-table-striped">
+        <table class="uk-table uk-table-small uk-table-divider uk-table-hover uk-table-striped uk-table-responsive">
           <thead>
             <tr>
               <th>Id</th>
@@ -128,7 +128,7 @@
         </div>
       </div>
       <div uk-spinner class="loader" style="display:none"></div>
-        <table class="uk-table uk-table-striped uk-table-small uk-table-hover uk-table-divider">
+        <table class="uk-table uk-table-striped uk-table-small uk-table-hover uk-table-divider uk-table-responsive">
           <thead>
             <tr>
               <th>Date</th>
