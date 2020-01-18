@@ -40,7 +40,7 @@
 				<select class="uk-select" name="vendeurs">
 					@if($userdepot)
 					@foreach($userdepot as $key=>$values)
-					<option value="{{$values->username}}">{{$values->username}}</option>
+					<option value="{{$values->username}}">{{$values->localisation}}</option>
 					@endforeach
 					@endif
 				</select>

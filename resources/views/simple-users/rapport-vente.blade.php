@@ -12,7 +12,7 @@
 		        <h3 class="uk-modal-title"><i class="material-icons">monetization_on</i> Paiement commission</h3>
 		        {!!Form::open(['url'=>'/user/rapport-ventes/pay-commission','id'=>'pay-commission-form'])!!}
 						{!!Form::label('Montant total Cumule')!!}
-						{!!Form::text("commission_total",'',['class'=>'uk-input uk-margin-small uk-border-rounded','disabled','id'=>'commission-cumulee'])!!}
+						{!!Form::text("commission_total",'',['class'=>'uk-input uk-margin-small uk-border-rounded','disabled','id'=>'pay-commission-cumulee'])!!}
 						{!!Form::label('Confirmez le mot de passe')!!}
 						{!!Form::password('password_confirm',['class'=>'uk-input uk-border-rounded uk-margin-small','autofocus'])!!}
 						{!!Form::submit('validez',['class'=>'uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
@@ -36,7 +36,7 @@
 
 		<div class="uk-width-1-5@m">
 			{!!Form::label('Commission (GNF)')!!}
-			{!!Form::text('commission_jour','N/A',['class'=>'uk-input uk-margin-small uk-text-center uk-border-rounded','disabled','id'=>'commission-jour'])!!}
+			{!!Form::text('commission_jour','N/A',['class'=>'uk-input uk-margin-small uk-text-center uk-border-rounded','disabled','id'=>'commission-cumulee'])!!}
 			@if(Auth::user()->type == 'v_da')
 			<button type="button" name="button" class="uk-button uk-button-small uk-button-primary uk-box-shadow-small uk-border-rounded" uk-toggle="target: #paiement-commission">Paiement Commission</button>
 			@endif
@@ -71,9 +71,14 @@
 						<th>Paiement Commission</th>
 					</tr>
 				</thead>
-				<tbody id="recrutement-list"><div id="loader" uk-spinner></div></tbody>
+				<tbody id="recrutement-list"></tbody>
 			</table>
 			<!-- // -->
+			<ul class="uk-pagination uk-flex uk-flex-center" id="recrutement-paginate">
+					<li><a><span>Page : </span><span id="page">1</span> </a> </li>
+					<li><a class="paginate-link" data-id="previous"><span uk-pagination-previous></span> Precedent</a></li>
+					<li><a class="paginate-link" data-id="next">Suivant <span uk-pagination-next></span> </a></li>
+			</ul>
 		</li>
 		<li>
 			<!-- REABONNEMENT -->
@@ -90,9 +95,14 @@
 						<th>Paiement Commission</th>
 					</tr>
 				</thead>
-				<tbody id="reabonnement-list"><div id="loader" uk-spinner></div></tbody>
+				<tbody id="reabonnement-list"></tbody>
 			</table>
 			<!-- // -->
+			<ul class="uk-pagination uk-flex uk-flex-center" id="reabonnement-paginate">
+					<li><a><span>Page : </span><span id="page">1</span> </a> </li>
+					<li><a class="paginate-link" data-id="previous"><span uk-pagination-previous></span> Precedent</a></li>
+					<li><a class="paginate-link" data-id="next">Suivant <span uk-pagination-next></span> </a></li>
+			</ul>
 		</li>
 		<li>
 			<!-- MIGRATION -->
@@ -108,8 +118,13 @@
 						<th>Promo</th>
 					</tr>
 				</thead>
-				<tbody id="migration-list"><div id="loader" uk-spinner></div></tbody>
+				<tbody id="migration-list"></tbody>
 			</table>
+			<ul class="uk-pagination uk-flex uk-flex-center" id="migration-paginate">
+					<li><a><span>Page : </span><span id="page">1</span> </a> </li>
+					<li><a class="paginate-link" data-id="previous"><span uk-pagination-previous></span> Precedent</a></li>
+					<li><a class="paginate-link" data-id="next">Suivant <span uk-pagination-next></span> </a></li>
+			</ul>
 			<!-- // -->
 		</li>
 	</ul>
@@ -120,9 +135,15 @@
 @section('script')
 <script type="text/javascript">
 	$(function() {
-
-		// $logistique.getListRapportVente("{{csrf_token()}}","{{url('/user/rapport-ventes/get-list')}}")
 		//
+		$("#filter-vendeur-rapport").on('submit',function (e) {
+			e.preventDefault()
+			$("#loader").hide()
+		})
+		$logistique.reabonnementVendeur("{{url('/user/rapport/list-reabonnement')}}")
+		$logistique.recrutementVendeur("{{url('/user/rapport/list-recrutement')}}")
+		$logistique.migrationVendeur("{{url('/user/rapport/list-migration')}}")
+		$logistique.getCommissionCumulee("{{url('/user/rapport/total-commission')}}")
 		$logistique.payCommission()
 		//
 		// $logistique.filterRapportForVendeurs(intervalId)

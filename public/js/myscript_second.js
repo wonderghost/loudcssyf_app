@@ -13,7 +13,6 @@ var $logistique = {
 
     }
 
-
 		token.attr('type','hidden');
 		token.attr('name','_token');
 		token.val(formToken);
@@ -1540,63 +1539,6 @@ commandCreditFilter : function (intervalId = "") {
   })
 }
 ,
-// FILTRER LES RAPPORTS DE VENTES CHEZ LES VENDEURS
-filterRapportForVendeurs : function (intervalId) {
-  $("#filter-vendeur-rapport").on('submit',function (e) {
-    clearInterval(intervalId)
-    e.preventDefault()
-    $.ajax({
-      url : $(this).attr('action'),
-      type : 'post',
-      dataType : 'json',
-      data : $(this).serialize()
-    })
-    .done(function (data) {
-      $("#loader").hide(200)
-      $("#commission-jour").val(data.commission)
-      $("#commission-cumulee").val(data.commission)
-
-      if(data.recrutement) {
-        $logistique.dataList(data.recrutement,$("#recrutement-list"))
-        data.recrutement.forEach(function (element , index) {
-          $("#recrutement-list .row:eq("+index+") .col").eq(0).remove()
-        })
-      }
-      if(data.reabonnement){
-        $logistique.dataList(data.reabonnement,$("#reabonnement-list"))
-        data.reabonnement.forEach(function (element , index) {
-          // AJOUT DU BUTTON ANNULER CHEZ L'ADMIN UNIQUEMENT
-          if($("#user-type").val() == 'admin') {
-            var annuler = $("<a></a>")  ,col = $("<td></td>")
-            annuler.addClass('uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small uk-text-capitalize remove-rapport-button uk-icon-link')
-            annuler.attr('uk-icon','icon : trash ; ratio : .8')
-            annuler.attr('data-id',element.id)
-            annuler.text("Annuler")
-            col.append(annuler)
-            $("#reabonnement-list .row:eq("+index+")").append(col)
-            $("#reabonnement-list .row:eq("+index+") .col").eq(0).remove()
-          }
-        })
-      }
-      if(data.migration) {
-        $logistique.dataList(data.migration,$("#migration-list"))
-        data.migration.forEach(function (element , index) {
-          $("#migration-list .row:eq("+index+") .col").eq(0).remove()
-        })
-      }
-    })
-    .fail(function (data) {
-      $("#loader").hide(200)
-      UIkit.notification({
-        message : data.responseJSON,
-        status : 'danger',
-        pos : 'top-center',
-        timeout : 2000
-      })
-    })
-  })
-}
-,
 // FILTRER LES TRANSACTIONS AFROCASH PAR DATE
 filterAfrocashTransactionForVendeur : function () {
   $("#filter-transaction-afrocash").on('submit',function (e) {
@@ -1688,12 +1630,68 @@ paginateData : function (paginateUrl,paginateLink,page,contentData) {
         paginateLink.eq(1).show()
         $logistique.dataList(paginateData,contentData)
         paginateData.forEach(function (element , index) {
-          // $("#reabonnement-list .row").eq(index).children().eq(0).remove()
-          // console.log(contentData)
           contentData.children().eq(index).children().eq(0).remove()
         })
       }
     },'json')
+  })
+}
+,
+getCommissionCumulee : function (url) {
+  $.get(url,function (data) {
+    $("#commission-cumulee").val(data)
+  },'json')
+}
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+,
+reabonnementVendeur : function (url) {
+  $.get(url,function (data) {
+    if(data.length <= 0) {
+      $("#reabonnement-list").parent().hide()
+      $("#reabonnement-list").parent().parent().html("<div class='uk-flex uk-flex-center uk-text-meta'>Aucune donnees!</div>")
+    }
+    else {
+      $logistique.dataList(data,$("#reabonnement-list"))
+      data.forEach(function (element , index) {
+        $("#reabonnement-list .row").eq(index).children().eq(0).remove()
+        $("#reabonnement-list .row").eq(index).children().eq(1).remove()
+      })
+      $logistique.paginateData(url,$("#reabonnement-paginate .paginate-link"),$("#reabonnement-paginate #page"),$("#reabonnement-list"))
+    }
+  },'json')
+}
+,
+recrutementVendeur : function (url) {
+  $.get(url,function (data) {
+    if(data.length <= 0){
+      $("#recrutement-list").parent().hide()
+      $("#recrutement-list").parent().parent().html("<div class='uk-flex uk-flex-center uk-text-meta'>Aucune donnees!</div>")
+    }
+    else {
+      $logistique.dataList(data,$("#recrutement-list"))
+      data.forEach(function (element , index) {
+        $("#recrutement-list .row").eq(index).children().eq(0).remove()
+        $("#recrutement-list .row").eq(index).children().eq(1).remove()
+      })
+      $logistique.paginateData(url,$("#recrutement-paginate .paginate-link"),$("#recrutement-paginate #page"),$("#recrutement-list"))
+    }
+  })
+}
+,
+migrationVendeur : function (url) {
+  $.get(url,function (data) {
+    if(data.length <= 0){
+      $("#migration-list").parent().hide()
+      $("#migration-list").parent().parent().html("<div class='uk-flex uk-flex-center uk-text-meta'>Aucune donnees!</div>")
+    }
+    else {
+      $logistique.dataList(data,$("#migration-list"))
+      data.forEach(function (element , index) {
+        $("#migration-list .row").eq(index).children().eq(0).remove()
+        $("#migration-list .row").eq(index).children().eq(1).remove()
+      })
+      $logistique.paginateData(url,$("#migration-paginate .paginate-link"),$("#migration-paginate #page"),$("#migration-list"))
+    }
   })
 }
 

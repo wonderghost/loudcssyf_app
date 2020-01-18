@@ -49,74 +49,51 @@ class RapportControlleur extends Controller
     public function getRapportByVendeurs() {
       return view('simple-users.rapport-vente');
     }
+// @@@@@
+  public function rapportVendeur($type='reabonnement',$vendeur) {
+    $data = RapportVente::where(['type'=>$type,'vendeurs'=>$vendeur])->orderBy('date_rapport','desc')->paginate(10);
+    return  $this->organizeRapport($data);
+  }
 
-    public function getListRapport(Request $request , $filter = false) {
-
-      try {
-        if($filter) {
-          if($request->input('date_debut') && $request->input('date_fin')) {
-            $recrutement = RapportVente::where('vendeurs',Auth::user()->username)
-            ->where('type','recrutement')
-            ->whereBetween('date_rapport',[$request->input('date_debut'),$request->input('date_fin')])
-            ->orderBy('date_rapport','desc')->get();
-
-            $reabonnement = RapportVente::where('vendeurs',Auth::user()->username)
-            ->where('type','reabonnement')
-            ->whereBetween('date_rapport',[$request->input('date_debut'),$request->input('date_fin')])
-            ->orderBy('date_rapport','desc')->get();
-
-            $migration = RapportVente::where('vendeurs',Auth::user()->username)
-            ->where('type','migration')
-            ->whereBetween('date_rapport',[$request->input('date_debut'),$request->input('date_fin')])
-            ->orderBy('date_rapport','desc')->get();
-
-            $commission = number_format(RapportVente::whereIn('type',['recrutement','reabonnement'])->where('vendeurs',Auth::user()->username)->whereBetween('date_rapport',[$request->input('date_debut'),$request->input('date_fin')])->sum('commission'));
-          } else {
-            throw new AppException("Selectionnez les dates pour activer le filtre!");
-          }
-        } else {
-          $recrutement = RapportVente::where('vendeurs',Auth::user()->username)->where('type','recrutement')->orderBy('date_rapport','desc')->limit(30)->get();
-          $reabonnement = RapportVente::where('vendeurs',Auth::user()->username)->where('type','reabonnement')->orderBy('date_rapport','desc')->limit(30)->get();
-          $migration = RapportVente::where('vendeurs',Auth::user()->username)->where('type','migration')->orderBy('date_rapport','desc')->limit(30)->get();
-          $commission = number_format(RapportVente::whereIn('type',['recrutement','reabonnement'])->where('vendeurs',Auth::user()->username)->sum('commission'));
-        }
-
-
-        $rapports = [
-	        'recrutement' =>  $recrutement,
-	        'reabonnement'  => $reabonnement,
-	        'migration' =>   $migration
-	      ];
-
-
-	      $all = [];
-
-	      foreach ($rapports as $key => $value) {
-	        foreach ($value as $_key => $_value) {
-
-	          $all[$key][$_key] = [
-	            'date'  =>  $_value->date_rapport,
-	            'type'  =>  $_value->type,
-	            'credit'  =>  $_value->credit_utilise,
-	            'quantite'  =>  $_value->quantite,
-	            'montant_ttc' =>  number_format($_value->montant_ttc),
-	            'commission'  =>  number_format($_value->commission),
-              'promo'	=>	$_value->promo > 0 ? '' : 'hors promo',
-              'paiement_commission' =>  $_value->statut_paiement_commission
-	          ];
-
-	        }
-
-	      }
-
-        $all['commission'] = $commission;
-	      return response()->json($all);
-      } catch (AppException $e) {
-        header("unprocessible entity",true,422);
-        die(json_encode($e->getMessage()));
-      }
-
+  public function reabonnementList() {
+    try {
+      return response()->json($this->rapportVendeur('reabonnement',Auth::user()->username));
+    } catch (AppException $e) {
+      header("Erreur!",true,422);
+      die(json_encode($e->getMessage()));
     }
+  }
+
+  public function recrutementList() {
+    try {
+      return response()->json($this->rapportVendeur('recrutement',Auth::user()->username));
+    } catch (AppException $e) {
+      header("Erreur !",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+
+  public function migrationList() {
+    try {
+      return response()->json($this->rapportVendeur('migration',Auth::user()->username));
+    } catch (AppException $e) {
+      header("Erreur !",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+
+  public function totalCommissionVendeur() {
+    try {
+      $commission = number_format(RapportVente::whereIn('type',['recrutement','reabonnement'])->where("vendeurs",Auth::user()->username)->sum('commission'));
+      return response()->json($commission);
+    } catch (AppException $e) {
+      header("Erreur!",true,422);
+      die(json_encode($e->getMessage()));
+    }
+
+  }
+
+// @@@@@@
 // ENVOI DE LA DEMANDE DE PAIEMENT DE COMMISSION
 public function payCommission(Request $request) {
   $validation = $request->validate([
@@ -183,14 +160,4 @@ public function PayCommissionList(Request $request) {
 
 }
 
-// FILTRER LES RAPPORTS PAR DATE POUR LES VENDEURS
-public function filterRapportList(Request $request) {
-  try {
-    return $this->getListRapport($request,true);
-  } catch (AppException $e) {
-    header("unprocessible entity",true,422);
-    die(json_encode($e->getMessage()));
-  }
-
-}
 }

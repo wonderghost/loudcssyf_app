@@ -35,7 +35,7 @@
 			</div>
 			<div>
 				{!!Form::label('Commission Cumulee (GNF)')!!}
-				{!!Form::text('commission_jour','N/A',['class'=>'uk-input uk-margin-small uk-text-center uk-border-rounded','disabled','id'=>'commission-jour'])!!}
+				{!!Form::text('commission_jour','N/A',['class'=>'uk-input uk-margin-small uk-text-center uk-border-rounded','disabled','id'=>'commission-cumulee'])!!}
 			</div>
 		</div>
 		{!!Form::close()!!}
@@ -109,7 +109,7 @@
 							<th>Promo</th>
 						</tr>
 					</thead>
-					<tbody id="migration-list"><div id="loader" uk-spinner></div></tbody>
+					<tbody id="migration-list"></tbody>
 				</table>
 				<!-- // -->
 			</li>
@@ -125,8 +125,18 @@
 				$logistique.reabonnementListForAdmin("{{url('/admin/rapport/list-reabonnement')}}")
 				$logistique.recrutementListFormAdmin("{{url('admin/rapport/list-recrutement')}}")
 				$logistique.migrationListForAdmin("{{url('admin/rapport/list-migration')}}")
+				setInterval(function () {
+					$logistique.getCommissionCumulee("{{url('admin/rapport/commission-total')}}")
+				}, 10000);
+				$logistique.getCommissionCumulee("{{url('admin/rapport/commission-total')}}")
 			} else {
-
+				$logistique.reabonnementListForAdmin("{{url('user/rapport/list-reabonnement')}}")
+				$logistique.recrutementListFormAdmin("{{url('user/rapport/list-recrutement')}}")
+				$logistique.migrationListForAdmin("{{url('user/rapport/list-migration')}}")
+				setInterval(function () {
+					$logistique.getCommissionCumulee("{{url('user/rapport/commission-total')}}")
+				}, 10000);
+				$logistique.getCommissionCumulee("{{url('user/rapport/commission-total')}}")
 			}
 		//
 	});

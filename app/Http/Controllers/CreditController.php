@@ -285,8 +285,12 @@ class CreditController extends Controller
 					$commande->status = 'aborted';
 					$commande->save();
 					// ENREGISTREMENT DE LA NOTIFICATION
-					$this->sendNotification("Commande Credit","Vous avez annulé une commande pour : ".$commande->vendeurs()->localisation,Auth::user()->username);
+					$gcga = User::where("type",'gcga')->get();
+					foreach($gcga as $key => $value) {
+						$this->sendNotification("Commande Credit","Vous avez annulé une commande pour : ".$commande->vendeurs()->localisation,$value->username);
+					}
 					$this->sendNotification("Commande Credit","Votre commande a été annulé",$commande->vendeurs);
+					$this->sendNotification("Commande credit","Une commande a ete annulee pour : ".$commande->vendeurs()->localisation,User::where('type','admin')->first()->username);
 					return response()->json('done');
 				}
 				} else {

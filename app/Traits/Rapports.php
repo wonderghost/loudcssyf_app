@@ -196,10 +196,8 @@ Trait Rapports {
 
 						$id_rapport = $rapport->id_rapport;
 						$rapport->save();
-
 						// CHANGEMENT DE STATUS DES MATERIELS
 						for($i = 1 ; $i <= $request->input('quantite_materiel') ; $i++) {
-
 							Exemplaire::where([
 								'vendeurs'  =>  $request->input('vendeurs'),
 								'serial_number' =>  $request->input('serial-number-'.$i),
@@ -209,13 +207,11 @@ Trait Rapports {
 								'rapports'  =>  $id_rapport
 							]);
 						}
-
 						// DEBIT DE LA QUANTITE DANS LE STOCK DU VENDEURS
 						$new_quantite = StockVendeur::where([
 							'vendeurs'  =>  $request->input('vendeurs'),
 							'produit' =>  Produits::where('with_serial',1)->first()->reference
 						])->first()->quantite - $request->input('quantite_materiel');
-
 						StockVendeur::where('vendeurs',$request->input('vendeurs'))->update([
 							'quantite'  =>  $new_quantite
 						]);
@@ -267,51 +263,6 @@ Trait Rapports {
 		$users = User::whereIn('type',['v_standart','v_da'])->get();
 			return view('admin.list-rapport-vente')->withUsers($users);
 	}
-
-	// RECUPERATION DE L'HISTORIQUE DES RAPPORTS
-	    public function getRapport(Request $request) {
-				try {
-					$recrutement = RapportVente::where('type','recrutement')->orderBy('date_rapport','desc')->paginate(5);
-					$reabonnement = RapportVente::where('type','reabonnement')->orderBy('date_rapport','desc')->paginate(5);
-					$migration = RapportVente::where('type','migration')->orderBy('date_rapport','desc')->paginate(5);
-					$rapports = [
-						'recrutement' =>  $recrutement,
-						'reabonnement'  => $reabonnement,
-						'migration' =>   $migration
-					];
-					$commission = number_format(RapportVente::whereIn('type',['recrutement','reabonnement'])->sum('commission'));
-					$all = [];
-
-					foreach ($rapports as $key => $value) {
-						foreach ($value as $_key => $_value) {
-
-							$all[$key][$_key] = [
-								'id'	=>	$_value->id_rapport,
-								'date'  =>  $_value->date_rapport,
-								'vendeurs'  =>  $_value->vendeurs()->agence()->societe." ( ".$_value->vendeurs()->localisation." )",
-								'type'  =>  $_value->type,
-								'credit'  =>  $_value->credit_utilise,
-								'quantite'  =>  $_value->quantite,
-								'montant_ttc' =>  number_format($_value->montant_ttc),
-								'commission'  =>  number_format($_value->commission),
-								'promo'	=>	$_value->promo > 0 ? '' : 'hors promo',
-								'paiement_commission' =>  $_value->statut_paiement_commission
-							];
-						}
-					}
-
-					// $all['commission'] = $commission;
-					// $all['paginate'] = [
-					// 	'recrutement'	=>	$recrutement,
-					// 	'reabonnement'	=>	$reabonnement,
-					// 	'migration'	=>	$migration
-					// ];
-					return response()->json($all);
-				} catch (AppException $e) {
-					header("unprocessible entity",true,422);
-					die(json_encode($e->getMessage()));
-				}
-	    }
 
 // HISTORIQUE DE REABONNE POUR L'ADMINISTRATEUR
 			public function reabonnementRapport() {
@@ -370,5 +321,15 @@ Trait Rapports {
 		return $all;
 	}
 
+public function totalCommission() {
+	try {
+		$commission = number_format(RapportVente::whereIn('type',['recrutement','reabonnement'])->sum('commission'));
+		return response()->json($commission);
+	} catch (AppException $e) {
+		header("Erreur!",true,422);
+		die(json_encode($e->getMessage()));
+	}
+
+}
 
 }
