@@ -13,12 +13,12 @@ class UsersTableSeeder extends Seeder
     {
         //
         DB::table('users')->insert([
-            'username' => 'root',
-            'email' => 'root@loudcssyf.com',
+            'username' => 'admin',
+            'email' => 'admin@loudcssyf.com',
             'password' => bcrypt('loudcssyf'),
             'phone' =>  '+224624075702',
             'type'  =>  'admin',
-            'agence'  =>  'AG-0000',
+            'agence'  =>  'AG-1234',
             'localisation'  =>  'xxx'
         ]);
     }

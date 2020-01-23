@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- <html onselectstart="return false" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;"> -->
+<html onselectstart="return false" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;">
 <html>
 <head>
 	<title>{{config('app.name')}}-@yield('title')</title>
@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 	<!-- UIkit CSS -->
 		<link rel="stylesheet" href="{{asset('css/uikit.min.css')}}">
-		<!-- <link rel="stylesheet" href="{{asset('css/uikit-rtl.min.css')}}"> -->
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.css" integrity="sha256-IvM9nJf/b5l2RoebiFno92E5ONttVyaEEsdemDC6iQA=" crossorigin="anonymous" />
 		<link rel="stylesheet" href="{{asset('css/style.css')}}">
@@ -220,14 +219,14 @@
     	<a class="uk-button uk-button-small border-button" uk-tooltip="Alarmes"><i class="material-icons">alarm</i></a>
 
 			@if(Auth::user()->type == 'admin')
-			<a class="uk-button uk-button-small border-button" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
+			<a class="uk-button uk-button-small border-button button-pay-comission" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
     	<a class="uk-button uk-button-small uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span> Promo</a>
 			@endif
 			@if(Auth::user()->type == 'gcga')
-			<a class="uk-button uk-button-small border-button" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
+			<a class="uk-button uk-button-small border-button button-pay-comission" id="" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
 			@endif
 			@if(Auth::user()->type == 'v_da')
-			<a class="uk-button uk-button-small border-button" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
+			<a class="uk-button uk-button-small border-button button-pay-comission" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
 			@endif
     </div>
 		<div class="uk-navbar-right uk-visible@m">
@@ -583,12 +582,14 @@
 		@endif
 		setInterval(function () {
 			$logistique.notificationList("{{csrf_token()}}","{{url('/user/notification/getlist')}}","{{Auth::user()->username}}","{{url('/user/notification/mark-as-read')}}")
-		},5000);
+		},20000);
 		$logistique.notificationList("{{csrf_token()}}","{{url('/user/notification/getlist')}}","{{Auth::user()->username}}","{{url('/user/notification/mark-as-read')}}")
 
 		// RECUPERATION DE L'HISTORIQUE DE PAIEMENT DES COMISSIONS
 		// console.log($("#commission-for-user").val())
-		$logistique.payCommissionList("{{csrf_token()}}","{{url('/user/rapport-ventes/get-pay-commission')}}",$("#commission-for-user").val())
+		$(".button-pay-comission").on('click',function () {
+			$logistique.payCommissionList("{{csrf_token()}}","{{url('/user/rapport-ventes/get-pay-commission')}}",$("#commission-for-user").val())
+		})
 		// chat service
 		$chatService.openChatBox("{{url('/user/chat-service/users-list')}}")
 })

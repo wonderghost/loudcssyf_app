@@ -46,11 +46,14 @@ class RapportVente extends Model
       $this->commission = round($this->commission);
 
     }
-
+// @@@@@@@@@@@@@@@@@@@
     public function vendeurs() {
       return  $this->belongsTo('App\User','vendeurs','username')->first();
     }
 
+    public function changeStatePayComission() {
+      $this->statut_paiement_commission = 'paye';
+    }
 
 
 }

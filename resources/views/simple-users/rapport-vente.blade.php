@@ -62,6 +62,7 @@
 				<thead>
 					<tr>
 						<th>Date</th>
+						<th>Vendeur</th>
 						<th>Type</th>
 						<th>Credit</th>
 						<th>Quantite</th>
@@ -86,6 +87,7 @@
 				<thead>
 					<tr>
 						<th>Date</th>
+						<th>Vendeur</th>
 						<th>Type</th>
 						<th>Credit</th>
 						<th>Quantite</th>

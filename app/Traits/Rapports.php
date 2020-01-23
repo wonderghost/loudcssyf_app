@@ -323,7 +323,7 @@ Trait Rapports {
 
 public function totalCommission() {
 	try {
-		$commission = number_format(RapportVente::whereIn('type',['recrutement','reabonnement'])->sum('commission'));
+		$commission = number_format(RapportVente::whereIn('type',['recrutement','reabonnement'])->where('statut_paiement_commission','non_paye')->sum('commission'));
 		return response()->json($commission);
 	} catch (AppException $e) {
 		header("Erreur!",true,422);

@@ -1387,7 +1387,7 @@ payCommissionList : function (token , url , vendeurs) {
 
 
         data.forEach(function (element,index) {
-
+          $("#pay-commission-list .row").eq(index).children().eq(0).remove()
           if($("#state-validate-button").val() === "with-validate-button") {
             var validate = $("<a></a>") , col = $("<td></td>")
             validate.addClass('uk-button uk-button-small uk-icon-link uk-button-primary uk-border-rounded uk-box-shadow-small uk-text-capitalize validate-pay-comission-button')
@@ -1426,12 +1426,9 @@ payCommissionList : function (token , url , vendeurs) {
           })
           .done(function (data) {
             UIkit.modal($("#loader")).hide()
-            UIkit.notification({
-              message : 'success',
-              status : 'success',
-              pos : 'top-center',
-              timeout : 2000
-            })
+            UIkit.modal.alert("Success!").then(function () {
+              $(location).attr('href','')
+            });
           })
           .fail(function (data) {
             UIkit.modal($("#loader")).hide()
@@ -1706,7 +1703,6 @@ reabonnementVendeur : function (url) {
       $logistique.dataList(data,$("#reabonnement-list"))
       data.forEach(function (element , index) {
         $("#reabonnement-list .row").eq(index).children().eq(0).remove()
-        $("#reabonnement-list .row").eq(index).children().eq(1).remove()
       })
       $logistique.paginateData(url,$("#reabonnement-paginate .paginate-link"),$("#reabonnement-paginate #page"),$("#reabonnement-list"))
     }
@@ -1723,7 +1719,6 @@ recrutementVendeur : function (url) {
       $logistique.dataList(data,$("#recrutement-list"))
       data.forEach(function (element , index) {
         $("#recrutement-list .row").eq(index).children().eq(0).remove()
-        $("#recrutement-list .row").eq(index).children().eq(1).remove()
       })
       $logistique.paginateData(url,$("#recrutement-paginate .paginate-link"),$("#recrutement-paginate #page"),$("#recrutement-list"))
     }
@@ -1740,7 +1735,6 @@ migrationVendeur : function (url) {
       $logistique.dataList(data,$("#migration-list"))
       data.forEach(function (element , index) {
         $("#migration-list .row").eq(index).children().eq(0).remove()
-        $("#migration-list .row").eq(index).children().eq(1).remove()
       })
       $logistique.paginateData(url,$("#migration-paginate .paginate-link"),$("#migration-paginate #page"),$("#migration-list"))
     }
