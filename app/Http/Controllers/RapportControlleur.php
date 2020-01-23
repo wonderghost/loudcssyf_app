@@ -144,6 +144,7 @@ public function PayCommissionList(Request $request) {
     $all =[];
     foreach($payCommission as $key  =>  $value) {
       $all[$key]  = [
+        'id'  =>  $value->id,
         'du' => $value->debut,
         'fin' =>  $value->fin,
         'total' =>  number_format($value->montant_total),
@@ -155,6 +156,38 @@ public function PayCommissionList(Request $request) {
     return response()->json($all);
   } catch (AppException $e) {
     header("unprocessible entity",true,422);
+    die(json_encode($e->getMessage()));
+  }
+
+}
+
+// VALIDATION PAIEMENT DES COMMSSIONS
+
+public function validatePayComission(Request $request) {
+  try {
+    $validation = $request->validate([
+      'password_confirm'  =>  'required',
+      'pay_comission_id'  =>  'required|exists:pay_commissions,id'
+    ],[
+      'required'  =>  'Remplissez les champs vides'
+    ]);
+    if(Hash::check($request->input('password_confirm'),Auth::user()->password)) {
+      // LE MOT DE PASSE CORRESPOND
+      $comission = PayCommission::find($request->input('pay_comission_id'));
+      // RECUPERATION DES RAPPORTS DANS L'INTERVAL DE DATE
+      $rapport = RapportVente::whereBetween('date_rapport',[$comission->debut,$comission->fin])->where('vendeurs',$comission->vendeurs)->where('statut_paiement_commission','non_paye')->get();
+      $total = RapportVente::whereBetween('date_rapport',[$comission->debut,$comission->fin])->where('vendeurs',$comission->vendeurs)->where('statut_paiement_commission','non_paye')->sum('commission');
+      if($total == $comission->montant_total) {
+        // LES MONTANTS SONT IDENTIQUES , IL N'Y A PAS DE CONFUSION
+        return response()->json('done');
+      }else {
+        throw new AppException("Erreur , Ressayez plus tard !");
+      }
+    } else {
+      throw new AppException("Erreur Sur le mot de passe saisi!");
+    }
+  } catch (AppException $e) {
+    header("Erreur!",true,422);
     die(json_encode($e->getMessage()));
   }
 

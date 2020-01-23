@@ -150,6 +150,28 @@
 	        </div>
 	    </div>
 	</div>
+	<!-- // MODAL VALIDATE PAIEMENT COMMISSION REQUEST  -->
+	<div id="validate-payment-comission" uk-modal="esc-close : false ; bg-close : false">
+	    <div class="uk-modal-dialog">
+				{!!Form::open(['url'=>'/user/rapport-ventes/validate-pay-commission','id'=>'validate-form-pay-comission'])!!}
+	        <div class="uk-modal-header">
+	            <h6>Vous confirmez la validation pour le paiement des commissions a hauteur de : <span class="uk-text-bold" id="pay-amount"></span>	pour : <span class="uk-text-bold" id="pay-user"></span> </h6>
+	        </div>
+	        <div class="uk-modal-body">
+						<input type="hidden" name="pay_comission_id" value="" id="pay-id">
+						{!!Form::label('Confirmez votre Mot de passe')!!}
+						{!!Form::password('password_confirm',['class'=>'uk-input uk-margin-small uk-border-rounded','autofocus' ,'placeholder'=>'Entrez votre mot de passe pour la confirmation'])!!}
+					</div>
+	        <div class="uk-modal-footer uk-text-right">
+						<button class="uk-button uk-button-danger uk-modal-close uk-border-rounded uk-box-shadow-small uk-button-small" type="button">Fermer</button>
+						{!!Form::submit("validez",['class'=>'uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
+					</div>
+					{!!Form::close()!!}
+	    </div>
+	</div>
+
+
+	<!-- // -->
 	<!-- // -->
 <!-- NAVBAR-->
 <div class="uk-navbar-container uk-box-shadow-small" id="entete" uk-sticky uk-navbar>

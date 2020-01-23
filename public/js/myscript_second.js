@@ -1390,8 +1390,13 @@ payCommissionList : function (token , url , vendeurs) {
 
           if($("#state-validate-button").val() === "with-validate-button") {
             var validate = $("<a></a>") , col = $("<td></td>")
-            validate.addClass('uk-button uk-button-small uk-icon-link uk-button-primary uk-border-rounded uk-box-shadow-small uk-text-capitalize')
+            validate.addClass('uk-button uk-button-small uk-icon-link uk-button-primary uk-border-rounded uk-box-shadow-small uk-text-capitalize validate-pay-comission-button')
+            validate.attr('href','#validate-payment-comission')
+            validate.attr('uk-toggle','')
             validate.attr('uk-icon','icon : check ; ratio : .8')
+            validate.attr('data-id',element.id)
+            validate.attr('data-user',element.vendeurs)
+            validate.attr('data-amount',element.total)
             validate.text("validez")
             col.append(validate)
             $("#pay-commission-list .row:eq("+index+")").append(col)
@@ -1403,6 +1408,50 @@ payCommissionList : function (token , url , vendeurs) {
           $("#pay-commission-list .row:eq("+index+") .col:eq(3)").addClass('uk-text-success')
         }
 
+        })
+
+        $('.validate-pay-comission-button').on('click',function (e) {
+          $("#pay-amount").text($(this).attr('data-amount'))
+          $("#pay-user").text($(this).attr('data-user'))
+          $("#pay-id").val($(this).attr('data-id'))
+        })
+
+        $("#validate-form-pay-comission").on('submit',function (e) {
+          e.preventDefault()
+          $.ajax({
+            url : $(this).attr('action'),
+            type : 'post',
+            data : $(this).serialize(),
+            dataType : 'json'
+          })
+          .done(function (data) {
+            UIkit.modal($("#loader")).hide()
+            UIkit.notification({
+              message : 'success',
+              status : 'success',
+              pos : 'top-center',
+              timeout : 2000
+            })
+          })
+          .fail(function (data) {
+            UIkit.modal($("#loader")).hide()
+            if(data.responseJSON.message) {
+              UIkit.notification({
+                message : data.responseJSON.message,
+                status : 'danger',
+                pos : 'top-center',
+                timeout : 2000
+              })
+            } else {
+              UIkit.notification({
+                message : data.responseJSON,
+                status : 'danger',
+                pos : 'top-center',
+                timeout : 2000
+              })
+
+            }
+          })
         })
     })
     .fail(function (data) {
@@ -1640,6 +1689,9 @@ paginateData : function (paginateUrl,paginateLink,page,contentData) {
 getCommissionCumulee : function (url) {
   $.get(url,function (data) {
     $("#commission-cumulee").val(data)
+    if($("#pay-commission-cumulee")) {
+      $("#pay-commission-cumulee").val(data)
+    }
   },'json')
 }
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

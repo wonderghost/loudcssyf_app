@@ -14,7 +14,7 @@
 						{!!Form::label('Montant total Cumule')!!}
 						{!!Form::text("commission_total",'',['class'=>'uk-input uk-margin-small uk-border-rounded','disabled','id'=>'pay-commission-cumulee'])!!}
 						{!!Form::label('Confirmez le mot de passe')!!}
-						{!!Form::password('password_confirm',['class'=>'uk-input uk-border-rounded uk-margin-small','autofocus'])!!}
+						{!!Form::password('password_confirm',['class'=>'uk-input uk-border-rounded uk-margin-small','autofocus','placeholder'=>'Entrez votre mot de passe pour confirmer la demande'])!!}
 						{!!Form::submit('validez',['class'=>'uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small'])!!}
 						{!!Form::close()!!}
 		        <p class="uk-text-right">
