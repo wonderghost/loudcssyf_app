@@ -19,7 +19,7 @@ class UsersTableSeeder extends Seeder
             'phone' =>  '+224624075702',
             'type'  =>  'admin',
             'agence'  =>  'AG-1234',
-            'localisation'  =>  'xxx'
+            'localisation'  =>  'aaaa'
         ]);
     }
 }
