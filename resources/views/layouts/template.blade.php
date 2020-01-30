@@ -15,6 +15,7 @@
 	<title>{{config('app.name')}}-@yield('title')</title>
 			<meta charset="utf-8">
 			<meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="csrf-token" content="{{csrf_token()}}">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 	<!-- UIkit CSS -->
 		<link rel="stylesheet" href="{{asset('css/uikit.min.css')}}">

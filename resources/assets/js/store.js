@@ -4,7 +4,7 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-const store = Vuex.Store({
+const store = new Vuex.Store({
   state : {
     users : []
   },
