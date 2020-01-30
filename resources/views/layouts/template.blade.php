@@ -254,7 +254,7 @@
 </div>
 <!-- // -->
     <!-- CONTENS -->
-<div class="uk-margin-large-bottom">
+<div id="app" class="uk-margin-large-bottom">
     @yield('content')
 </div>
 <!-- // -->
@@ -551,6 +551,7 @@
 <script type="text/javascript" src="{{asset('js/myscript.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/myscript_second.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/myscript_third.js')}}"></script>
+<script src="{{ mix('js/app.js') }}" charset="utf-8"></script>
 <script type="text/javascript">
 	$(function () {
 		$('form').on('submit',function (e) {
