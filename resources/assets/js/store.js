@@ -6,13 +6,17 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state : {
-    users : []
+    users : [],
+    filtedredUser : [],
+    searchText : ""
   },
   mutations : {
-
+    searchText (state , word) {
+      state.searchText = word
+    }
   },
   actions : {
-    
+
   }
 })
 

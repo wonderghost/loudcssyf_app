@@ -7,13 +7,13 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="user in users" :key="user.username">
+      <tr v-for="user in filteredUser" :key="user.username">
         <td v-for="column in user">{{column}}</td>
         <td> <a :href="userEditLink+'/'+user.username" :id="user.username" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small">editer</a> </td>
         <td> <a href="#" :id="user.username" class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small">reset</a> </td>
         <td>
            <a href="#" v-if="user.status === 'unblocked'" :id="user.username" class="uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small">bloquer</a>
-           <a href="#" v-if="user.status === 'blocked'" :id="user.username" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small">debloquer</a> 
+           <a href="#" v-else :id="user.username" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small">debloquer</a>
          </td>
       </tr>
     </tbody>
@@ -44,6 +44,11 @@
       computed : {
         users () {
           return this.$store.state.users
+        },
+        filteredUser() {
+          return this.users.filter((user) => {
+            return user.localisation.toUpperCase().match(this.$store.state.searchText.toUpperCase())
+          })
         }
       }
     }

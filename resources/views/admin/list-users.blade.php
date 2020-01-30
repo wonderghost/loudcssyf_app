@@ -4,6 +4,8 @@
 	<div class="uk-container uk-container-large">
 		<h3><a href="{{url('/admin')}}" uk-tooltip="tableau de bord" uk-icon="icon:arrow-left;ratio:1.5"></a> Tous les utilisateurs</h3>
 		<hr class="uk-divider-small"></hr>
+
+		<filter-user-component></filter-user-component>
 		<user-component></user-component>
 	</div>
 </div>
