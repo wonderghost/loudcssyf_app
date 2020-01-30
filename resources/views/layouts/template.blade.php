@@ -547,11 +547,12 @@
 <script type="text/javascript" src="{{asset('js/uikit.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/uikit-icons.min.js')}}"></script>
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.js"></script> -->
+<script src="{{ mix('js/app.js') }}" charset="utf-8"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js"></script>
 <script type="text/javascript" src="{{asset('js/myscript.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/myscript_second.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/myscript_third.js')}}"></script>
-<script src="{{ mix('js/app.js') }}" charset="utf-8"></script>
+<script src="{{ mix('js/store.js') }}" charset="utf-8"></script>
 <script type="text/javascript">
 	$(function () {
 		$('form').on('submit',function (e) {

@@ -12,7 +12,7 @@
     "devDependencies": {
         "axios": "^0.19.2",
         "cross-env": "^5.1",
-        "jquery": "^3.2",
+        "jquery": "^3.4.1",
         "laravel-mix": "^5.0.1",
         "lodash": "^4.17.4",
         "resolve-url-loader": "^3.1.0",
@@ -22,6 +22,7 @@
     },
     "dependencies": {
         "uikit": "^3.3.0",
+        "uikit-icons": "^0.5.0",
         "vue": "^2.6.11",
         "vuex": "^3.1.2"
     }
