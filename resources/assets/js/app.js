@@ -15,7 +15,8 @@ window.$ = window.jQuery = require('jquery')
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('example-component', require('./components/ExampleComponent.vue'));
+Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('user-component',require('./components/UserComponent.vue').default)
 
 import Vue from 'vue'
 import Vuex from 'vuex'

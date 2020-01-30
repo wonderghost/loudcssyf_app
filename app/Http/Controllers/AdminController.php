@@ -145,21 +145,15 @@ class AdminController extends Controller
 
     public function getListUsers(Request $request) {
       try {
-        if($request->input('ref-0') !== "all") {
-          $users = User::where('type','<>','admin')->where('type',$request->input('ref-0'))->orderBy('localisation','desc')->get();
-        } else {
-          $users = User::where('type','<>','admin')->orderBy('localisation','desc')->get();
-        }
+        $users = User::where('type','<>','admin')->orderBy('localisation','desc')->get();
         $userCollection = collect([]);
-
         foreach ($users as $key => $element) {
           $userCollection->prepend($element->only(['username','type','email','phone','localisation','status']));
-          // $userCollection->prepend($element->agence()->societe,'agence');
         }
         return response()->json($userCollection);
       } catch (AppException $e) {
         header("Unprocessable entity",true,422);
-        die($e->getMessage());
+        die(json_encode($e->getMessage()));
       }
 
     }

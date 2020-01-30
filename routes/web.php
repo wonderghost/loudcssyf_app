@@ -67,7 +67,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/add-user','AdminController@getFormUser');
 	Route::post('/admin/add-user','AdminController@addUser');
 	Route::get('/admin/list-users','AdminController@listUser');
-	Route::post('/admin/users/list','AdminController@getListUsers');
+	Route::get('/admin/users/list','AdminController@getListUsers');
 
 	Route::get('/admin/add-depot','LogistiqueController@makeDepot');
 	Route::post("/admin/add-depot",'LogistiqueController@addDepot');

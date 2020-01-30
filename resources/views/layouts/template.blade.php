@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html onselectstart="return false" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;">
+<!-- <html onselectstart="return false" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;"> -->
 <html>
 <head>
 	<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-130660555-4"></script>
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-130660555-4"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
   gtag('config', 'UA-130660555-4');
-</script>
+</script> -->
 
 	<title>{{config('app.name')}}-@yield('title')</title>
 			<meta charset="utf-8">
@@ -547,13 +547,13 @@
 <!-- UIkit JS -->
 <script type="text/javascript" src="{{asset('js/uikit.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/uikit-icons.min.js')}}"></script>
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.js"></script> -->
-<script src="{{ mix('js/app.js') }}" charset="utf-8"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js"></script>
 <script type="text/javascript" src="{{asset('js/myscript.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/myscript_second.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/myscript_third.js')}}"></script>
-<script src="{{ mix('js/store.js') }}" charset="utf-8"></script>
+<script src="{{ mix('js/app.js') }}" ></script>
+<script src="{{ mix('js/store.js') }}" ></script>
+<script src="{{ mix('js/echo.js') }}" ></script>
 <script type="text/javascript">
 	$(function () {
 		$('form').on('submit',function (e) {
