@@ -8,16 +8,22 @@ const store = new Vuex.Store({
   state : {
     users : [],
     filtedredUser : [],
-    searchText : ""
+    searchText : "",
+    typeUser : "",
+    searchState : true
   },
   mutations : {
     searchText (state , word) {
+      state.searchState = true
       state.searchText = word
+    },
+    filterUsers (state , type ) {
+      state.searchState = false
+      state.typeUser = type
     }
   },
   actions : {
 
   }
 })
-
 export default store

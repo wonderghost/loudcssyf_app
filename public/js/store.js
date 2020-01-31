@@ -13660,11 +13660,18 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
   state: {
     users: [],
     filtedredUser: [],
-    searchText: ""
+    searchText: "",
+    typeUser: "",
+    searchState: true
   },
   mutations: {
     searchText: function searchText(state, word) {
+      state.searchState = true;
       state.searchText = word;
+    },
+    filterUsers: function filterUsers(state, type) {
+      state.searchState = false;
+      state.typeUser = type;
     }
   },
   actions: {}

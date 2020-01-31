@@ -6,8 +6,8 @@
     </div>
   <div class="">
     <label for=""> <span uk-icon="icon : users"></span> Vendeurs</label>
-    <select class="uk-select uk-border-rounded uk-box-shadow-hover-small" name="">
-      <option value="all">tous</option>
+    <select @change="filterUserByType(type)" v-model="type" class="uk-select uk-border-rounded uk-box-shadow-hover-small" name="">
+      <option value="">tous</option>
       <option v-for="(type , key) in userType"  :value="key"> {{type}} </option>
     </select>
   </div>
@@ -33,13 +33,17 @@
               'coursier' : 'coursier',
               'controleur' : 'controleur'
             },
-            wordSearch : ""
+            wordSearch : "",
+            type : ""
           }
         }
         ,
         methods : {
           search (text) {
             this.$store.commit('searchText',text)
+          },
+          filterUserByType (type) {
+            this.$store.commit('filterUsers',type)
           }
         },
         computed : {

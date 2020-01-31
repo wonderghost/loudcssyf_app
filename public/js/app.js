@@ -1973,12 +1973,16 @@ __webpack_require__.r(__webpack_exports__);
         'coursier': 'coursier',
         'controleur': 'controleur'
       },
-      wordSearch: ""
+      wordSearch: "",
+      type: ""
     };
   },
   methods: {
     search: function search(text) {
       this.$store.commit('searchText', text);
+    },
+    filterUserByType: function filterUserByType(type) {
+      this.$store.commit('filterUsers', type);
     }
   },
   computed: {
@@ -2049,7 +2053,11 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       return this.users.filter(function (user) {
-        return user.localisation.toUpperCase().match(_this.$store.state.searchText.toUpperCase());
+        if (_this.$store.state.searchState) {
+          return user.localisation.toUpperCase().match(_this.$store.state.searchText.toUpperCase());
+        } else {
+          return user.type.match(_this.$store.state.typeUser);
+        }
       });
     }
   }
@@ -13236,12 +13244,40 @@ var render = function() {
         _c(
           "select",
           {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.type,
+                expression: "type"
+              }
+            ],
             staticClass:
               "uk-select uk-border-rounded uk-box-shadow-hover-small",
-            attrs: { name: "" }
+            attrs: { name: "" },
+            on: {
+              change: [
+                function($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function(o) {
+                      return o.selected
+                    })
+                    .map(function(o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.type = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                },
+                function($event) {
+                  return _vm.filterUserByType(_vm.type)
+                }
+              ]
+            }
           },
           [
-            _c("option", { attrs: { value: "all" } }, [_vm._v("tous")]),
+            _c("option", { attrs: { value: "" } }, [_vm._v("tous")]),
             _vm._v(" "),
             _vm._l(_vm.userType, function(type, key) {
               return _c("option", { domProps: { value: key } }, [
@@ -26863,11 +26899,18 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
   state: {
     users: [],
     filtedredUser: [],
-    searchText: ""
+    searchText: "",
+    typeUser: "",
+    searchState: true
   },
   mutations: {
     searchText: function searchText(state, word) {
+      state.searchState = true;
       state.searchText = word;
+    },
+    filterUsers: function filterUsers(state, type) {
+      state.searchState = false;
+      state.typeUser = type;
     }
   },
   actions: {}

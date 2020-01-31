@@ -47,7 +47,11 @@
         },
         filteredUser() {
           return this.users.filter((user) => {
-            return user.localisation.toUpperCase().match(this.$store.state.searchText.toUpperCase())
+            if(this.$store.state.searchState) {
+              return user.localisation.toUpperCase().match(this.$store.state.searchText.toUpperCase())
+            } else {
+              return user.type.match(this.$store.state.typeUser)
+            }
           })
         }
       }
