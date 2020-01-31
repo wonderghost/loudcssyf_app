@@ -21,8 +21,10 @@ Vue.component('filter-user-component',require('./components/FilterComponentUser.
 
 import Vue from 'vue'
 import Vuex from 'vuex'
+import Vuikit from 'vuikit'
 import store from './store'
 
+Vue.use(Vuikit)
 Vue.use(Vuex)
 
 const app = new Vue({

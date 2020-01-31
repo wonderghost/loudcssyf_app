@@ -303,16 +303,27 @@ class AdminController extends Controller
     }
 
     public function blockUser(Request $request) {
-        $user = User::select()->where('username',$request->input('ref'))->first();
-        $user->status = 'blocked';
-        $user->save();
-        return response()->json('done');
+      try {
+          $user = User::select()->where('username',$request->input('ref'))->first();
+          $user->status = 'blocked';
+          $user->save();
+          return response()->json('done');
+      } catch (AppException $e) {
+          header("Erreur!",true,422);
+          die(jsone_encode($e->getMessage()));
+      }
     }
     public function unblockUser(Request $request) {
+      try {
         $user = User::select()->where('username',$request->input('ref'))->first();
         $user->status = 'unblocked';
         $user->save();
         return response()->json('done');
+      }
+      catch (AppException $e) {
+        header("Erreur!",true,422);
+        die(json_encode($e->getMessage()));
+      }
     }
     // liste de tous les depots
     public function listDepot() {
@@ -644,7 +655,7 @@ class AdminController extends Controller
         throw new AppException("Mot de passe incorrect!");
       }
     } catch (AppException $e) {
-      header("Unprocessible entity",true,422);
+      header("Erreur!",true,422);
       die(json_encode($e->getMessage()));
     }
   }

@@ -1,4 +1,6 @@
 <template>
+<div class="">
+
   <table  class="uk-table uk-table-divider uk-table-striped uk-table-small uk-table-hover">
     <thead>
       <tr>
@@ -9,15 +11,38 @@
     <tbody>
       <tr v-for="user in filteredUser" :key="user.username">
         <td v-for="column in user">{{column}}</td>
-        <td> <a :href="userEditLink+'/'+user.username" :id="user.username" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small">editer</a> </td>
-        <td> <a href="#" :id="user.username" class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small">reset</a> </td>
+        <td> <a :href="userEditLink+'/'+user.username" :id="user.username" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-text-capitalize uk-box-shadow-small">editer <span uk-icon="icon : pencil"></span> </a> </td>
+        <td> <button uk-toggle="target : #reset-modal" @click="userToReset = user.localisation" :id="user.username" class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small uk-text-capitalize">reset <span uk-icon="icon : refresh"></span> </button> </td>
         <td>
-           <a href="#" v-if="user.status === 'unblocked'" :id="user.username" class="uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small">bloquer</a>
-           <a href="#" v-else :id="user.username" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small">debloquer</a>
+           <button @click="blockUser(user.username)" v-if="user.status === 'unblocked'" :id="user.username" class="uk-button uk-button-small uk-button-danger uk-text-capitalize uk-border-rounded uk-box-shadow-small">bloquer <span uk-icon="icon : lock"></span> </button>
+           <button @click="unblockUser(user.username)" v-else :id="user.username" class="uk-button uk-button-small uk-button-default uk-alert-success uk-text-capitalize uk-border-rounded uk-box-shadow-small">debloquer <span uk-icon="icon : unlock"></span> </button>
          </td>
       </tr>
     </tbody>
   </table>
+
+  <div id="reset-modal" uk-modal="esc-close : false ; bg-close : false">
+    <div class="uk-modal-dialog">
+        <div class="uk-modal-header">
+            <h3 class="uk-modal-title">Reinitialisation de Mot de Passe</h3>
+            <p>Vous etes sur le point de reinitialiser le mot de passe pour : <span class="uk-text-bold">{{ userToReset }}</span> </p>
+        </div>
+        <div class="uk-modal-body">
+          <form :action="userResetLink"  method="post" @submit="resetUser($event)">
+            <input type="hidden" name="username" :value="userId">
+            <div class="uk-margin-small">
+              <label for="">Confirmez votre mot de passe</label>
+              <input type="password" name="admin_passwowrd" value="" class="uk-input uk-border-rounded uk-box-shadow-hover-small" autofocus placeholder="Entrez votre mot de passe">
+            </div>
+            <button class="uk-button uk-button-primary uk-button-small uk-border-rounded uk-box-shadow-small" type="submit">validez</button>
+          </form>
+        </div>
+        <div class="uk-modal-footer uk-text-right">
+          <button class="uk-button uk-button-danger uk-button-small uk-border-rounded uk-box-shadow-small uk-modal-close" type="button">annuler</button>
+        </div>
+    </div>
+</div>
+</div>
 </template>
 
 <script>
@@ -28,7 +53,12 @@
       data :function () {
         return {
           tableHeader : ['username','type','email','phone','agence','status'],
-          userEditLink : "/admin/edit-users"
+          userEditLink : "/admin/edit-users",
+          userBlockLink : "/admin/block-user",
+          userUnblockLink : '/admin/unblock-user',
+          userResetLink : "/admin/reset-user",
+          userToReset : "",
+          userId : ""
         }
       },
       methods : {
@@ -37,8 +67,42 @@
           axios.get('/admin/users/list').then(function (response) {
             tmp.$store.state.users = response.data
            }).catch(function (error) {
-             console.log(error)
+             alert(error)
            })
+        },
+        resetUser : function (event) {
+          event.preventDefault()
+          
+
+        }
+        ,
+        blockUser : function (username) {
+          let link = this.userBlockLink
+          UIkit.modal.confirm("Etes vous sur de vouloir effectuer cette action ?").then(function () {
+            axios.post(link,{
+              ref : username
+            }).then(function (response) {
+              UIkit.modal.alert("Utilisateur bloque avec success!").then(function () {
+                location.reload()
+              })
+            }).catch(function (error) {
+              console.log(error)
+            })
+          })
+        },
+        unblockUser : function (username) {
+          let link = this.userUnblockLink
+          UIkit.modal.confirm("Etes-vous sur de vouloir effectuer cette action ?").then(function () {
+            axios.post(link , {
+              ref : username
+            }).then(function (response) {
+              UIkit.modal.alert("Utilisateur debloque avec success!").then(function () {
+                location.reload()
+              })
+            }).catch(function (error) {
+              console.log(error)
+            })
+          })
         }
       },
       computed : {

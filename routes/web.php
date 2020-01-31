@@ -89,7 +89,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/history-depot','LogistiqueController@historyDepot');
 	Route::post('/admin/history-depot','LogistiqueController@getHistoryDepot');
 	// Reinitialiser un utilisateur
-	Route::post('admin/reset-user','AdminController@resetUser');
+	Route::post('/admin/reset-user','AdminController@resetUser');
 	// liste des depots
 	Route::get('/admin/list-depot','AdminController@listDepot');
 	//

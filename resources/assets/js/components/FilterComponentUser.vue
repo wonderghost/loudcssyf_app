@@ -1,4 +1,5 @@
 <template>
+
   <div class="uk-child-width-1-4@m" uk-grid>
     <div class="">
       <label for=""> <span uk-icon="icon : search"></span> Recherche</label>
@@ -12,9 +13,10 @@
     </select>
   </div>
   <div class="">
-    <p class="uk-text-bold">Resultat de recherche pour : {{wordSearch}}</p>
+    <p class="uk-text-bold">Resultat de recherche pour : <span v-if="wordSearch !== ''"> {{wordSearch}} </span><span v-else> {{type}}</span>   </p>
   </div>
 </div>
+
 </template>
 
 <script>
