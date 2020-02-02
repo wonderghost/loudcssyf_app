@@ -32,7 +32,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/afrocash/apport','AdminController@apportCapital');
 	Route::get('/admin/afrocash/all-transactions','CreditController@allTransactionAfrocash');
 	// recuperation des soldes vendeurs
-	Route::post('/admin/get-soldes','CreditController@getSoldesVendeurs');
+	Route::get('/admin/get-soldes','CreditController@getSoldesVendeurs');
 	// etat depot Central
 	Route::get('/admin/depot-central','AdminController@etatDepotCentral');
 	Route::post('/admin/depot-central','AdminController@getEtatDepotCentral');

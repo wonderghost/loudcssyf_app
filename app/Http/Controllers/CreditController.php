@@ -52,12 +52,7 @@ class CreditController extends Controller
 
      // AJOUTER UN COMPTE
     public function addAccount() {
-    	$credits = Credit::all();
-			$total = 0;
-			foreach ($credits as $key => $value) {
-				$total+=$value->solde;
-			}
-        return view('admin.add-account-credit')->withCredit($credits)->withTotal($total);
+      return view('admin.add-account-credit');
     }
 
 		public function getGlobalSolde(Credit $credit) {

@@ -43,7 +43,25 @@
         </div>
       </li>
       <li>
-
+        <!-- <div class="uk-width-1-2@m">
+          <label for=""> <span uk-icon="icon : search"></span> Recherche</label>
+          <input type="text" name="" value="" class="uk-input uk-border-rounded uk-box-shadow-hover-small" placeholder="Recherche rapide ...">
+        </div> -->
+        <filter-user-component></filter-user-component>
+        <div class="">
+          <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+  					<thead>
+  						<tr>
+  							<th v-for="head in soldeVendeurs"> {{head}} </th>
+  						</tr>
+  					</thead>
+  					<tbody>
+              <tr v-for="vendeur in soldeVendeur">
+                <td v-for="column in vendeur">{{ column }}</td>
+              </tr>
+            </tbody>
+  				</table>
+        </div>
       </li>
     </ul>
   </div>
@@ -53,6 +71,7 @@
     export default {
         mounted() {
           this.getSolde()
+          this.getsoldeVendeurs()
         },
         data () {
           return {
@@ -66,13 +85,15 @@
             typeCredit : "",
             creditAccountUrl : "/admin/add-account-credit",
             errors : [],
-            requestState : false
+            requestState : false,
+            soldeVendeurs : ['vendeurs','type','afrocash courant','afrocash grossiste','cga','rex']
           }
         }
         ,
         methods : {
           getSolde : async function () {
             try {
+              this.soldes.total = 0
               let response = await axios.get('/admin/get-global-solde')
               response.data.forEach(element => {
                 if(element.designation == 'cga') {
@@ -87,7 +108,17 @@
             } catch (error) {
               console.log(error)
             }
-          },
+          }
+          ,
+          getsoldeVendeurs : async function () {
+            try {
+              let response = await axios.get('/admin/get-soldes')
+              this.$store.state.soldeVendeur = response.data
+            } catch (error) {
+              console.log(error)
+            }
+          }
+          ,
           crediterAccount : async function (event) {
             event.preventDefault()
 
@@ -118,6 +149,18 @@
         computed : {
           myToken() {
             return this.$store.state.myToken
+          },
+          soldeVendeur () {
+            // return this.$store.state.soldeVendeur
+            return this.$store.state.soldeVendeur.filter( (user) => {
+              if(this.$store.state.searchState) {
+                // recherche rapide
+                return user.vendeurs.toUpperCase().match(this.$store.state.searchText.toUpperCase())
+              } else {
+                // filtre
+                return user.type.match(this.$store.state.typeUser)
+              }
+            })
           }
         }
     }

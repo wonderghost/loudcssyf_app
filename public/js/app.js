@@ -1979,9 +1979,28 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     this.getSolde();
+    this.getsoldeVendeurs();
   },
   data: function data() {
     return {
@@ -1995,7 +2014,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       typeCredit: "",
       creditAccountUrl: "/admin/add-account-credit",
       errors: [],
-      requestState: false
+      requestState: false,
+      soldeVendeurs: ['vendeurs', 'type', 'afrocash courant', 'afrocash grossiste', 'cga', 'rex']
     };
   },
   methods: {
@@ -2011,10 +2031,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context.prev = _context.next) {
               case 0:
                 _context.prev = 0;
-                _context.next = 3;
+                this.soldes.total = 0;
+                _context.next = 4;
                 return axios.get('/admin/get-global-solde');
 
-              case 3:
+              case 4:
                 response = _context.sent;
                 response.data.forEach(function (element) {
                   if (element.designation == 'cga') {
@@ -2027,20 +2048,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                   _this.soldes.total += element.solde;
                 });
-                _context.next = 10;
+                _context.next = 11;
                 break;
 
-              case 7:
-                _context.prev = 7;
+              case 8:
+                _context.prev = 8;
                 _context.t0 = _context["catch"](0);
                 console.log(_context.t0);
 
-              case 10:
+              case 11:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[0, 7]]);
+        }, _callee, this, [[0, 8]]);
       }));
 
       function getSolde() {
@@ -2049,25 +2070,63 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       return getSolde;
     }(),
-    crediterAccount: function () {
-      var _crediterAccount = _asyncToGenerator(
+    getsoldeVendeurs: function () {
+      var _getsoldeVendeurs = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(event) {
-        var response, errorTab, prop;
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var response;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
+                _context2.prev = 0;
+                _context2.next = 3;
+                return axios.get('/admin/get-soldes');
+
+              case 3:
+                response = _context2.sent;
+                this.$store.state.soldeVendeur = response.data;
+                _context2.next = 10;
+                break;
+
+              case 7:
+                _context2.prev = 7;
+                _context2.t0 = _context2["catch"](0);
+                console.log(_context2.t0);
+
+              case 10:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this, [[0, 7]]);
+      }));
+
+      function getsoldeVendeurs() {
+        return _getsoldeVendeurs.apply(this, arguments);
+      }
+
+      return getsoldeVendeurs;
+    }(),
+    crediterAccount: function () {
+      var _crediterAccount = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(event) {
+        var response, errorTab, prop;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
                 event.preventDefault();
-                _context2.prev = 1;
-                _context2.next = 4;
+                _context3.prev = 1;
+                _context3.next = 4;
                 return axios.post(this.creditAccountUrl, {
                   compte: this.typeCredit,
                   montant: this.montantCredit
                 });
 
               case 4:
-                response = _context2.sent;
+                response = _context3.sent;
 
                 if (response.data == 'done') {
                   $("#loader").hide();
@@ -2076,30 +2135,30 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   this.getSolde();
                 }
 
-                _context2.next = 12;
+                _context3.next = 12;
                 break;
 
               case 8:
-                _context2.prev = 8;
-                _context2.t0 = _context2["catch"](1);
+                _context3.prev = 8;
+                _context3.t0 = _context3["catch"](1);
                 $("#loader").hide();
 
-                if (_context2.t0.response.data.errors) {
-                  errorTab = _context2.t0.response.data.errors;
+                if (_context3.t0.response.data.errors) {
+                  errorTab = _context3.t0.response.data.errors;
 
                   for (prop in errorTab) {
                     this.errors.push(errorTab[prop][0]);
                   }
                 } else {
-                  this.errors.push(_context2.t0.response.data);
+                  this.errors.push(_context3.t0.response.data);
                 }
 
               case 12:
               case "end":
-                return _context2.stop();
+                return _context3.stop();
             }
           }
-        }, _callee2, this, [[1, 8]]);
+        }, _callee3, this, [[1, 8]]);
       }));
 
       function crediterAccount(_x) {
@@ -2112,6 +2171,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   computed: {
     myToken: function myToken() {
       return this.$store.state.myToken;
+    },
+    soldeVendeur: function soldeVendeur() {
+      var _this2 = this;
+
+      // return this.$store.state.soldeVendeur
+      return this.$store.state.soldeVendeur.filter(function (user) {
+        if (_this2.$store.state.searchState) {
+          // recherche rapide
+          return user.vendeurs.toUpperCase().match(_this2.$store.state.searchText.toUpperCase());
+        } else {
+          // filtre
+          return user.type.match(_this2.$store.state.typeUser);
+        }
+      });
     }
   }
 });
@@ -15392,7 +15465,48 @@ var render = function() {
         )
       ]),
       _vm._v(" "),
-      _c("li")
+      _c(
+        "li",
+        [
+          _c("filter-user-component"),
+          _vm._v(" "),
+          _c("div", {}, [
+            _c(
+              "table",
+              {
+                staticClass:
+                  "uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small"
+              },
+              [
+                _c("thead", [
+                  _c(
+                    "tr",
+                    _vm._l(_vm.soldeVendeurs, function(head) {
+                      return _c("th", [_vm._v(" " + _vm._s(head) + " ")])
+                    }),
+                    0
+                  )
+                ]),
+                _vm._v(" "),
+                _c(
+                  "tbody",
+                  _vm._l(_vm.soldeVendeur, function(vendeur) {
+                    return _c(
+                      "tr",
+                      _vm._l(vendeur, function(column) {
+                        return _c("td", [_vm._v(_vm._s(column))])
+                      }),
+                      0
+                    )
+                  }),
+                  0
+                )
+              ]
+            )
+          ])
+        ],
+        1
+      )
     ])
   ])
 }
@@ -36922,6 +37036,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
 var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
   state: {
     users: [],
+    soldeVendeur: [],
     filtedredUser: [],
     searchText: "",
     typeUser: "",
