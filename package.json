@@ -22,10 +22,12 @@
     },
     "dependencies": {
         "laravel-echo": "^1.6.1",
+        "numeral": "^2.0.6",
         "pusher-js": "^5.0.3",
         "uikit": "^3.3.0",
         "uikit-icons": "^0.5.0",
         "vue": "^2.6.11",
+        "vue-filter-number-format": "^2.0.0",
         "vuex": "^3.1.2",
         "vuikit": "^0.8.10"
     }

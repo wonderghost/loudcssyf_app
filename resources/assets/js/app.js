@@ -14,18 +14,21 @@ window.$ = window.jQuery = require('jquery')
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
-
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
-Vue.component('user-component',require('./components/UserComponent.vue').default)
-Vue.component('filter-user-component',require('./components/FilterComponentUser.vue').default)
-
+// admin front end
+Vue.component('user-component',require('./adminComponents/UserComponent.vue').default)
+Vue.component('filter-user-component',require('./adminComponents/FilterComponentUser.vue').default)
+Vue.component('account',require('./adminComponents/AccountComponent.vue').default)
+// /
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Vuikit from 'vuikit'
+import numeral from 'numeral';
+import numFormat from 'vue-filter-number-format';
 import store from './store'
 
 Vue.use(Vuikit)
 Vue.use(Vuex)
+Vue.filter('numFormat', numFormat(numeral));
 
 const app = new Vue({
     el: '#app',

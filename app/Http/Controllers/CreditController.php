@@ -60,6 +60,9 @@ class CreditController extends Controller
         return view('admin.add-account-credit')->withCredit($credits)->withTotal($total);
     }
 
+		public function getGlobalSolde(Credit $credit) {
+			return $credit->all();
+		}
     //
     public function makeAddAccount(CreditRequest $request) {
 			try {
@@ -93,9 +96,12 @@ class CreditController extends Controller
 				} else {
 					$credit->save();
 				}
-				return redirect('/admin/add-account-credit')->with('success',"Compte $credit->designation Credité de ".number_format($credit->solde)." GNF !");
+				// return redirect('/admin/add-account-credit')->with('success',"Compte $credit->designation Credité de ".number_format($credit->solde)." GNF !");
+				return response()
+					->json('done');
 			} catch (AppException $e) {
-					return back()->with('_error',$e->getMessage());
+					header("Erreur!",true,422);
+					die(json_encode($e->getMessage()));
 			}
     }
 

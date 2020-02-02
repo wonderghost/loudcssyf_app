@@ -58,6 +58,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/formule','AdminController@addFormule');
 	// creation des comptes de credit
 	Route::get('/admin/add-account-credit','CreditController@addAccount');
+	Route::get('admin/get-global-solde','CreditController@getGlobalSolde');
 	Route::post('/admin/add-account-credit','CreditController@makeAddAccount');
 
 	// admin routing
