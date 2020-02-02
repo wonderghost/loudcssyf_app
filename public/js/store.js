@@ -13662,7 +13662,8 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     filtedredUser: [],
     searchText: "",
     typeUser: "",
-    searchState: true
+    searchState: true,
+    myToken: document.querySelector("meta[name=csrf-token]").content
   },
   mutations: {
     searchText: function searchText(state, word) {

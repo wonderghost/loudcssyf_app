@@ -2052,6 +2052,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     this.listUser();
@@ -2064,7 +2070,9 @@ __webpack_require__.r(__webpack_exports__);
       userUnblockLink: '/admin/unblock-user',
       userResetLink: "/admin/reset-user",
       userToReset: "",
-      userId: ""
+      userId: "",
+      userPassword: "",
+      errorHandler: ""
     };
   },
   methods: {
@@ -2076,8 +2084,27 @@ __webpack_require__.r(__webpack_exports__);
         alert(error);
       });
     },
-    resetUser: function resetUser(event) {
+    resetUser: function resetUser(event, username) {
+      UIkit.modal($("#reset-modal")).hide();
       event.preventDefault();
+      var link = this.userResetLink;
+      var userPassword = this.userPassword;
+      var userId = this.userId;
+      axios.post(link, {
+        admin_password: userPassword,
+        user: userId
+      }).then(function (response) {
+        UIkit.modal.alert("Mot de passe reinitialise!").then(function () {
+          location.reload();
+        });
+      })["catch"](function (error) {
+        UIkit.modal($("#reset-modal")).show();
+        UIkit.notification({
+          message: error.response.data,
+          status: 'danger',
+          pos: 'top-center'
+        });
+      });
     },
     blockUser: function blockUser(username) {
       var link = this.userBlockLink;
@@ -2109,6 +2136,9 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   computed: {
+    myToken: function myToken() {
+      return this.$store.state.myToken;
+    },
     users: function users() {
       return this.$store.state.users;
     },
@@ -13471,12 +13501,13 @@ var render = function() {
                       },
                       on: {
                         click: function($event) {
-                          _vm.userToReset = user.localisation
+                          ;(_vm.userToReset = user.localisation),
+                            (_vm.userId = user.username)
                         }
                       }
                     },
                     [
-                      _vm._v("reset "),
+                      _vm._v(" reset "),
                       _c("span", { attrs: { "uk-icon": "icon : refresh" } })
                     ]
                   )
@@ -13557,7 +13588,6 @@ var render = function() {
             _c(
               "form",
               {
-                attrs: { action: _vm.userResetLink, method: "post" },
                 on: {
                   submit: function($event) {
                     return _vm.resetUser($event)
@@ -13566,11 +13596,79 @@ var render = function() {
               },
               [
                 _c("input", {
-                  attrs: { type: "hidden", name: "username" },
-                  domProps: { value: _vm.userId }
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.myToken,
+                      expression: "myToken"
+                    }
+                  ],
+                  attrs: { type: "hidden" },
+                  domProps: { value: _vm.myToken },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.myToken = $event.target.value
+                    }
+                  }
                 }),
                 _vm._v(" "),
-                _vm._m(0),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.userId,
+                      expression: "userId"
+                    }
+                  ],
+                  attrs: { type: "hidden" },
+                  domProps: { value: _vm.userId },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.userId = $event.target.value
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c("div", { staticClass: "uk-margin-small" }, [
+                  _c("label", { attrs: { for: "" } }, [
+                    _vm._v("Confirmez votre mot de passe")
+                  ]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.userPassword,
+                        expression: "userPassword"
+                      }
+                    ],
+                    staticClass:
+                      "uk-input uk-border-rounded uk-box-shadow-hover-small",
+                    attrs: {
+                      type: "password",
+                      autofocus: "",
+                      placeholder: "Entrez votre mot de passe"
+                    },
+                    domProps: { value: _vm.userPassword },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.userPassword = $event.target.value
+                      }
+                    }
+                  })
+                ]),
                 _vm._v(" "),
                 _c(
                   "button",
@@ -13585,34 +13683,13 @@ var render = function() {
             )
           ]),
           _vm._v(" "),
-          _vm._m(1)
+          _vm._m(0)
         ])
       ]
     )
   ])
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "uk-margin-small" }, [
-      _c("label", { attrs: { for: "" } }, [
-        _vm._v("Confirmez votre mot de passe")
-      ]),
-      _vm._v(" "),
-      _c("input", {
-        staticClass: "uk-input uk-border-rounded uk-box-shadow-hover-small",
-        attrs: {
-          type: "password",
-          name: "admin_passwowrd",
-          value: "",
-          autofocus: "",
-          placeholder: "Entrez votre mot de passe"
-        }
-      })
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -34664,7 +34741,8 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     filtedredUser: [],
     searchText: "",
     typeUser: "",
-    searchState: true
+    searchState: true,
+    myToken: document.querySelector("meta[name=csrf-token]").content
   },
   mutations: {
     searchText: function searchText(state, word) {

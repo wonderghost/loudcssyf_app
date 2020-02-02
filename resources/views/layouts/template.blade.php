@@ -562,7 +562,7 @@
 				top : 0
 			})
 			$("#loader").show()
-
+			
 		})
 
     $(".close-button").on('click',function () {

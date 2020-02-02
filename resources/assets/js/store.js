@@ -10,7 +10,8 @@ const store = new Vuex.Store({
     filtedredUser : [],
     searchText : "",
     typeUser : "",
-    searchState : true
+    searchState : true,
+    myToken : document.querySelector("meta[name=csrf-token]").content
   },
   mutations : {
     searchText (state , word) {
