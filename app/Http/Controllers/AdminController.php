@@ -35,6 +35,7 @@ use App\TransactionCreditCentral;
 use App\Exceptions\AppException;
 use App\Promo;
 use App\CommandMaterial;
+use App\Livraison;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
@@ -635,7 +636,16 @@ class AdminController extends Controller
       die(json_encode($e->getMessage()));
     }
   }
-  
+  public function getAllLivraison(Request $request) {
+    try {
+      return response()
+        ->json($this->organizeLivraison($this->livraisonRequest(new Livraison)));
+    } catch (AppException $e) {
+      header("Erreur!",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+
   // REINITIALISER UN UTILISATEUR
   public function resetUser(Request $request) {
     try {

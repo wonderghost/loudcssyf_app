@@ -14,9 +14,10 @@ const store = new Vuex.Store({
     searchState : true,
     myToken : document.querySelector("meta[name=csrf-token]").content,
     commandMaterial :[],
-    livraison :[],
+    livraisonMaterial :[],
     commandCredit :[],
-    typeCommand : 'en attente'
+    typeCommand : 'en attente',
+    statusLivraison : 'unlivred'
   },
   mutations : {
     searchText (state , word) {
@@ -29,6 +30,15 @@ const store = new Vuex.Store({
     },
     setTypeCommand (state , type) {
       state.typeCommand = type
+    },
+    setCommandMaterial (state,data) {
+      state.commandMaterial = data
+    },
+    setLivraisonMaterial (state,data) {
+      state.livraisonMaterial = data
+    },
+    setStateLivraison (state ,status) {
+      state.statusLivraison = status
     }
   },
   actions : {

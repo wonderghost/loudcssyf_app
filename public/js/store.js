@@ -13666,9 +13666,10 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     searchState: true,
     myToken: document.querySelector("meta[name=csrf-token]").content,
     commandMaterial: [],
-    livraison: [],
+    livraisonMaterial: [],
     commandCredit: [],
-    typeCommand: 'en attente'
+    typeCommand: 'en attente',
+    statusLivraison: 'unlivred'
   },
   mutations: {
     searchText: function searchText(state, word) {
@@ -13681,6 +13682,15 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     },
     setTypeCommand: function setTypeCommand(state, type) {
       state.typeCommand = type;
+    },
+    setCommandMaterial: function setCommandMaterial(state, data) {
+      state.commandMaterial = data;
+    },
+    setLivraisonMaterial: function setLivraisonMaterial(state, data) {
+      state.livraisonMaterial = data;
+    },
+    setStateLivraison: function setStateLivraison(state, status) {
+      state.statusLivraison = status;
     }
   },
   actions: {}

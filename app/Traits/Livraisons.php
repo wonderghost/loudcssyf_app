@@ -214,8 +214,6 @@ public function inventaireLivraison() {
 
   public function organizeLivraison($livraison) {
     $all=[];
-    $files = [];
-    $ids = [];
     foreach ($livraison as $key => $value) {
       $date = new Carbon($value->created_at);
 
@@ -225,21 +223,12 @@ public function inventaireLivraison() {
         'produit' =>  $value->produits()->libelle,
         'command' =>  $value->ravitaillementVendeurs()->commands,
         'quantite'  =>  $value->quantite,
-        'status'  =>  $value->status == 'unlivred'  ? "En attente de livraison" : "Livraison effectuee",
-      ];
-      $files[$key] = [
-        'filename'  =>  $value->serialFile()
-      ];
-
-      $ids[$key]  = [
+        'status'  =>  $value->status,
+        'filename'  =>  url('livraison_serial_files').'/'.$value->serialFile(),
         'id'  =>  $value->id
       ];
     }
-    return response()->json([
-      'all' =>  $all,
-      'file'  =>  $files,
-      'ids' =>  $ids
-    ]);
+    return response()->json($all);
   }
 
   public function getListLivraisonValidee(Request $request) {
@@ -261,6 +250,11 @@ public function inventaireLivraison() {
         ->where('with_serial',1)->get())
         ->whereIn('ravitaillement',RavitaillementVendeur::select('id_ravitaillement')->where('livraison','non_confirmer')->get())->get();
     }
+  }
+
+  public function livraisonRequest(Livraison $l) {
+    return $l->whereIn('produits',Produits::select('reference')
+              ->where('with_serial',1)->get())->get();
   }
 
   public function getSerialInFileText($filename) {

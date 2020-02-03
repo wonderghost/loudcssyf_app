@@ -2248,9 +2248,39 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     this.getMaterialCommande();
+    this.getLivraisonMaterial();
   },
   data: function data() {
     return {
@@ -2276,7 +2306,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 response = _context.sent;
 
                 if (response.data.length) {
-                  this.$store.state.commandMaterial = response.data;
+                  this.$store.commit('setCommandMaterial', response.data);
                 }
 
                 _context.next = 10;
@@ -2285,7 +2315,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 7:
                 _context.prev = 7;
                 _context.t0 = _context["catch"](0);
-                console.log(_context.t0);
+                alert(_context.t0);
 
               case 10:
               case "end":
@@ -2301,8 +2331,49 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       return getMaterialCommande;
     }(),
+    getLivraisonMaterial: function () {
+      var _getLivraisonMaterial = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.prev = 0;
+                _context2.next = 3;
+                return axios.get('/admin/commandes/livraison');
+
+              case 3:
+                response = _context2.sent;
+                this.$store.commit('setLivraisonMaterial', response.data.original);
+                _context2.next = 10;
+                break;
+
+              case 7:
+                _context2.prev = 7;
+                _context2.t0 = _context2["catch"](0);
+                alert(_context2.t0);
+
+              case 10:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this, [[0, 7]]);
+      }));
+
+      function getLivraisonMaterial() {
+        return _getLivraisonMaterial.apply(this, arguments);
+      }
+
+      return getLivraisonMaterial;
+    }(),
     filterCommande: function filterCommande(type) {
       this.$store.commit('setTypeCommand', type);
+    },
+    filterLivraison: function filterLivraison(status) {
+      this.$store.commit('setStateLivraison', status);
     }
   },
   computed: {
@@ -2321,6 +2392,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     typeCommand: function typeCommand() {
       return this.$store.state.typeCommand;
+    },
+    livraisonMaterial: function livraisonMaterial() {
+      var _this2 = this;
+
+      // return this.$store.state.livraisonMaterial
+      return this.livraisonM.filter(function (liv) {
+        return liv.status === _this2.statusLivraison;
+      });
+    },
+    livraisonM: function livraisonM() {
+      return this.$store.state.livraisonMaterial;
+    },
+    statusLivraison: function statusLivraison() {
+      return this.$store.state.statusLivraison;
     }
   }
 });
@@ -15846,7 +15931,129 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
-      _c("li"),
+      _c("li", [
+        _c(
+          "ul",
+          {
+            staticClass: "uk-tab",
+            attrs: { "uk-switcher": "animation : uk-animation-slide-right" }
+          },
+          [
+            _c("li", [
+              _c(
+                "a",
+                {
+                  attrs: { href: "#" },
+                  on: {
+                    click: function($event) {
+                      return _vm.filterLivraison("unlivred")
+                    }
+                  }
+                },
+                [_vm._v("en attente de validation")]
+              )
+            ]),
+            _vm._v(" "),
+            _c("li", [
+              _c(
+                "a",
+                {
+                  attrs: { href: "#" },
+                  on: {
+                    click: function($event) {
+                      return _vm.filterLivraison("livred")
+                    }
+                  }
+                },
+                [_vm._v("deja validee")]
+              )
+            ])
+          ]
+        ),
+        _vm._v(" "),
+        _c("div", {}, [
+          _c(
+            "table",
+            {
+              staticClass:
+                "uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover"
+            },
+            [
+              _c("thead", [
+                _c(
+                  "tr",
+                  _vm._l(_vm.livraison, function(head) {
+                    return _c("th", [_vm._v(_vm._s(head))])
+                  }),
+                  0
+                )
+              ]),
+              _vm._v(" "),
+              _c(
+                "tbody",
+                _vm._l(_vm.livraisonMaterial, function(livraison) {
+                  return _c("tr", [
+                    _c("td", [_vm._v(_vm._s(livraison.date))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(livraison.vendeur))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(livraison.produit))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(livraison.command))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(livraison.quantite))]),
+                    _vm._v(" "),
+                    livraison.status == "livred"
+                      ? _c("td", { staticClass: "uk-text-success" }, [
+                          _vm._v(_vm._s(livraison.status))
+                        ])
+                      : _c("td", { staticClass: "uk-text-danger" }, [
+                          _vm._v(_vm._s(livraison.status))
+                        ]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _vm.typeUser == "logistique"
+                        ? _c(
+                            "a",
+                            {
+                              staticClass:
+                                "uk-button uk-button-small uk-button-primary uk-text-capitalize uk-border-rounded uk-box-shadow-small",
+                              attrs: { href: "#" }
+                            },
+                            [
+                              _vm._v("validez "),
+                              _c("span", {
+                                attrs: { "uk-icon": "icon : check" }
+                              })
+                            ]
+                          )
+                        : _vm._e(),
+                      _vm._v(" "),
+                      livraison.status == "livred"
+                        ? _c(
+                            "a",
+                            {
+                              staticClass:
+                                "uk-button uk-button-small uk-button-default uk-text-capitalize uk-border-rounded uk-box-shadow-small",
+                              attrs: { download: "", href: livraison.filename }
+                            },
+                            [
+                              _vm._v("details "),
+                              _c("span", {
+                                attrs: { "uk-icon": "icon : more" }
+                              })
+                            ]
+                          )
+                        : _vm._e()
+                    ])
+                  ])
+                }),
+                0
+              )
+            ]
+          )
+        ])
+      ]),
       _vm._v(" "),
       _c("li")
     ])
@@ -15861,7 +16068,7 @@ var staticRenderFns = [
       "ul",
       {
         staticClass: "uk-subnav uk-subnav-pill",
-        attrs: { "uk-switcher": "animation: uk-animation-fade" }
+        attrs: { "uk-switcher": "animation: uk-animation-slide-bottom" }
       },
       [
         _c("li", [
@@ -37450,9 +37657,10 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     searchState: true,
     myToken: document.querySelector("meta[name=csrf-token]").content,
     commandMaterial: [],
-    livraison: [],
+    livraisonMaterial: [],
     commandCredit: [],
-    typeCommand: 'en attente'
+    typeCommand: 'en attente',
+    statusLivraison: 'unlivred'
   },
   mutations: {
     searchText: function searchText(state, word) {
@@ -37465,6 +37673,15 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     },
     setTypeCommand: function setTypeCommand(state, type) {
       state.typeCommand = type;
+    },
+    setCommandMaterial: function setCommandMaterial(state, data) {
+      state.commandMaterial = data;
+    },
+    setLivraisonMaterial: function setLivraisonMaterial(state, data) {
+      state.livraisonMaterial = data;
+    },
+    setStateLivraison: function setStateLivraison(state, status) {
+      state.statusLivraison = status;
     }
   },
   actions: {}

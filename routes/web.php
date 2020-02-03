@@ -16,6 +16,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	// COMMANDES
 	Route::get('/admin/commandes','AdminController@allCommandes');
 	Route::get('/admin/commandes/all','AdminController@getAllCommandes');
+	Route::get('/admin/commandes/livraison','AdminController@getAllLivraison');
 	// Route::get('/admin/commandes/validated','AdminController@getValidatedCommandesMaterial');
 	Route::post('/admin/commandes/credit-all','CreditController@getAllCommandes');
 	// DASHBOARD DATA
