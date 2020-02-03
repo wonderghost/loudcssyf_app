@@ -13662,9 +13662,22 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     soldeVendeur: [],
     filtedredUser: [],
     searchText: "",
-    typeUser: "",
+    typeUser: document.querySelector("input[id=user-type]").value,
     searchState: true,
-    myToken: document.querySelector("meta[name=csrf-token]").content
+    myToken: document.querySelector("meta[name=csrf-token]").content,
+    commandMaterial: {
+      confirmed: [],
+      unconfirmed: []
+    },
+    livraison: {
+      livred: [],
+      unlivred: []
+    },
+    commandCredit: {
+      confired: [],
+      unconfirmed: [],
+      aborted: []
+    }
   },
   mutations: {
     searchText: function searchText(state, word) {

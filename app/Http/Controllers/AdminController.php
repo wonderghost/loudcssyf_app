@@ -617,32 +617,25 @@ class AdminController extends Controller
     return view('admin.all-commandes');
   }
 
-  public function getAllCommandes(Request $request) {
+  public function getAllCommandes(Request $request , CommandMaterial $c) {
     try {
-      $commands= CommandMaterial::where('status','unconfirmed')->orderBy('created_at','desc')->get();
-      $_commands = CommandMaterial::where("status",'confirmed')->orderBy('created_at','desc')->get();
+      $commands= $c->select()->orderBy('created_at','desc')->get();
 
       $all =  $this->organizeCommandList($commands);
-      $_all = $this->organizeCommandList($_commands);
       // recuperation des livraison
-      $livraison = $this->livraisonStateRequest('unvalidate');
-      $livraison = $this->organizeLivraison($livraison);
+      // $livraison = $this->livraisonStateRequest('unvalidate');
+      // $livraison = $this->organizeLivraison($livraison);
+      //
+      // $_livraison = $this->livraisonStateRequest('validate');
+      // $_livraison = $this->organizeLivraison($_livraison);
 
-      $_livraison = $this->livraisonStateRequest('validate');
-      $_livraison = $this->organizeLivraison($_livraison);
-
-      return response()->json([
-        'unconfirmed' =>  $all,
-        'confirmed' =>  $_all,
-        'livraison_unvalidate'  =>  $livraison,
-        'livraison_validate'  =>  $_livraison
-      ]);
+      return response()->json($all);
     } catch (AppException $e) {
       header("Unprocessable entity",true,422);
       die(json_encode($e->getMessage()));
     }
   }
-
+  
   // REINITIALISER UN UTILISATEUR
   public function resetUser(Request $request) {
     try {

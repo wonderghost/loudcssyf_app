@@ -5,25 +5,21 @@
 	<div class="uk-container uk-container-large">
 		<h3><a href="{{url('/admin')}}" uk-tooltip="tableau de bord" uk-icon="icon:arrow-left;ratio:1.5"></a> Toutes les commandes</h3>
 		<hr class="uk-divider-small">
+		<command></command>
 		<!-- MODAL DETAIL LIVRAISON TO DOWNLOAD -->
 
-		<div id="modal-livraison-detail" class="uk-flex-top" uk-modal>
+		<!-- <div id="modal-livraison-detail" class="uk-flex-top" uk-modal>
 				<div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical uk-text-center">
 						<button class="uk-modal-close-default" type="button" uk-close></button>
 						<p class="uk-text-lead">Cliquez sur le button pour telecharger le fichier text</p>
 						<a id="file-link" download="" target="_blank" class="uk-button uk-button-primary uk-border-rounded uk-box-shadow-small">Telecharger <span uk-icon="icon : download"></span> </a>
 				</div>
-		</div>
+		</div> -->
 		<!-- // -->
 
-		<ul uk-tab>
-		    <li><a href="#">Materiel</a></li>
-		    <li><a href="#">Credit</a></li>
-		</ul>
-
-		<ul class="uk-switcher uk-margin">
+		<!-- <ul class="uk-switcher uk-margin">
 			<li>
-				<!-- MATERIEL -->
+
 				<div class="uk-gird-small" uk-grid>
             <div class="uk-width-auto@m">
                 <ul class="uk-tab-left" uk-tab="connect: #component-tab-left; animation: uk-animation-fade">
@@ -97,11 +93,11 @@
 										</li>
                 </ul>
             </div>
-        </div>
-				<!-- // -->
-			</li>
+        </div> -->
+
+			<!-- </li>
 			<li>
-				<!-- CGA -->
+
 				<div uk-grid>
           <div class="uk-width-auto@m">
               <ul class="uk-tab-left" uk-tab="connect: #cga-tab-left; animation: uk-animation-fade">
@@ -164,19 +160,11 @@
 									</li>
               </ul>
           </div>
-      </div>
-				<!-- // -->
+      </div> -->
+				<!--
 			</li>
 		</ul>
-
+-->
 	</div>
 </div>
-@endsection
-@section("script")
-<script type="text/javascript">
-	$(function() {
-		$logistique.getListCommandes("{{csrf_token()}}","{{url('/admin/commandes/all')}}")
-		$logistique.getCommandes("{{csrf_token()}}","{{url('/admin/commandes/credit-all')}}")
-	});
-</script>
 @endsection

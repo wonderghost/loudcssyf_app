@@ -5,6 +5,13 @@
   <div class="uk-container">
     <h3>Tableau de bord</h3>
     <hr class="uk-divider-small">
+    
+    @if(session('msg'))
+    <div class="uk-alert-info" uk-alert>
+      <a href="#" class="uk-alert-close" uk-close></a>
+      <p>{{session('msg')}}</p>
+    </div>
+    @endif
     <div class="uk-grid-small uk-child-width-1-4@m" uk-grid>
       <div class="">
         <!-- USERS -->

@@ -15,7 +15,8 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('admin/search/{slug}','AdminController@SearchText');
 	// COMMANDES
 	Route::get('/admin/commandes','AdminController@allCommandes');
-	Route::post('/admin/commandes/all','AdminController@getAllCommandes');
+	Route::get('/admin/commandes/all','AdminController@getAllCommandes');
+	// Route::get('/admin/commandes/validated','AdminController@getValidatedCommandesMaterial');
 	Route::post('/admin/commandes/credit-all','CreditController@getAllCommandes');
 	// DASHBOARD DATA
 	Route::post('/admin/dashboard/user-data','AdminController@dataForUserChart');

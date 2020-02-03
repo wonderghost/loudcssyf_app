@@ -18,6 +18,7 @@ window.$ = window.jQuery = require('jquery')
 Vue.component('user-component',require('./adminComponents/UserComponent.vue').default)
 Vue.component('filter-user-component',require('./adminComponents/FilterComponentUser.vue').default)
 Vue.component('account',require('./adminComponents/AccountComponent.vue').default)
+Vue.component('command',require('./adminComponents/CommandComponent.vue').default)
 // /
 import Vue from 'vue'
 import Vuex from 'vuex'

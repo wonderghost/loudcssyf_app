@@ -17,7 +17,7 @@ class IsLogistique
     {
         $user = $request->user();
         if($user && $user->type !== 'logistique') {
-            return redirect('/user');
+            return redirect('/');
         }
         return $next($request);
     }
