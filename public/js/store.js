@@ -13665,19 +13665,10 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     typeUser: document.querySelector("input[id=user-type]").value,
     searchState: true,
     myToken: document.querySelector("meta[name=csrf-token]").content,
-    commandMaterial: {
-      confirmed: [],
-      unconfirmed: []
-    },
-    livraison: {
-      livred: [],
-      unlivred: []
-    },
-    commandCredit: {
-      confired: [],
-      unconfirmed: [],
-      aborted: []
-    }
+    commandMaterial: [],
+    livraison: [],
+    commandCredit: [],
+    typeCommand: 'en attente'
   },
   mutations: {
     searchText: function searchText(state, word) {
@@ -13687,6 +13678,9 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     filterUsers: function filterUsers(state, type) {
       state.searchState = false;
       state.typeUser = type;
+    },
+    setTypeCommand: function setTypeCommand(state, type) {
+      state.typeCommand = type;
     }
   },
   actions: {}

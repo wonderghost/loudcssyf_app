@@ -13,19 +13,10 @@ const store = new Vuex.Store({
     typeUser : document.querySelector("input[id=user-type]").value,
     searchState : true,
     myToken : document.querySelector("meta[name=csrf-token]").content,
-    commandMaterial : {
-      confirmed : [],
-      unconfirmed : []
-    },
-    livraison : {
-      livred : [],
-      unlivred : []
-    },
-    commandCredit : {
-      confired : [],
-      unconfirmed : [],
-      aborted : []
-    }
+    commandMaterial :[],
+    livraison :[],
+    commandCredit :[],
+    typeCommand : 'en attente'
   },
   mutations : {
     searchText (state , word) {
@@ -35,6 +26,9 @@ const store = new Vuex.Store({
     filterUsers (state , type ) {
       state.searchState = false
       state.typeUser = type
+    },
+    setTypeCommand (state , type) {
+      state.typeCommand = type
     }
   },
   actions : {

@@ -9,12 +9,13 @@
     <ul class="uk-switcher uk-margin">
 			<li>
         <ul class="uk-tab" uk-switcher="animation : uk-animation-slide-right">
-          <li> <a href="#">Toutes les commandes</a> </li>
-          <li> <a href="#">En attente de confirmation</a> </li>
-          <li> <a href="#">Deja confirmee</a> </li>
+          <li> <a href="#" @click="filterCommande('en attente')">En attente de confirmation</a> </li>
+          <li> <a href="#" @click="filterCommande('confirmer')">Deja confirmee</a> </li>
+          <li> <a href="#" @click="filterCommande('')">Toutes les commandes</a> </li>
         </ul>
-        <ul class="uk-margin uk-switcher">
-          <li>
+
+          <div class="">
+
             <table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover">
               <thead>
                 <tr>
@@ -22,7 +23,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="command in commandMaterialUnconfirmed">
+                <tr v-for="command in commandMaterial">
                   <td v-for="(column , name) in command" v-if="name != 'link' && name != 'id' && name!='status'">{{column}}</td>
                   <td class="uk-text-danger" v-if="command.status == 'en attente'">{{command.status}}</td>
                   <td class="uk-text-success" v-else >{{command.status}}</td>
@@ -30,18 +31,7 @@
                 </tr>
               </tbody>
             </table>
-          </li>
-          <li>
-            <table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover">
-              <thead>
-                <tr>
-                  <th v-for="head in materialCommand">{{head}}</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </li>
-        </ul>
+          </div>
       </li>
       <li></li>
       <li></li>
@@ -56,9 +46,7 @@
         data () {
           return {
             materialCommand : ['date','vendeurs','designation','quantite','parabole a livrer','status'],
-            livraison : ['date','vendeurs','designation','commande','quantite','status'],
-            confirmed : 'uk-text-success',
-            unconfirmed : 'uk-text-danger'
+            livraison : ['date','vendeurs','designation','commande','quantite','status']
           }
         },
         methods : {
@@ -66,22 +54,30 @@
             try {
               let response = await axios.get('/admin/commandes/all')
               if(response.data.length) {
-                this.$store.state.commandMaterial.unconfirmed = response.data
+                this.$store.state.commandMaterial = response.data
               }
             } catch (e) {
               console.log(e)
             }
+          },
+          filterCommande : function (type) {
+            this.$store.commit('setTypeCommand',type)
           }
         },
         computed : {
-          commandMaterialUnconfirmed () {
-            return this.$store.state.commandMaterial.unconfirmed
-          },
-          commandMaterialConfirmed () {
-            return this.$store.state.commandMaterial.confirmed
+          commandMaterial () {
+            return this.cMaterial.filter( (command) => {
+              return command.status.match(this.typeCommand)
+            })
           },
           typeUser () {
             return this.$store.state.typeUser
+          },
+          cMaterial () {
+            return this.$store.state.commandMaterial
+          },
+          typeCommand() {
+            return this.$store.state.typeCommand
           }
         }
     }

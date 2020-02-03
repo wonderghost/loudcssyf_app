@@ -2248,16 +2248,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     this.getMaterialCommande();
@@ -2265,9 +2255,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   data: function data() {
     return {
       materialCommand: ['date', 'vendeurs', 'designation', 'quantite', 'parabole a livrer', 'status'],
-      livraison: ['date', 'vendeurs', 'designation', 'commande', 'quantite', 'status'],
-      confirmed: 'uk-text-success',
-      unconfirmed: 'uk-text-danger'
+      livraison: ['date', 'vendeurs', 'designation', 'commande', 'quantite', 'status']
     };
   },
   methods: {
@@ -2288,7 +2276,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 response = _context.sent;
 
                 if (response.data.length) {
-                  this.$store.state.commandMaterial.unconfirmed = response.data;
+                  this.$store.state.commandMaterial = response.data;
                 }
 
                 _context.next = 10;
@@ -2312,17 +2300,27 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return getMaterialCommande;
-    }()
+    }(),
+    filterCommande: function filterCommande(type) {
+      this.$store.commit('setTypeCommand', type);
+    }
   },
   computed: {
-    commandMaterialUnconfirmed: function commandMaterialUnconfirmed() {
-      return this.$store.state.commandMaterial.unconfirmed;
-    },
-    commandMaterialConfirmed: function commandMaterialConfirmed() {
-      return this.$store.state.commandMaterial.confirmed;
+    commandMaterial: function commandMaterial() {
+      var _this = this;
+
+      return this.cMaterial.filter(function (command) {
+        return command.status.match(_this.typeCommand);
+      });
     },
     typeUser: function typeUser() {
       return this.$store.state.typeUser;
+    },
+    cMaterial: function cMaterial() {
+      return this.$store.state.commandMaterial;
+    },
+    typeCommand: function typeCommand() {
+      return this.$store.state.typeCommand;
     }
   }
 });
@@ -15730,94 +15728,121 @@ var render = function() {
     _vm._v(" "),
     _c("ul", { staticClass: "uk-switcher uk-margin" }, [
       _c("li", [
-        _vm._m(1),
+        _c(
+          "ul",
+          {
+            staticClass: "uk-tab",
+            attrs: { "uk-switcher": "animation : uk-animation-slide-right" }
+          },
+          [
+            _c("li", [
+              _c(
+                "a",
+                {
+                  attrs: { href: "#" },
+                  on: {
+                    click: function($event) {
+                      return _vm.filterCommande("en attente")
+                    }
+                  }
+                },
+                [_vm._v("En attente de confirmation")]
+              )
+            ]),
+            _vm._v(" "),
+            _c("li", [
+              _c(
+                "a",
+                {
+                  attrs: { href: "#" },
+                  on: {
+                    click: function($event) {
+                      return _vm.filterCommande("confirmer")
+                    }
+                  }
+                },
+                [_vm._v("Deja confirmee")]
+              )
+            ]),
+            _vm._v(" "),
+            _c("li", [
+              _c(
+                "a",
+                {
+                  attrs: { href: "#" },
+                  on: {
+                    click: function($event) {
+                      return _vm.filterCommande("")
+                    }
+                  }
+                },
+                [_vm._v("Toutes les commandes")]
+              )
+            ])
+          ]
+        ),
         _vm._v(" "),
-        _c("ul", { staticClass: "uk-margin uk-switcher" }, [
-          _c("li", [
-            _c(
-              "table",
-              {
-                staticClass:
-                  "uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover"
-              },
-              [
-                _c("thead", [
-                  _c(
-                    "tr",
-                    _vm._l(_vm.materialCommand, function(head) {
-                      return _c("th", [_vm._v(_vm._s(head))])
-                    }),
-                    0
-                  )
-                ]),
-                _vm._v(" "),
+        _c("div", {}, [
+          _c(
+            "table",
+            {
+              staticClass:
+                "uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover"
+            },
+            [
+              _c("thead", [
                 _c(
-                  "tbody",
-                  _vm._l(_vm.commandMaterialUnconfirmed, function(command) {
-                    return _c(
-                      "tr",
-                      [
-                        _vm._l(command, function(column, name) {
-                          return name != "link" &&
-                            name != "id" &&
-                            name != "status"
-                            ? _c("td", [_vm._v(_vm._s(column))])
-                            : _vm._e()
-                        }),
-                        _vm._v(" "),
-                        command.status == "en attente"
-                          ? _c("td", { staticClass: "uk-text-danger" }, [
-                              _vm._v(_vm._s(command.status))
-                            ])
-                          : _c("td", { staticClass: "uk-text-success" }, [
-                              _vm._v(_vm._s(command.status))
-                            ]),
-                        _vm._v(" "),
-                        _c("td", [
-                          _vm.typeUser == "logistique"
-                            ? _c(
-                                "a",
-                                {
-                                  staticClass:
-                                    "uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-text-capitalize",
-                                  attrs: { href: command.link }
-                                },
-                                [_vm._v("confirmer")]
-                              )
-                            : _vm._e()
-                        ])
-                      ],
-                      2
-                    )
+                  "tr",
+                  _vm._l(_vm.materialCommand, function(head) {
+                    return _c("th", [_vm._v(_vm._s(head))])
                   }),
                   0
                 )
-              ]
-            )
-          ]),
-          _vm._v(" "),
-          _c("li", [
-            _c(
-              "table",
-              {
-                staticClass:
-                  "uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover"
-              },
-              [
-                _c("thead", [
-                  _c(
+              ]),
+              _vm._v(" "),
+              _c(
+                "tbody",
+                _vm._l(_vm.commandMaterial, function(command) {
+                  return _c(
                     "tr",
-                    _vm._l(_vm.materialCommand, function(head) {
-                      return _c("th", [_vm._v(_vm._s(head))])
-                    }),
-                    0
+                    [
+                      _vm._l(command, function(column, name) {
+                        return name != "link" &&
+                          name != "id" &&
+                          name != "status"
+                          ? _c("td", [_vm._v(_vm._s(column))])
+                          : _vm._e()
+                      }),
+                      _vm._v(" "),
+                      command.status == "en attente"
+                        ? _c("td", { staticClass: "uk-text-danger" }, [
+                            _vm._v(_vm._s(command.status))
+                          ])
+                        : _c("td", { staticClass: "uk-text-success" }, [
+                            _vm._v(_vm._s(command.status))
+                          ]),
+                      _vm._v(" "),
+                      _c("td", [
+                        _vm.typeUser == "logistique"
+                          ? _c(
+                              "a",
+                              {
+                                staticClass:
+                                  "uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-text-capitalize",
+                                attrs: { href: command.link }
+                              },
+                              [_vm._v("confirmer")]
+                            )
+                          : _vm._e()
+                      ])
+                    ],
+                    2
                   )
-                ]),
-                _vm._v(" "),
-                _c("tbody")
-              ]
-            )
-          ])
+                }),
+                0
+              )
+            ]
+          )
         ])
       ]),
       _vm._v(" "),
@@ -15873,33 +15898,6 @@ var staticRenderFns = [
             },
             [_vm._v("Credit")]
           )
-        ])
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "ul",
-      {
-        staticClass: "uk-tab",
-        attrs: { "uk-switcher": "animation : uk-animation-slide-right" }
-      },
-      [
-        _c("li", [
-          _c("a", { attrs: { href: "#" } }, [_vm._v("Toutes les commandes")])
-        ]),
-        _vm._v(" "),
-        _c("li", [
-          _c("a", { attrs: { href: "#" } }, [
-            _vm._v("En attente de confirmation")
-          ])
-        ]),
-        _vm._v(" "),
-        _c("li", [
-          _c("a", { attrs: { href: "#" } }, [_vm._v("Deja confirmee")])
         ])
       ]
     )
@@ -37451,19 +37449,10 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     typeUser: document.querySelector("input[id=user-type]").value,
     searchState: true,
     myToken: document.querySelector("meta[name=csrf-token]").content,
-    commandMaterial: {
-      confirmed: [],
-      unconfirmed: []
-    },
-    livraison: {
-      livred: [],
-      unlivred: []
-    },
-    commandCredit: {
-      confired: [],
-      unconfirmed: [],
-      aborted: []
-    }
+    commandMaterial: [],
+    livraison: [],
+    commandCredit: [],
+    typeCommand: 'en attente'
   },
   mutations: {
     searchText: function searchText(state, word) {
@@ -37473,6 +37462,9 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     filterUsers: function filterUsers(state, type) {
       state.searchState = false;
       state.typeUser = type;
+    },
+    setTypeCommand: function setTypeCommand(state, type) {
+      state.typeCommand = type;
     }
   },
   actions: {}
