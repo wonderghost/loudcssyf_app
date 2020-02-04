@@ -247,15 +247,17 @@ class CreditController extends Controller
 		}
 
 	// RECUPERATION DE LA LISTE DE TOUTES LES COMMANES , POUR L'ADMINISTRATEUR
-	public function getAllCommandes(Request $request) {
-		$commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg','rex'])->where('status','unvalidated')->orderBy('created_at','desc')->limit(30)->get();
-		$commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg','rex'])->where('status','validated')->orderBy('created_at','desc')->limit(30)->get();
-		$commands_aborted = CommandCredit::whereIn('type',['cga','afro_cash_sg','red'])->where('status','aborted')->orderBy('created_at','desc')->limit(30)->get();
-		return response()->json([
-			'unvalidated'	=>	$this->organizeCommandGcga($commands_unvalidated),
-			'validated'	=>	$this->organizeCommandGcga($commands_validated),
-			'aborted'	=>	$this->organizeCommandGcga($commands_aborted)
-		]);
+	public function getAllCommandes(Request $request , CommandCredit $c) {
+		// $commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg','rex'])->where('status','unvalidated')->orderBy('created_at','desc')->limit(30)->get();
+		// $commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg','rex'])->where('status','validated')->orderBy('created_at','desc')->limit(30)->get();
+		// $commands_aborted = CommandCredit::whereIn('type',['cga','afro_cash_sg','red'])->where('status','aborted')->orderBy('created_at','desc')->limit(30)->get();
+		$all = $c->select()->orderBy('created_at','desc')->get();
+		return response()->json($this->organizeCommandGcga($all));
+		// return response()->json([
+		// 	'unvalidated'	=>	$this->organizeCommandGcga($commands_unvalidated),
+		// 	'validated'	=>	$this->organizeCommandGcga($commands_validated),
+		// 	'aborted'	=>	$this->organizeCommandGcga($commands_aborted)
+		// ]);
 	}
 
 	// ANNULATION D'UN COMMANDE CHEZ LA GESTIONNAIRE DE CREDIT CGA

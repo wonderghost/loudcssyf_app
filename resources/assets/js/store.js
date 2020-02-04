@@ -17,7 +17,8 @@ const store = new Vuex.Store({
     livraisonMaterial :[],
     commandCredit :[],
     typeCommand : 'en attente',
-    statusLivraison : 'unlivred'
+    statusLivraison : 'unlivred',
+    statusCommandCredit : 'unvalidated'
   },
   mutations : {
     searchText (state , word) {
@@ -37,8 +38,15 @@ const store = new Vuex.Store({
     setLivraisonMaterial (state,data) {
       state.livraisonMaterial = data
     },
+    setCommandCredit (state , data) {
+      state.commandCredit = data
+    }
+    ,
     setStateLivraison (state ,status) {
       state.statusLivraison = status
+    },
+    setStatusCommandCredit (state , type) {
+      state.statusCommandCredit = type
     }
   },
   actions : {

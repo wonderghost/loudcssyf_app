@@ -63,7 +63,9 @@
           </table>
         </div>
       </li>
-      <li></li>
+      <li>
+        <credit-component></credit-component>
+      </li>
     </ul>
   </div>
 </template>

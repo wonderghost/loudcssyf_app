@@ -13669,7 +13669,8 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     livraisonMaterial: [],
     commandCredit: [],
     typeCommand: 'en attente',
-    statusLivraison: 'unlivred'
+    statusLivraison: 'unlivred',
+    statusCommandCredit: 'unvalidated'
   },
   mutations: {
     searchText: function searchText(state, word) {
@@ -13689,8 +13690,14 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     setLivraisonMaterial: function setLivraisonMaterial(state, data) {
       state.livraisonMaterial = data;
     },
+    setCommandCredit: function setCommandCredit(state, data) {
+      state.commandCredit = data;
+    },
     setStateLivraison: function setStateLivraison(state, status) {
       state.statusLivraison = status;
+    },
+    setStatusCommandCredit: function setStatusCommandCredit(state, type) {
+      state.statusCommandCredit = type;
     }
   },
   actions: {}
