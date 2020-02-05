@@ -13,7 +13,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="credit in commandCredit">
+          <tr v-for="credit in commandCredit.slice(start,end)">
             <td>{{credit.date}}</td>
             <td>{{credit.vendeurs}}</td>
             <td>{{credit.type}}</td>
@@ -29,18 +29,27 @@
           </tr>
         </tbody>
       </table>
+      <ul class="uk-pagination uk-flex uk-flex-center" uk-margin>
+        <li> <span> Page active : {{currentPage}} </span> </li>
+        <li> <button @click="previousPage()" type="button" class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small" name="button"> <span uk-pagination-previous></span> Precedent </button> </li>
+        <li> <button @click="nextPage()" type="button" class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small" name="button"> Suivant <span uk-pagination-next></span>  </button> </li>
+      </ul>
     </div>
   </div>
 </template>
 
 <script>
+
     export default {
         mounted() {
           this.getCommandCredit()
         },
         data () {
           return {
-            tableHead : ['date','vendeurs','type','montant','status','numero recu','recu']
+            tableHead : ['date','vendeurs','type','montant','status','numero recu','recu'],
+            currentPage: 1,
+            start : 0,
+            end  : 10
           }
         },
         methods : {
@@ -48,13 +57,33 @@
             try {
               let response = await axios.get('/admin/commandes/credit-all')
               this.$store.commit('setCommandCredit',response.data)
+              this.all = response.data
             }
             catch (e) {
               alert(e)
             }
           },
           filterCommandCredit (status) {
+            this.currentPage = 1
+            this.start = 0
+            this.end = 10
             this.$store.commit('setStatusCommandCredit',status)
+          },
+          nextPage : function () {
+            if(this.commandCredit.length > this.end) {
+              let ecart = this.end - this.start
+              this.start = this.end
+              this.end += ecart
+              this.currentPage++
+            }
+          },
+          previousPage : function () {
+            if(this.start > 0) {
+              let ecart = this.end - this.start
+              this.start -= ecart
+              this.end -= ecart
+              this.currentPage--
+            }
           }
         },
         computed : {

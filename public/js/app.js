@@ -2279,6 +2279,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     this.getMaterialCommande();
@@ -2287,7 +2296,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   data: function data() {
     return {
       materialCommand: ['date', 'vendeurs', 'designation', 'quantite', 'parabole a livrer', 'status'],
-      livraison: ['date', 'vendeurs', 'designation', 'commande', 'quantite', 'status']
+      livraison: ['date', 'vendeurs', 'designation', 'commande', 'quantite', 'status'],
+      start: 0,
+      end: 10,
+      currentPage: 1
     };
   },
   methods: {
@@ -2372,10 +2384,32 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       return getLivraisonMaterial;
     }(),
     filterCommande: function filterCommande(type) {
+      this.currentPage = 1;
+      this.start = 0;
+      this.end = 10;
       this.$store.commit('setTypeCommand', type);
     },
     filterLivraison: function filterLivraison(status) {
+      this.currentPage = 1;
+      this.start = 0;
+      this.end = 10;
       this.$store.commit('setStateLivraison', status);
+    },
+    nextPage: function nextPage() {
+      if (this.commandMaterial.length > this.end) {
+        var ecart = this.end - this.start;
+        this.start = this.end;
+        this.end += ecart;
+        this.currentPage++;
+      }
+    },
+    previousPage: function previousPage() {
+      if (this.start > 0) {
+        var ecart = this.end - this.start;
+        this.start -= ecart;
+        this.end -= ecart;
+        this.currentPage--;
+      }
     }
   },
   computed: {
@@ -2466,13 +2500,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     this.getCommandCredit();
   },
   data: function data() {
     return {
-      tableHead: ['date', 'vendeurs', 'type', 'montant', 'status', 'numero recu', 'recu']
+      tableHead: ['date', 'vendeurs', 'type', 'montant', 'status', 'numero recu', 'recu'],
+      currentPage: 1,
+      start: 0,
+      end: 10
     };
   },
   methods: {
@@ -2492,20 +2534,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 3:
                 response = _context.sent;
                 this.$store.commit('setCommandCredit', response.data);
-                _context.next = 10;
+                this.all = response.data;
+                _context.next = 11;
                 break;
 
-              case 7:
-                _context.prev = 7;
+              case 8:
+                _context.prev = 8;
                 _context.t0 = _context["catch"](0);
                 alert(_context.t0);
 
-              case 10:
+              case 11:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this, [[0, 7]]);
+        }, _callee, this, [[0, 8]]);
       }));
 
       function getCommandCredit() {
@@ -2515,7 +2558,26 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       return getCommandCredit;
     }(),
     filterCommandCredit: function filterCommandCredit(status) {
+      this.currentPage = 1;
+      this.start = 0;
+      this.end = 10;
       this.$store.commit('setStatusCommandCredit', status);
+    },
+    nextPage: function nextPage() {
+      if (this.commandCredit.length > this.end) {
+        var ecart = this.end - this.start;
+        this.start = this.end;
+        this.end += ecart;
+        this.currentPage++;
+      }
+    },
+    previousPage: function previousPage() {
+      if (this.start > 0) {
+        var ecart = this.end - this.start;
+        this.start -= ecart;
+        this.end -= ecart;
+        this.currentPage--;
+      }
     }
   },
   computed: {
@@ -15934,7 +15996,50 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", {}, [
-    _vm._m(0),
+    _c(
+      "ul",
+      {
+        staticClass: "uk-subnav uk-subnav-pill",
+        attrs: { "uk-switcher": "animation: uk-animation-slide-bottom" }
+      },
+      [
+        _c("li", [
+          _c(
+            "a",
+            {
+              staticClass:
+                "uk-button uk-button-small uk-border-rounded uk-box-shadow-small",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  _vm.start = 0
+                }
+              }
+            },
+            [_vm._v("Materiel")]
+          )
+        ]),
+        _vm._v(" "),
+        _c("li", [
+          _c(
+            "a",
+            {
+              staticClass:
+                "uk-button uk-button-small uk-border-rounded uk-box-shadow-small",
+              attrs: { href: "#" },
+              on: {
+                click: function($event) {
+                  _vm.end = 10
+                }
+              }
+            },
+            [_vm._v("Livraison")]
+          )
+        ]),
+        _vm._v(" "),
+        _vm._m(0)
+      ]
+    ),
     _vm._v(" "),
     _c("ul", { staticClass: "uk-switcher uk-margin" }, [
       _c("li", [
@@ -16012,7 +16117,9 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "tbody",
-                _vm._l(_vm.commandMaterial, function(command) {
+                _vm._l(_vm.commandMaterial.slice(_vm.start, _vm.end), function(
+                  command
+                ) {
                   return _c(
                     "tr",
                     [
@@ -16052,7 +16159,53 @@ var render = function() {
                 0
               )
             ]
-          )
+          ),
+          _vm._v(" "),
+          _c("ul", { staticClass: "uk-pagination uk-flex uk-flex-center" }, [
+            _c("li", [
+              _c("span", [_vm._v(" Page : " + _vm._s(_vm.currentPage) + " ")])
+            ]),
+            _vm._v(" "),
+            _c("li", [
+              _c(
+                "button",
+                {
+                  staticClass:
+                    "uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-default",
+                  attrs: { type: "button", name: "button" },
+                  on: {
+                    click: function($event) {
+                      return _vm.previousPage()
+                    }
+                  }
+                },
+                [
+                  _c("span", { attrs: { "uk-pagination-previous": "" } }),
+                  _vm._v(" Previous")
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("li", [
+              _c(
+                "button",
+                {
+                  staticClass:
+                    "uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-default",
+                  attrs: { type: "button", name: "button" },
+                  on: {
+                    click: function($event) {
+                      return _vm.nextPage()
+                    }
+                  }
+                },
+                [
+                  _vm._v(" Suivant "),
+                  _c("span", { attrs: { "uk-pagination-next": "" } })
+                ]
+              )
+            ])
+          ])
         ])
       ]),
       _vm._v(" "),
@@ -16116,67 +16269,115 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "tbody",
-                _vm._l(_vm.livraisonMaterial, function(livraison) {
-                  return _c("tr", [
-                    _c("td", [_vm._v(_vm._s(livraison.date))]),
-                    _vm._v(" "),
-                    _c("td", [_vm._v(_vm._s(livraison.vendeur))]),
-                    _vm._v(" "),
-                    _c("td", [_vm._v(_vm._s(livraison.produit))]),
-                    _vm._v(" "),
-                    _c("td", [_vm._v(_vm._s(livraison.command))]),
-                    _vm._v(" "),
-                    _c("td", [_vm._v(_vm._s(livraison.quantite))]),
-                    _vm._v(" "),
-                    livraison.status == "livred"
-                      ? _c("td", { staticClass: "uk-text-success" }, [
-                          _vm._v(_vm._s(livraison.status))
-                        ])
-                      : _c("td", { staticClass: "uk-text-danger" }, [
-                          _vm._v(_vm._s(livraison.status))
-                        ]),
-                    _vm._v(" "),
-                    _c("td", [
-                      _vm.typeUser == "logistique"
-                        ? _c(
-                            "a",
-                            {
-                              staticClass:
-                                "uk-button uk-button-small uk-button-primary uk-text-capitalize uk-border-rounded uk-box-shadow-small",
-                              attrs: { href: "#" }
-                            },
-                            [
-                              _vm._v("validez "),
-                              _c("span", {
-                                attrs: { "uk-icon": "icon : check" }
-                              })
-                            ]
-                          )
-                        : _vm._e(),
+                _vm._l(
+                  _vm.livraisonMaterial.slice(_vm.start, _vm.end),
+                  function(livraison) {
+                    return _c("tr", [
+                      _c("td", [_vm._v(_vm._s(livraison.date))]),
+                      _vm._v(" "),
+                      _c("td", [_vm._v(_vm._s(livraison.vendeur))]),
+                      _vm._v(" "),
+                      _c("td", [_vm._v(_vm._s(livraison.produit))]),
+                      _vm._v(" "),
+                      _c("td", [_vm._v(_vm._s(livraison.command))]),
+                      _vm._v(" "),
+                      _c("td", [_vm._v(_vm._s(livraison.quantite))]),
                       _vm._v(" "),
                       livraison.status == "livred"
-                        ? _c(
-                            "a",
-                            {
-                              staticClass:
-                                "uk-button uk-button-small uk-button-default uk-text-capitalize uk-border-rounded uk-box-shadow-small",
-                              attrs: { download: "", href: livraison.filename }
-                            },
-                            [
-                              _vm._v("details "),
-                              _c("span", {
-                                attrs: { "uk-icon": "icon : more" }
-                              })
-                            ]
-                          )
-                        : _vm._e()
+                        ? _c("td", { staticClass: "uk-text-success" }, [
+                            _vm._v(_vm._s(livraison.status))
+                          ])
+                        : _c("td", { staticClass: "uk-text-danger" }, [
+                            _vm._v(_vm._s(livraison.status))
+                          ]),
+                      _vm._v(" "),
+                      _c("td", [
+                        _vm.typeUser == "logistique"
+                          ? _c(
+                              "a",
+                              {
+                                staticClass:
+                                  "uk-button uk-button-small uk-button-primary uk-text-capitalize uk-border-rounded uk-box-shadow-small",
+                                attrs: { href: "#" }
+                              },
+                              [
+                                _vm._v("validez "),
+                                _c("span", {
+                                  attrs: { "uk-icon": "icon : check" }
+                                })
+                              ]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        livraison.status == "livred"
+                          ? _c(
+                              "a",
+                              {
+                                staticClass:
+                                  "uk-button uk-button-small uk-button-default uk-text-capitalize uk-border-rounded uk-box-shadow-small",
+                                attrs: {
+                                  download: "",
+                                  href: livraison.filename
+                                }
+                              },
+                              [
+                                _vm._v("details "),
+                                _c("span", {
+                                  attrs: { "uk-icon": "icon : more" }
+                                })
+                              ]
+                            )
+                          : _vm._e()
+                      ])
                     ])
-                  ])
-                }),
+                  }
+                ),
                 0
               )
             ]
-          )
+          ),
+          _vm._v(" "),
+          _c("ul", { staticClass: "uk-pagination uk-flex uk-flex-center" }, [
+            _c("li", [
+              _c(
+                "button",
+                {
+                  staticClass:
+                    "uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small",
+                  attrs: { type: "button", name: "button" },
+                  on: {
+                    click: function($event) {
+                      return _vm.previousPage()
+                    }
+                  }
+                },
+                [
+                  _c("span", { attrs: { "uk-pagination-previous": "" } }),
+                  _vm._v(" Precedent")
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("li", [
+              _c(
+                "button",
+                {
+                  staticClass:
+                    "uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small",
+                  attrs: { type: "button", name: "button" },
+                  on: {
+                    click: function($event) {
+                      return _vm.nextPage()
+                    }
+                  }
+                },
+                [
+                  _vm._v(" Suivant "),
+                  _c("span", { attrs: { "uk-pagination-next": "" } })
+                ]
+              )
+            ])
+          ])
         ])
       ]),
       _vm._v(" "),
@@ -16189,50 +16390,17 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "ul",
-      {
-        staticClass: "uk-subnav uk-subnav-pill",
-        attrs: { "uk-switcher": "animation: uk-animation-slide-bottom" }
-      },
-      [
-        _c("li", [
-          _c(
-            "a",
-            {
-              staticClass:
-                "uk-button uk-button-small uk-border-rounded uk-box-shadow-small",
-              attrs: { href: "#" }
-            },
-            [_vm._v("Materiel")]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", [
-          _c(
-            "a",
-            {
-              staticClass:
-                "uk-button uk-button-small uk-border-rounded uk-box-shadow-small",
-              attrs: { href: "#" }
-            },
-            [_vm._v("Livraison")]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", [
-          _c(
-            "a",
-            {
-              staticClass:
-                "uk-button uk-button-small uk-border-rounded uk-box-shadow-small",
-              attrs: { href: "#" }
-            },
-            [_vm._v("Credit")]
-          )
-        ])
-      ]
-    )
+    return _c("li", [
+      _c(
+        "a",
+        {
+          staticClass:
+            "uk-button uk-button-small uk-border-rounded uk-box-shadow-small",
+          attrs: { href: "#" }
+        },
+        [_vm._v("Credit")]
+      )
+    ])
   }
 ]
 render._withStripped = true
@@ -16331,7 +16499,9 @@ var render = function() {
           _vm._v(" "),
           _c(
             "tbody",
-            _vm._l(_vm.commandCredit, function(credit) {
+            _vm._l(_vm.commandCredit.slice(_vm.start, _vm.end), function(
+              credit
+            ) {
               return _c("tr", [
                 _c("td", [_vm._v(_vm._s(credit.date))]),
                 _vm._v(" "),
@@ -16352,6 +16522,61 @@ var render = function() {
             }),
             0
           )
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "ul",
+        {
+          staticClass: "uk-pagination uk-flex uk-flex-center",
+          attrs: { "uk-margin": "" }
+        },
+        [
+          _c("li", [
+            _c("span", [
+              _vm._v(" Page active : " + _vm._s(_vm.currentPage) + " ")
+            ])
+          ]),
+          _vm._v(" "),
+          _c("li", [
+            _c(
+              "button",
+              {
+                staticClass:
+                  "uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small",
+                attrs: { type: "button", name: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.previousPage()
+                  }
+                }
+              },
+              [
+                _c("span", { attrs: { "uk-pagination-previous": "" } }),
+                _vm._v(" Precedent ")
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", [
+            _c(
+              "button",
+              {
+                staticClass:
+                  "uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small",
+                attrs: { type: "button", name: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.nextPage()
+                  }
+                }
+              },
+              [
+                _vm._v(" Suivant "),
+                _c("span", { attrs: { "uk-pagination-next": "" } })
+              ]
+            )
+          ])
         ]
       )
     ])

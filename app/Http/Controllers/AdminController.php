@@ -623,12 +623,6 @@ class AdminController extends Controller
       $commands= $c->select()->orderBy('created_at','desc')->get();
 
       $all =  $this->organizeCommandList($commands);
-      // recuperation des livraison
-      // $livraison = $this->livraisonStateRequest('unvalidate');
-      // $livraison = $this->organizeLivraison($livraison);
-      //
-      // $_livraison = $this->livraisonStateRequest('validate');
-      // $_livraison = $this->organizeLivraison($_livraison);
 
       return response()->json($all);
     } catch (AppException $e) {

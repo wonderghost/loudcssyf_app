@@ -2,8 +2,8 @@
   <div class="">
 
     <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
-        <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiel</a></li>
-        <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Livraison</a></li>
+        <li><a @click="start=0" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiel</a></li>
+        <li><a @click="end=10" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Livraison</a></li>
         <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Credit</a></li>
     </ul>
     <ul class="uk-switcher uk-margin">
@@ -23,7 +23,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="command in commandMaterial">
+                <tr v-for="command in commandMaterial.slice(start,end)">
                   <td v-for="(column , name) in command" v-if="name != 'link' && name != 'id' && name!='status'">{{column}}</td>
                   <td class="uk-text-danger" v-if="command.status == 'en attente'">{{command.status}}</td>
                   <td class="uk-text-success" v-else >{{command.status}}</td>
@@ -31,6 +31,11 @@
                 </tr>
               </tbody>
             </table>
+              <ul class="uk-pagination uk-flex uk-flex-center">
+                <li> <span> Page : {{currentPage}} </span> </li>
+                <li> <button type="button" @click="previousPage()" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-default" name="button"> <span uk-pagination-previous></span> Previous</button> </li>
+                <li> <button type="button" @click="nextPage()" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-default" name="button"> Suivant <span uk-pagination-next></span> </button> </li>
+              </ul>
           </div>
       </li>
       <li>
@@ -46,7 +51,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="livraison in livraisonMaterial">
+              <tr v-for="livraison in livraisonMaterial.slice(start,end)">
                 <td>{{livraison.date}}</td>
                 <td>{{livraison.vendeur}}</td>
                 <td>{{livraison.produit}}</td>
@@ -61,6 +66,10 @@
               </tr>
             </tbody>
           </table>
+          <ul class="uk-pagination uk-flex uk-flex-center">
+            <li> <button @click="previousPage()" type="button" class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small" name="button"> <span uk-pagination-previous></span> Precedent</button> </li>
+            <li> <button @click="nextPage()" type="button" class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small" name="button"> Suivant <span uk-pagination-next></span> </button> </li>
+          </ul>
         </div>
       </li>
       <li>
@@ -78,7 +87,10 @@
         data () {
           return {
             materialCommand : ['date','vendeurs','designation','quantite','parabole a livrer','status'],
-            livraison : ['date','vendeurs','designation','commande','quantite','status']
+            livraison : ['date','vendeurs','designation','commande','quantite','status'],
+            start : 0,
+            end : 10,
+            currentPage : 1
           }
         },
         methods : {
@@ -102,10 +114,32 @@
           }
           ,
           filterCommande : function (type) {
+            this.currentPage = 1
+            this.start = 0
+            this.end = 10
             this.$store.commit('setTypeCommand',type)
           },
           filterLivraison : function (status) {
+            this.currentPage = 1
+            this.start = 0
+            this.end = 10
             this.$store.commit('setStateLivraison',status)
+          },
+          nextPage : function () {
+            if(this.commandMaterial.length > this.end) {
+              let ecart = this.end - this.start
+              this.start = this.end
+              this.end += ecart
+              this.currentPage++
+            }
+          },
+          previousPage : function () {
+            if(this.start > 0) {
+              let ecart = this.end - this.start
+              this.start -= ecart
+              this.end -= ecart
+              this.currentPage--
+            }
           }
         },
         computed : {
