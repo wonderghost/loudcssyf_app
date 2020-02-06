@@ -23,14 +23,6 @@
     <input type="hidden" id="user-type" value="{{Auth::user()->type}}">
     <input type="hidden" id="user-localisation" value="{{Auth::user()->localisation}}">
     <input type="hidden" id="username" value="{{Auth::user()->username}}">
-    <div id="loader">
-  		<div class="uk-border-rounded uk-dark uk-width-1-2@s uk-width-1-3@m uk-align-center uk-background-default uk-margin-xlarge-top uk-padding uk-visible@m uk-flex uk-flex-middle uk-flex-center" style="margin-top : 20% !important;">
-  			<div class="uk-margin-right" uk-spinner></div>  Patientez svp ...
-  		</div>
-  		<div class="uk-border-rounded uk-dark uk-width-1-2@s uk-width-1-3@m uk-align-center uk-background-default uk-margin-xlarge-top uk-padding uk-hidden@m uk-flex uk-flex-middle uk-flex-center" style="margin-top : 50% !important;">
-  			<div class="uk-margin-right" uk-spinner></div>  Patientez svp ...
-  		</div>
-  	</div>
     <div id="app">
       <home-component></home-component>
       @yield('content')

@@ -1,6 +1,8 @@
 <template>
 <div class="">
-
+  <loading :active.sync="isLoading"
+      :can-cancel="false"
+      :is-full-page="fullPage"></loading>
   <table  class="uk-table uk-table-divider uk-table-striped uk-table-small uk-table-hover">
     <thead>
       <tr>
@@ -52,7 +54,12 @@
 </template>
 
 <script>
+import Loading from 'vue-loading-overlay'
+import 'vue-loading-overlay/dist/vue-loading.css'
     export default {
+      created () {
+        this.isLoading = true
+      },
       mounted() {
         this.listUser()
       },
@@ -66,17 +73,24 @@
           userToReset : "",
           userId : "",
           userPassword : "",
-          errorHandler : ""
+          errorHandler : "",
+          isLoading : false,
+          fullPage : true
         }
+      },
+      components : {
+        Loading
       },
       methods : {
         listUser : function () {
           var tmp = this
           axios.get('/admin/users/list').then(function (response) {
             tmp.$store.state.users = response.data
+
            }).catch(function (error) {
              alert(error)
            })
+           this.isLoading = false
         },
         resetUser : function (event,username) {
           UIkit.modal($("#reset-modal")).hide()
@@ -144,7 +158,7 @@
             if(this.$store.state.searchState) {
               return user.localisation.toUpperCase().match(this.$store.state.searchText.toUpperCase())
             } else {
-              return user.type.match(this.$store.state.typeUser)
+              return user.type.match(this.$store.state.typeUserFilter)
             }
           })
         }

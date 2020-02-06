@@ -13669,6 +13669,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     typeCommand: 'en attente',
     statusLivraison: 'unlivred',
     statusCommandCredit: 'unvalidated',
+    typeUserFilter: document.querySelector("input[id=user-type]").value,
     typeUser: document.querySelector("input[id=user-type]").value,
     myToken: document.querySelector("meta[name=csrf-token]").content,
     userLocalisation: document.querySelector("input[id=user-localisation]").value,
@@ -13681,7 +13682,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     },
     filterUsers: function filterUsers(state, type) {
       state.searchState = false;
-      state.typeUser = type;
+      state.typeUserFilter = type;
     },
     setTypeCommand: function setTypeCommand(state, type) {
       state.typeCommand = type;

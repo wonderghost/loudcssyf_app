@@ -50,7 +50,7 @@
             <li class="uk-parent">
               <a href="#"><span uk-icon="icon: credit-card;"></span> Afrocash</a>
               <ul class="uk-nav-sub">
-                <li><a href="admin/afrocash"><span uk-icon="icon :arrow-right;"></span> Operations</a>	</li>
+                <li><a href="/admin/afrocash"><span uk-icon="icon :arrow-right;"></span> Operations</a>	</li>
                 <li><a href="/admin/afrocash/all-transactions"><span uk-icon="icon : arrow-right;"></span> Toutes les transactions</a>	</li>
               </ul>
             </li>
@@ -83,8 +83,13 @@
                   <li><a href="/admin/all-rapport"><span uk-icon="icon:arrow-right"></span> Toutes les ventes</a></li>
               </ul>
           </li>
-          <li><a href="/admin/formule"><span uk-icon="icon:check"></span> Formule</a></li>
-          <li><a href="/admin/settings"><span uk-icon="icon:user"></span> Profile</a></li>
+          <li class="uk-parent">
+            <a href="#"> <span uk-icon="icon : settings ; ratio : .9"></span> Parametres</a>
+            <ul class="uk-nav-sub">
+              <li><a href="/admin/formule"><span uk-icon="icon:check"></span> Formule</a></li>
+              <li><a href="/admin/settings"><span uk-icon="icon:user"></span> Profile</a></li>
+            </ul>
+          </li>
           </template>
         </ul>
       </div>

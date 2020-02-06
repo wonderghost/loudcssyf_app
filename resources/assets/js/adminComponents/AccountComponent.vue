@@ -1,5 +1,8 @@
 <template>
   <div class="">
+    <loading :active.sync="isLoading"
+        :can-cancel="false"
+        :is-full-page="fullPage"></loading>
     <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
 		    <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Comptes</a></li>
 		    <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Soldes Vendeurs</a></li>
@@ -67,12 +70,20 @@
 </template>
 
 <script>
+import Loading from 'vue-loading-overlay'
+import 'vue-loading-overlay/dist/vue-loading.css'
     export default {
+      created () {
+        this.isLoading = true
+      },
         mounted() {
-
           this.getSolde()
           this.getsoldeVendeurs()
         },
+        components : {
+          Loading
+        }
+        ,
         props : {
           theUser : String
         },
@@ -84,6 +95,9 @@
               rex : 0,
               total : 0
             },
+            isLoading : false,
+            fullPage : true
+            ,
             montantCredit : 0,
             typeCredit : "",
             creditAccountUrl : "/admin/add-account-credit",
@@ -113,6 +127,7 @@
                 }
                 this.soldes.total+=element.solde
               })
+              this.isLoading = false
             } catch (error) {
               console.log(error)
             }
@@ -127,14 +142,15 @@
                 var response = await axios.get('/user/get-soldes')
               }
               this.$store.commit('setSoldeVendeurs',response.data)
+              this.isLoading = false
             } catch (error) {
               console.log(error)
             }
           }
           ,
           crediterAccount : async function (event) {
+            this.isLoading = true
             event.preventDefault()
-
             try {
               let response = await axios.post(this.creditAccountUrl,{
                 _token : this.myToken,
@@ -146,9 +162,10 @@
                 this.requestState = true
                 this.montantCredit = 0
                 this.getSolde()
+                this.isLoading = false
               }
             } catch (error) {
-              $("#loader").hide()
+              this.isLoading = false
               if(error.response.data.errors) {
                 let errorTab = error.response.data.errors
                 for (var prop in errorTab) {
@@ -172,7 +189,7 @@
                 return user.vendeurs.toUpperCase().match(this.$store.state.searchText.toUpperCase())
               } else {
                 // filtre
-                return user.type.match(this.$store.state.typeUser)
+                return user.type.match(this.$store.state.typeUserFilter)
               }
             })
           }

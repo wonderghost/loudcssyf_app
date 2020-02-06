@@ -1,5 +1,9 @@
 <template>
   <div class="">
+    <loading :active.sync="isLoading"
+        :can-cancel="true"
+        :is-full-page="fullPage"></loading>
+
     <ul class="uk-tab" uk-switcher="animation : uk-animation-slide-right">
       <li> <a @click="filterCommandCredit('unvalidated')" href="#">En attente de validation</a> </li>
       <li> <a @click="filterCommandCredit('validated')" href="#">Deja validee</a> </li>
@@ -39,9 +43,12 @@
 </template>
 
 <script>
+import Loading from 'vue-loading-overlay'
+import 'vue-loading-overlay/dist/vue-loading.css'
 
     export default {
         mounted() {
+          this.isLoading = true
           this.getCommandCredit()
         },
         props : {
@@ -52,9 +59,15 @@
             tableHead : ['date','vendeurs','type','montant','status','numero recu','recu'],
             currentPage: 1,
             start : 0,
-            end  : 10
+            end  : 10,
+            isLoading : false,
+            fullPage : true
           }
         },
+        components : {
+          Loading
+        }
+        ,
         methods : {
           getCommandCredit : async function () {
             try {
@@ -64,7 +77,7 @@
                 var response = await axios.get('/user/commandes/credit-all')
               }
               this.$store.commit('setCommandCredit',response.data)
-              this.all = response.data
+              this.isLoading=false
             }
             catch (e) {
               alert(e)
