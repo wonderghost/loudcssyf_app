@@ -28,6 +28,7 @@
         "uikit-icons": "^0.5.0",
         "vue": "^2.6.11",
         "vue-filter-number-format": "^2.0.0",
+        "vue-loading-overlay": "^3.2.0",
         "vuex": "^3.1.2",
         "vuikit": "^0.8.10"
     }

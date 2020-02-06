@@ -46,10 +46,6 @@
         </div>
       </li>
       <li>
-        <!-- <div class="uk-width-1-2@m">
-          <label for=""> <span uk-icon="icon : search"></span> Recherche</label>
-          <input type="text" name="" value="" class="uk-input uk-border-rounded uk-box-shadow-hover-small" placeholder="Recherche rapide ...">
-        </div> -->
         <filter-user-component></filter-user-component>
         <div class="">
           <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
@@ -73,6 +69,7 @@
 <script>
     export default {
         mounted() {
+
           this.getSolde()
           this.getsoldeVendeurs()
         },
@@ -129,7 +126,7 @@
               else {
                 var response = await axios.get('/user/get-soldes')
               }
-              this.$store.state.soldeVendeur = response.data
+              this.$store.commit('setSoldeVendeurs',response.data)
             } catch (error) {
               console.log(error)
             }
@@ -140,6 +137,7 @@
 
             try {
               let response = await axios.post(this.creditAccountUrl,{
+                _token : this.myToken,
                 compte : this.typeCredit,
                 montant : this.montantCredit
               })

@@ -73,7 +73,7 @@
         </div>
       </li>
       <li>
-        <credit-component></credit-component>
+        <credit-component the-user="admin"></credit-component>
       </li>
     </ul>
   </div>

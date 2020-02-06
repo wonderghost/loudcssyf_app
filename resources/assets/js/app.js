@@ -20,6 +20,7 @@ Vue.component('filter-user-component',require('./adminComponents/FilterComponent
 Vue.component('account',require('./adminComponents/AccountComponent.vue').default)
 Vue.component('command',require('./adminComponents/CommandComponent.vue').default)
 Vue.component('credit-component',require('./adminComponents/CreditComponent.vue').default)
+Vue.component('home-component',require('./userComponents/homeComponent.vue').default)
 
 // /
 import Vue from 'vue'
@@ -27,7 +28,7 @@ import Vuex from 'vuex'
 import Vuikit from 'vuikit'
 import numeral from 'numeral';
 import numFormat from 'vue-filter-number-format';
-
+import Loading from 'vue-loading-overlay'
 import store from './store'
 
 Vue.use(Vuikit)

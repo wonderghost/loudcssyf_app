@@ -13662,15 +13662,17 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     soldeVendeur: [],
     filtedredUser: [],
     searchText: "",
-    typeUser: document.querySelector("input[id=user-type]").value,
     searchState: true,
-    myToken: document.querySelector("meta[name=csrf-token]").content,
     commandMaterial: [],
     livraisonMaterial: [],
     commandCredit: [],
     typeCommand: 'en attente',
     statusLivraison: 'unlivred',
-    statusCommandCredit: 'unvalidated'
+    statusCommandCredit: 'unvalidated',
+    typeUser: document.querySelector("input[id=user-type]").value,
+    myToken: document.querySelector("meta[name=csrf-token]").content,
+    userLocalisation: document.querySelector("input[id=user-localisation]").value,
+    userName: document.querySelector("input[id=username]").value
   },
   mutations: {
     searchText: function searchText(state, word) {
@@ -13698,6 +13700,9 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     },
     setStatusCommandCredit: function setStatusCommandCredit(state, type) {
       state.statusCommandCredit = type;
+    },
+    setSoldeVendeurs: function setSoldeVendeurs(state, data) {
+      state.soldeVendeur = data;
     }
   },
   actions: {}
