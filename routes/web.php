@@ -159,7 +159,6 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// === MATERIELS
 	Route::get('/user/list-material','LogistiqueController@listMaterial')->middleware('logistique');
 	Route::post('/user/list-material','LogistiqueController@getListMaterial')->middleware('logistique');
-	Route::get('/user/history-depot','LogistiqueController@historyDepot')->middleware('logistique');
 	Route::post('/user/history-depot','LogistiqueController@getHistoryDepot')->middleware('logistique');
 	# recuperation des numeros de SERIES
 	Route::post('/user/get-serialNumber','LogistiqueController@ListSerialNumber')->middleware('logistique');
@@ -171,6 +170,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/parabole-du','LogistiqueController@getParaboleDu')->middleware('logistique');
 	Route::post('/user/reste-pour-ravitaillement','LogistiqueController@getRestantPourRavitaillement')->middleware('logistique');
 	// COMPLETER LE RAVITAILLEMENT EN SAISISSANT LES NUMEROS DE SERIE
+	Route::get('/user/history-depot','LogistiqueController@historyDepot')->middleware('logistique');
 	Route::get('/user/ravitailler/{commande}/complete-transfert','LogistiqueController@completeTransfert')->middleware('logistique');
 	Route::post('/user/ravitailler/{commande}/complete-transfert','LogistiqueController@completeTransfertFinal')->middleware('logistique');
 
@@ -216,7 +216,11 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// GESTIONNAIRE CGA
 	Route::get('/user/cga-credit/','CreditController@crediterVendeur')->middleware('cga');
 	Route::get('/user/credit-cga/commandes','CreditController@commandCredit')->middleware('cga');
-	Route::post('user/credit-cga/commandes','CreditController@getListCommandGcga')->middleware('cga');
+
+	Route::get('/user/commandes/credit-all','CreditController@getAllCommandes')->middleware('cga');
+	Route::get('/user/get-soldes','CreditController@getSoldesVendeurs')->middleware('cga');
+	Route::get('user/get-global-solde','CreditController@getGlobalSolde')->middleware('cga');
+
 	Route::post('/user/send-cga','CreditController@sendCga')->middleware('cga');
 	Route::post('/user/send-afrocash','CreditController@sendAfrocash');
 	Route::post('/user/credit-cga/abort-commandes','CreditController@abortCommande')->middleware('cga');

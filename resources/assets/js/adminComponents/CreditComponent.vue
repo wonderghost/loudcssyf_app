@@ -22,7 +22,7 @@
             <td>{{credit.numero_recu}}</td>
             <td v-if="credit.recu !== 'undefined'">
               <div uk-lightbox>
-                <a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-default uk-text-capitalize" href="" data-caption="Caption">voir</a>
+                <a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-default uk-text-capitalize" href="" :data-caption="credit.numero_recu">voir</a>
               </div>
             </td>
             <td v-else>{{credit.recu}}</td>
@@ -44,6 +44,9 @@
         mounted() {
           this.getCommandCredit()
         },
+        props : {
+          theUser : String
+        },
         data () {
           return {
             tableHead : ['date','vendeurs','type','montant','status','numero recu','recu'],
@@ -55,7 +58,11 @@
         methods : {
           getCommandCredit : async function () {
             try {
-              let response = await axios.get('/admin/commandes/credit-all')
+              if(this.theUser == 'admin') {
+                var response = await axios.get('/admin/commandes/credit-all')
+              } else {
+                var response = await axios.get('/user/commandes/credit-all')
+              }
               this.$store.commit('setCommandCredit',response.data)
               this.all = response.data
             }

@@ -1997,10 +1997,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     this.getSolde();
     this.getsoldeVendeurs();
+  },
+  props: {
+    theUser: String
   },
   data: function data() {
     return {
@@ -2032,11 +2038,28 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 _context.prev = 0;
                 this.soldes.total = 0;
-                _context.next = 4;
+
+                if (!(this.theUser == 'admin')) {
+                  _context.next = 8;
+                  break;
+                }
+
+                _context.next = 5;
                 return axios.get('/admin/get-global-solde');
 
-              case 4:
+              case 5:
                 response = _context.sent;
+                _context.next = 11;
+                break;
+
+              case 8:
+                _context.next = 10;
+                return axios.get('/user/get-global-solde');
+
+              case 10:
+                response = _context.sent;
+
+              case 11:
                 response.data.forEach(function (element) {
                   if (element.designation == 'cga') {
                     _this.soldes.cga = element.solde;
@@ -2048,20 +2071,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                   _this.soldes.total += element.solde;
                 });
-                _context.next = 11;
+                _context.next = 17;
                 break;
 
-              case 8:
-                _context.prev = 8;
+              case 14:
+                _context.prev = 14;
                 _context.t0 = _context["catch"](0);
                 console.log(_context.t0);
 
-              case 11:
+              case 17:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this, [[0, 8]]);
+        }, _callee, this, [[0, 14]]);
       }));
 
       function getSolde() {
@@ -2080,26 +2103,43 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context2.prev = _context2.next) {
               case 0:
                 _context2.prev = 0;
-                _context2.next = 3;
+
+                if (!(this.theUser == 'admin')) {
+                  _context2.next = 7;
+                  break;
+                }
+
+                _context2.next = 4;
                 return axios.get('/admin/get-soldes');
 
-              case 3:
+              case 4:
                 response = _context2.sent;
-                this.$store.state.soldeVendeur = response.data;
                 _context2.next = 10;
                 break;
 
               case 7:
-                _context2.prev = 7;
+                _context2.next = 9;
+                return axios.get('/user/get-soldes');
+
+              case 9:
+                response = _context2.sent;
+
+              case 10:
+                this.$store.state.soldeVendeur = response.data;
+                _context2.next = 16;
+                break;
+
+              case 13:
+                _context2.prev = 13;
                 _context2.t0 = _context2["catch"](0);
                 console.log(_context2.t0);
 
-              case 10:
+              case 16:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[0, 7]]);
+        }, _callee2, this, [[0, 13]]);
       }));
 
       function getsoldeVendeurs() {
@@ -2509,6 +2549,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   mounted: function mounted() {
     this.getCommandCredit();
   },
+  props: {
+    theUser: String
+  },
   data: function data() {
     return {
       tableHead: ['date', 'vendeurs', 'type', 'montant', 'status', 'numero recu', 'recu'],
@@ -2528,27 +2571,44 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context.prev = _context.next) {
               case 0:
                 _context.prev = 0;
-                _context.next = 3;
+
+                if (!(this.theUser == 'admin')) {
+                  _context.next = 7;
+                  break;
+                }
+
+                _context.next = 4;
                 return axios.get('/admin/commandes/credit-all');
 
-              case 3:
+              case 4:
                 response = _context.sent;
-                this.$store.commit('setCommandCredit', response.data);
-                this.all = response.data;
-                _context.next = 11;
+                _context.next = 10;
                 break;
 
-              case 8:
-                _context.prev = 8;
+              case 7:
+                _context.next = 9;
+                return axios.get('/user/commandes/credit-all');
+
+              case 9:
+                response = _context.sent;
+
+              case 10:
+                this.$store.commit('setCommandCredit', response.data);
+                this.all = response.data;
+                _context.next = 17;
+                break;
+
+              case 14:
+                _context.prev = 14;
                 _context.t0 = _context["catch"](0);
                 alert(_context.t0);
 
-              case 11:
+              case 17:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this, [[0, 8]]);
+        }, _callee, this, [[0, 14]]);
       }));
 
       function getCommandCredit() {
@@ -15734,142 +15794,159 @@ var render = function() {
               2
             ),
             _vm._v(" "),
-            _c(
-              "div",
-              {},
-              [
-                _c("h4", [_vm._v("Crediter les comptes")]),
-                _vm._v(" "),
-                _vm._l(_vm.errors, function(error) {
-                  return _vm.errors.length
-                    ? [
-                        _c(
-                          "div",
-                          {
-                            staticClass:
-                              "uk-alert-danger uk-border-rounded uk-box-shadow-hover-small",
-                            attrs: { "uk-alert": "" }
-                          },
-                          [
-                            _c("a", {
-                              staticClass: "uk-alert-close",
-                              attrs: { href: "#", "uk-close": "" }
-                            }),
-                            _vm._v(" "),
-                            _c("p", [_vm._v(_vm._s(error))])
-                          ]
-                        )
-                      ]
-                    : _vm._e()
-                }),
-                _vm._v(" "),
-                _vm.requestState
-                  ? _c(
-                      "div",
-                      {
-                        staticClass:
-                          "uk-alert-success uk-border-rounded uk-box-shadow-hover-small",
-                        attrs: { "uk-alert": "" }
-                      },
-                      [
-                        _c("a", {
-                          staticClass: "uk-alert-close",
-                          attrs: { href: "#", "uk-close": "" }
-                        }),
-                        _vm._v(" "),
-                        _c("p", [_vm._v("Success")])
-                      ]
-                    )
-                  : _vm._e(),
-                _vm._v(" "),
-                _c(
-                  "form",
-                  {
-                    on: {
-                      submit: function($event) {
-                        return _vm.crediterAccount($event)
-                      }
-                    }
-                  },
-                  [
-                    _c("label", [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.typeCredit,
-                            expression: "typeCredit"
-                          }
-                        ],
-                        staticClass: "uk-radio",
-                        attrs: { type: "radio", name: "compte", value: "cga" },
-                        domProps: { checked: _vm._q(_vm.typeCredit, "cga") },
-                        on: {
-                          change: function($event) {
-                            _vm.typeCredit = "cga"
-                          }
-                        }
+            _vm.theUser == "admin"
+              ? [
+                  _c(
+                    "div",
+                    {},
+                    [
+                      _c("h4", [_vm._v("Crediter les comptes")]),
+                      _vm._v(" "),
+                      _vm._l(_vm.errors, function(error) {
+                        return _vm.errors.length
+                          ? [
+                              _c(
+                                "div",
+                                {
+                                  staticClass:
+                                    "uk-alert-danger uk-border-rounded uk-box-shadow-hover-small",
+                                  attrs: { "uk-alert": "" }
+                                },
+                                [
+                                  _c("a", {
+                                    staticClass: "uk-alert-close",
+                                    attrs: { href: "#", "uk-close": "" }
+                                  }),
+                                  _vm._v(" "),
+                                  _c("p", [_vm._v(_vm._s(error))])
+                                ]
+                              )
+                            ]
+                          : _vm._e()
                       }),
-                      _vm._v(" CGA\n\t\t\t\t\t\t")
-                    ]),
-                    _vm._v(" "),
-                    _c("label", [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.typeCredit,
-                            expression: "typeCredit"
-                          }
-                        ],
-                        staticClass: "uk-radio",
-                        attrs: { type: "radio", name: "compte", value: "rex" },
-                        domProps: { checked: _vm._q(_vm.typeCredit, "rex") },
-                        on: {
-                          change: function($event) {
-                            _vm.typeCredit = "rex"
-                          }
-                        }
-                      }),
-                      _vm._v(" REX\n\t\t\t\t\t\t")
-                    ]),
-                    _vm._v(" "),
-                    _c("input", {
-                      directives: [
+                      _vm._v(" "),
+                      _vm.requestState
+                        ? _c(
+                            "div",
+                            {
+                              staticClass:
+                                "uk-alert-success uk-border-rounded uk-box-shadow-hover-small",
+                              attrs: { "uk-alert": "" }
+                            },
+                            [
+                              _c("a", {
+                                staticClass: "uk-alert-close",
+                                attrs: { href: "#", "uk-close": "" }
+                              }),
+                              _vm._v(" "),
+                              _c("p", [_vm._v("Success")])
+                            ]
+                          )
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _c(
+                        "form",
                         {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.montantCredit,
-                          expression: "montantCredit"
-                        }
-                      ],
-                      staticClass:
-                        "uk-input uk-border-rounded uk-box-shadow-hover-small uk-margin-small",
-                      attrs: {
-                        type: "number",
-                        name: "montant",
-                        placeholder: "Montant"
-                      },
-                      domProps: { value: _vm.montantCredit },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
+                          on: {
+                            submit: function($event) {
+                              return _vm.crediterAccount($event)
+                            }
                           }
-                          _vm.montantCredit = $event.target.value
-                        }
-                      }
-                    }),
-                    _vm._v(" "),
-                    _vm._m(1)
-                  ]
-                )
-              ],
-              2
-            )
-          ]
+                        },
+                        [
+                          _c("label", [
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.typeCredit,
+                                  expression: "typeCredit"
+                                }
+                              ],
+                              staticClass: "uk-radio",
+                              attrs: {
+                                type: "radio",
+                                name: "compte",
+                                value: "cga"
+                              },
+                              domProps: {
+                                checked: _vm._q(_vm.typeCredit, "cga")
+                              },
+                              on: {
+                                change: function($event) {
+                                  _vm.typeCredit = "cga"
+                                }
+                              }
+                            }),
+                            _vm._v(" CGA\n  \t\t\t\t\t\t")
+                          ]),
+                          _vm._v(" "),
+                          _c("label", [
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.typeCredit,
+                                  expression: "typeCredit"
+                                }
+                              ],
+                              staticClass: "uk-radio",
+                              attrs: {
+                                type: "radio",
+                                name: "compte",
+                                value: "rex"
+                              },
+                              domProps: {
+                                checked: _vm._q(_vm.typeCredit, "rex")
+                              },
+                              on: {
+                                change: function($event) {
+                                  _vm.typeCredit = "rex"
+                                }
+                              }
+                            }),
+                            _vm._v(" REX\n  \t\t\t\t\t\t")
+                          ]),
+                          _vm._v(" "),
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.montantCredit,
+                                expression: "montantCredit"
+                              }
+                            ],
+                            staticClass:
+                              "uk-input uk-border-rounded uk-box-shadow-hover-small uk-margin-small",
+                            attrs: {
+                              type: "number",
+                              name: "montant",
+                              placeholder: "Montant"
+                            },
+                            domProps: { value: _vm.montantCredit },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.montantCredit = $event.target.value
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _vm._m(1)
+                        ]
+                      )
+                    ],
+                    2
+                  )
+                ]
+              : _vm._e()
+          ],
+          2
         )
       ]),
       _vm._v(" "),
@@ -15927,7 +16004,7 @@ var staticRenderFns = [
       "ul",
       {
         staticClass: "uk-subnav uk-subnav-pill",
-        attrs: { "uk-switcher": "animation: uk-animation-fade" }
+        attrs: { "uk-switcher": "animation: uk-animation-slide-bottom" }
       },
       [
         _c("li", [
@@ -16516,7 +16593,22 @@ var render = function() {
                 _c("td", [_vm._v(_vm._s(credit.numero_recu))]),
                 _vm._v(" "),
                 credit.recu !== "undefined"
-                  ? _c("td", [_vm._m(0, true)])
+                  ? _c("td", [
+                      _c("div", { attrs: { "uk-lightbox": "" } }, [
+                        _c(
+                          "a",
+                          {
+                            staticClass:
+                              "uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-default uk-text-capitalize",
+                            attrs: {
+                              href: "",
+                              "data-caption": credit.numero_recu
+                            }
+                          },
+                          [_vm._v("voir")]
+                        )
+                      ])
+                    ])
                   : _c("td", [_vm._v(_vm._s(credit.recu))])
               ])
             }),
@@ -16582,24 +16674,7 @@ var render = function() {
     ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { attrs: { "uk-lightbox": "" } }, [
-      _c(
-        "a",
-        {
-          staticClass:
-            "uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-default uk-text-capitalize",
-          attrs: { href: "", "data-caption": "Caption" }
-        },
-        [_vm._v("voir")]
-      )
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
