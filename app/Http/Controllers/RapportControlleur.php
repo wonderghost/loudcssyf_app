@@ -192,11 +192,11 @@ public function validatePayComission(Request $request) {
         $comission->save();
         throw new AppException("Demande deja traitee!");
       }
+      return response()->json([$total,$comission->montant_total]);
+      die();
       if($total == $comission->montant_total) {
         // LES MONTANTS SONT IDENTIQUES , IL N'Y A PAS DE CONFUSION
         if($afrocash_central && ($afrocash_central->solde >= $total) ) {
-          return response()->json([$total,$comission->montant_total]);
-          die();
 
           // ENVOI DES NOTIFICATIONS
           $this->sendNotification("Paiement Comission","Paiement de commission de : ".number_format($total)." GNF effectue pour :".$afrocash_account->vendeurs()->localisation,Auth::user()->username);
