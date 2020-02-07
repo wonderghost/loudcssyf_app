@@ -12,9 +12,8 @@ class PayCommission extends Model
 
     public function isExistPayment() {
       $temp = self::where([
-        'debut' =>  $this->debut,
-        'fin' =>  $this->fin,
-        'vendeurs'  =>  $this->vendeurs
+        'vendeurs'  =>  $this->vendeurs,
+        'status'  =>  'unvalidated'
       ])->first();
       if($temp) {
         return true;
