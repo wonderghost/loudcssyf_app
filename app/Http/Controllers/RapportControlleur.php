@@ -193,8 +193,8 @@ public function validatePayComission(Request $request) {
         throw new AppException("Demande deja traitee!");
       }
       if($total == $comission->montant_total) {
-        return response()->json([$total,$comission->montant_total]);
-        die();
+        // return response()->json([$total,$comission->montant_total]);
+        // die();
         // LES MONTANTS SONT IDENTIQUES , IL N'Y A PAS DE CONFUSION
         if($afrocash_central && ($afrocash_central->solde >= $total) ) {
 
