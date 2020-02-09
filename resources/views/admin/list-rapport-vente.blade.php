@@ -66,6 +66,12 @@
 					<tbody id="recrutement-list"></tbody>
 				</table>
 				<!-- // -->
+				<!-- // -->
+				<ul class="uk-pagination uk-flex uk-flex-center" id="recrutement-paginate">
+						<li><a><span>Page : </span><span id="recrutement-page">1</span> </a> </li>
+				    <li><a class="paginate-link" data-id="previous"><span uk-pagination-previous></span> Precedent</a></li>
+				    <li><a class="paginate-link" data-id="next">Suivant <span uk-pagination-next></span> </a></li>
+				</ul>
 			</li>
 			<li>
 				<!-- REABONNEMENT -->
@@ -112,6 +118,11 @@
 					<tbody id="migration-list"></tbody>
 				</table>
 				<!-- // -->
+				<ul class="uk-pagination uk-flex uk-flex-center" id="migration-paginate">
+						<li><a><span>Page : </span><span id="migration-page">1</span> </a> </li>
+				    <li><a class="paginate-link" data-id="previous"><span uk-pagination-previous></span> Precedent</a></li>
+				    <li><a class="paginate-link" data-id="next">Suivant <span uk-pagination-next></span> </a></li>
+				</ul>
 			</li>
 		</ul>
 

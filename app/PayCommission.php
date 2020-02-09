@@ -7,21 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class PayCommission extends Model
 {
     //
-    protected $table = 'pay_commissions';
+    protected $table = 'pay_comissions';
+    protected $keyType = 'string';
 
-
-    public function isExistPayment() {
-      $temp = self::where([
-        'vendeurs'  =>  $this->vendeurs,
-        'status'  =>  'unvalidated'
-      ])->first();
-      if($temp) {
-        return true;
-      }
-      return false;
-    }
-
-    public function vendeurs() {
-      return $this->belongsTo('App\User','vendeurs','username')->first();
+    public function rapports() {
+      return $this->hasMany('App\RapportVente','pay_comission_id','id')->orderBy('date_rapport','asc');
     }
 }

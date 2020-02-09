@@ -1636,6 +1636,7 @@ recrutementListFormAdmin : function (url) {
       data.forEach(function (element , index) {
         $("#recrutement-list .row").eq(index).children().eq(0).remove()
       })
+      $logistique.paginateData(url,$("#recrutement-paginate .paginate-link"),$("#recrutement-paginate #recrutement-page"),$("#recrutement-list"))
     }
   },'json')
 },
@@ -1650,6 +1651,7 @@ migrationListForAdmin : function (url) {
       data.forEach(function (element , index ) {
         $("#migration-list .row").eq(index).children().eq(0).remove()
       })
+      $logistique.paginateData(url,$("#migration-paginate .paginate-link"),$("#migration-paginate #migration-page"),$("#migration-list"))
     }
   })
 }
@@ -1720,7 +1722,7 @@ recrutementVendeur : function (url) {
       data.forEach(function (element , index) {
         $("#recrutement-list .row").eq(index).children().eq(0).remove()
       })
-      $logistique.paginateData(url,$("#recrutement-paginate .paginate-link"),$("#recrutement-paginate #page"),$("#recrutement-list"))
+      // $logistique.paginateData(url,$("#recrutement-paginate .paginate-link"),$("#recrutement-paginate #recrutement-page"),$("#recrutement-list"))
     }
   })
 }
@@ -1736,7 +1738,7 @@ migrationVendeur : function (url) {
       data.forEach(function (element , index) {
         $("#migration-list .row").eq(index).children().eq(0).remove()
       })
-      $logistique.paginateData(url,$("#migration-paginate .paginate-link"),$("#migration-paginate #page"),$("#migration-list"))
+      // $logistique.paginateData(url,$("#migration-paginate .paginate-link"),$("#migration-paginate #migration-page"),$("#migration-list"))
     }
   })
 }

@@ -55,5 +55,4 @@ class RapportVente extends Model
       $this->statut_paiement_commission = 'paye';
     }
 
-
 }

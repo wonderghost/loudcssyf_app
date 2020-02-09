@@ -48,4 +48,20 @@ class User extends Authenticatable
       return RexAccount::where('numero',$this->rex);
     }
 
+    public function rapports() {
+      return $this->hasMany("App\RapportVente",'vendeurs','username')->get();
+    }
+
+    // rapport ayant deja recu une demande de paiement
+    public function rapportPayNotNull() {
+      return $this->hasMany("App\RapportVente",'vendeurs','username')->whereNotNull('pay_comission_id')->get();
+    }
+    // rapport n'ayant pas recu une demande de paiement
+    public function rapportsPayNUll() {
+      return $this->hasMany("App\RapportVente",'vendeurs','username')->whereNull('pay_comission_id')->get();
+    }
+
+    public function rapportGroupByPayId() {
+      return RapportVente::select('pay_comission_id')->whereNotNull('pay_comission_id')->where("vendeurs",$this->username)->groupBy('pay_comission_id')->get();
+    }
 }
