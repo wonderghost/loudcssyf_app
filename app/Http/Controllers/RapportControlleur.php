@@ -233,6 +233,8 @@ public function validatePayComission(Request $request) {
           $afrocash_account->solde+=$total;
 
           $comission->status = 'validated';
+          $pay_at = Carbon::now();
+          $comission->pay_at = $pay_at->toDateTimeString();
           $comission->save();
           $afrocash_central->save();
           $afrocash_account->save();
