@@ -91,6 +91,51 @@
             </ul>
           </li>
           </template>
+          <template v-if="typeUser == 'v_da' || typeUser == 'v_standart'" id="">
+            <li class="uk-parent">
+                <a href="#"><span uk-icon="icon:cart;ratio:0.9"></span> Ventes</a>
+                <ul class="uk-nav-sub">
+                    <li><a href="/user/rapport-ventes"><span uk-icon="icon:plus"></span> Rapport de ventes</a></li>
+                </ul>
+            </li>
+            <li class="uk-parent">
+                <a href="#"><span uk-icon="icon:thumbnails;ratio:0.9"></span> Stock</a>
+                <ul class="uk-nav-sub">
+                    <li><a href="/user/my-inventory"><span uk-icon="icon:arrow-right"></span> Inventaire</a></li>
+                    <li><a href="/user/my-history-ravitaillement"><span uk-icon="icon:arrow-right"></span> Historique de ravitaillement</a></li>
+                </ul>
+            </li>
+
+            <li class="uk-parent">
+                <a href="#"><span uk-icon="icon:users;ratio:0.9"></span> Carnet d'adresse</a>
+                <ul class="uk-nav-sub">
+                    <li><a href="/user/add-client"><span uk-icon="icon:arrow-right"></span> Nouveau</a></li>
+                    <li><a href="/user/list-client"><span uk-icon="icon:arrow-right"></span> Repertoire</a></li>
+                </ul>
+            </li>
+            <!-- AFROCASH -->
+            <li class="uk-parent">
+              <a href="#"><span uk-icon="icon : credit-card"></span> Afrocash</a>
+              <ul class="uk-nav-sub">
+                <li><a href="/user/afrocash"> <span uk-icon="icon : arrow-right"></span>	Operations</a> </li>
+                <li><a href="/user/afrocash/all-transactions"> <span uk-icon="icon : arrow-right"></span>	Toutes les Transactions</a> </li>
+              </ul>
+            </li>
+            <!-- // -->
+            <li class="uk-parent">
+                <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Commandes</a>
+                <ul class="uk-nav-sub">
+                    <li><a href="/user/new-command"><span uk-icon="icon:arrow-right"></span> Nouvelle Commande</a></li>
+                    <li><a href="/user/list-command"><span uk-icon="icon:arrow-right"></span> Toutes les Commandes</a></li>
+                </ul>
+            </li>
+          </template>
+          <li class="uk-parent">
+            <a href="#"> <span uk-icon="icon : settings ; ratio : .9"></span> Parametres</a>
+            <ul class="uk-nav-sub">
+              <li><a href="/user/settings"><span uk-icon="icon:user"></span> Profile</a></li>
+            </ul>
+          </li>
         </ul>
       </div>
     </div>

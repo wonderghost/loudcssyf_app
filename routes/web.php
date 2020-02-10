@@ -49,9 +49,10 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/rapport/remove-rapport','AdminController@removeRapport');
 
 	//
-	Route::get('/admin/rapport/list-reabonnement','AdminController@reabonnementRapport'); // recuperation de l'historique des rapports
-	Route::get('/admin/rapport/list-recrutement','AdminController@recrutementRapport'); // recuperation de l'historique des rapports
-	Route::get('/admin/rapport/list-migration','AdminController@migrationRapport'); // recuperation de l'historique des rapports
+	// Route::get('/admin/rapport/list-reabonnement','AdminController@reabonnementRapport'); // recuperation de l'historique des rapports
+	// Route::get('/admin/rapport/list-recrutement','AdminController@recrutementRapport'); // recuperation de l'historique des rapports
+	// Route::get('/admin/rapport/list-migration','AdminController@migrationRapport'); // recuperation de l'historique des rapports
+	Route::get('/admin/rapport/all','AdminController@getAllRapport');
 	Route::get('/admin/rapport/commission-total','AdminController@totalCommission');
 	// OPTION DE FORMULES
 	Route::post('/admin/add-option','AdminController@addOptionFormule');
@@ -121,9 +122,10 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('user/rapport/commission-total','RapportControlleur@totalCommission')->middleware('controleur');
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	Route::get('/user/rapport-ventes','RapportControlleur@getRapportByVendeurs')->middleware("vendeur");
-	Route::get('/user/rapport/list-reabonnement','RapportControlleur@reabonnementList')->middleware('vendeur');
-	Route::get('/user/rapport/list-recrutement','RapportControlleur@recrutementList')->middleware('vendeur');
-	Route::get('/user/rapport/list-migration','RapportControlleur@migrationList')->middleware('vendeur');
+	Route::get('/user/rapport-ventes/all','RapportControlleur@getAllRapportForVendeur')->middleware('vendeur');
+	// Route::get('/user/rapport/list-reabonnement','RapportControlleur@reabonnementList')->middleware('vendeur');
+	// Route::get('/user/rapport/list-recrutement','RapportControlleur@recrutementList')->middleware('vendeur');
+	// Route::get('/user/rapport/list-migration','RapportControlleur@migrationList')->middleware('vendeur');
 	Route::get("/user/rapport/total-commission",'RapportControlleur@totalCommissionVendeur')->middleware('vendeur');
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// ravitailler un depot

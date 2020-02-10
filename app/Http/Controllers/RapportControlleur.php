@@ -50,10 +50,21 @@ class RapportControlleur extends Controller
     public function getRapportByVendeurs() {
       return view('simple-users.rapport-vente');
     }
-// @@@@@
   public function rapportVendeur($type='reabonnement',$vendeur) {
     $data = RapportVente::where(['type'=>$type,'vendeurs'=>$vendeur])->orderBy('date_rapport','desc')->paginate(10);
     return  $this->organizeRapport($data);
+  }
+  // @@@@@
+
+  public function getAllRapportForVendeur(Request $request , RapportVente $r) {
+    try {
+      $result = $r->where('vendeurs',$request->user()->username)->orderBy('date_rapport','desc')->get();
+      return response()
+        ->json($this->organizeRapport($result));
+    } catch (AppException $e) {
+      header("Erreur!",true,422);
+      die(json_encode($e->getMessage()));
+    }
   }
 
   public function reabonnementList() {
@@ -83,9 +94,12 @@ class RapportControlleur extends Controller
     }
   }
 
-  public function totalCommissionVendeur() {
+  public function totalCommissionVendeur(Request $request , RapportVente $r) {
     try {
-      $commission = number_format(RapportVente::whereIn('type',['recrutement','reabonnement'])->where("vendeurs",Auth::user()->username)->whereNull('pay_comission_id')->sum('commission'));
+      $commission = $r->whereIn('type',['recrutement','reabonnement'])
+        ->where('vendeurs',$request->user()->username)
+        ->whereNull('pay_comission_id')
+        ->sum('commission');
       return response()->json($commission);
     } catch (AppException $e) {
       header("Erreur!",true,422);
@@ -93,7 +107,7 @@ class RapportControlleur extends Controller
     }
 
   }
-
+// ----------------------------------------------------------------------------------------------
 // @@@@@@
 // ENVOI DE LA DEMANDE DE PAIEMENT DE COMMISSION
 public function payCommission(Request $request , PayCommission $pay) {

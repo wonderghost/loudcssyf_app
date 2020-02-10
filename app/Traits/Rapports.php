@@ -265,6 +265,16 @@ Trait Rapports {
 	}
 
 // HISTORIQUE DE REABONNE POUR L'ADMINISTRATEUR
+		public function getAllRapport(RapportVente $r) {
+			try {
+				$all = $r->select()->orderBy('date_rapport','desc')->get();
+				return response()
+					->json($this->organizeRapport($all));
+			} catch (AppException $e) {
+				header("Erreur!",true,$e);
+				die(json_encode($e->getMessage()));
+			}
+		}
 			public function reabonnementRapport() {
 				try {
 					$reabonnement = RapportVente::where('type','reabonnement')->orderBy('date_rapport','desc')->paginate(10);
@@ -320,10 +330,12 @@ Trait Rapports {
 		}
 		return $all;
 	}
-
-public function totalCommission() {
+// cumulee total des comissions de tous les rapports
+public function totalCommission(RapportVente $r) {
 	try {
-		$commission = number_format(RapportVente::whereIn('type',['recrutement','reabonnement'])->where('statut_paiement_commission','non_paye')->sum('commission'));
+		$commission = $r->whereIn('type',['recrutement','reabonnement'])
+			->whereNull('pay_comission_id')
+			->sum('commission');
 		return response()->json($commission);
 	} catch (AppException $e) {
 		header("Erreur!",true,422);

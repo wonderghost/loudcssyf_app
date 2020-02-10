@@ -13673,7 +13673,8 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     typeUser: document.querySelector("input[id=user-type]").value,
     myToken: document.querySelector("meta[name=csrf-token]").content,
     userLocalisation: document.querySelector("input[id=user-localisation]").value,
-    userName: document.querySelector("input[id=username]").value
+    userName: document.querySelector("input[id=username]").value,
+    rapportVentes: []
   },
   mutations: {
     searchText: function searchText(state, word) {
@@ -13704,6 +13705,9 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     },
     setSoldeVendeurs: function setSoldeVendeurs(state, data) {
       state.soldeVendeur = data;
+    },
+    setRapportVente: function setRapportVente(state, data) {
+      state.rapportVentes = data;
     }
   },
   actions: {}

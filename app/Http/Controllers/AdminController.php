@@ -162,8 +162,8 @@ class AdminController extends Controller
     public function addUser(UserRequest $request) {
       try {
 
-        return response()->json($request);
-        die();
+        // return response()->json($request);
+        // die();
         $user = new User;
       	$agence = new Agence;
       	$user->email = $request->input('email');
@@ -201,7 +201,7 @@ class AdminController extends Controller
       			$user->save();
             $this->createAccountCredit($user->username,'cga');
             $this->newAccount($user->username);
-      			return redirect("/admin/add-user")->with('success',"Nouvel utilisateur ajouté!");
+      			return response()->json('done');
       	} else {
       		// vendeurs standart
               if($user->type !== 'v_standart') {
@@ -229,7 +229,6 @@ class AdminController extends Controller
       			// elle existe deja
       			$user->agence = $temp->reference;
       		}
-
               if($user->type == 'v_standart') {
                   $user->rex = $this->createAccountCredit(NULL,'rex');
                   $user->save();

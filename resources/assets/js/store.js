@@ -21,7 +21,8 @@ const store = new Vuex.Store({
     typeUser : document.querySelector("input[id=user-type]").value,
     myToken : document.querySelector("meta[name=csrf-token]").content,
     userLocalisation : document.querySelector("input[id=user-localisation]").value,
-    userName : document.querySelector("input[id=username]").value
+    userName : document.querySelector("input[id=username]").value,
+    rapportVentes : []
   },
   mutations : {
     searchText (state , word) {
@@ -53,6 +54,9 @@ const store = new Vuex.Store({
     },
     setSoldeVendeurs (state , data) {
       state.soldeVendeur = data
+    },
+    setRapportVente (state , data) {
+      state.rapportVentes = data
     }
   },
   actions : {

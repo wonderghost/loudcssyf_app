@@ -12,7 +12,12 @@
         <p>{{error}}</p>
       </div>
     </template>
-
+    <template id="" v-if="success">
+      <div class="uk-alert-success uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+        <a href="#" class="uk-alert-close" uk-close></a>
+        <p>Nouvel utilisateur ajouté</p>
+      </div>
+    </template>
   <form>
     <div class="uk-alert-warning uk-border-rounded uk-box-shadow-small" uk-alert>
       <a href="#" class="uk-alert-close" uk-close></a>
@@ -113,7 +118,8 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             ville : "",
             adresse : "",
             // error
-            errors : []
+            errors : [],
+            success : false
           }
         },
         methods : {
@@ -132,6 +138,10 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 ville : this.ville,
                 adresse : this.adresse
               })
+              if(response.data == 'done') {
+                this.isLoading = false
+                this.success = true
+              }
             } catch (error) {
               this.isLoading = false
               if(error.response.data.errors) {

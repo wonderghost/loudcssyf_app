@@ -22,6 +22,7 @@ Vue.component('command',require('./adminComponents/CommandComponent.vue').defaul
 Vue.component('credit-component',require('./adminComponents/CreditComponent.vue').default)
 Vue.component('home-component',require('./userComponents/homeComponent.vue').default)
 Vue.component('add-user-component',require('./adminComponents/AddUserComponent.vue').default)
+Vue.component('rapport-component',require('./userComponents/RapportComponent.vue').default)
 // /
 import Vue from 'vue'
 import Vuex from 'vuex'
