@@ -26,7 +26,7 @@ class CreditRequest extends FormRequest
         return [
             //
             'compte' => 'required',
-            'montant' => 'required'
+            'montant' => 'required|numeric|min : 100000'
         ];
     }
 }

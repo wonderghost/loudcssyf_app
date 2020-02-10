@@ -24,6 +24,8 @@ class Livraison extends Model
     }
 
     public function serialFile() {
-      return LivraisonSerialFile::where('livraison_id',$this->id)->first()->filename;
+      // return LivraisonSerialFile::where('livraison_id',$this->id)->first()->filename;
+      $tmp = LivraisonSerialFile::where('livraison_id',$this->id)->first() ? LivraisonSerialFile::where('livraison_id',$this->id)->first()->filename : 'undefined';
+      return $tmp;
     }
 }

@@ -15,8 +15,10 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('admin/search/{slug}','AdminController@SearchText');
 	// COMMANDES
 	Route::get('/admin/commandes','AdminController@allCommandes');
-	Route::post('/admin/commandes/all','AdminController@getAllCommandes');
-	Route::post('/admin/commandes/credit-all','CreditController@getAllCommandes');
+	Route::get('/admin/commandes/all','AdminController@getAllCommandes');
+	Route::get('/admin/commandes/livraison','AdminController@getAllLivraison');
+	// Route::get('/admin/commandes/validated','AdminController@getValidatedCommandesMaterial');
+	Route::get('/admin/commandes/credit-all','CreditController@getAllCommandes');
 	// DASHBOARD DATA
 	Route::post('/admin/dashboard/user-data','AdminController@dataForUserChart');
 	Route::post('/admin/dashboard/depot-data','AdminController@dataForDepotChart');
@@ -32,7 +34,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/afrocash/apport','AdminController@apportCapital');
 	Route::get('/admin/afrocash/all-transactions','CreditController@allTransactionAfrocash');
 	// recuperation des soldes vendeurs
-	Route::post('/admin/get-soldes','CreditController@getSoldesVendeurs');
+	Route::get('/admin/get-soldes','CreditController@getSoldesVendeurs');
 	// etat depot Central
 	Route::get('/admin/depot-central','AdminController@etatDepotCentral');
 	Route::post('/admin/depot-central','AdminController@getEtatDepotCentral');
@@ -58,6 +60,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/formule','AdminController@addFormule');
 	// creation des comptes de credit
 	Route::get('/admin/add-account-credit','CreditController@addAccount');
+	Route::get('admin/get-global-solde','CreditController@getGlobalSolde');
 	Route::post('/admin/add-account-credit','CreditController@makeAddAccount');
 
 	// admin routing
@@ -67,7 +70,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/add-user','AdminController@getFormUser');
 	Route::post('/admin/add-user','AdminController@addUser');
 	Route::get('/admin/list-users','AdminController@listUser');
-	Route::post('/admin/users/list','AdminController@getListUsers');
+	Route::get('/admin/users/list','AdminController@getListUsers');
 
 	Route::get('/admin/add-depot','LogistiqueController@makeDepot');
 	Route::post("/admin/add-depot",'LogistiqueController@addDepot');
@@ -89,7 +92,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/history-depot','LogistiqueController@historyDepot');
 	Route::post('/admin/history-depot','LogistiqueController@getHistoryDepot');
 	// Reinitialiser un utilisateur
-	Route::post('admin/reset-user','AdminController@resetUser');
+	Route::post('/admin/reset-user','AdminController@resetUser');
 	// liste des depots
 	Route::get('/admin/list-depot','AdminController@listDepot');
 	//
@@ -156,7 +159,6 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// === MATERIELS
 	Route::get('/user/list-material','LogistiqueController@listMaterial')->middleware('logistique');
 	Route::post('/user/list-material','LogistiqueController@getListMaterial')->middleware('logistique');
-	Route::get('/user/history-depot','LogistiqueController@historyDepot')->middleware('logistique');
 	Route::post('/user/history-depot','LogistiqueController@getHistoryDepot')->middleware('logistique');
 	# recuperation des numeros de SERIES
 	Route::post('/user/get-serialNumber','LogistiqueController@ListSerialNumber')->middleware('logistique');
@@ -168,6 +170,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/parabole-du','LogistiqueController@getParaboleDu')->middleware('logistique');
 	Route::post('/user/reste-pour-ravitaillement','LogistiqueController@getRestantPourRavitaillement')->middleware('logistique');
 	// COMPLETER LE RAVITAILLEMENT EN SAISISSANT LES NUMEROS DE SERIE
+	Route::get('/user/history-depot','LogistiqueController@historyDepot')->middleware('logistique');
 	Route::get('/user/ravitailler/{commande}/complete-transfert','LogistiqueController@completeTransfert')->middleware('logistique');
 	Route::post('/user/ravitailler/{commande}/complete-transfert','LogistiqueController@completeTransfertFinal')->middleware('logistique');
 
@@ -213,7 +216,11 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// GESTIONNAIRE CGA
 	Route::get('/user/cga-credit/','CreditController@crediterVendeur')->middleware('cga');
 	Route::get('/user/credit-cga/commandes','CreditController@commandCredit')->middleware('cga');
-	Route::post('user/credit-cga/commandes','CreditController@getListCommandGcga')->middleware('cga');
+
+	Route::get('/user/commandes/credit-all','CreditController@getAllCommandes')->middleware('cga');
+	Route::get('/user/get-soldes','CreditController@getSoldesVendeurs')->middleware('cga');
+	Route::get('user/get-global-solde','CreditController@getGlobalSolde')->middleware('cga');
+
 	Route::post('/user/send-cga','CreditController@sendCga')->middleware('cga');
 	Route::post('/user/send-afrocash','CreditController@sendAfrocash');
 	Route::post('/user/credit-cga/abort-commandes','CreditController@abortCommande')->middleware('cga');

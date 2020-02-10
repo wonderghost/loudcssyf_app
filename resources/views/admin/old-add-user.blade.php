@@ -1,0 +1,83 @@
+@extends('layouts.app_admin')
+
+@section('admin_content')
+<div class="uk-section uk-section-default">
+	<div class="uk-container">
+		<h3><a href="{{url('/admin')}}" uk-tooltip="tableau de bord" uk-icon="icon:arrow-left;ratio:1.5"></a> Nouvel Utilisateur</h3>
+
+		@if(session('success'))
+		<div class="uk-alert-success uk-border-rounded uk-box-shadow-small uk-width-1-2@m" uk-alert>
+			<a href="#" class="uk-alert-close" uk-close></a>
+			<p>{{session('success')}}</p>
+		</div>
+		@endif
+
+		@if($errors->any())
+		@foreach($errors->all() as $error)
+		<div class="uk-alert-danger uk-border-rounded uk-box-shadow-small uk-width-1-2@m" uk-alert>
+			<a href="#" uk-close class="uk-alert-close"></a>
+			<p>{{$error}}</p>
+		</div>
+		@endforeach
+		@endif
+				{!!Form::open()!!}
+		<div class="uk-child-width-1-2@m">
+			<div>
+				<h4>Infos Utilisateur</h4>
+				{!!Form::label("Email *")!!}
+				{!!Form::email('email','',['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'E-mail *'])!!}
+				{!!Form::label("Telephone")!!}
+				{!!Form::number('phone','',['class'=>'uk-input uk-border-rounded','placeholder'=>'Telephone *'])!!}
+				{!!Form::label('Niveau d\'access')!!}
+				{!!Form::select('type',['v_standart'=>'Vendeur standart','v_da'=>'Distibuteur Agree','commercial'=>'Responsable Commercial','logistique'=>'Responsable Logistique','gcga'=>'Gestionnaire Cga','grex'=>'Gestionnaire Rex','gdepot'=>'Gestionnaire Depot','controleur'=>'Controleur','coursier'=>"Coursier"],null,['class'=>'uk-select uk-margin-small','placeholder'=>"-- Niveau d'acces *--",'id'=>'user-type'])!!}
+				{!!Form::label('Agence')!!}
+				{!!Form::text('localisation',null,['class'=>'uk-input uk-margin-small uk-border-rounded','placeholder'=>'Agence','id'=>'localisation'])!!}
+				{!!Form::hidden('password','loudcssyf')!!}
+			</div>
+			<hr class="uk-divider-small">
+			<div id="agency-infos" style="display: none;">
+				<h4>Agence</h4>
+				{!!Form::label("Numero Distributeur")!!}
+				{!!Form::text('num_dist','XXX',['class'=>'uk-input uk-margin-small','placeholder'=>'Numero distributeur *'])!!}
+				{!!Form::label("Societe")!!}
+				{!!Form::text('societe','Loudcssyf-sarl',['class'=>'uk-input uk-margin-small','placeholder'=>'Societe *','id'=>'societe'])!!}
+				{!!Form::label("RCCM")!!}
+				{!!Form::text('rccm','XXX',['class'=>'uk-input uk-margin-small','placeholder'=>'RCCM'])!!}
+				{!!Form::label("Ville")!!}
+				{!!Form::text('ville','Conakry',['class'=>'uk-input uk-margin-small','placeholder'=>'Ville'])!!}
+				{!!Form::label("Adresse")!!}
+				{!!Form::text('adresse','XXX',['class'=>'uk-input uk-margin-small','placeholder'=>'Adresse'])!!}
+			</div>
+		</div>
+		<button type="submit" class="uk-button uk-button-primary uk-border-rounded uk-box-shadow-small">valider <span uk-icon="icon:check"></span></button>
+				{!!Form::close()!!}
+
+
+	</div>
+</div>
+
+@endsection
+@section('script')
+<script type="text/javascript">
+	$(function() {
+		$("#user-type").on('change',function() {
+			if($(this).val() == "v_da") {
+				$("#agency-infos").show(500);
+				$("#societe").val('');
+				$("#localisation").show(500);
+			} else {
+				if($(this).val() !== 'v_standart') {
+					$("#localisation").val('');
+					$("#localisation").hide(500);
+				} else {
+					$("#localisation").show(500);
+					$("#localisation").val('');
+				}
+				$("#agency-infos").hide(500);
+				$("#societe").val('Loudcssyf-sarl');
+			}
+
+		});
+	});
+</script>
+@endsection

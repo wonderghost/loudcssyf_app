@@ -35,6 +35,7 @@ use App\TransactionCreditCentral;
 use App\Exceptions\AppException;
 use App\Promo;
 use App\CommandMaterial;
+use App\Livraison;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
@@ -145,21 +146,15 @@ class AdminController extends Controller
 
     public function getListUsers(Request $request) {
       try {
-        if($request->input('ref-0') !== "all") {
-          $users = User::where('type','<>','admin')->where('type',$request->input('ref-0'))->orderBy('localisation','desc')->get();
-        } else {
-          $users = User::where('type','<>','admin')->orderBy('localisation','desc')->get();
-        }
+        $users = User::where('type','<>','admin')->orderBy('localisation','desc')->get();
         $userCollection = collect([]);
-
         foreach ($users as $key => $element) {
           $userCollection->prepend($element->only(['username','type','email','phone','localisation','status']));
-          // $userCollection->prepend($element->agence()->societe,'agence');
         }
         return response()->json($userCollection);
       } catch (AppException $e) {
         header("Unprocessable entity",true,422);
-        die($e->getMessage());
+        die(json_encode($e->getMessage()));
       }
 
     }
@@ -309,16 +304,27 @@ class AdminController extends Controller
     }
 
     public function blockUser(Request $request) {
-        $user = User::select()->where('username',$request->input('ref'))->first();
-        $user->status = 'blocked';
-        $user->save();
-        return response()->json('done');
+      try {
+          $user = User::select()->where('username',$request->input('ref'))->first();
+          $user->status = 'blocked';
+          $user->save();
+          return response()->json('done');
+      } catch (AppException $e) {
+          header("Erreur!",true,422);
+          die(jsone_encode($e->getMessage()));
+      }
     }
     public function unblockUser(Request $request) {
+      try {
         $user = User::select()->where('username',$request->input('ref'))->first();
         $user->status = 'unblocked';
         $user->save();
         return response()->json('done');
+      }
+      catch (AppException $e) {
+        header("Erreur!",true,422);
+        die(json_encode($e->getMessage()));
+      }
     }
     // liste de tous les depots
     public function listDepot() {
@@ -612,28 +618,24 @@ class AdminController extends Controller
     return view('admin.all-commandes');
   }
 
-  public function getAllCommandes(Request $request) {
+  public function getAllCommandes(Request $request , CommandMaterial $c) {
     try {
-      $commands= CommandMaterial::where('status','unconfirmed')->orderBy('created_at','desc')->get();
-      $_commands = CommandMaterial::where("status",'confirmed')->orderBy('created_at','desc')->get();
+      $commands= $c->select()->orderBy('created_at','desc')->get();
 
       $all =  $this->organizeCommandList($commands);
-      $_all = $this->organizeCommandList($_commands);
-      // recuperation des livraison
-      $livraison = $this->livraisonStateRequest('unvalidate');
-      $livraison = $this->organizeLivraison($livraison);
 
-      $_livraison = $this->livraisonStateRequest('validate');
-      $_livraison = $this->organizeLivraison($_livraison);
-
-      return response()->json([
-        'unconfirmed' =>  $all,
-        'confirmed' =>  $_all,
-        'livraison_unvalidate'  =>  $livraison,
-        'livraison_validate'  =>  $_livraison
-      ]);
+      return response()->json($all);
     } catch (AppException $e) {
       header("Unprocessable entity",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+  public function getAllLivraison(Request $request) {
+    try {
+      return response()
+        ->json($this->organizeLivraison($this->livraisonRequest(new Livraison)));
+    } catch (AppException $e) {
+      header("Erreur!",true,422);
       die(json_encode($e->getMessage()));
     }
   }
@@ -650,7 +652,7 @@ class AdminController extends Controller
         throw new AppException("Mot de passe incorrect!");
       }
     } catch (AppException $e) {
-      header("Unprocessible entity",true,422);
+      header("Erreur!",true,422);
       die(json_encode($e->getMessage()));
     }
   }
