@@ -160,91 +160,96 @@ class AdminController extends Controller
     }
 
     public function addUser(UserRequest $request) {
-    	$user = new User;
-    	$agence = new Agence;
-    	$user->email = $request->input('email');
-    	$user->phone = $request->input('phone');
-    	$user->type = $request->input('type');
-    	$user->password = bcrypt($request->input('password'));
-    	$user->localisation = $request->input('localisation');
+      try {
 
-    	if($request->input('type') == 'v_da') {
-    		//ajout d'un distributeur agree
+        return response()->json($request);
+        die();
+        $user = new User;
+      	$agence = new Agence;
+      	$user->email = $request->input('email');
+      	$user->phone = $request->input('phone');
+      	$user->type = $request->input('type');
+      	$user->password = bcrypt("Loudcssyf");
+      	$user->localisation = $request->input('localisation');
 
-    		do {
-	    		$user->username = 'DA-'.mt_rand(1000,9999);
-	    	} while ($this->isExistUsername ($user->username));
+      	if($request->input('type') == 'v_da') {
+      		//ajout d'un distributeur agree
 
-    		if($temp = $this->isExistAgence($request->input('societe'))) {
-    			// agence existante
-    			$user->agence = $temp->reference;
-    		} else {
-    			// une nouvelle agence a enregistree
-    			do{
-    				$agence->reference = 'AG-'.mt_rand(1000,9999);
-    			}while($this->isExistAgenceRef($agence->reference));
+      		do {
+  	    		$user->username = 'DA-'.mt_rand(1000,9999);
+  	    	} while ($this->isExistUsername ($user->username));
 
-    			$agence->societe = $request->input('societe');
-    			$agence->rccm = $request->input('rccm');
-    			$agence->adresse = $request->input('adresse');
-    			$agence->ville = $request->input('ville');
-                $agence->num_dist = $request->input('num_dist');
-    			$user->agence = $agence->reference;
-                // dd($user->username);
-    			$agence->save();
-    		}
-                // die();
-    			$user->save();
-          $this->createAccountCredit($user->username,'cga');
-          $this->newAccount($user->username);
-    			return redirect("/admin/add-user")->with('success',"Nouvel utilisateur ajouté!");
-    	} else {
-    		// vendeurs standart
-            if($user->type !== 'v_standart') {
-                $user->localisation = 'local'.time();
-            }
+      		if($temp = $this->isExistAgence($request->input('societe'))) {
+      			// agence existante
+      			$user->agence = $temp->reference;
+      		} else {
+      			// une nouvelle agence a enregistree
+      			do{
+      				$agence->reference = 'AG-'.mt_rand(1000,9999);
+      			}while($this->isExistAgenceRef($agence->reference));
 
-    		do {
-	    		$user->username = 'LS-'.mt_rand(1000,9999);
-	    	} while ($this->isExistUsername ($user->username));
+      			$agence->societe = $request->input('societe');
+      			$agence->rccm = $request->input('rccm');
+      			$agence->adresse = $request->input('adresse');
+      			$agence->ville = $request->input('ville');
+                  $agence->num_dist = $request->input('num_dist');
+      			$user->agence = $agence->reference;
+                  // dd($user->username);
+      			$agence->save();
+      		}
+                  // die();
+      			$user->save();
+            $this->createAccountCredit($user->username,'cga');
+            $this->newAccount($user->username);
+      			return redirect("/admin/add-user")->with('success',"Nouvel utilisateur ajouté!");
+      	} else {
+      		// vendeurs standart
+              if($user->type !== 'v_standart') {
+                  $user->localisation = 'local'.time();
+              }
 
-    		if(!$temp = $this->isExistAgence($request->input('societe'))) {
-    			// On creer pour la premiere fois
-    			$agence->societe = $request->input('societe');
-    			$agence->rccm = $request->input('rccm');
-    			$agence->adresse = $request->input('adresse');
-    			$agence->ville= $request->input('ville');
+      		do {
+  	    		$user->username = 'LS-'.mt_rand(1000,9999);
+  	    	} while ($this->isExistUsername ($user->username));
 
-    			do{
-    				$agence->reference = 'AG-'.mt_rand(1000,9999);
-    			} while($this->isExistAgenceRef($agence->reference));
+      		if(!$temp = $this->isExistAgence($request->input('societe'))) {
+      			// On creer pour la premiere fois
+      			$agence->societe = $request->input('societe');
+      			$agence->rccm = $request->input('rccm');
+      			$agence->adresse = $request->input('adresse');
+      			$agence->ville= $request->input('ville');
 
-    			$user->agence = $agence->reference;
-    			$agence->save();
-    		} else {
-    			// elle existe deja
-    			$user->agence = $temp->reference;
-    		}
+      			do{
+      				$agence->reference = 'AG-'.mt_rand(1000,9999);
+      			} while($this->isExistAgenceRef($agence->reference));
 
-            if($user->type == 'v_standart') {
-                $user->rex = $this->createAccountCredit(NULL,'rex');
+      			$user->agence = $agence->reference;
+      			$agence->save();
+      		} else {
+      			// elle existe deja
+      			$user->agence = $temp->reference;
+      		}
+
+              if($user->type == 'v_standart') {
+                  $user->rex = $this->createAccountCredit(NULL,'rex');
+                  $user->save();
+                  $this->createAccountCredit($user->username,'cga');
+                  $this->newAccount($user->username,'semi_grossiste');
+                  $this->newAccount($user->username);
+              } else if($user->type == 'logistique') {
                 $user->save();
-                $this->createAccountCredit($user->username,'cga');
-                $this->newAccount($user->username,'semi_grossiste');
                 $this->newAccount($user->username);
-            } else if($user->type == 'logistique') {
-              $user->save();
-              $this->newAccount($user->username);
-            } else {
-                $user->save();
-            }
-
-    		return redirect("/admin/add-user")->with('success',"Nouvel utilisateur ajouté!");
+              } else {
+                  $user->save();
+              }
+          //
     	}
-
-
-
+      return response()->json('done');
+    } catch (AppException $e) {
+      header("Erreur!",true,422);
+      die(json_encode($e->getMessage()));
     }
+  }
 
     public function isExistUsername ($temp) {
     	$users = User::select()->where('username',$temp)->first();
