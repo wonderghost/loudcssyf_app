@@ -27,15 +27,12 @@
       <home-component></home-component>
       @yield('content')
     </div>
-    <script type="text/javascript" src="{{asset('js/jquery-3.4.1.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('js/jquery-ui.min.js')}}"></script>
+    <script type="application/javascript" src="{{asset('js/jquery-3.4.1.min.js')}}"></script>
+    <script type="application/javascript" src="{{asset('js/jquery-ui.min.js')}}"></script>
     <!-- UIkit JS -->
-    <script type="text/javascript" src="{{asset('js/uikit.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('js/uikit-icons.min.js')}}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js"></script>
-    <script type="text/javascript" src="{{asset('js/myscript.js')}}"></script>
-    <script type="text/javascript" src="{{asset('js/myscript_second.js')}}"></script>
-    <script type="text/javascript" src="{{asset('js/myscript_third.js')}}"></script>
+    <script type="application/javascript" src="{{asset('js/uikit.min.js')}}"></script>
+    <script type="application/javascript" src="{{asset('js/uikit-icons.min.js')}}"></script>
+
     <script src="{{ mix('js/app.js') }}" ></script>
     <script src="{{ mix('js/store.js') }}" ></script>
     <script src="{{ mix('js/echo.js') }}" ></script>

@@ -1,4 +1,3 @@
-
 import Vue from 'vue'
 import Vuex from 'vuex'
 
@@ -22,7 +21,8 @@ const store = new Vuex.Store({
     myToken : document.querySelector("meta[name=csrf-token]").content,
     userLocalisation : document.querySelector("input[id=user-localisation]").value,
     userName : document.querySelector("input[id=username]").value,
-    rapportVentes : []
+    rapportVentes : [],
+    payComissionList : []
   },
   mutations : {
     searchText (state , word) {
@@ -57,6 +57,9 @@ const store = new Vuex.Store({
     },
     setRapportVente (state , data) {
       state.rapportVentes = data
+    },
+    setPayComissionList (state , data) {
+      state.payComissionList = data
     }
   },
   actions : {

@@ -171,15 +171,10 @@ public function payCommission(Request $request , PayCommission $pay) {
 }
 
 // LIST DE PAIEMENT DES COMMISSIONS
-public function PayCommissionList(Request $request) {
+public function PayCommissionListForVendeurs(Request $request) {
   try {
-    if($request->input('ref-0') == "all") {
-      $payCommission = PayCommission::all();
-    }
-    else {
-      $_tmp = $request->user()->rapportGroupByPayId();
-      $payCommission = PayCommission::whereIn('id',$_tmp)->get();
-    }
+    $_tmp = $request->user()->rapportGroupByPayId();
+    $payCommission = PayCommission::whereIn('id',$_tmp)->get();
     $all =[];
     foreach($payCommission as $key  =>  $value) {
       $all[$key]  = [
@@ -199,6 +194,33 @@ public function PayCommissionList(Request $request) {
   }
 
 }
+
+
+  public function payComissionList(PayCommission $pay){
+    try {
+      $result = $pay->select()->orderBy('status','asc')->get();
+      $all = [];
+      foreach ($result as $key => $value) {
+        $all[$key] = [
+          'id'  =>  $value->id,
+          'du'=> $value->rapports()->get()->first()->date_rapport,
+          'au'=> $value->rapports()->get()->last()->date_rapport,
+          'total' =>  number_format($value->montant),
+          'status'  =>  $value->status,
+          'vendeurs'  => $value->rapports()->first()->vendeurs()->localisation
+        ];
+      }
+
+      return response()
+        ->json($all);
+
+    } catch (AppException $e) {
+      header("Erreur!",true,422);
+      die(json_encode($e->getMessage()));
+    }
+
+  }
+
 
 // VALIDATION PAIEMENT DES COMMSSIONS
 

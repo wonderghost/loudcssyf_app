@@ -12,8 +12,11 @@
       <a class="uk-button uk-button-small border-button" href="" uk-tooltip="Conversations"><i class="material-icons">message</i></a>
       <a class="uk-button uk-button-small border-button" href="" uk-tooltip="Alertes"><i class="material-icons">alarm</i></a>
       <template v-if="typeUser == 'admin'" id="">
-        <a class="uk-button uk-button-small border-button button-pay-comission" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
       	<a class="uk-button uk-button-small uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span> Promo</a>
+    </template>
+    <template v-if="typeUser == 'admin' || typeUser == 'gcga'" id="">
+      <a class="uk-button uk-button-small border-button button-pay-comission" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
+      <pay-comission-component></pay-comission-component>
     </template>
 
     </div>
@@ -130,12 +133,38 @@
                 </ul>
             </li>
           </template>
-          <li class="uk-parent">
-            <a href="#"> <span uk-icon="icon : settings ; ratio : .9"></span> Parametres</a>
-            <ul class="uk-nav-sub">
-              <li><a href="/user/settings"><span uk-icon="icon:user"></span> Profile</a></li>
-            </ul>
-          </li>
+          <!-- GESTIONNAIRE CGA -->
+          <template v-if="typeUser == 'gcga'" id="">
+            <li class="uk-parent">
+                <a href="#"><span uk-icon="icon:credit-card;ratio:0.9"></span> Credit</a>
+                <ul class="uk-nav-sub">
+
+                    <li><a href="/user/cga-credit"><span uk-icon="icon:arrow-right"></span> Comptes</a></li>
+                    <!-- // -->
+                </ul>
+            </li>
+            <li class="uk-parent">
+              <a href="#" ><span uk-icon="icon:credit-card"></span> Afrocash</a>
+              <ul class="uk-nav-sub">
+                <li><a href="/user/afrocash/transactions"><span uk-icon="icon : arrow-right"></span>  Toutes les Transactions</a> </li>
+              </ul>
+            </li>
+            <li class="uk-parent">
+                <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Commandes</a>
+                <ul class="uk-nav-sub">
+                    <li><a href="/user/credit-cga/commandes"><span uk-icon="icon:arrow-right"></span> Toutes les Commandes</a></li>
+                </ul>
+            </li>
+          </template>
+          <!-- // -->
+          <template v-if="typeUser !== 'admin'" id="">
+            <li class="uk-parent">
+              <a href="#"> <span uk-icon="icon : settings ; ratio : .9"></span> Parametres</a>
+              <ul class="uk-nav-sub">
+                <li><a href="/user/settings"><span uk-icon="icon:user"></span> Profile</a></li>
+              </ul>
+            </li>
+          </template>
         </ul>
       </div>
     </div>
@@ -143,7 +172,7 @@
 </div>
 </template>
 
-<script>
+<script type="application/javascript">
     export default {
         mounted() {
 

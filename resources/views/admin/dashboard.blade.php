@@ -5,7 +5,7 @@
   <div class="uk-container">
     <h3>Tableau de bord</h3>
     <hr class="uk-divider-small">
-    
+
     @if(session('msg'))
     <div class="uk-alert-info" uk-alert>
       <a href="#" class="uk-alert-close" uk-close></a>
@@ -32,24 +32,4 @@
   </div>
 </div>
 
-@endsection
-@section('script')
-<script type="text/javascript">
-  $(function () {
-
-    setInterval(function () {
-      // USER CHARTS
-      $logistique.userChart("{{csrf_token()}}","{{url('/admin/dashboard/user-data')}}")
-      // DEPOT CHARTS
-      $logistique.depotChart("{{csrf_token()}}","{{url('/admin/dashboard/depot-data')}}")
-    },5000);
-
-    // USER CHARTS
-    $logistique.userChart("{{csrf_token()}}","{{url('/admin/dashboard/user-data')}}")
-    // DEPOT CHARTS
-    $logistique.depotChart("{{csrf_token()}}","{{url('/admin/dashboard/depot-data')}}")
-    // // console.log(ctx)
-
-  })
-</script>
 @endsection

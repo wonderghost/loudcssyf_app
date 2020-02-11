@@ -13674,7 +13674,8 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     myToken: document.querySelector("meta[name=csrf-token]").content,
     userLocalisation: document.querySelector("input[id=user-localisation]").value,
     userName: document.querySelector("input[id=username]").value,
-    rapportVentes: []
+    rapportVentes: [],
+    payComissionList: []
   },
   mutations: {
     searchText: function searchText(state, word) {
@@ -13708,6 +13709,9 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     },
     setRapportVente: function setRapportVente(state, data) {
       state.rapportVentes = data;
+    },
+    setPayComissionList: function setPayComissionList(state, data) {
+      state.payComissionList = data;
     }
   },
   actions: {}

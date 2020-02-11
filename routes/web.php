@@ -272,8 +272,10 @@ Route::middleware(['auth','unblocked'])->group(function () {
 
 	// ENVOI DE LA DEMANDE DE PAIEMENT DE COMMISSION
 	Route::post('/user/rapport-ventes/pay-commission','RapportControlleur@payCommission')->middleware('vendeur');
-	Route::post('/user/rapport-ventes/get-pay-commission','RapportControlleur@PayCommissionList');
+	Route::get('/user/rapport-ventes/get-pay-commission','RapportControlleur@PayCommissionListForVendeurs')->middleware('vendeur');
+
 	Route::post('/user/rapport-ventes/validate-pay-commission','RapportControlleur@validatePayComission')->middleware('cga');
+	Route::get('/user/pay-comissions/all','RapportControlleur@payComissionList');
 	// NOTIFICATIONS
 	Route::post('/user/notification/getlist','NotificationController@getList');
 	Route::post('/user/notification/mark-as-read','NotificationController@markAsRead');
