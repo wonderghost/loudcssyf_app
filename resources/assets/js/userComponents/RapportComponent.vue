@@ -17,7 +17,7 @@
         <li><a @click="typeRapp = 'recrutement' , payComission = false"  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-hover-small" href="#">Recrutement</a></li>
         <li><a @click="typeRapp = 'reabonnement', payComission = false"  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-hover-small" href="#">Reabonnement</a></li>
         <li><a @click="typeRapp = 'migration' , payComission = false" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-hover-small" href="#">Migration</a></li>
-        <li><a @click="payComission = true" v-if="typeUser == 'v_da' || typeUser == 'v_standart'" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-hover-small" href="#">Paiement Comission</a></li>
+        <li><a @click="payComission = true" v-if="typeUser == 'v_da'" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-hover-small" href="#">Paiement Comission</a></li>
     </ul>
     <template v-if="!payComission" id="">
       <div class="">
@@ -56,7 +56,7 @@
         </ul>
       </div>
     </template>
-    <template v-if="typeUser == 'v_da' || typeUser == 'v_standart' " id="">
+    <template v-if="typeUser == 'v_da'" id="">
       <div v-if="payComission" class="uk-grid-small uk-grid-divider" uk-grid>
         <div  class="uk-width-1-3@m">
           <h3 class="">Demandez un paiement de comission</h3>
@@ -67,6 +67,7 @@
               <p>{{error}}</p>
             </div>
           </template>
+
           <template id="" v-if="success">
             <div class="uk-alert-success uk-border-rounded uk-box-shadow-hover-small" uk-alert>
               <a href="#" class="uk-alert-close" uk-close></a>
@@ -169,6 +170,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             try {
               let response = await axios.get('/user/rapport-ventes/get-pay-commission')
               this.$store.commit('setPayComissionList',response.data)
+              this.getPayComissionList()
             } catch (error) {
               alert(error)
             }

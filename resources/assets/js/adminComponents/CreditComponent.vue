@@ -22,7 +22,9 @@
             <td>{{credit.vendeurs}}</td>
             <td>{{credit.type}}</td>
             <td>{{credit.montant}}</td>
-            <td>{{credit.status}}</td>
+            <td v-if="credit.status == 'unvalidated'" class="uk-text-danger">{{credit.status}}</td>
+            <td v-else-if="credit.status == 'aborted'" class="uk-text-warning">{{credit.status}}</td>
+            <td v-else class="uk-text-success">{{credit.status}}</td>
             <td>{{credit.numero_recu}}</td>
             <td v-if="credit.recu !== 'undefined'">
               <div uk-lightbox>
@@ -30,6 +32,13 @@
               </div>
             </td>
             <td v-else>{{credit.recu}}</td>
+            <td>
+              <template id="" v-if="credit.status == 'unvalidated' && typeUser == 'gcga'">
+                <button type="button" name="button" class="uk-text-capitalize uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small"> validez <span uk-icon="icon : check"></span> </button>
+                <button type="button" name="button" class="uk-text-capitalize uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small"> annuler <span uk-icon="icon : close"></span> </button>
+              </template>
+            </td>
+
           </tr>
         </tbody>
       </table>
@@ -117,6 +126,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           },
           statusCommandCredit () {
             return this.$store.state.statusCommandCredit
+          },
+          typeUser () {
+            return this.$store.state.typeUser
           }
         }
     }

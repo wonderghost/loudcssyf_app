@@ -16,7 +16,6 @@
     </template>
     <template v-if="typeUser == 'admin' || typeUser == 'gcga'" id="">
       <a class="uk-button uk-button-small border-button button-pay-comission" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
-      <pay-comission-component></pay-comission-component>
     </template>
 
     </div>

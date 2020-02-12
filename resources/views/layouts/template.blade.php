@@ -25,6 +25,7 @@
     <input type="hidden" id="username" value="{{Auth::user()->username}}">
     <div id="app">
       <home-component></home-component>
+      <pay-comission-component></pay-comission-component>
       @yield('content')
     </div>
     <script type="application/javascript" src="{{asset('js/jquery-3.4.1.min.js')}}"></script>

@@ -2789,6 +2789,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2905,6 +2914,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     statusCommandCredit: function statusCommandCredit() {
       return this.$store.state.statusCommandCredit;
+    },
+    typeUser: function typeUser() {
+      return this.$store.state.typeUser;
     }
   }
 });
@@ -3165,6 +3177,10 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vue_loading_overlay__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-loading-overlay */ "./node_modules/vue-loading-overlay/dist/vue-loading.min.js");
+/* harmony import */ var vue_loading_overlay__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(vue_loading_overlay__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var vue_loading_overlay_dist_vue_loading_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-loading-overlay/dist/vue-loading.css */ "./node_modules/vue-loading-overlay/dist/vue-loading.css");
+/* harmony import */ var vue_loading_overlay_dist_vue_loading_css__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(vue_loading_overlay_dist_vue_loading_css__WEBPACK_IMPORTED_MODULE_2__);
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -3229,13 +3245,45 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   created: function created() {},
   mounted: function mounted() {
     this.getPayComissionList();
   },
+  components: {
+    Loading: vue_loading_overlay__WEBPACK_IMPORTED_MODULE_1___default.a
+  },
   data: function data() {
-    return {};
+    return {
+      isLoading: false,
+      fullPage: true,
+      userActiveValidate: {},
+      passwordConfirm: "",
+      errors: []
+    };
   },
   methods: {
     getPayComissionList: function () {
@@ -3279,11 +3327,79 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return getPayComissionList;
+    }(),
+    validatePayComission: function () {
+      var _validatePayComission = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var response, errorTab, prop;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                this.isLoading = true;
+                UIkit.modal($("#validate-payment-comission")).hide();
+                _context2.prev = 2;
+                _context2.next = 5;
+                return axios.post("/user/rapport-ventes/validate-pay-commission", {
+                  _token: this.myToken,
+                  password_confirm: this.passwordConfirm,
+                  pay_comission_id: this.userActiveValidate.id
+                });
+
+              case 5:
+                response = _context2.sent;
+
+                if (response.data == 'done') {
+                  this.isLoading = false;
+                  UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Vous avez paye une commission :-)</div>").then(function () {
+                    location.reload();
+                  });
+                }
+
+                _context2.next = 14;
+                break;
+
+              case 9:
+                _context2.prev = 9;
+                _context2.t0 = _context2["catch"](2);
+                this.isLoading = false;
+                UIkit.modal($("#validate-payment-comission")).show();
+
+                if (_context2.t0.response.data.errors) {
+                  errorTab = _context2.t0.response.data.errors;
+
+                  for (prop in errorTab) {
+                    this.errors.push(errorTab[prop][0]);
+                  }
+                } else {
+                  this.errors.push(_context2.t0.response.data);
+                }
+
+              case 14:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this, [[2, 9]]);
+      }));
+
+      function validatePayComission() {
+        return _validatePayComission.apply(this, arguments);
+      }
+
+      return validatePayComission;
     }()
   },
   computed: {
     payComissionList: function payComissionList() {
       return this.$store.state.payComissionList;
+    },
+    myToken: function myToken() {
+      return this.$store.state.myToken;
+    },
+    typeUser: function typeUser() {
+      return this.$store.state.typeUser;
     }
   }
 });
@@ -3311,6 +3427,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+//
 //
 //
 //
@@ -3543,20 +3660,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 3:
                 response = _context2.sent;
                 this.$store.commit('setPayComissionList', response.data);
-                _context2.next = 10;
+                this.getPayComissionList();
+                _context2.next = 11;
                 break;
 
-              case 7:
-                _context2.prev = 7;
+              case 8:
+                _context2.prev = 8;
                 _context2.t0 = _context2["catch"](0);
                 alert(_context2.t0);
 
-              case 10:
+              case 11:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[0, 7]]);
+        }, _callee2, this, [[0, 8]]);
       }));
 
       function getPayComissionList() {
@@ -3672,7 +3790,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
 //
 //
 //
@@ -18669,7 +18786,17 @@ var render = function() {
                   _vm._v(" "),
                   _c("td", [_vm._v(_vm._s(credit.montant))]),
                   _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(credit.status))]),
+                  credit.status == "unvalidated"
+                    ? _c("td", { staticClass: "uk-text-danger" }, [
+                        _vm._v(_vm._s(credit.status))
+                      ])
+                    : credit.status == "aborted"
+                    ? _c("td", { staticClass: "uk-text-warning" }, [
+                        _vm._v(_vm._s(credit.status))
+                      ])
+                    : _c("td", { staticClass: "uk-text-success" }, [
+                        _vm._v(_vm._s(credit.status))
+                      ]),
                   _vm._v(" "),
                   _c("td", [_vm._v(_vm._s(credit.numero_recu))]),
                   _vm._v(" "),
@@ -18690,7 +18817,17 @@ var render = function() {
                           )
                         ])
                       ])
-                    : _c("td", [_vm._v(_vm._s(credit.recu))])
+                    : _c("td", [_vm._v(_vm._s(credit.recu))]),
+                  _vm._v(" "),
+                  _c(
+                    "td",
+                    [
+                      credit.status == "unvalidated" && _vm.typeUser == "gcga"
+                        ? [_vm._m(0, true), _vm._v(" "), _vm._m(1, true)]
+                        : _vm._e()
+                    ],
+                    2
+                  )
                 ])
               }),
               0
@@ -18757,7 +18894,42 @@ var render = function() {
     1
   )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass:
+          "uk-text-capitalize uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small",
+        attrs: { type: "button", name: "button" }
+      },
+      [
+        _vm._v(" validez "),
+        _c("span", { attrs: { "uk-icon": "icon : check" } })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass:
+          "uk-text-capitalize uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small",
+        attrs: { type: "button", name: "button" }
+      },
+      [
+        _vm._v(" annuler "),
+        _c("span", { attrs: { "uk-icon": "icon : close" } })
+      ]
+    )
+  }
+]
 render._withStripped = true
 
 
@@ -19229,71 +19401,241 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", {}, [
-    _c(
-      "div",
-      {
-        staticClass: "uk-modal-container",
+  return _c(
+    "div",
+    {},
+    [
+      _c("loading", {
         attrs: {
-          id: "modal-commission",
-          "uk-modal": "esc-close : false ; bg-close : false;"
+          active: _vm.isLoading,
+          "can-cancel": false,
+          "is-full-page": _vm.fullPage
+        },
+        on: {
+          "update:active": function($event) {
+            _vm.isLoading = $event
+          }
         }
-      },
-      [
-        _c("div", { staticClass: " uk-modal-dialog" }, [
-          _vm._m(0),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "uk-modal-body uk-overflow-auto uk-height-medium" },
-            [
-              _c(
-                "table",
-                {
-                  staticClass:
-                    "uk-table uk-table-small uk-table-hover uk-table-striped uk-table-divider uk-table-responsive"
-                },
-                [
-                  _vm._m(1),
-                  _vm._v(" "),
-                  _c(
-                    "tbody",
-                    _vm._l(_vm.payComissionList, function(pay) {
-                      return _c(
-                        "tr",
-                        { key: pay.id },
-                        [
+      }),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "uk-modal-container",
+          attrs: {
+            id: "modal-commission",
+            "uk-modal": "esc-close : false ; bg-close : false;"
+          }
+        },
+        [
+          _c("div", { staticClass: " uk-modal-dialog" }, [
+            _vm._m(0),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass: "uk-modal-body uk-overflow-auto uk-height-medium"
+              },
+              [
+                _c(
+                  "table",
+                  {
+                    staticClass:
+                      "uk-table uk-table-small uk-table-hover uk-table-striped uk-table-divider uk-table-responsive"
+                  },
+                  [
+                    _vm._m(1),
+                    _vm._v(" "),
+                    _c(
+                      "tbody",
+                      _vm._l(_vm.payComissionList, function(pay) {
+                        return _c("tr", { key: pay.id }, [
                           _c("td", [_vm._v(_vm._s(pay.du))]),
                           _vm._v(" "),
                           _c("td", [_vm._v(_vm._s(pay.au))]),
                           _vm._v(" "),
                           _c("td", [_vm._v(_vm._s(pay.total))]),
                           _vm._v(" "),
-                          _c("td", [_vm._v(_vm._s(pay.status))]),
+                          pay.status == "unvalidated"
+                            ? _c("td", { staticClass: "uk-text-danger" }, [
+                                _vm._v(_vm._s(pay.status))
+                              ])
+                            : _c("td", { staticClass: "uk-text-success" }, [
+                                _vm._v(_vm._s(pay.status))
+                              ]),
                           _vm._v(" "),
                           _c("td", [_vm._v(_vm._s(pay.vendeurs))]),
                           _vm._v(" "),
-                          pay.status == "unvalidated"
-                            ? [_vm._m(2, true), _vm._v(" "), _vm._m(3, true)]
-                            : _vm._e()
-                        ],
-                        2
-                      )
-                    }),
-                    0
-                  )
+                          _c(
+                            "td",
+                            [
+                              pay.status == "unvalidated" &&
+                              _vm.typeUser == "gcga"
+                                ? [
+                                    _c(
+                                      "button",
+                                      {
+                                        staticClass:
+                                          "uk-button uk-button-small uk-button-primary uk-text-capitalize uk-box-shadow-small uk-border-rounded",
+                                        attrs: {
+                                          type: "button",
+                                          "uk-toggle":
+                                            "target : #validate-payment-comission"
+                                        },
+                                        on: {
+                                          click: function($event) {
+                                            _vm.userActiveValidate = pay
+                                          }
+                                        }
+                                      },
+                                      [_vm._v("Validez")]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "button",
+                                      {
+                                        staticClass:
+                                          "uk-button uk-button-small uk-button-danger uk-text-capitalize uk-box-shadow-small uk-border-rounded",
+                                        attrs: { type: "button" }
+                                      },
+                                      [_vm._v("Annulez")]
+                                    )
+                                  ]
+                                : _vm._e()
+                            ],
+                            2
+                          )
+                        ])
+                      }),
+                      0
+                    )
+                  ]
+                )
+              ]
+            ),
+            _vm._v(" "),
+            _vm._m(2)
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          attrs: {
+            id: "validate-payment-comission",
+            "uk-modal": "esc-close : false ; bg-close : false"
+          }
+        },
+        [
+          _c("div", { staticClass: "uk-modal-dialog" }, [
+            _c("div", { staticClass: "uk-modal-header" }, [
+              _c(
+                "div",
+                { staticClass: "uk-alert-info", attrs: { "uk-alert": "" } },
+                [
+                  _c("p", [
+                    _c("span", { attrs: { "uk-icon": "icon : info" } }),
+                    _vm._v(
+                      " Vous confirmez la validation pour le paiement des commissions a hauteur de : "
+                    ),
+                    _c("span", { staticClass: "uk-text-bold" }, [
+                      _vm._v(_vm._s(_vm.userActiveValidate.total) + " GNF ")
+                    ]),
+                    _vm._v(" , pour :  "),
+                    _c("span", { staticClass: "uk-text-bold" }, [
+                      _vm._v(_vm._s(_vm.userActiveValidate.vendeurs))
+                    ])
+                  ])
                 ]
               )
-            ]
-          ),
-          _vm._v(" "),
-          _vm._m(4)
-        ])
-      ]
-    ),
-    _vm._v(" "),
-    _vm._m(5)
-  ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "uk-modal-body" },
+              [
+                _vm._l(_vm.errors, function(error) {
+                  return _vm.errors.length
+                    ? [
+                        _c(
+                          "div",
+                          {
+                            staticClass:
+                              "uk-alert-danger uk-border-rounded uk-box-shadow-hover-small",
+                            attrs: { "uk-alert": "" }
+                          },
+                          [
+                            _c("a", {
+                              staticClass: "uk-alert-close",
+                              attrs: { href: "#", "uk-close": "" }
+                            }),
+                            _vm._v(" "),
+                            _c("p", [_vm._v(_vm._s(error))])
+                          ]
+                        )
+                      ]
+                    : _vm._e()
+                }),
+                _vm._v(" "),
+                _c(
+                  "form",
+                  {
+                    on: {
+                      submit: function($event) {
+                        $event.preventDefault()
+                        return _vm.validatePayComission()
+                      }
+                    }
+                  },
+                  [
+                    _c("div", { staticClass: "uk-margin-small" }, [
+                      _c("label", { attrs: { for: "" } }, [
+                        _vm._v("Confirmez votre mot de passe")
+                      ]),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.passwordConfirm,
+                            expression: "passwordConfirm"
+                          }
+                        ],
+                        staticClass:
+                          "uk-input uk-border-rounded uk-box-shadow-hover-small",
+                        attrs: {
+                          type: "password",
+                          placeholder: "Entrez votre mot de passe ...",
+                          autofocus: ""
+                        },
+                        domProps: { value: _vm.passwordConfirm },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.passwordConfirm = $event.target.value
+                          }
+                        }
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _vm._m(3)
+                  ]
+                )
+              ],
+              2
+            ),
+            _vm._v(" "),
+            _vm._m(4)
+          ])
+        ]
+      )
+    ],
+    1
+  )
 }
 var staticRenderFns = [
   function() {
@@ -19331,42 +19673,6 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("td", [
-      _c(
-        "button",
-        {
-          staticClass:
-            "uk-button uk-button-small uk-button-primary uk-text-capitalize uk-box-shadow-small uk-border-rounded",
-          attrs: {
-            type: "button",
-            "uk-toggle": "target : #validate-payment-comission",
-            name: "button"
-          }
-        },
-        [_vm._v("Validez")]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", [
-      _c(
-        "button",
-        {
-          staticClass:
-            "uk-button uk-button-small uk-button-danger uk-text-capitalize uk-box-shadow-small uk-border-rounded",
-          attrs: { type: "button", name: "button" }
-        },
-        [_vm._v("Annulez")]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
     return _c("div", { staticClass: "uk-modal-footer uk-text-right" }, [
       _c(
         "button",
@@ -19384,55 +19690,43 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c(
-      "div",
+      "button",
       {
-        attrs: {
-          id: "validate-payment-comission",
-          "uk-modal": "esc-close : false ; bg-close : false"
-        }
+        staticClass:
+          "uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small",
+        attrs: { type: "submit" }
       },
-      [
-        _c("div", { staticClass: "uk-modal-dialog" }, [
-          _c("div", { staticClass: "uk-modal-header" }, [
-            _c("h4", [
-              _vm._v(
-                "Vous confirmez la validation pour le paiement des commissions a hauteur de : "
-              )
-            ])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "uk-modal-body" }),
-          _vm._v(" "),
-          _c("div", { staticClass: "uk-modal-footer uk-text-right" }, [
-            _c(
-              "button",
-              {
-                staticClass:
-                  "uk-button uk-button-default uk-border-rounded uk-box-shadow-small uk-button-small",
-                attrs: {
-                  "uk-toggle": "target : #modal-commission",
-                  type: "button"
-                }
-              },
-              [
-                _c("span", { attrs: { "uk-icon": "icon : arrow-left" } }),
-                _vm._v(" Retour")
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "button",
-              {
-                staticClass:
-                  "uk-button uk-button-danger uk-modal-close uk-border-rounded uk-box-shadow-small uk-button-small",
-                attrs: { type: "button" }
-              },
-              [_vm._v("Fermer")]
-            )
-          ])
-        ])
-      ]
+      [_vm._v("validez "), _c("span", { attrs: { "uk-icon": "icon : check" } })]
     )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "uk-modal-footer uk-text-right" }, [
+      _c(
+        "button",
+        {
+          staticClass:
+            "uk-button uk-button-default uk-border-rounded uk-box-shadow-small uk-button-small",
+          attrs: { "uk-toggle": "target : #modal-commission", type: "button" }
+        },
+        [
+          _c("span", { attrs: { "uk-icon": "icon : arrow-left" } }),
+          _vm._v(" Retour")
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass:
+            "uk-button uk-button-danger uk-modal-close uk-border-rounded uk-box-shadow-small uk-button-small",
+          attrs: { type: "button" }
+        },
+        [_vm._v("Fermer")]
+      )
+    ])
   }
 ]
 render._withStripped = true
@@ -19547,7 +19841,7 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("li", [
-            _vm.typeUser == "v_da" || _vm.typeUser == "v_standart"
+            _vm.typeUser == "v_da"
               ? _c(
                   "a",
                   {
@@ -19665,7 +19959,7 @@ var render = function() {
           ]
         : _vm._e(),
       _vm._v(" "),
-      _vm.typeUser == "v_da" || _vm.typeUser == "v_standart"
+      _vm.typeUser == "v_da"
         ? [
             _vm.payComission
               ? _c(
@@ -19973,7 +20267,7 @@ var render = function() {
             _vm.typeUser == "admin" ? [_vm._m(5)] : _vm._e(),
             _vm._v(" "),
             _vm.typeUser == "admin" || _vm.typeUser == "gcga"
-              ? [_vm._m(6), _vm._v(" "), _c("pay-comission-component")]
+              ? [_vm._m(6)]
               : _vm._e()
           ],
           2
