@@ -142,13 +142,11 @@ Trait Afrocashes {
 						// tester la disponibilite du montant
 						if($this->getSoldeGlobal("cga") >= $commande->montant) {
 							$cga_account = CgaAccount::where('vendeur',$commande->vendeurs)->first();
-
 							// crediter le compte cga du vendeur
 							$new_solde_cga_vendeur = $cga_account->solde + $request->input('montant');
 							CgaAccount::where('numero',$cga_account->numero)->update([
 								'solde'	=>	$new_solde_cga_vendeur
 							]);
-
 							// debiter le compte central cga
 							$new_solde_cga_central	=	Credit::where('designation','cga')->first()->solde - $request->input('montant');
 							Credit::where('designation','cga')->update([

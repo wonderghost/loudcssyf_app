@@ -3,7 +3,7 @@
     <loading :active.sync="isLoading"
         :can-cancel="true"
         :is-full-page="fullPage"></loading>
-
+        <!-- // -->
         <!-- validation commande modal -->
         <template id="" v-if="typeUser == 'gcga'">
           <div id="modal-validation-command" uk-modal="esc-close : false ; bg-close : false;">
@@ -74,7 +74,7 @@
             <td>
               <template id="" v-if="credit.status == 'unvalidated' && typeUser == 'gcga'">
                 <button type="button" @click="commandToValidate = credit" uk-toggle="target : #modal-validation-command" name="button" class="uk-text-capitalize uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small"> validez <span uk-icon="icon : check"></span> </button>
-                <button type="button" name="button" class="uk-text-capitalize uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small"> annuler <span uk-icon="icon : close"></span> </button>
+                <button type="button" @click="abortCommand(credit)" name="button" class="uk-text-capitalize uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small"> annuler <span uk-icon="icon : close"></span> </button>
               </template>
             </td>
 
@@ -167,6 +167,35 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               } else {
                   this.errors.push(error.response.data)
               }
+            }
+          },
+          abortCommand : function (credit) {
+            var tmp = this
+            UIkit.modal.confirm("<div class='uk-alert-warning' uk-alert><p> <span uk-icon='icon : warning'></span> Etes vous sur de vouloir annuler la commande de : "+credit.vendeurs+ " ? </p></div>")
+              .then(function () {
+                tmp.makeAbortCommand(credit)
+              })
+          },
+          makeAbortCommand : async function (credit) {
+            this.isLoading = true
+            try {
+                let response = await axios.post("/user/credit-cga/abort-commandes",{
+                  _token : this.myToken,
+                  command : credit.id
+                })
+                if(response.data == 'done') {
+                  this.isLoading = false
+                  UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Une commande annule !</div>")
+                    .then(function () {
+                      location.reload()
+                    })
+                }
+            } catch (e) {
+              this.isLoading.false
+              UIkit.modal.alert(e)
+                .then(function () {
+                  location.reload()
+                })
             }
           }
           ,

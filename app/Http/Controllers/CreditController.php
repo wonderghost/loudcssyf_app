@@ -252,7 +252,8 @@ class CreditController extends Controller
 
 	public function abortCommande(Request $request) {
 		try {
-			$commande = CommandCredit::find($request->input('ref-0'));
+			$commande = CommandCredit::find($request->input('command'));
+
 			if($commande) {
 				if($commande->status == "unvalidated") {
 					$central = Credit::find('afrocash');
@@ -281,11 +282,12 @@ class CreditController extends Controller
 						$this->sendNotification("Commande Credit","Vous avez annulé une commande pour : ".$commande->vendeurs()->localisation,$value->username);
 					}
 					$this->sendNotification("Commande Credit","Votre commande a été annulé",$commande->vendeurs);
-					$this->sendNotification("Commande credit","Une commande a ete annulee pour : ".$commande->vendeurs()->localisation,User::where('type','admin')->first()->username);
+					$this->sendNotification("Commande credit","Une commande a ete annulee pour : ".$commande->vendeurs()->localisation,'admin');
+					$this->sendNotification("Commande credit","Une commande a ete annulee pour : ".$commande->vendeurs()->localisation,'root');
 					return response()->json('done');
 				}
 				} else {
-					throw new AppException("Commande deja validee!");
+					throw new AppException("Commande deja validee , vous ne pouvez pas l'annuler!");
 				}
 			} else {
 					throw new AppException("ERREUR!");

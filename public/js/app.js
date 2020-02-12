@@ -2987,6 +2987,64 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       return validateCommandCredit;
     }(),
+    abortCommand: function abortCommand(credit) {
+      var tmp = this;
+      UIkit.modal.confirm("<div class='uk-alert-warning' uk-alert><p> <span uk-icon='icon : warning'></span> Etes vous sur de vouloir annuler la commande de : " + credit.vendeurs + " ? </p></div>").then(function () {
+        tmp.makeAbortCommand(credit);
+      });
+    },
+    makeAbortCommand: function () {
+      var _makeAbortCommand = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(credit) {
+        var response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                this.isLoading = true;
+                _context3.prev = 1;
+                _context3.next = 4;
+                return axios.post("/user/credit-cga/abort-commandes", {
+                  _token: this.myToken,
+                  command: credit.id
+                });
+
+              case 4:
+                response = _context3.sent;
+
+                if (response.data == 'done') {
+                  this.isLoading = false;
+                  UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Une commande annule !</div>").then(function () {
+                    location.reload();
+                  });
+                }
+
+                _context3.next = 12;
+                break;
+
+              case 8:
+                _context3.prev = 8;
+                _context3.t0 = _context3["catch"](1);
+                this.isLoading["false"];
+                UIkit.modal.alert(_context3.t0).then(function () {
+                  location.reload();
+                });
+
+              case 12:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this, [[1, 8]]);
+      }));
+
+      function makeAbortCommand(_x) {
+        return _makeAbortCommand.apply(this, arguments);
+      }
+
+      return makeAbortCommand;
+    }(),
     filterCommandCredit: function filterCommandCredit(status) {
       this.currentPage = 1;
       this.start = 0;
@@ -19132,7 +19190,25 @@ var render = function() {
                               ]
                             ),
                             _vm._v(" "),
-                            _vm._m(1, true)
+                            _c(
+                              "button",
+                              {
+                                staticClass:
+                                  "uk-text-capitalize uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small",
+                                attrs: { type: "button", name: "button" },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.abortCommand(credit)
+                                  }
+                                }
+                              },
+                              [
+                                _vm._v(" annuler "),
+                                _c("span", {
+                                  attrs: { "uk-icon": "icon : close" }
+                                })
+                              ]
+                            )
                           ]
                         : _vm._e()
                     ],
@@ -19220,23 +19296,6 @@ var staticRenderFns = [
         [_vm._v("Fermer")]
       )
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass:
-          "uk-text-capitalize uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small",
-        attrs: { type: "button", name: "button" }
-      },
-      [
-        _vm._v(" annuler "),
-        _c("span", { attrs: { "uk-icon": "icon : close" } })
-      ]
-    )
   }
 ]
 render._withStripped = true

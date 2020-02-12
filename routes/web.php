@@ -263,6 +263,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/afrocash/all-transactions','CreditController@allTransactionAfrocashVendeur')->middleware('vendeur');
 	Route::post("/user/afrocash/all-transactions",'CreditController@getAllTransactionAfrocashVendeur')->middleware('vendeur');
 	Route::post('/user/afrocash/filter-transactions','CreditController@filterTransactionAfrocash')->middleware('vendeur');
+	
 	// RECOUVREMENTS
 	Route::get('user/recouvrement','RecouvrementController@operations')->middleware('coursier');
 	Route::post('/user/recouvrement/add','RecouvrementController@addRecouvrement')->middleware('coursier');
