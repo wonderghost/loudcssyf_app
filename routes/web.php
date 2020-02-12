@@ -223,7 +223,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/get-soldes','CreditController@getSoldesVendeurs')->middleware('cga');
 	Route::get('user/get-global-solde','CreditController@getGlobalSolde')->middleware('cga');
 
-	Route::post('/user/send-cga','CreditController@sendCga')->middleware('cga');
+	// Route::post('/user/send-cga','CreditController@sendCga')->middleware('cga');
 	Route::post('/user/send-afrocash','CreditController@sendAfrocash');
 	Route::post('/user/credit-cga/abort-commandes','CreditController@abortCommande')->middleware('cga');
 	Route::post('/user/cga-credit/','CreditController@getListVendeur')->middleware('cga');

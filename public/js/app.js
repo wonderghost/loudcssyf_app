@@ -2798,6 +2798,45 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2815,7 +2854,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       start: 0,
       end: 10,
       isLoading: false,
-      fullPage: true
+      fullPage: true,
+      commandToValidate: {},
+      validateFormData: {
+        _token: "",
+        commande: "",
+        montant: "",
+        password_confirmed: "",
+        type_commande: ""
+      },
+      errors: []
     };
   },
   components: {
@@ -2878,6 +2926,67 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       return getCommandCredit;
     }(),
+    validateCommandCredit: function () {
+      var _validateCommandCredit = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var response, errorTab, prop;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                this.validateFormData.commande = this.commandToValidate.id;
+                this.validateFormData._token = this.myToken;
+                this.validateFormData.type_commande = this.commandToValidate.type;
+                _context2.prev = 3;
+                this.isLoading = true;
+                UIkit.modal($("#modal-validation-command")).hide();
+                _context2.next = 8;
+                return axios.post("/user/send-afrocash", this.validateFormData);
+
+              case 8:
+                response = _context2.sent;
+
+                if (response.data == 'done') {
+                  this.isLoading = false;
+                  UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Un commande valide avec success :-) <span uk-icon='icon : check'></span></div>").then(function () {
+                    location.reload();
+                  });
+                }
+
+                _context2.next = 17;
+                break;
+
+              case 12:
+                _context2.prev = 12;
+                _context2.t0 = _context2["catch"](3);
+                this.isLoading = false;
+                UIkit.modal($("#modal-validation-command")).show();
+
+                if (_context2.t0.response.data.errors) {
+                  errorTab = _context2.t0.response.data.errors;
+
+                  for (prop in errorTab) {
+                    this.errors.push(errorTab[prop][0]);
+                  }
+                } else {
+                  this.errors.push(_context2.t0.response.data);
+                }
+
+              case 17:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this, [[3, 12]]);
+      }));
+
+      function validateCommandCredit() {
+        return _validateCommandCredit.apply(this, arguments);
+      }
+
+      return validateCommandCredit;
+    }(),
     filterCommandCredit: function filterCommandCredit(status) {
       this.currentPage = 1;
       this.start = 0;
@@ -2917,6 +3026,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     typeUser: function typeUser() {
       return this.$store.state.typeUser;
+    },
+    myToken: function myToken() {
+      return this.$store.state.myToken;
     }
   }
 });
@@ -18700,6 +18812,177 @@ var render = function() {
         }
       }),
       _vm._v(" "),
+      _vm.typeUser == "gcga"
+        ? [
+            _c(
+              "div",
+              {
+                attrs: {
+                  id: "modal-validation-command",
+                  "uk-modal": "esc-close : false ; bg-close : false;"
+                }
+              },
+              [
+                _c("div", { staticClass: "uk-modal-dialog" }, [
+                  _c("div", { staticClass: "uk-modal-header" }, [
+                    _c(
+                      "div",
+                      {
+                        staticClass: "uk-alert-info",
+                        attrs: { "uk-alert": "" }
+                      },
+                      [
+                        _c("p", [
+                          _c("span", { attrs: { "uk-icon": "icon : info" } }),
+                          _vm._v(" Vous confirmez l'envoi de : "),
+                          _c("span", { staticClass: "uk-text-bold" }, [
+                            _vm._v(_vm._s(_vm.commandToValidate.montant))
+                          ]),
+                          _vm._v(", a : "),
+                          _c("span", { staticClass: "uk-text-bold" }, [
+                            _vm._v(_vm._s(_vm.commandToValidate.vendeurs))
+                          ])
+                        ])
+                      ]
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    { staticClass: "uk-modal-body" },
+                    [
+                      _vm._l(_vm.errors, function(error) {
+                        return _vm.errors.length
+                          ? [
+                              _c(
+                                "div",
+                                {
+                                  staticClass:
+                                    "uk-alert-danger uk-border-rounded uk-box-shadow-hover-small",
+                                  attrs: { "uk-alert": "" }
+                                },
+                                [
+                                  _c("a", {
+                                    staticClass: "uk-alert-close",
+                                    attrs: { href: "#", "uk-close": "" }
+                                  }),
+                                  _vm._v(" "),
+                                  _c("p", [_vm._v(_vm._s(error))])
+                                ]
+                              )
+                            ]
+                          : _vm._e()
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "form",
+                        {
+                          on: {
+                            submit: function($event) {
+                              $event.preventDefault()
+                              return _vm.validateCommandCredit()
+                            }
+                          }
+                        },
+                        [
+                          _c("div", { staticClass: "uk-margin-small" }, [
+                            _c("label", { attrs: { for: "" } }, [
+                              _vm._v("Entrez le montant")
+                            ]),
+                            _vm._v(" "),
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.validateFormData.montant,
+                                  expression: "validateFormData.montant"
+                                }
+                              ],
+                              staticClass: "uk-input uk-border-rounded",
+                              attrs: {
+                                type: "number",
+                                placeholder: "Montant de la transaction",
+                                autofocus: ""
+                              },
+                              domProps: { value: _vm.validateFormData.montant },
+                              on: {
+                                input: function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    _vm.validateFormData,
+                                    "montant",
+                                    $event.target.value
+                                  )
+                                }
+                              }
+                            })
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "uk-margin-small" }, [
+                            _c("label", { attrs: { for: "" } }, [
+                              _vm._v("Confirmez votre mot de passe")
+                            ]),
+                            _vm._v(" "),
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value:
+                                    _vm.validateFormData.password_confirmed,
+                                  expression:
+                                    "validateFormData.password_confirmed"
+                                }
+                              ],
+                              staticClass: "uk-input uk-border-rounded",
+                              attrs: {
+                                type: "password",
+                                placeholder: "Entrez votre mot de passe ici",
+                                value: ""
+                              },
+                              domProps: {
+                                value: _vm.validateFormData.password_confirmed
+                              },
+                              on: {
+                                input: function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    _vm.validateFormData,
+                                    "password_confirmed",
+                                    $event.target.value
+                                  )
+                                }
+                              }
+                            })
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "button",
+                            {
+                              staticClass:
+                                "uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small",
+                              attrs: { type: "submit", name: "button" }
+                            },
+                            [_vm._v("Validez")]
+                          )
+                        ]
+                      )
+                    ],
+                    2
+                  ),
+                  _vm._v(" "),
+                  _vm._m(0)
+                ])
+              ]
+            )
+          ]
+        : _vm._e(),
+      _vm._v(" "),
       _c(
         "ul",
         {
@@ -18823,7 +19106,34 @@ var render = function() {
                     "td",
                     [
                       credit.status == "unvalidated" && _vm.typeUser == "gcga"
-                        ? [_vm._m(0, true), _vm._v(" "), _vm._m(1, true)]
+                        ? [
+                            _c(
+                              "button",
+                              {
+                                staticClass:
+                                  "uk-text-capitalize uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small",
+                                attrs: {
+                                  type: "button",
+                                  "uk-toggle":
+                                    "target : #modal-validation-command",
+                                  name: "button"
+                                },
+                                on: {
+                                  click: function($event) {
+                                    _vm.commandToValidate = credit
+                                  }
+                                }
+                              },
+                              [
+                                _vm._v(" validez "),
+                                _c("span", {
+                                  attrs: { "uk-icon": "icon : check" }
+                                })
+                              ]
+                            ),
+                            _vm._v(" "),
+                            _vm._m(1, true)
+                          ]
                         : _vm._e()
                     ],
                     2
@@ -18891,7 +19201,7 @@ var render = function() {
         )
       ])
     ],
-    1
+    2
   )
 }
 var staticRenderFns = [
@@ -18899,18 +19209,17 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass:
-          "uk-text-capitalize uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small",
-        attrs: { type: "button", name: "button" }
-      },
-      [
-        _vm._v(" validez "),
-        _c("span", { attrs: { "uk-icon": "icon : check" } })
-      ]
-    )
+    return _c("div", { staticClass: "uk-modal-footer" }, [
+      _c(
+        "button",
+        {
+          staticClass:
+            "uk-modal-close uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-danger",
+          attrs: { type: "button", name: "button" }
+        },
+        [_vm._v("Fermer")]
+      )
+    ])
   },
   function() {
     var _vm = this

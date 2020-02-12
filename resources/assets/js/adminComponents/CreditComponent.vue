@@ -4,6 +4,45 @@
         :can-cancel="true"
         :is-full-page="fullPage"></loading>
 
+        <!-- validation commande modal -->
+        <template id="" v-if="typeUser == 'gcga'">
+          <div id="modal-validation-command" uk-modal="esc-close : false ; bg-close : false;">
+              <div class="uk-modal-dialog">
+                  <div class="uk-modal-header">
+                    <div class="uk-alert-info" uk-alert>
+                      <p>
+                      <span uk-icon = "icon : info"></span> Vous confirmez l'envoi de : <span class="uk-text-bold">{{ commandToValidate.montant }}</span>, a : <span class="uk-text-bold">{{ commandToValidate.vendeurs }}</span>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="uk-modal-body">
+                    <!-- Erreor block -->
+                          <template v-if="errors.length" v-for="error in errors">
+                          <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+                            <a href="#" class="uk-alert-close" uk-close></a>
+                            <p>{{error}}</p>
+                          </div>
+                        </template>
+                    <form @submit.prevent="validateCommandCredit()">
+                      <div class="uk-margin-small">
+                        <label for="">Entrez le montant</label>
+                        <input type="number" v-model="validateFormData.montant" placeholder="Montant de la transaction" class="uk-input uk-border-rounded" autofocus>
+                      </div>
+                      <div class="uk-margin-small">
+                        <label for="">Confirmez votre mot de passe</label>
+                        <input type="password" v-model="validateFormData.password_confirmed" placeholder="Entrez votre mot de passe ici" class="uk-input uk-border-rounded" value="">
+                      </div>
+                      <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small" name="button">Validez</button>
+                    </form>
+                  </div>
+                  <div class="uk-modal-footer">
+                    <button type="button" class="uk-modal-close uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-danger" name="button">Fermer</button>
+                  </div>
+              </div>
+          </div>
+        </template>
+        <!-- // -->
+
     <ul class="uk-tab" uk-switcher="animation : uk-animation-slide-right">
       <li> <a @click="filterCommandCredit('unvalidated')" href="#">En attente de validation</a> </li>
       <li> <a @click="filterCommandCredit('validated')" href="#">Deja validee</a> </li>
@@ -34,7 +73,7 @@
             <td v-else>{{credit.recu}}</td>
             <td>
               <template id="" v-if="credit.status == 'unvalidated' && typeUser == 'gcga'">
-                <button type="button" name="button" class="uk-text-capitalize uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small"> validez <span uk-icon="icon : check"></span> </button>
+                <button type="button" @click="commandToValidate = credit" uk-toggle="target : #modal-validation-command" name="button" class="uk-text-capitalize uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small"> validez <span uk-icon="icon : check"></span> </button>
                 <button type="button" name="button" class="uk-text-capitalize uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small"> annuler <span uk-icon="icon : close"></span> </button>
               </template>
             </td>
@@ -70,7 +109,16 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             start : 0,
             end  : 10,
             isLoading : false,
-            fullPage : true
+            fullPage : true,
+            commandToValidate : {},
+            validateFormData : {
+              _token : "",
+              commande : "",
+              montant : "",
+              password_confirmed : "",
+              type_commande : ""
+            },
+            errors : []
           }
         },
         components : {
@@ -92,6 +140,36 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               alert(e)
             }
           },
+          validateCommandCredit : async function () {
+            this.validateFormData.commande = this.commandToValidate.id
+            this.validateFormData._token = this.myToken
+            this.validateFormData.type_commande = this.commandToValidate.type
+            try {
+              this.isLoading = true
+              UIkit.modal($("#modal-validation-command")).hide()
+
+              let response = await axios.post("/user/send-afrocash",this.validateFormData)
+              if(response.data == 'done') {
+                this.isLoading = false
+                UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Un commande valide avec success :-) <span uk-icon='icon : check'></span></div>")
+                  .then(function () {
+                    location.reload()
+                  })
+              }
+            } catch (error) {
+              this.isLoading = false
+              UIkit.modal($("#modal-validation-command")).show()
+              if(error.response.data.errors) {
+                let errorTab = error.response.data.errors
+                for (var prop in errorTab) {
+                  this.errors.push(errorTab[prop][0])
+                }
+              } else {
+                  this.errors.push(error.response.data)
+              }
+            }
+          }
+          ,
           filterCommandCredit (status) {
             this.currentPage = 1
             this.start = 0
@@ -129,6 +207,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           },
           typeUser () {
             return this.$store.state.typeUser
+          },
+          myToken () {
+            return this.$store.state.myToken
           }
         }
     }

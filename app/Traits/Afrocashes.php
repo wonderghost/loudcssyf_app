@@ -124,6 +124,8 @@ Trait Afrocashes {
 			'commande'	=> 'required|exists:command_credits,id',
 			'montant'	=>	'required',
 			'password_confirmed'	=>	'required'
+		],[
+			'required'	=> ':attribute ne peut etre vide!'
 		]);
 		try {
 			// validation du mote de passe
@@ -167,7 +169,10 @@ Trait Afrocashes {
 							$this->sendNotification("Commande Credit Cga" , "Votre Commande cga a ete valide",$commande->vendeurs);
 							$this->sendNotification("Commande Credit Cga" , "Vous avez valide une commande cga",Auth::user()->username);
 
-							return redirect('/user/credit-cga/commandes')->withSuccess("Success!");
+							// return redirect('/user/credit-cga/commandes')->withSuccess("Success!");
+							return response()
+								->json('done');
+
 						} else {
 							throw new AppException("Montant Indisponible!");
 						}
@@ -213,7 +218,8 @@ Trait Afrocashes {
 							$this->sendNotification("Commande Afrocash" , "Votre Commande Afrocash a ete valide!",$commande->vendeurs);
 							$this->sendNotification("Commande Afrocash" , "Vous avez valide une commande Afrocash!",Auth::user()->username);
 
-							return redirect('/user/credit-cga/commandes')->withSuccess("Success!");
+							return response()
+								->json('done');
 							// ENVOI DE LA NOTIFICATION
 						} else {
 							throw new AppException("Montant Indisponible!");
@@ -251,7 +257,8 @@ Trait Afrocashes {
 							$this->sendNotification("Commande Credit Rex" ,"Une commande Rex a ete valide",User::where('type','admin')->first()->username);
 							$this->sendNotification("Commande Credit Rex" , "Votre Commande rex a ete valide",$commande->vendeurs);
 							$this->sendNotification("Commande Credit Rex" , "Vous avez valide une commande rex",Auth::user()->username);
-							return redirect('/user/credit-rex/commandes')->withSuccess("Success!");
+							return response()
+								->json('done');
 						} else {
 							throw new AppException("Montant Indisponible!");
 						}
@@ -268,7 +275,8 @@ Trait Afrocashes {
 				throw new AppException("Deja validee!");
 			}
 		} catch (AppException $e) {
-			return back()->with("_error",$e->getMessage());
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
 		}
 
 	}
