@@ -50,11 +50,7 @@ class RapportControlleur extends Controller
     public function getRapportByVendeurs() {
       return view('simple-users.rapport-vente');
     }
-    
-  public function rapportVendeur($type='reabonnement',$vendeur) {
-    $data = RapportVente::where(['type'=>$type,'vendeurs'=>$vendeur])->orderBy('date_rapport','desc')->paginate(10);
-    return  $this->organizeRapport($data);
-  }
+
   // @@@@@
 
   public function getAllRapportForVendeur(Request $request , RapportVente $r) {
@@ -68,32 +64,6 @@ class RapportControlleur extends Controller
     }
   }
 
-  public function reabonnementList() {
-    try {
-      return response()->json($this->rapportVendeur('reabonnement',Auth::user()->username));
-    } catch (AppException $e) {
-      header("Erreur!",true,422);
-      die(json_encode($e->getMessage()));
-    }
-  }
-
-  public function recrutementList() {
-    try {
-      return response()->json($this->rapportVendeur('recrutement',Auth::user()->username));
-    } catch (AppException $e) {
-      header("Erreur !",true,422);
-      die(json_encode($e->getMessage()));
-    }
-  }
-
-  public function migrationList() {
-    try {
-      return response()->json($this->rapportVendeur('migration',Auth::user()->username));
-    } catch (AppException $e) {
-      header("Erreur !",true,422);
-      die(json_encode($e->getMessage()));
-    }
-  }
 
   public function totalCommissionVendeur(Request $request , RapportVente $r) {
     try {

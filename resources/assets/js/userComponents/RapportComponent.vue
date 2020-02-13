@@ -129,7 +129,9 @@ import 'vue-loading-overlay/dist/vue-loading.css';
       },
         mounted() {
           this.getRapportVente()
-          this.getPayComissionList()
+          if(this.typeUser == 'v_da') {
+            this.getPayComissionListForVendeur()
+          }
         },
         components : {
           Loading
@@ -155,7 +157,10 @@ import 'vue-loading-overlay/dist/vue-loading.css';
               if(this.typeUser == 'admin') {
                 var response = await axios.get('/admin/rapport/all')
                 var responseCom = await axios.get('/admin/rapport/commission-total')
-              } else {
+              }else if(this.typeUser == 'controleur'){
+                var response = await axios.get('/user/rapport/all')
+                var responseCom = await axios.get('/user/rapport/commission-total')
+              }else {
                 var response = await axios.get('/user/rapport-ventes/all')
                 var responseCom = await axios.get('/user/rapport/total-commission')
               }
@@ -166,7 +171,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
               alert(error)
             }
           },
-          getPayComissionList : async function () {
+          getPayComissionListForVendeur : async function () {
             try {
               let response = await axios.get('/user/rapport-ventes/get-pay-commission')
               this.$store.commit('setPayComissionList',response.data)

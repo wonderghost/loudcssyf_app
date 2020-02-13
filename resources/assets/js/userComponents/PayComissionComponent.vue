@@ -103,12 +103,18 @@ import 'vue-loading-overlay/dist/vue-loading.css';
       methods : {
         getPayComissionList : async function () {
           try {
-            let response = await axios.get('/user/pay-comissions/all')
+            if(this.typeUser == 'admin') {
+              var response = await axios.get('/admin/pay-comissions/all')
+            } else if(this.typeUser == 'gcga') {
+              var response = await axios.get('/user/pay-comissions/all')
+            } else {
+              return 0
+            }
             if(response.data) {
               this.$store.commit('setPayComissionList',response.data)
             }
           } catch (e) {
-              alert(e)
+              console.log(e)
           }
         },
         validatePayComission : async function () {

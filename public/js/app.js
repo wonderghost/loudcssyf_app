@@ -3285,11 +3285,14 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     blockUser: function blockUser(username) {
+      var tmp = this;
       var link = this.userBlockLink;
       UIkit.modal.confirm("Etes vous sur de vouloir effectuer cette action ?").then(function () {
+        tmp.isLoading = true;
         axios.post(link, {
           ref: username
         }).then(function (response) {
+          tmp.isLoading = false;
           UIkit.modal.alert("Utilisateur bloque avec success!").then(function () {
             location.reload();
           });
@@ -3299,16 +3302,19 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     unblockUser: function unblockUser(username) {
+      var tmp = this;
       var link = this.userUnblockLink;
       UIkit.modal.confirm("Etes-vous sur de vouloir effectuer cette action ?").then(function () {
+        tmp.isLoading = true;
         axios.post(link, {
           ref: username
         }).then(function (response) {
+          tmp.isLoading = false;
           UIkit.modal.alert("Utilisateur debloque avec success!").then(function () {
             location.reload();
           });
         })["catch"](function (error) {
-          console.log(error);
+          alert(error);
         });
       });
     }
@@ -3785,30 +3791,56 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context.prev = _context.next) {
               case 0:
                 _context.prev = 0;
-                _context.next = 3;
+
+                if (!(this.typeUser == 'admin')) {
+                  _context.next = 7;
+                  break;
+                }
+
+                _context.next = 4;
+                return axios.get('/admin/pay-comissions/all');
+
+              case 4:
+                response = _context.sent;
+                _context.next = 14;
+                break;
+
+              case 7:
+                if (!(this.typeUser == 'gcga')) {
+                  _context.next = 13;
+                  break;
+                }
+
+                _context.next = 10;
                 return axios.get('/user/pay-comissions/all');
 
-              case 3:
+              case 10:
                 response = _context.sent;
+                _context.next = 14;
+                break;
 
+              case 13:
+                return _context.abrupt("return", 0);
+
+              case 14:
                 if (response.data) {
                   this.$store.commit('setPayComissionList', response.data);
                 }
 
-                _context.next = 10;
+                _context.next = 20;
                 break;
 
-              case 7:
-                _context.prev = 7;
+              case 17:
+                _context.prev = 17;
                 _context.t0 = _context["catch"](0);
-                alert(_context.t0);
+                console.log(_context.t0);
 
-              case 10:
+              case 20:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this, [[0, 7]]);
+        }, _callee, this, [[0, 17]]);
       }));
 
       function getPayComissionList() {
@@ -4045,7 +4077,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   mounted: function mounted() {
     this.getRapportVente();
-    this.getPayComissionList();
+
+    if (this.typeUser == 'v_da') {
+      this.getPayComissionListForVendeur();
+    }
   },
   components: {
     Loading: vue_loading_overlay__WEBPACK_IMPORTED_MODULE_1___default.a
@@ -4092,39 +4127,58 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 7:
                 responseCom = _context.sent;
-                _context.next = 16;
+                _context.next = 25;
                 break;
 
               case 10:
-                _context.next = 12;
-                return axios.get('/user/rapport-ventes/all');
+                if (!(this.typeUser == 'controleur')) {
+                  _context.next = 19;
+                  break;
+                }
 
-              case 12:
+                _context.next = 13;
+                return axios.get('/user/rapport/all');
+
+              case 13:
                 response = _context.sent;
-                _context.next = 15;
-                return axios.get('/user/rapport/total-commission');
-
-              case 15:
-                responseCom = _context.sent;
+                _context.next = 16;
+                return axios.get('/user/rapport/commission-total');
 
               case 16:
+                responseCom = _context.sent;
+                _context.next = 25;
+                break;
+
+              case 19:
+                _context.next = 21;
+                return axios.get('/user/rapport-ventes/all');
+
+              case 21:
+                response = _context.sent;
+                _context.next = 24;
+                return axios.get('/user/rapport/total-commission');
+
+              case 24:
+                responseCom = _context.sent;
+
+              case 25:
                 this.isLoading = false;
                 this.commission = responseCom.data;
                 this.$store.commit('setRapportVente', response.data);
-                _context.next = 24;
+                _context.next = 33;
                 break;
 
-              case 21:
-                _context.prev = 21;
+              case 30:
+                _context.prev = 30;
                 _context.t0 = _context["catch"](0);
                 alert(_context.t0);
 
-              case 24:
+              case 33:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this, [[0, 21]]);
+        }, _callee, this, [[0, 30]]);
       }));
 
       function getRapportVente() {
@@ -4133,8 +4187,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       return getRapportVente;
     }(),
-    getPayComissionList: function () {
-      var _getPayComissionList = _asyncToGenerator(
+    getPayComissionListForVendeur: function () {
+      var _getPayComissionListForVendeur = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
         var response;
@@ -4165,11 +4219,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee2, this, [[0, 7]]);
       }));
 
-      function getPayComissionList() {
-        return _getPayComissionList.apply(this, arguments);
+      function getPayComissionListForVendeur() {
+        return _getPayComissionListForVendeur.apply(this, arguments);
       }
 
-      return getPayComissionList;
+      return getPayComissionListForVendeur;
     }(),
     nextPage: function nextPage() {
       if (this.rapportVentes.length > this.end) {
@@ -4278,6 +4332,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -18871,7 +18934,7 @@ var render = function() {
             "table",
             {
               staticClass:
-                "uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover"
+                "uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover uk-table-responsive"
             },
             [
               _c("thead", [
@@ -19023,7 +19086,7 @@ var render = function() {
             "table",
             {
               staticClass:
-                "uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover"
+                "uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover uk-table-responsive"
             },
             [
               _c("thead", [
@@ -19440,7 +19503,7 @@ var render = function() {
           "table",
           {
             staticClass:
-              "uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover"
+              "uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover uk-table-responsive"
           },
           [
             _c("thead", [
@@ -19816,7 +19879,7 @@ var render = function() {
         "table",
         {
           staticClass:
-            "uk-table uk-table-divider uk-table-striped uk-table-small uk-table-hover"
+            "uk-table uk-table-divider uk-table-striped uk-table-small uk-table-hover uk-table-responsive"
         },
         [
           _c("thead", [
@@ -21282,9 +21345,9 @@ var render = function() {
         ),
         _vm._v(" "),
         _c("div", { staticClass: "uk-navbar-right uk-visible@m" }, [
-          _c("a", { staticClass: "uk-button", attrs: { href: "#" } }, [
+          _c("a", { staticClass: "uk-button" }, [
             _c("span", { attrs: { "uk-icon": "icon : user ;" } }),
-            _vm._v(" " + _vm._s(_vm.username) + " ")
+            _vm._v(" " + _vm._s(_vm.userLocalisation) + " ")
           ]),
           _vm._v(" "),
           _c("form", { attrs: { action: "/logout", method: "post" } }, [
@@ -21370,7 +21433,9 @@ var render = function() {
                     ]
                   : _vm._e(),
                 _vm._v(" "),
-                _vm.typeUser !== "admin" ? [_vm._m(28)] : _vm._e()
+                _vm.typeUser == "controleur" ? [_vm._m(28)] : _vm._e(),
+                _vm._v(" "),
+                _vm.typeUser !== "admin" ? [_vm._m(29)] : _vm._e()
               ],
               2
             )
@@ -21979,6 +22044,33 @@ var staticRenderFns = [
           _c("a", { attrs: { href: "/user/commandes" } }, [
             _c("span", { attrs: { "uk-icon": "icon:thumbnails" } }),
             _vm._v(" Toutes les Commandes")
+          ])
+        ])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("li", { staticClass: "uk-parent" }, [
+      _c("a", { attrs: { href: "#" } }, [
+        _c("span", { attrs: { "uk-icon": "icon:cart;ratio:0.9" } }),
+        _vm._v(" Rapport Ventes")
+      ]),
+      _vm._v(" "),
+      _c("ul", { staticClass: "uk-nav-sub" }, [
+        _c("li", [
+          _c("a", { attrs: { href: "/user/add-rapport" } }, [
+            _c("span", { attrs: { "uk-icon": "icon:arrow-right" } }),
+            _vm._v(" Ajouter")
+          ])
+        ]),
+        _vm._v(" "),
+        _c("li", [
+          _c("a", { attrs: { href: "/user/all-rapport" } }, [
+            _c("span", { attrs: { "uk-icon": "icon:arrow-right" } }),
+            _vm._v(" Toutes les ventes")
           ])
         ])
       ])

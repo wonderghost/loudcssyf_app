@@ -49,7 +49,7 @@
       <li> <a @click="filterCommandCredit('aborted')" href="#">commandes annullee</a> </li>
     </ul>
     <div class="">
-      <table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover">
+      <table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover uk-table-responsive">
         <thead>
           <tr>
             <th v-for="head in tableHead">{{head}}</th>

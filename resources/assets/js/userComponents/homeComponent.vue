@@ -20,7 +20,7 @@
 
     </div>
     <div class="uk-navbar-right uk-visible@m">
-      <a href="#" class="uk-button"><span uk-icon="icon : user ;"></span> {{username}} </a>
+      <a class="uk-button"><span uk-icon="icon : user ;"></span> {{userLocalisation}} </a>
       <form action="/logout" method="post">
         <input type="hidden" name="_token" :value="myToken">
         <button class="uk-button uk-button-small uk-button-link uk-margin-right border-button" type="submit" uk-tooltip="Deconnexion"><i class="material-icons">power_settings_new</i></button>
@@ -175,6 +175,15 @@
                 <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Commandes</a>
                 <ul class="uk-nav-sub">
                     <li><a href="/user/commandes"><span uk-icon="icon:thumbnails"></span> Toutes les Commandes</a></li>
+                </ul>
+            </li>
+          </template>
+          <template id="" v-if="typeUser == 'controleur'">
+            <li class="uk-parent">
+                <a href="#"><span uk-icon="icon:cart;ratio:0.9"></span> Rapport Ventes</a>
+                <ul class="uk-nav-sub">
+                    <li><a href="/user/add-rapport"><span uk-icon="icon:arrow-right"></span> Ajouter</a></li>
+                    <li><a href="/user/all-rapport"><span uk-icon="icon:arrow-right"></span> Toutes les ventes</a></li>
                 </ul>
             </li>
           </template>

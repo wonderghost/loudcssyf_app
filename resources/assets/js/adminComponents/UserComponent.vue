@@ -3,7 +3,7 @@
   <loading :active.sync="isLoading"
       :can-cancel="false"
       :is-full-page="fullPage"></loading>
-  <table  class="uk-table uk-table-divider uk-table-striped uk-table-small uk-table-hover">
+  <table  class="uk-table uk-table-divider uk-table-striped uk-table-small uk-table-hover uk-table-responsive">
     <thead>
       <tr>
         <th v-for="head in tableHeader"> {{ head }} </th>
@@ -116,11 +116,14 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         }
         ,
         blockUser : function (username) {
+          var tmp = this
           let link = this.userBlockLink
           UIkit.modal.confirm("Etes vous sur de vouloir effectuer cette action ?").then(function () {
+            tmp.isLoading = true
             axios.post(link,{
               ref : username
             }).then(function (response) {
+              tmp.isLoading = false
               UIkit.modal.alert("Utilisateur bloque avec success!").then(function () {
                 location.reload()
               })
@@ -130,16 +133,19 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           })
         },
         unblockUser : function (username) {
+          var tmp = this
           let link = this.userUnblockLink
           UIkit.modal.confirm("Etes-vous sur de vouloir effectuer cette action ?").then(function () {
+            tmp.isLoading = true
             axios.post(link , {
               ref : username
             }).then(function (response) {
+              tmp.isLoading = false
               UIkit.modal.alert("Utilisateur debloque avec success!").then(function () {
                 location.reload()
               })
             }).catch(function (error) {
-              console.log(error)
+              alert(error)
             })
           })
         }

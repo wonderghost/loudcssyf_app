@@ -259,14 +259,13 @@ Trait Rapports {
 	}
 	// LIST DES RAPPORTS
 	public function listRapport() {
-		$users = User::whereIn('type',['v_standart','v_da'])->get();
-			return view('admin.list-rapport-vente')->withUsers($users);
+		return view('admin.list-rapport-vente');
 	}
 
 // HISTORIQUE DE REABONNE POUR L'ADMINISTRATEUR
 		public function getAllRapport(RapportVente $r) {
 			try {
-				$all = $r->select()->orderBy('date_rapport','desc')->get();
+				$all = $r->select()->orderBy('date_rapport','desc')->limit(500)->get();
 				return response()
 					->json($this->organizeRapport($all));
 			} catch (AppException $e) {
@@ -274,41 +273,8 @@ Trait Rapports {
 				die(json_encode($e->getMessage()));
 			}
 		}
-			public function reabonnementRapport() {
-				try {
-					$reabonnement = RapportVente::where('type','reabonnement')->orderBy('date_rapport','desc')->paginate(10);
-					$all=$this->organizeRapport($reabonnement);
-					return response()->json($all);
-				} catch (AppException $e) {
-					header("Erreur!",true,422);
-					die(json_encode($e->getMessage()));
-				}
-		}
 
 // HISTORIQUE DE RECRUTEMENT POUR L'ADMINISTRATEUR
-
-	public function recrutementRapport() {
-		try {
-			$recrutement = RapportVente::where('type','recrutement')->orderBy('date_rapport','desc')->paginate(10);
-			$all = $this->organizeRapport($recrutement);
-			return response()->json($all);
-		} catch (AppException $e) {
-			header("Erreur!",true,422);
-			die(json_encode($e->getMessage()));
-		}
-
-	}
-	// HISTORIQUE DE MIGRATION POUR L'ADMINISTRATEUR
-	public function migrationRapport() {
-		try {
-			$migration = RapportVente::where('type','migration')->orderBy('date_rapport','desc')->paginate(10);
-			$all = $this->organizeRapport($migration);
-			return response()->json($all);
-		} catch (AppException $e) {
-			header("Erreur!",true,422);
-			die(json_encode($e->getMessage()));
-		}
-	}
 
 
 	public function organizeRapport($data) {
@@ -340,7 +306,6 @@ public function totalCommission(RapportVente $r) {
 		header("Erreur!",true,422);
 		die(json_encode($e->getMessage()));
 	}
-
 }
 
 }
