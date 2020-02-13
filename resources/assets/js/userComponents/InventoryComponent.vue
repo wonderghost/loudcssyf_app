@@ -1,0 +1,178 @@
+<template>
+  <div class="">
+    <loading :active.sync="isLoading"
+        :can-cancel="true"
+        :is-full-page="fullPage"></loading>
+    <div class="uk-child-width-1-4@m" uk-grid>
+      <template id="" v-if="typeUser == 'v_da' || typeUser == 'v_standart'">
+        <div class="">
+          <div class="uk-card uk-card-default uk-border-rounded">
+            <h3 class="uk-card-title">Title</h3>
+            <p></p>
+          </div>
+        </div>
+      </template>
+      <template id="else" v-else>
+        <div v-for="mat in materials" class="">
+          <div class="uk-card uk-border-rounded uk-box-shadow-hover-small uk-background-muted uk-dark uk-card-body uk-padding-small">
+            <h3 class="uk-card-title">{{ mat.article }}</h3>
+            <p>
+              <ul class="uk-list uk-list-divider">
+                <li>Quantite : {{mat.quantite}}</li>
+                <li>TTC : {{mat.prix_ttc | numFormat}}</li>
+                <li>HT : {{mat.ht | numFormat}}</li>
+                <li>Marge : {{mat.marge | numFormat}}</li>
+              </ul>
+            </p>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
+        <li><a @click="materialState = 'inactif',start = 0 , end =15 , currentPage = 1"  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiels Inactifs</a></li>
+        <li><a @click="materialState = 'actif' , start = 0 , end =15 , currentPage = 1"  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiels Actifs</a></li>
+    </ul>
+    <!-- FILTER BY USERS -->
+    <template v-if="typeUser == 'admin' || typeUser == 'logistique'" id="">
+      <div class="uk-margin-remove uk-flex uk-flex-right">
+        <select v-model="userFilter" class="uk-input uk-border-rounded uk-width-1-3@m" name="">
+          <option value="">Tous les vendeurs</option>
+          <option v-for="user in users" :value="user.username">{{user.localisation}}</option>
+        </select>
+      </div>
+    </template>
+    <!-- // -->
+    <div class="">
+      <table class="uk-table uk-table-small uk-table-striped uk-table-hover uk-table-divider uk-table-responsive">
+        <thead>
+          <tr>
+            <th v-for="head in tableHead">{{head}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="serial in ListSerialNumber.slice(start,end)">
+            <td>{{serial.numero_serie}}</td>
+            <td>{{serial.vendeurs}}</td>
+            <td>{{serial.article}}</td>
+            <td>{{serial.status}}</td>
+            <td>{{serial.origine}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <ul class="uk-pagination uk-flex uk-flex-center">
+        <li> <span> Page : {{currentPage}} </span> </li>
+        <li> <button type="button" @click="previousPage()" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-default" name="button"> <span uk-pagination-previous></span> Previous</button> </li>
+        <li> <button type="button" @click="nextPage()" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-default" name="button"> Suivant <span uk-pagination-next></span> </button> </li>
+      </ul>
+    </div>
+  </div>
+</template>
+<script>
+import Loading from 'vue-loading-overlay'
+import 'vue-loading-overlay/dist/vue-loading.css'
+
+    export default {
+      created () {
+        this.isLoading = true
+      },
+      components : {
+        Loading
+      },
+        mounted() {
+          this.getSerialNumberList()
+          this.getMaterials()
+        },
+        data () {
+          return {
+            isLoading : false,
+            fullPage : true,
+            tableHead : ['Numero Serie','Vendeur','Article','Status','Origine'],
+            materialState : "inactif",
+            start : 0,
+            end : 15,
+            currentPage : 1,
+            materials : [],
+            users : [],
+            userFilter : ""
+          }
+        },
+        methods : {
+          getSerialNumberList : async function () {
+            try {
+              if(this.typeUser == 'admin') {
+                var response = await axios.get("/admin/inventory/get-serial-number-list")
+              }else {
+                var response = await axios.get("/user/inventory/get-serial-number-list")
+              }
+              this.isLoading = false
+              this.$store.commit('setSerialNumberList',response.data)
+            } catch (e) {
+              alert(e)
+            }
+          },
+          nextPage : function () {
+            if(this.serialNumberList.length > this.end) {
+              let ecart = this.end - this.start
+              this.start = this.end
+              this.end += ecart
+              this.currentPage++
+            }
+          },
+          previousPage : function () {
+            if(this.start > 0) {
+              let ecart = this.end - this.start
+              this.start -= ecart
+              this.end -= ecart
+              this.currentPage--
+            }
+          },
+          getMaterials : async function () {
+            try {
+              if(this.typeUser == 'admin') {
+                var response = await axios.get("/admin/inventory/all-material")
+              }else {
+                var response = await axios.get("/user/inventory/all-material")
+              }
+              this.materials = response.data
+              this.listUserForFilter()
+            } catch (e) {
+                alert(e)
+            }
+          },
+          listUserForFilter : async function () {
+            try {
+              var response = await axios.get("/admin/users/list")
+              this.users = response.data
+            } catch (e) {
+                alert(e)
+            }
+          }
+        },
+        computed : {
+          typeUser () {
+            return this.$store.state.typeUser
+          },
+          myToken () {
+            return this.$store.state.myToken
+          },
+          serialNumberList () {
+            return this.$store.state.serialNumberList.filter( (serial) => {
+              return serial.status == this.materialState
+            })
+          },
+          serialNumberForVendeurs() {
+            return this.serialNumberList.filter( (userSerial) =>  {
+              return userSerial.user_id === this.userFilter
+            })
+          },
+          ListSerialNumber () {
+            if(this.userFilter == "") {
+              return this.serialNumberList
+            } else {
+              return this.serialNumberForVendeurs
+            }
+          }
+        }
+    }
+</script>

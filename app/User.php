@@ -27,6 +27,9 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    public function exemplaire () {
+      return $this->hasMany('App\Exemplaire');
+    }
 
     public function agence() {
       return $this->belongsTo('App\Agence','agence','reference')->first();

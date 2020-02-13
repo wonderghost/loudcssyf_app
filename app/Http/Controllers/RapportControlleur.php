@@ -50,6 +50,7 @@ class RapportControlleur extends Controller
     public function getRapportByVendeurs() {
       return view('simple-users.rapport-vente');
     }
+    
   public function rapportVendeur($type='reabonnement',$vendeur) {
     $data = RapportVente::where(['type'=>$type,'vendeurs'=>$vendeur])->orderBy('date_rapport','desc')->paginate(10);
     return  $this->organizeRapport($data);
@@ -186,7 +187,6 @@ public function PayCommissionListForVendeurs(Request $request) {
         'vendeurs'  => $value->rapports()->first()->vendeurs()->localisation
       ];
     }
-
     return response()->json($all);
   } catch (AppException $e) {
     header("unprocessible entity",true,422);

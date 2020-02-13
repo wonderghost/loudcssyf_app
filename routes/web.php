@@ -98,7 +98,8 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/list-depot','AdminController@listDepot');
 	//
 	Route::get('/admin/inventory','LogistiqueController@inventory');
-	Route::post('/admin/inventory','LogistiqueController@getListMaterialByVendeurs');
+	Route::get('/admin/inventory/get-serial-number-list','LogistiqueController@getListMaterialByVendeurs');
+	Route::get('/admin/inventory/all-material','LogistiqueController@getAllMaterialForVendeurs');
 	// Editer les infos materiels
 	Route::get('/admin/edit-material/{reference}','LogistiqueController@editMaterial');
 	Route::post('/admin/edit-material/{reference}','LogistiqueController@makeEditMaterial');
@@ -180,7 +181,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/ravitailler/{commande}/abort-transfert','LogistiqueController@abortTransfert')->middleware('logistique');
 	// INVENTAIRE
 	Route::get('/user/inventory','LogistiqueController@inventory')->middleware('logistique');
-	Route::post('/user/inventory','LogistiqueController@getListMaterialByVendeurs')->middleware('logistique');
+	Route::get('/user/inventory/get-serial-number-list','LogistiqueController@getListMaterialByVendeurs')->middleware('logistique');
 
 	// VENDEURS
 	Route::get('/user/my-inventory','LogistiqueController@inventoryVendeur')->middleware('vendeur');
@@ -263,7 +264,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/afrocash/all-transactions','CreditController@allTransactionAfrocashVendeur')->middleware('vendeur');
 	Route::post("/user/afrocash/all-transactions",'CreditController@getAllTransactionAfrocashVendeur')->middleware('vendeur');
 	Route::post('/user/afrocash/filter-transactions','CreditController@filterTransactionAfrocash')->middleware('vendeur');
-	
+
 	// RECOUVREMENTS
 	Route::get('user/recouvrement','RecouvrementController@operations')->middleware('coursier');
 	Route::post('/user/recouvrement/add','RecouvrementController@addRecouvrement')->middleware('coursier');

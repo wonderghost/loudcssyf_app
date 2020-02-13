@@ -22,7 +22,8 @@ const store = new Vuex.Store({
     userLocalisation : document.querySelector("input[id=user-localisation]").value,
     userName : document.querySelector("input[id=username]").value,
     rapportVentes : [],
-    payComissionList : []
+    payComissionList : [],
+    serialNumberList : [],
   },
   mutations : {
     searchText (state , word) {
@@ -60,6 +61,9 @@ const store = new Vuex.Store({
     },
     setPayComissionList (state , data) {
       state.payComissionList = data
+    },
+    setSerialNumberList (state,data) {
+      state.serialNumberList = data
     }
   },
   actions : {

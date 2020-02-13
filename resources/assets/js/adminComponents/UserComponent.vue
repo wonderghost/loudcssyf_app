@@ -86,7 +86,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           var tmp = this
           axios.get('/admin/users/list').then(function (response) {
             tmp.$store.state.users = response.data
-
            }).catch(function (error) {
              alert(error)
            })

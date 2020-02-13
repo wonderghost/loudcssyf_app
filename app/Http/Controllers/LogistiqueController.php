@@ -471,48 +471,55 @@ class LogistiqueController extends Controller
     }
 
     public function inventory() {
-        $user = $this->getVendeur();
-        $agence = [];
-        foreach($user as $key => $values) {
-            $agence[$key] = Agence::select()->where('reference',$values->agence)->first();
-        }
-        return view('logistique.inventory')->withUsers($user)->withAgence($agence);
+      return view('logistique.inventory');
     }
 
-    public function getListMaterialByVendeurs(Request $request) {
-        $produit = [];
-        $stock = [];
+    public function getListMaterialByVendeurs(Request $request , Exemplaire $sn) {
+      try {
+        $serials = $sn->whereNotNull('vendeurs')->orderBy('serial_number','asc')->get();
+        $all = [];
+        foreach($serials as $key => $value) {
+          $all[$key] = [
+            'user_id' =>  $value->vendeurs,
+            'numero_serie'  =>  $value->serial_number,
+            'vendeurs'  => $value->vendeurs() ? $value->vendeurs()->localisation : 'undefined',
+            'article' =>  $value->produit()->libelle,
+            'status'  =>  $value->status,
+            'origine' =>  $value->depot()->depot
+          ];
+        }
+        return response()
+          ->json($all);
+      }catch (AppException $e) {
+        header("Erreur ",true,422);
+        die(json_encode($e->getMessage()));
+      }
+    }
+
+    public function getAllMaterialForVendeurs(Request $request , StockVendeur $sv , Produits $p) {
+      try {
+        $result = $sv->select('produit')->groupBy('produit')->get();
 
         $all = [];
-        if($request->input('ref') == "all") {
-            //
-            $produit = Produits::select()->get();
-            // var_dump($produit);
-            foreach($produit as $key => $values ) {
-                // $stock [$key]=
-                $quantite = StockVendeur::select()->where('produit',$values->reference)->sum('quantite');
-                $all[$key] = $this->organize($values,$quantite);
-            }
-            // return response()->json($all);
-
-        } else {
-             $stock = StockVendeur::select()->where('vendeurs',$request->input('ref'))->get();
-             //
-             foreach($stock as $key => $value) {
-                    $produit[$key] = Produits::select()->where('reference',$value->produit)->first();
-                }
-                //
-             if($produit) {
-
-                foreach($produit as $key => $values) {
-                    $quantite = StockVendeur::select()->where('produit',$values->reference)->where('vendeurs',$request->input('ref'))->first()->quantite;
-                    $all[$key] = $this->organize($values,$quantite);
-                }
-            }
-            //
-
+        foreach($result as $key => $value) {
+          $article = $p->where('reference',$value->produit)->first();
+          $quantite = $sv->where('produit',$value->produit)->sum('quantite');
+          $all[$key] = [
+            'article' => $article->libelle,
+            'quantite'  =>  $quantite,
+            'prix_initial' =>  $article->prix_initial,
+            'prix_ttc'  =>  $article->prix_vente,
+            'marge' =>  $article->marge,
+            'ht'  =>  ceil($article->prix_vente/1.18),
+            'tva' =>  '18%'
+          ];
         }
-        return response()->json($all);
+        return response()
+          ->json($all);
+      } catch (AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
+      }
 
     }
 

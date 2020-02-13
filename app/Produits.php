@@ -11,4 +11,8 @@ class Produits extends Model
 
     protected $keyType = 'string';
     protected $primaryKey = 'reference';
+
+    public function exemplaire() {
+      return $this->hasMany('App\Produits');
+    }
 }

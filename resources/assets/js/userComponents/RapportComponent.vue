@@ -170,7 +170,6 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             try {
               let response = await axios.get('/user/rapport-ventes/get-pay-commission')
               this.$store.commit('setPayComissionList',response.data)
-              this.getPayComissionList()
             } catch (error) {
               alert(error)
             }

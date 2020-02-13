@@ -127,7 +127,6 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 location.reload()
               })
             }
-
           } catch (error) {
             this.isLoading = false
             UIkit.modal($("#validate-payment-comission")).show()

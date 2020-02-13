@@ -69,7 +69,6 @@
                 <a href="#"><span uk-icon="icon:thumbnails;ratio:0.9"></span> Stock</a>
                 <ul class="uk-nav-sub">
                     <li><a href="/admin/inventory"><span uk-icon="icon:arrow-right"></span> Inventaire</a></li>
-                    <li><a href="#"><span uk-icon="icon:arrow-right"></span> Historique de ravitaillement</a></li>
                 </ul>
             </li>
             <li class="uk-parent">
@@ -156,6 +155,29 @@
             </li>
           </template>
           <!-- // -->
+          <template id="" v-if="typeUser == 'logistique'">
+            <li class="uk-parent">
+                <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Depots</a>
+                <ul class="uk-nav-sub">
+                    <li><a href="/user/ravitailler-depot"><span uk-icon="icon:arrow-right"></span> Ravitailler un depot</a></li>
+                    <li><a href="/user/list-material"><span uk-icon="icon:arrow-right"></span> Tous les materiels</a></li>
+                    <li><a href="/user/history-depot"><span uk-icon="icon:arrow-right"></span> Historique </a></li>
+                </ul>
+            </li>
+            <li class="uk-parent">
+                <a href="#"><span uk-icon="icon:thumbnails;ratio:0.9"></span> Stock</a>
+                <ul class="uk-nav-sub">
+                    <li><a href="/user/inventory"><span uk-icon="icon:arrow-right"></span> Inventaire</a></li>
+                    <li><a href="#"><span uk-icon="icon:arrow-right"></span> Historique de ravitaillement</a></li>
+                </ul>
+            </li>
+            <li class="uk-parent">
+                <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Commandes</a>
+                <ul class="uk-nav-sub">
+                    <li><a href="/user/commandes"><span uk-icon="icon:thumbnails"></span> Toutes les Commandes</a></li>
+                </ul>
+            </li>
+          </template>
           <template v-if="typeUser !== 'admin'" id="">
             <li class="uk-parent">
               <a href="#"> <span uk-icon="icon : settings ; ratio : .9"></span> Parametres</a>

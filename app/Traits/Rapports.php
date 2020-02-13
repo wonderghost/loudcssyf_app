@@ -90,7 +90,6 @@ Trait Rapports {
 
 							// DEBIT DU CREDIT CGA
 							$new_solde_cga = CgaAccount::where('vendeur',$request->input('vendeurs'))->first()->solde - $request->input('montant_ttc');
-
 							CgaAccount::where('vendeur',$request->input('vendeurs'))->update([
 								'solde' =>  $new_solde_cga
 							]);

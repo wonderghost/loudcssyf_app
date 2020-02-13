@@ -24,6 +24,7 @@ Vue.component('home-component',require('./userComponents/homeComponent.vue').def
 Vue.component('add-user-component',require('./adminComponents/AddUserComponent.vue').default)
 Vue.component('rapport-component',require('./userComponents/RapportComponent.vue').default)
 Vue.component('pay-comission-component',require('./userComponents/PayComissionComponent.vue').default)
+Vue.component('inventory',require('./userComponents/InventoryComponent.vue').default)
 
 import Vue from 'vue'
 import Vuex from 'vuex'

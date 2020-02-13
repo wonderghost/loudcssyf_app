@@ -14,14 +14,15 @@ class Exemplaire extends Model
     protected $fillable = ['vendeurs'];
 
     public function vendeurs() {
-      return $this->hasOne('App\User','username','vendeurs');
+      return $this->belongsTo('App\User','vendeurs','username')->first();
     }
 
-    public function produits() {
-
+    public function produit() {
+      return $this->belongsTo('App\Produits','produit','reference')->first();
     }
 
     public function depot() {
       return $this->hasMany('App\Stock','exemplaire','serial_number')->first();
     }
+
 }

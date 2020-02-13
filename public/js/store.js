@@ -13675,7 +13675,8 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     userLocalisation: document.querySelector("input[id=user-localisation]").value,
     userName: document.querySelector("input[id=username]").value,
     rapportVentes: [],
-    payComissionList: []
+    payComissionList: [],
+    serialNumberList: []
   },
   mutations: {
     searchText: function searchText(state, word) {
@@ -13712,6 +13713,9 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     },
     setPayComissionList: function setPayComissionList(state, data) {
       state.payComissionList = data;
+    },
+    setSerialNumberList: function setSerialNumberList(state, data) {
+      state.serialNumberList = data;
     }
   },
   actions: {}
