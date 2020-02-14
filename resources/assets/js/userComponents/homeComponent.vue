@@ -103,7 +103,7 @@
                 <a href="#"><span uk-icon="icon:thumbnails;ratio:0.9"></span> Stock</a>
                 <ul class="uk-nav-sub">
                     <li><a href="/user/my-inventory"><span uk-icon="icon:arrow-right"></span> Inventaire</a></li>
-                    <li><a href="/user/my-history-ravitaillement"><span uk-icon="icon:arrow-right"></span> Historique de ravitaillement</a></li>
+                    <!-- <li><a href="/user/my-history-ravitaillement"><span uk-icon="icon:arrow-right"></span> Historique de ravitaillement</a></li> -->
                 </ul>
             </li>
 

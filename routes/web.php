@@ -97,6 +97,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/inventory','LogistiqueController@inventory');
 	Route::get('/admin/inventory/get-serial-number-list','LogistiqueController@getListMaterialByVendeurs');
 	Route::get('/admin/inventory/all-material','LogistiqueController@getAllMaterialForVendeurs');
+	// Route::get('/admin/inventory/all-credit-vendeurs','CreditController@')
 	// Editer les infos materiels
 	Route::get('/admin/edit-material/{reference}','LogistiqueController@editMaterial');
 	Route::post('/admin/edit-material/{reference}','LogistiqueController@makeEditMaterial');
@@ -107,6 +108,7 @@ Route::middleware(['auth','admin'])->group(function () {
 Auth::routes();
 
 Route::middleware(['auth','unblocked'])->group(function () {
+	Route::get('/{slug}/all-vendeurs','LogistiqueController@allVendeurs');
 	// CONSTRUCTION DU TABLEAU DE BORD
 	Route::post('/user/dashboard/chart-vente','VendeurController@statistiqueVente');
 	// rapport pour controleur
@@ -174,19 +176,18 @@ Route::middleware(['auth','unblocked'])->group(function () {
 
 	Route::post('/user/complete-transfert/find-serial-number','LogistiqueController@getSerialNumber')->middleware('logistique');
 	Route::post('/user/ravitailler/{commande}/abort-transfert','LogistiqueController@abortTransfert')->middleware('logistique');
+	Route::get('/user/inventory/all-material','LogistiqueController@getAllMaterialForVendeurs')->middleware('logistique');
 	// INVENTAIRE
 	Route::get('/user/inventory','LogistiqueController@inventory')->middleware('logistique');
-	Route::get('/user/inventory/get-serial-number-list','LogistiqueController@getListMaterialByVendeurs')->middleware('logistique');
+	Route::get('/user/inventory/get-serial-number-list','LogistiqueController@getListMaterialByVendeurs');
 
 	// VENDEURS
+
 	Route::get('/user/my-inventory','LogistiqueController@inventoryVendeur')->middleware('vendeur');
-	Route::post('/user/my-inventory/serials','VendeurController@SerialForVendeur')->middleware('vendeur');
-	Route::post('/user/my-inventory','LogistiqueController@getListMaterialByVendeurs');
-	Route::post('/user/my-history-ravitaillement','LogistiqueController@getHistoryRavitaillement')->middleware('vendeur');
-
-	Route::get('/user/my-history-ravitaillement','LogistiqueController@historyRavitaillement')->middleware('vendeur');
-
 	Route::get('/user/new-command','CommandController@addCommand')->middleware('vendeur');
+	Route::get('/user/inventory/all-vendeur-material','LogistiqueController@getAllMaterialByVendeurs')->middleware('vendeur');
+	Route::get('/user/inventory/all-credit-vendeurs','CreditController@getCreditForVendeurs');
+
 	// ========= LISTE DES COMMANDES
 	Route::get('/user/list-command','CommandController@getList')->middleware('vendeur');
 	Route::post('/user/list-command','CommandController@getRequestList')->middleware('vendeur');

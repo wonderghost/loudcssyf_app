@@ -456,11 +456,7 @@ class LogistiqueController extends Controller
           'vendeurs'  =>  $vendeur,
           'produit' =>  $ref
           ])->first();
-          // dump($temp);
-          // die();
         if($temp) {
-          // dump($temp);
-          // die();
             return $temp;
         }
         return false;
@@ -473,7 +469,19 @@ class LogistiqueController extends Controller
     public function inventory() {
       return view('logistique.inventory');
     }
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    public function allVendeurs(User $u) {
+      try {
+        return response()
+          ->json($u->whereIn('type',['v_da','v_standart'])
+          ->orderBy('localisation','asc')
+          ->get());
+      } catch (AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
+      }
 
+    }
     public function getListMaterialByVendeurs(Request $request , Exemplaire $sn) {
       try {
         $serials = $sn->whereNotNull('vendeurs')->orderBy('serial_number','asc')->get();
@@ -496,61 +504,60 @@ class LogistiqueController extends Controller
       }
     }
 
+    // materiels inventaire pour les vendeurs
+    public function getAllMaterialByVendeurs (Request $request , StockVendeur $sv , Produits $p) {
+      try {
+        $result = $sv->select('produit')
+          ->groupBy('produit')
+          ->get();
+          $all = $this->organizeAllMaterial($result,$request,$p,$sv , true);
+          return response()
+            ->json($all);
+      } catch (AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
+      }
+    }
+    // materiels inventaire global du reseau
     public function getAllMaterialForVendeurs(Request $request , StockVendeur $sv , Produits $p) {
       try {
         $result = $sv->select('produit')->groupBy('produit')->get();
-
-        $all = [];
-        foreach($result as $key => $value) {
-          $article = $p->where('reference',$value->produit)->first();
-          $quantite = $sv->where('produit',$value->produit)->sum('quantite');
-          $all[$key] = [
-            'article' => $article->libelle,
-            'quantite'  =>  $quantite,
-            'prix_initial' =>  $article->prix_initial,
-            'prix_ttc'  =>  $article->prix_vente,
-            'marge' =>  $article->marge,
-            'ht'  =>  ceil($article->prix_vente/1.18),
-            'tva' =>  '18%'
-          ];
-        }
+        $all = $this->organizeAllMaterial($result,$request , $p , $sv);
         return response()
           ->json($all);
       } catch (AppException $e) {
         header("Erreur",true,422);
         die(json_encode($e->getMessage()));
       }
-
     }
 
-    public function inventoryVendeur() {
-        // dd(Auth::user()->username);
-        $soldeCga = CgaAccount::select()->where('vendeur',Auth::user()->username)->first();
-        $soldeRex = RexAccount::select()->where('numero',Auth::user()->rex)->first();
-        $solde_afrocash_sm = Afrocash::where(['vendeurs'=>Auth::user()->username,'type'=>'semi_grossiste'])->first();
-        $solde_afrocash_courant = Afrocash::where(['vendeurs'=>Auth::user()->username,'type'=>'courant'])->first();
-        // dd($soldeCga);
-        return view('logistique.my-inventory')->withSolde($soldeCga)
-                                                ->withRex($soldeRex)
-                                                ->withAfrocashsm($solde_afrocash_sm)
-                                                ->withAfrocashcourant($solde_afrocash_courant);
-    }
-
-    public function historyRavitaillement() {
-        return view('logistique.my-stock-history');
-    }
-    public function getHistoryRavitaillement(Request $request) {
-         $all = [];
-        if($request->input('ref')){
-            $historique = RavitaillementVendeur::select()->where('vendeurs',$request->input('ref'))->orderBy('created_at','desc')->get();
-            foreach($historique as $key => $values) {
-                $produit = Produits::select()->where('reference',$values->produit)->first();
-                $all[$key]= $this->organizeCommand($values,$produit->libelle);
-            }
+    public function organizeAllMaterial($data , Request $request , Produits $p , StockVendeur $sv , $vendeur = false) {
+      $all = [];
+      foreach($data as $key => $value) {
+        $article = $p->where('reference',$value->produit)->first();
+        if(!$vendeur) {
+          $quantite = $sv->where('produit',$value->produit)->sum('quantite');
+        } else {
+          $quantite = $sv->where('produit',$value->produit)
+            ->where('vendeurs',$request->user()->username)
+            ->sum('quantite');
         }
-        return response()->json($all);
+        $all[$key] = [
+          'article' => $article->libelle,
+          'quantite'  =>  $quantite,
+          'prix_initial' =>  $article->prix_initial,
+          'prix_ttc'  =>  $article->prix_vente,
+          'marge' =>  $article->marge,
+          'ht'  =>  ceil($article->prix_vente/1.18),
+          'tva' =>  '18%'
+        ];
+      }
+      return $all;
     }
-
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    public function inventoryVendeur() {
+      return view('logistique.my-inventory');
+    }
     //
 
     public function editMaterial($reference) {

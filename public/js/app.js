@@ -3433,6 +3433,22 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -3445,6 +3461,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   mounted: function mounted() {
     this.getSerialNumberList();
     this.getMaterials();
+
+    if (this.typeUser == 'v_da' || this.typeUser == 'v_standart') {
+      this.userFilter = this.userName;
+      this.getCreditForVendeurs();
+    }
   },
   data: function data() {
     return {
@@ -3456,6 +3477,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       end: 15,
       currentPage: 1,
       materials: [],
+      credits: [],
       users: [],
       userFilter: ""
     };
@@ -3518,7 +3540,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       return getSerialNumberList;
     }(),
     nextPage: function nextPage() {
-      if (this.serialNumberList.length > this.end) {
+      if (this.ListSerialNumber.length > this.end) {
         var ecart = this.end - this.start;
         this.start = this.end;
         this.end += ecart;
@@ -3554,33 +3576,52 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 4:
                 response = _context2.sent;
-                _context2.next = 10;
-                break;
-
-              case 7:
-                _context2.next = 9;
-                return axios.get("/user/inventory/all-material");
-
-              case 9:
-                response = _context2.sent;
-
-              case 10:
-                this.materials = response.data;
-                this.listUserForFilter();
                 _context2.next = 17;
                 break;
 
-              case 14:
-                _context2.prev = 14;
+              case 7:
+                if (!(this.typeUser == 'logistique')) {
+                  _context2.next = 13;
+                  break;
+                }
+
+                _context2.next = 10;
+                return axios.get("/user/inventory/all-material");
+
+              case 10:
+                response = _context2.sent;
+                _context2.next = 17;
+                break;
+
+              case 13:
+                if (!(this.typeUser == 'v_da' || this.typeUser == 'v_standart')) {
+                  _context2.next = 17;
+                  break;
+                }
+
+                _context2.next = 16;
+                return axios.get("/user/inventory/all-vendeur-material");
+
+              case 16:
+                response = _context2.sent;
+
+              case 17:
+                this.materials = response.data;
+                this.listUserForFilter();
+                _context2.next = 24;
+                break;
+
+              case 21:
+                _context2.prev = 21;
                 _context2.t0 = _context2["catch"](0);
                 alert(_context2.t0);
 
-              case 17:
+              case 24:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[0, 14]]);
+        }, _callee2, this, [[0, 21]]);
       }));
 
       function getMaterials() {
@@ -3600,7 +3641,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 _context3.prev = 0;
                 _context3.next = 3;
-                return axios.get("/admin/users/list");
+                return axios.get("/admin/all-vendeurs");
 
               case 3:
                 response = _context3.sent;
@@ -3626,6 +3667,52 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return listUserForFilter;
+    }(),
+    getCreditForVendeurs: function () {
+      var _getCreditForVendeurs = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
+        var response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                _context4.prev = 0;
+
+                if (!(this.typeUser == 'v_da' || this.typeUser == 'v_standart')) {
+                  _context4.next = 5;
+                  break;
+                }
+
+                _context4.next = 4;
+                return axios.get("/user/inventory/all-credit-vendeurs");
+
+              case 4:
+                response = _context4.sent;
+
+              case 5:
+                this.credits = response.data;
+                _context4.next = 11;
+                break;
+
+              case 8:
+                _context4.prev = 8;
+                _context4.t0 = _context4["catch"](0);
+                alert(_context4.t0);
+
+              case 11:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4, this, [[0, 8]]);
+      }));
+
+      function getCreditForVendeurs() {
+        return _getCreditForVendeurs.apply(this, arguments);
+      }
+
+      return getCreditForVendeurs;
     }()
   },
   computed: {
@@ -3655,6 +3742,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       } else {
         return this.serialNumberForVendeurs;
       }
+    },
+    userName: function userName() {
+      return this.$store.state.userName;
     }
   }
 });
@@ -20191,11 +20281,56 @@ var render = function() {
       _vm._v(" "),
       _c(
         "div",
-        { staticClass: "uk-child-width-1-4@m", attrs: { "uk-grid": "" } },
+        {
+          staticClass: "uk-child-width-1-6@m uk-grid-small",
+          attrs: { "uk-grid": "" }
+        },
         [
+          _vm._l(_vm.materials, function(mat) {
+            return _c("div", {}, [
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "uk-card uk-border-rounded uk-box-shadow-hover-small uk-background-muted uk-dark uk-card-body uk-padding-small"
+                },
+                [
+                  _c("h3", { staticClass: "uk-card-title" }, [
+                    _vm._v(_vm._s(mat.article))
+                  ]),
+                  _vm._v(" "),
+                  _c("p", [
+                    _c("ul", { staticClass: "uk-list uk-list-divider" }, [
+                      _c("li", [
+                        _c("span", [_vm._v("Qte : " + _vm._s(mat.quantite))]),
+                        _vm._v(" ,\n                "),
+                        _c("span", [
+                          _vm._v(
+                            "TTC : " + _vm._s(_vm._f("numFormat")(mat.prix_ttc))
+                          )
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("li", [
+                        _c("span", [
+                          _vm._v("HT : " + _vm._s(_vm._f("numFormat")(mat.ht)))
+                        ]),
+                        _vm._v(" ,\n                "),
+                        _c("span", [
+                          _vm._v(
+                            "Marge : " + _vm._s(_vm._f("numFormat")(mat.marge))
+                          )
+                        ])
+                      ])
+                    ])
+                  ])
+                ]
+              )
+            ])
+          }),
+          _vm._v(" "),
           _vm.typeUser == "v_da" || _vm.typeUser == "v_standart"
-            ? [_vm._m(0)]
-            : _vm._l(_vm.materials, function(mat) {
+            ? _vm._l(_vm.credits, function(cred, name) {
                 return _c("div", {}, [
                   _c(
                     "div",
@@ -20204,41 +20339,28 @@ var render = function() {
                         "uk-card uk-border-rounded uk-box-shadow-hover-small uk-background-muted uk-dark uk-card-body uk-padding-small"
                     },
                     [
-                      _c("h3", { staticClass: "uk-card-title" }, [
-                        _vm._v(_vm._s(mat.article))
-                      ]),
+                      _c(
+                        "h3",
+                        { staticClass: "uk-card-title uk-text-capitalize" },
+                        [_vm._v(_vm._s(name))]
+                      ),
                       _vm._v(" "),
                       _c("p", [
                         _c("ul", { staticClass: "uk-list uk-list-divider" }, [
                           _c("li", [
-                            _vm._v("Quantite : " + _vm._s(mat.quantite))
+                            _c("span", [
+                              _vm._v(_vm._s(_vm._f("numFormat")(cred)))
+                            ])
                           ]),
                           _vm._v(" "),
-                          _c("li", [
-                            _vm._v(
-                              "TTC : " +
-                                _vm._s(_vm._f("numFormat")(mat.prix_ttc))
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c("li", [
-                            _vm._v(
-                              "HT : " + _vm._s(_vm._f("numFormat")(mat.ht))
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c("li", [
-                            _vm._v(
-                              "Marge : " +
-                                _vm._s(_vm._f("numFormat")(mat.marge))
-                            )
-                          ])
+                          _vm._m(0, true)
                         ])
                       ])
                     ]
                   )
                 ])
               })
+            : _vm._e()
         ],
         2
       ),
@@ -20442,13 +20564,7 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", {}, [
-      _c("div", { staticClass: "uk-card uk-card-default uk-border-rounded" }, [
-        _c("h3", { staticClass: "uk-card-title" }, [_vm._v("Title")]),
-        _vm._v(" "),
-        _c("p")
-      ])
-    ])
+    return _c("li", [_c("span", [_vm._v("GNF")])])
   }
 ]
 render._withStripped = true
@@ -21815,13 +21931,6 @@ var staticRenderFns = [
           _c("a", { attrs: { href: "/user/my-inventory" } }, [
             _c("span", { attrs: { "uk-icon": "icon:arrow-right" } }),
             _vm._v(" Inventaire")
-          ])
-        ]),
-        _vm._v(" "),
-        _c("li", [
-          _c("a", { attrs: { href: "/user/my-history-ravitaillement" } }, [
-            _c("span", { attrs: { "uk-icon": "icon:arrow-right" } }),
-            _vm._v(" Historique de ravitaillement")
           ])
         ])
       ])

@@ -34,8 +34,31 @@ class CreditController extends Controller
 	use Afrocashes;
 	use Cga;
 	use Rex;
-    //SOLDE DES VENDEURS
 
+// 	INVENTAIRE EN CREDIT CHEZ LES VENDEURS
+
+		public function getCreditForVendeurs(Request $request) {
+			try {
+
+				$all = [
+					'cga'	=>	$request->user()->cgaAccount()->solde,
+					'Afrocash Courant'	=>	$request->user()->afroCash('courant')->first()->solde,
+					'Afrocash Grossiste'	=>	$request->user()->afroCash('semi_grossiste')->first() ? $request->user()->afroCash('semi_grossiste')->first()->solde : 'N/A',
+					'rex'	=>	$request->user()->rexAccount()->first() ? $request->user()->rexAccount()->first()->solde : 'N/A'
+				];
+
+				return response()
+					->json($all);
+			} catch (AppExceptin $e) {
+				header("Erreur",true,422);
+				die(json_encode($e->getMessage()));
+			}
+		}
+		// INVENTAIRE DE TOUS LE RESEAUX CHEZ L'ADMIN
+		public function getCreditForAllVendeurs() {
+
+		}
+    //SOLDE DES VENDEURS
 		public function soldeVendeur() {
 			return view('credit.solde-vendeur');
 		}

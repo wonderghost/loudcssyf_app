@@ -3,30 +3,45 @@
     <loading :active.sync="isLoading"
         :can-cancel="true"
         :is-full-page="fullPage"></loading>
-    <div class="uk-child-width-1-4@m" uk-grid>
-      <template id="" v-if="typeUser == 'v_da' || typeUser == 'v_standart'">
-        <div class="">
-          <div class="uk-card uk-card-default uk-border-rounded">
-            <h3 class="uk-card-title">Title</h3>
-            <p></p>
-          </div>
-        </div>
-      </template>
-      <template id="else" v-else>
+    <div class="uk-child-width-1-6@m uk-grid-small" uk-grid>
+      <template>
+        <!-- INVENTAIRE DES MATERIELS -->
         <div v-for="mat in materials" class="">
           <div class="uk-card uk-border-rounded uk-box-shadow-hover-small uk-background-muted uk-dark uk-card-body uk-padding-small">
             <h3 class="uk-card-title">{{ mat.article }}</h3>
             <p>
               <ul class="uk-list uk-list-divider">
-                <li>Quantite : {{mat.quantite}}</li>
-                <li>TTC : {{mat.prix_ttc | numFormat}}</li>
-                <li>HT : {{mat.ht | numFormat}}</li>
-                <li>Marge : {{mat.marge | numFormat}}</li>
+                <li>
+                  <span>Qte : {{mat.quantite}}</span> ,
+                  <span>TTC : {{mat.prix_ttc | numFormat}}</span>
+                </li>
+                <li>
+                  <span>HT : {{mat.ht | numFormat}}</span> ,
+                  <span>Marge : {{mat.marge | numFormat}}</span>
+                </li>
               </ul>
             </p>
           </div>
         </div>
       </template>
+      <template id="" v-if="typeUser == 'v_da' || typeUser == 'v_standart'">
+        <!-- INVENTAIRE DES SOLDES DES CREDITS -->
+        <div v-for="(cred , name) in credits" class="">
+          <div class="uk-card uk-border-rounded uk-box-shadow-hover-small uk-background-muted uk-dark uk-card-body uk-padding-small">
+            <h3 class="uk-card-title uk-text-capitalize">{{name}}</h3>
+            <p>
+              <ul class="uk-list uk-list-divider">
+                <li>
+                  <span>{{cred | numFormat}}</span>
+                </li>
+                <li> <span>GNF</span> </li>
+              </ul>
+            </p>
+          </div>
+        </div>
+
+      </template>
+
     </div>
 
     <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
@@ -43,6 +58,7 @@
       </div>
     </template>
     <!-- // -->
+    <!-- LISTE DES NUMEROS DE SERIES -->
     <div class="">
       <table class="uk-table uk-table-small uk-table-striped uk-table-hover uk-table-divider uk-table-responsive">
         <thead>
@@ -82,6 +98,10 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         mounted() {
           this.getSerialNumberList()
           this.getMaterials()
+          if(this.typeUser == 'v_da' || this.typeUser == 'v_standart') {
+            this.userFilter = this.userName
+            this.getCreditForVendeurs()
+          }
         },
         data () {
           return {
@@ -93,12 +113,13 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             end : 15,
             currentPage : 1,
             materials : [],
+            credits : [],
             users : [],
             userFilter : ""
           }
         },
         methods : {
-          getSerialNumberList : async function () {
+          getSerialNumberList : async function () { // listing des numeros de series
             try {
               if(this.typeUser == 'admin') {
                 var response = await axios.get("/admin/inventory/get-serial-number-list")
@@ -112,7 +133,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             }
           },
           nextPage : function () {
-            if(this.serialNumberList.length > this.end) {
+            if(this.ListSerialNumber.length > this.end) {
               let ecart = this.end - this.start
               this.start = this.end
               this.end += ecart
@@ -127,12 +148,14 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               this.currentPage--
             }
           },
-          getMaterials : async function () {
+          getMaterials : async function () { //recuperation de l'inventaire material
             try {
               if(this.typeUser == 'admin') {
                 var response = await axios.get("/admin/inventory/all-material")
-              }else {
+              }else if(this.typeUser == 'logistique') {
                 var response = await axios.get("/user/inventory/all-material")
+              } else if(this.typeUser == 'v_da' || this.typeUser == 'v_standart') {
+                var response = await axios.get("/user/inventory/all-vendeur-material")
               }
               this.materials = response.data
               this.listUserForFilter()
@@ -140,10 +163,20 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 alert(e)
             }
           },
-          listUserForFilter : async function () {
+          listUserForFilter : async function () { //recuperation de la liste des utilisateurs pour le filtre
             try {
-              var response = await axios.get("/admin/users/list")
+              var response = await axios.get("/admin/all-vendeurs")
               this.users = response.data
+            } catch (e) {
+                alert(e)
+            }
+          },
+          getCreditForVendeurs : async function () { // inventaire des soldes du vendeur
+            try {
+               if(this.typeUser == 'v_da' || this.typeUser == 'v_standart') {
+                var response = await axios.get("/user/inventory/all-credit-vendeurs")
+              }
+              this.credits = response.data
             } catch (e) {
                 alert(e)
             }
@@ -172,6 +205,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             } else {
               return this.serialNumberForVendeurs
             }
+          },
+          userName() {
+            return this.$store.state.userName
           }
         }
     }
