@@ -155,7 +155,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/confirm-command/{id}','LogistiqueController@confirmCommand')->middleware('logistique');
 	// 	LISTE DES COMMANDES
 	Route::get('/user/commandes','LogistiqueController@allCommandes')->middleware('logistique');
-	Route::post('/user/commandes','LogistiqueController@getAllCommandes')->middleware('logistique');
+	Route::get('/logistique/commandes/all','AdminController@getAllCommandes')->middleware('logistique');
+	Route::get('/logistique/commandes/livraison','AdminController@getAllLivraison')->middleware('logistique');
 	// === MATERIELS
 	Route::get('/user/list-material','LogistiqueController@listMaterial')->middleware('logistique');
 	Route::post('/user/list-material','LogistiqueController@getListMaterial')->middleware('logistique');

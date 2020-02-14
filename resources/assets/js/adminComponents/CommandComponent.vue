@@ -1,10 +1,13 @@
 <template>
   <div class="">
+    <loading :active.sync="isLoading"
+        :can-cancel="true"
+        :is-full-page="fullPage"></loading>
 
     <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
         <li><a @click="start=0" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiel</a></li>
         <li><a @click="end=10" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Livraison</a></li>
-        <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Credit</a></li>
+        <li><a v-if="typeUser == 'admin' || typeUser == 'gcga'" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Credit</a></li>
     </ul>
     <ul class="uk-switcher uk-margin">
 			<li>
@@ -27,7 +30,7 @@
                   <td v-for="(column , name) in command" v-if="name != 'link' && name != 'id' && name!='status'">{{column}}</td>
                   <td class="uk-text-danger" v-if="command.status == 'en attente'">{{command.status}}</td>
                   <td class="uk-text-success" v-else >{{command.status}}</td>
-                  <td> <a :href="command.link" v-if="typeUser == 'logistique'" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-text-capitalize">confirmer</a> </td>
+                  <td> <a :href="command.link" v-if="typeUser == 'logistique' && command.status == 'en attente'" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-text-capitalize">confirmer</a> </td>
                 </tr>
               </tbody>
             </table>
@@ -60,7 +63,7 @@
                 <td v-if="livraison.status == 'livred'" class="uk-text-success">{{livraison.status}}</td>
                 <td v-else class="uk-text-danger">{{livraison.status}}</td>
                 <td>
-                   <a href="#" v-if="typeUser == 'logistique'" class="uk-button uk-button-small uk-button-primary uk-text-capitalize uk-border-rounded uk-box-shadow-small">validez <span uk-icon="icon : check"></span> </a>
+                   <a href="#" v-if="typeUser == 'logistique' && livraison.status == 'unlivred'" class="uk-button uk-button-small uk-button-primary uk-text-capitalize uk-border-rounded uk-box-shadow-small">validez <span uk-icon="icon : check"></span> </a>
                    <a download :href="livraison.filename" v-if="livraison.status == 'livred'" class="uk-button uk-button-small uk-button-default uk-text-capitalize uk-border-rounded uk-box-shadow-small">details <span uk-icon="icon : more"></span> </a>
                  </td>
               </tr>
@@ -72,17 +75,28 @@
           </ul>
         </div>
       </li>
-      <li>
-        <credit-component the-user="admin"></credit-component>
-      </li>
+      <template id="" v-if="typeUser == 'admin' || typeUser == 'gcga'">
+        <li>
+          <credit-component the-user="admin"></credit-component>
+        </li>
+    </template>
     </ul>
   </div>
 </template>
 <script>
+import Loading from 'vue-loading-overlay'
+import 'vue-loading-overlay/dist/vue-loading.css'
+
     export default {
+      created () {
+        this.isLoading = true
+      },
         mounted() {
           this.getMaterialCommande()
           this.getLivraisonMaterial()
+        },
+        components : {
+          Loading
         },
         data () {
           return {
@@ -96,9 +110,14 @@
         methods : {
           getMaterialCommande : async function () {
             try {
-              let response = await axios.get('/admin/commandes/all')
+              if(this.typeUser == 'admin') {
+                var response = await axios.get('/admin/commandes/all')
+              } else if(this.typeUser == 'logistique') {
+                var response = await axios.get("/logistique/commandes/all")
+              }
               if(response.data.length) {
                 this.$store.commit('setCommandMaterial',response.data)
+                this.isLoading = false
               }
             } catch (e) {
               alert(e)
@@ -106,7 +125,12 @@
           },
           getLivraisonMaterial : async function () {
             try {
-              let response = await axios.get('/admin/commandes/livraison')
+              if(this.typeUser == 'admin') {
+
+                var response = await axios.get('/admin/commandes/livraison')
+              } else if(this.typeUser == 'logistique') {
+                var response = await axios.get('/logistique/commandes/livraison')
+              }
               this.$store.commit('setLivraisonMaterial',response.data.original)
             } catch (e) {
               alert(e)

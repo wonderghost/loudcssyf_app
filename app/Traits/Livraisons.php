@@ -254,7 +254,10 @@ public function inventaireLivraison() {
 
   public function livraisonRequest(Livraison $l) {
     return $l->whereIn('produits',Produits::select('reference')
-              ->where('with_serial',1)->get())->get();
+              ->where('with_serial',1)
+              ->get())
+              ->orderBy('created_at','desc')
+              ->get();
   }
 
   public function getSerialInFileText($filename) {

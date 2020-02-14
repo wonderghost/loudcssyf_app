@@ -616,7 +616,7 @@ class AdminController extends Controller
       die(json_encode($e->getMessage()));
     }
   }
-
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
   // Commandes
   public function allCommandes() {
     return view('admin.all-commandes');
@@ -634,6 +634,7 @@ class AdminController extends Controller
       die(json_encode($e->getMessage()));
     }
   }
+
   public function getAllLivraison(Request $request) {
     try {
       return response()
@@ -643,7 +644,7 @@ class AdminController extends Controller
       die(json_encode($e->getMessage()));
     }
   }
-
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
   // REINITIALISER UN UTILISATEUR
   public function resetUser(Request $request) {
     try {
