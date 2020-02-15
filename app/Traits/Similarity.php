@@ -387,7 +387,7 @@ return false;
 
 // VERIFIER SI LA COMMANDE EXISTE POUR LE VENDEUR SELECTIONEE
 
-public function isExisteCommandeForVendeur($vendeur,$produit,$id_commande) {
+public function isExisteCommandeForVendeur($vendeur,$id_commande) {
     $temp = CommandMaterial::where([
         'id_commande' =>$id_commande,
         'vendeurs'=>$vendeur,
@@ -423,17 +423,11 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
     'quantite'  =>  $newQuantite
   ]);
 }
-
 //
   public function organizeCommandList($commands) {
     $all = [];
     foreach($commands as $key => $values) {
         $vendeurs = User::where('username',$values->vendeurs)->first();
-        // if($vendeurs->type == "v_da") {
-
-        // } else {
-          // $agence = $vendeurs->localisation;
-        // }
 
         $date = new Carbon($values->created_at);
         $date->setLocale('fr_FR');
@@ -476,160 +470,7 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
     }
     return false;
   }
-  // /AJAX REQUEST FOR SEARCH
 
-  public function searchText(Request $request,$slug) {
-    try {
-      $result = "";
-      $search = "%".$request->input('ref-0')."%";
-      switch ($slug) {
-        case 'users':
-            $users = User::where('type','<>','admin')->orderBy('localisation','asc')->get();
-            $userCollection = collect([]);
-
-            foreach ($users as $key => $element) {
-              if(
-                str_contains(strtolower($element->localisation),strtolower($request->input('ref-0'))) ||
-                str_contains(strtolower($element->email),strtolower($request->input('ref-0'))) ||
-                str_contains(strtolower($element->username),strtolower($request->input('ref-0'))) ||
-                str_contains(strtolower($element->phone),strtolower($request->input('ref-0')))
-              ) {
-                $userCollection->prepend($element->only(['username','type','email','phone','localisation','status']));
-              }
-            }
-            $result=$userCollection;
-          break;
-          case 'vendeurs-solde' :
-          $users = User::whereIn("type",['v_da','v_standart'])->orderBy('localisation','asc')->get();
-          if(!$request->input('ref-0') == "") {
-            $userColl = collect([]);
-            foreach($users as $key => $value) {
-              if(str_contains(strtolower($value->localisation),strtolower($request->input('ref-0')))) {
-                $userColl->prepend($value);
-              }
-            }
-          } else {
-            $userColl = $users;
-          }
-            $temp = $this->getSoldesVendeurs($request ,$userColl);
-            return $temp;
-          break;
-          case 'vendeurs-type-solde':
-            if($request->input('ref-0') == "") {
-              $users = User::whereIn("type",['v_da','v_standart'])->orderBy('localisation','asc')->get();
-            }
-            else {
-              $users = User::where('type',$request->input("ref-0"))->orderBy('localisation','asc')->get();
-            }
-            return $this->getSoldesVendeurs($request,$users);
-            break;
-            case 'commande-filter' :
-
-            if($request->input('debut_date')) {
-              if($request->input('fin_date')) {
-                if($request->input('vendeurs') !== "all") {
-                  if($request->input('type_credit') !== "all") {
-                    // FILTRE AU COMPLET
-                    $commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
-                      ->where('status','unvalidated')
-                      ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
-                      ->where('vendeurs',$request->input('vendeurs'))
-                      ->where('type',$request->input('type_credit'))
-                      ->orderBy('created_at','desc')->get();
-                    $commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
-                      ->where('status','validated')
-                      ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
-                      ->where('vendeurs',$request->input('vendeurs'))
-                      ->where('type',$request->input('type_credit'))
-                      ->orderBy('created_at','desc')->get();
-                    $commands_aborted = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
-                      ->where('status','aborted')
-                      ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
-                      ->where('vendeurs',$request->input('vendeurs'))
-                      ->where('type',$request->input('type_credit'))
-                      ->orderBy('created_at','desc')->get();
-                  } else {
-                    $commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
-                      ->where('status','unvalidated')
-                      ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
-                      ->where('vendeurs',$request->input('vendeurs'))
-                      ->orderBy('created_at','desc')->get();
-                    $commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
-                      ->where('status','validated')
-                      ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
-                      ->where('vendeurs',$request->input('vendeurs'))
-                      ->orderBy('created_at','desc')->get();
-                    $commands_aborted = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
-                      ->where('status','aborted')
-                      ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
-                      ->where('vendeurs',$request->input('vendeurs'))
-                      ->orderBy('created_at','desc')->get();
-                  }
-                } else {
-                  if($request->input('type_credit') !== "all") {
-                    $commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
-                      ->where('status','unvalidated')
-                      ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
-                      ->where('type',$request->input('type_credit'))
-                      ->orderBy('created_at','desc')->get();
-                    $commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
-                      ->where('status','validated')
-                      ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
-                      ->where('type',$request->input('type_credit'))
-                      ->orderBy('created_at','desc')->get();
-                    $commands_aborted = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
-                      ->where('status','aborted')
-                      ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
-                      ->where('type',$request->input('type_credit'))
-                      ->orderBy('created_at','desc')->get();
-                  } else {
-                    $commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
-                    ->where('status','unvalidated')
-                    ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
-                    ->orderBy('created_at','desc')->get();
-                    $commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
-                    ->where('status','validated')
-                    ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
-                    ->orderBy('created_at','desc')->get();
-                    $commands_aborted = CommandCredit::whereIn('type',['cga','afro_cash_sg'])
-                    ->where('status','aborted')
-                    ->whereBetween('created_at',[$request->input('debut_date'),$request->input('fin_date')])
-                    ->orderBy('created_at','desc')->get();
-                  }
-                }
-              } else {
-                throw new AppException("Selectionnez les dates pour activer le filtre!");
-              }
-            } else {
-              // date debut inexistant ## NE RIEN FAIRE ##
-              throw new AppException("Selectionnez les dates pour activer le filtre!");
-            }
-
-            #################################################################################33
-
-              $all_unvalidated = $this->organizeCommandGcga($commands_unvalidated);
-
-        			$all_validated = $this->organizeCommandGcga($commands_validated);
-
-        			$all_aborted = $this->organizeCommandGcga($commands_aborted);
-
-              return response()->json([
-                'unvalidated' =>  $all_unvalidated,
-                'validated' =>  $all_validated,
-                'aborted' =>  $all_aborted
-              ]);
-          break;
-        default:
-          throw new AppException("Erreur !");
-          break;
-      }
-      return response()->json($result);
-    } catch (AppException $e) {
-      header("Unprocessibilyt entity",true,422);
-      die(json_encode($e->getMessage()));
-    }
-
-  }
 
   // ENVOI DE LA NOTIFICATION
   public function sendNotification($title,$description , $vendeurs) {

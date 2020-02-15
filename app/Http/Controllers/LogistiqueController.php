@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Arr;
 use App\Exceptions\Handler;
 
 use Illuminate\Http\Request;
@@ -339,39 +339,26 @@ class LogistiqueController extends Controller
     }
 // RAVITAILLEMENT VENDEUR
   public function addStock($commande) {
-
-      if(!$this->isExistCommandOnly($commande)) {
-          // LA COMMANDE N'EXISTE PAS
-          return redirect('/user/commandes')->with("_errors","Ressayez Ulterieurement!");
-      }
       // recuperer le vendeurs qui a emis la commande
-      $user = CommandMaterial::where('id_commande',$commande)->first()->vendeurs()->first();
+    $user = CommandMaterial::where('id_commande',$commande)->first()->vendeurs()->first();
+    // dump($this->CommandChangeStatus($commande,$user->username));
+    $this->CommandChangeStatus($commande,$user->username);
+    if($this->changeCommandStatusGlobale($commande)) {
+      return redirect('/user/commandes');
+    };
 
-      // dump($this->CommandChangeStatus($commande,$user->username));
-      $this->CommandChangeStatus($commande,$user->username);
-      if($this->changeCommandStatusGlobale($commande)) {
-        return redirect('/user/commandes');
-      };
-
-      $agence = Agence::where('reference',$user->agence)->first();
-      $materiel = Produits::all();
-      $depots = Depots::all();
-      return view('logistique.add-ravitaillement')->withUsers($user)->withAgences($agence)
-                        ->withMateriel($materiel)
-                        ->withDepots($depots)
-                        ->withCommande($commande);
+    return view('logistique.add-ravitaillement')->withCommande($commande);
     }
 
     // TRAITEMENT DE LA REQUETE DE COMMANDE , ENVOI DU RAVITAILLEMENT
     public function makeAddStock(RavitaillementRequest $request,$commande) {
       try {
         // existence de la commande pour le vendeur selectionne
+        
         if($this->isExisteCommandeForVendeur(
           $request->input('vendeur'),
-          $request->input('produit'),
           $commande)) {
             if($this->isDisponibleInDepot($request->input('depot'),$request->input('produit'),$request->input('quantite'))) {
-
               // disponibilite de la quantite dans le depot central
               if($this->isRavitaillementPossible($commande,$request)) {
                 // verifier si le ravitaillement est possible pour ce vendeur
@@ -435,7 +422,8 @@ class LogistiqueController extends Controller
       					$this->sendNotification("Ravitaillement Materiel" ,"Vous avez effectue un ravitaillement au compte de ".User::where("username",$request->input('vendeur'))->first()->localisation,Auth::user()->username);
       					$this->sendNotification("Ravitaillement Materiel" ,"Votre commande materiel a ete confirme , rendez vous dans le depot : ".$request->input('depot'),$request->input('vendeur'));
                 $this->sendNotification("Livraison Materiel" ,"Vous avez une livraison a effectue au compte de : ".User::where('username',$request->input('vendeur'))->first()->localisation , Depots::where("localisation",$request->input("depot"))->first()->vendeurs);
-                return redirect('/user/ravitailler/'.$commande)->withSuccess("Success!");
+                return response()
+                  ->json('done');
               } else {
                 throw new AppException("Ravitaillement indisponible");
               }
@@ -446,7 +434,8 @@ class LogistiqueController extends Controller
           throw new AppException("Commande Invalide!");
         }
       } catch (AppException $e) {
-        return back()->with("_errors",$e->getMessage());
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
       }
 
     }
@@ -686,38 +675,36 @@ class LogistiqueController extends Controller
     }
 
 
-    public function getParaboleDu(Request $request) {
+    public function getParaboleDu($vendeur) {
 
-        $migration = RapportVente::where('vendeurs',$request->input('ref'))->where('type','migration')->sum('quantite');
-
+        $migration = RapportVente::where('vendeurs',$vendeur)->where('type','migration')->sum('quantite');
         $compense   = Compense::where([
           'type'=>'debit',
-          'vendeurs'  =>  $request->input('ref')
+          'vendeurs'  =>  $vendeur
           ])->get()->sum('quantite');
           // quantite de parabole duDA-5648
         $parabole_du = $migration - $compense;
-        return response()->json($parabole_du);
-
+        return $parabole_du;
     }
 
-    public function getRestantPourRavitaillement(Request $request) {
+    public function getRestantPourRavitaillement($commande , $materiel ,$vendeur ) {
       // Quantite de parabole restant pour ravitaillement
       #quantite commander
       $quantiteCommande = CommandProduit::where([
-        'commande'  =>  $request->input('command'),
-        'produit' =>  $request->input('material')
+        'commande'  =>  $commande,
+        'produit' =>  $materiel
       ])->first()->quantite_commande;
 
       #quantite deja envoyer
       $ravitaillements  = RavitaillementVendeur::select('id_ravitaillement')->where([
-        'vendeurs'  =>  $request->input('vendeurs'),
-        'commands'  =>  $request->input('command')
+        'vendeurs'  =>  $vendeur,
+        'commands'  =>  $commande
       ])->get();
 
-      $quantiteEnvoyer = Livraison::whereIn('ravitaillement',$ravitaillements)->where('produits',$request->input('material'))->sum('quantite');
+      $quantiteEnvoyer = Livraison::whereIn('ravitaillement',$ravitaillements)->where('produits',$materiel)->sum('quantite');
 
       $restantPourRavitaillement = $quantiteCommande - $quantiteEnvoyer ;
-      return  response()->json($restantPourRavitaillement);
+      return $restantPourRavitaillement;
     }
     //  CONFIRMER UNE COMMANDE
     public function confirmCommand($idCommande) {
@@ -734,5 +721,70 @@ class LogistiqueController extends Controller
             return response()->json('fail');
         }
     }
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// GET INFOS COMMANDES
+  public function getInfosCommande($slug , CommandMaterial $c ,Produits $p) {
+    try {
+      $commande = $c->find($slug);
+      $rv = [];
+      foreach($commande->commandProduits()->get() as $key => $value) {
+        if($value->produits()->first()->with_serial == 1){
+          $terminal = $this->getRestantPourRavitaillement($value->commande,$value->produit,$commande->vendeurs);
+        } else {
+          $parabole = $this->getRestantPourRavitaillement($value->commande,$value->produit,$commande->vendeurs);
+        }
+      }
+      $rv = [
+        'terminal'  =>  $terminal,
+        'parabole'  => $parabole
+      ];
+      $all = [
+        'id'  =>  $commande->id_commande,
+        'status'  =>  $commande->status,
+        'vendeurs' => $commande->vendeurs,
+        'vendeurs_localisation' =>  $commande->vendeurs()->first()->localisation,
+        'parabole_du'  =>  $this->getParaboleDu($commande->vendeurs),
+        'restant_ravit' =>  $rv,
+        'materials' =>  $p->select(['reference','libelle'])->get()
+      ];
 
+      return response()
+        ->json($all);
+    } catch (AppException $e) {
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+  public function depotList (Depots $d) {
+    try {
+
+      $depots = $d->all();
+      $all = [];
+      foreach($depots as $key => $value) {
+        $stock = $value->stockMateriel()->get();
+
+        foreach ($stock as $_value) {
+          if($_value->produits()->first()->with_serial == 1) {
+            $terminal_quantite = $_value->quantite;
+          } else {
+            $parabole_quantite = $_value->quantite;
+          }
+        }
+
+        $all[$key] =[
+          'localisation'  =>  $value->localisation,
+          'terminal'  =>  $terminal_quantite,
+          'parabole'  =>  $parabole_quantite,
+        ];
+      }
+
+      return response()
+        ->json($all);
+
+    } catch (AppException $e) {
+      header("Erreur!",true,422);
+      die(json_encode($e->getMessage()));
+    }
+
+  }
 }

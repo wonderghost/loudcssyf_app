@@ -17,6 +17,6 @@ class CommandProduit extends Model
     }
 
     public function produits() {
-      return $this->belongsTo('App\Produits');
+      return $this->belongsTo('App\Produits','produit','reference');
     }
 }

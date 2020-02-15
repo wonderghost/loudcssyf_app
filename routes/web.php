@@ -166,10 +166,12 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// RAVITAILLEMENT VENDEURS
 	Route::get('/user/ravitailler/{commande}','LogistiqueController@addStock')->middleware('logistique');
 	Route::post('/user/ravitailler/{commande}','LogistiqueController@makeAddStock')->middleware('logistique');
+	#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	Route::get('/logistique/ravitaillement/{slug}/infos','LogistiqueController@getInfosCommande')->middleware('logistique');
+	Route::get("/logistique/ravitaillement/list-depot",'LogistiqueController@depotList')->middleware('logistique');
+	#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@22
 
-	Route::post('/user/get-by-depot','LogistiqueController@getMaterialByDepot')->middleware('logistique');
-	Route::post('/user/parabole-du','LogistiqueController@getParaboleDu')->middleware('logistique');
-	Route::post('/user/reste-pour-ravitaillement','LogistiqueController@getRestantPourRavitaillement')->middleware('logistique');
+
 	// COMPLETER LE RAVITAILLEMENT EN SAISISSANT LES NUMEROS DE SERIE
 	Route::get('/user/history-depot','LogistiqueController@historyDepot')->middleware('logistique');
 	Route::get('/user/ravitailler/{commande}/complete-transfert','LogistiqueController@completeTransfert')->middleware('logistique');
@@ -185,9 +187,11 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// VENDEURS
 
 	Route::get('/user/my-inventory','LogistiqueController@inventoryVendeur')->middleware('vendeur');
-	Route::get('/user/new-command','CommandController@addCommand')->middleware('vendeur');
 	Route::get('/user/inventory/all-vendeur-material','LogistiqueController@getAllMaterialByVendeurs')->middleware('vendeur');
 	Route::get('/user/inventory/all-credit-vendeurs','CreditController@getCreditForVendeurs');
+
+	Route::get('/user/new-command','CommandController@addCommand')->middleware('vendeur');
+	Route::get('/user/new-command/get-infos-material','CommandController@infoMaterial')->middleware('vendeur');
 
 	// ========= LISTE DES COMMANDES
 	Route::get('/user/list-command','CommandController@getList')->middleware('vendeur');
@@ -221,7 +225,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/get-soldes','CreditController@getSoldesVendeurs')->middleware('cga');
 	Route::get('user/get-global-solde','CreditController@getGlobalSolde')->middleware('cga');
 
-	// Route::post('/user/send-cga','CreditController@sendCga')->middleware('cga');
+
 	Route::post('/user/send-afrocash','CreditController@sendAfrocash');
 	Route::post('/user/credit-cga/abort-commandes','CreditController@abortCommande')->middleware('cga');
 	Route::post('/user/cga-credit/','CreditController@getListVendeur')->middleware('cga');

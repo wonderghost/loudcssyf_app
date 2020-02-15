@@ -224,6 +224,7 @@ public function inventaireLivraison() {
         'command' =>  $value->ravitaillementVendeurs()->commands,
         'quantite'  =>  $value->quantite,
         'status'  =>  $value->status,
+        'depot' =>  $value->depot()->first()->localisation,
         'filename'  =>  url('livraison_serial_files').'/'.$value->serialFile(),
         'id'  =>  $value->id
       ];

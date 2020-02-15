@@ -187,6 +187,16 @@
                 </ul>
             </li>
           </template>
+          <template id="" v-if="typeUser == 'gdepot'">
+            <li class="uk-parent">
+                <a href="#"><span uk-icon="icon:cart;ratio:0.9"></span> Materiels</a>
+                <ul class="uk-nav-sub">
+                    <!-- LOGISTIC ONLY -->
+                    <li><a href="/user/inventaire-depot"><span uk-icon="icon:arrow-right"></span> Stock</a></li>
+                    <li><a href="/user/livraison"><span uk-icon="icon:arrow-right"></span> Commandes</a></li>
+                </ul>
+            </li>
+          </template>
           <template v-if="typeUser !== 'admin'" id="">
             <li class="uk-parent">
               <a href="#"> <span uk-icon="icon : settings ; ratio : .9"></span> Parametres</a>

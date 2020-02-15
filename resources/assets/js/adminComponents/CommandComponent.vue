@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <loading :active.sync="isLoading"
-        :can-cancel="true"
+        :can-cancel="false"
         :is-full-page="fullPage"></loading>
 
     <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
@@ -62,6 +62,7 @@
                 <td>{{livraison.quantite}}</td>
                 <td v-if="livraison.status == 'livred'" class="uk-text-success">{{livraison.status}}</td>
                 <td v-else class="uk-text-danger">{{livraison.status}}</td>
+                <td>{{livraison.depot}}</td>
                 <td>
                    <a href="#" v-if="typeUser == 'logistique' && livraison.status == 'unlivred'" class="uk-button uk-button-small uk-button-primary uk-text-capitalize uk-border-rounded uk-box-shadow-small">validez <span uk-icon="icon : check"></span> </a>
                    <a download :href="livraison.filename" v-if="livraison.status == 'livred'" class="uk-button uk-button-small uk-button-default uk-text-capitalize uk-border-rounded uk-box-shadow-small">details <span uk-icon="icon : more"></span> </a>
@@ -101,10 +102,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         data () {
           return {
             materialCommand : ['date','vendeurs','designation','quantite','parabole a livrer','status'],
-            livraison : ['date','vendeurs','designation','commande','quantite','status'],
+            livraison : ['date','vendeurs','designation','commande','quantite','status','depot'],
             start : 0,
             end : 10,
-            currentPage : 1
+            currentPage : 1,
+            isLoading : false,
+            fullPage : true
           }
         },
         methods : {

@@ -26,6 +26,7 @@ Vue.component('rapport-component',require('./userComponents/RapportComponent.vue
 Vue.component('pay-comission-component',require('./userComponents/PayComissionComponent.vue').default)
 Vue.component('inventory',require('./userComponents/InventoryComponent.vue').default)
 Vue.component('new-command',require('./userComponents/NewCommandComponent.vue').default)
+Vue.component('ravitaillement-command',require('./userComponents/RavitaillementComponent.vue').default)
 
 import Vue from 'vue'
 import Vuex from 'vuex'

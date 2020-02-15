@@ -9,9 +9,9 @@ class StockPrime extends Model
     //
     protected $table = 'stock_central_prime';
     protected $keyType ='string';
-    // protected $primaryKey = 'p'
+
 
     public function produits() {
-      return $this->hasOne('App\Produits','reference','produit');
+      return $this->belongsTo('App\Produits','produit','reference');
     }
 }

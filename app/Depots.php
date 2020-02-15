@@ -17,7 +17,7 @@ class Depots extends Model
     }
 
     public function stockMateriel() {
-      return $this->belongsTo('App\StockPrime');
+      return $this->hasMany('App\StockPrime','depot','localisation');
     }
 
 

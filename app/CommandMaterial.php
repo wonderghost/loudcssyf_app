@@ -21,4 +21,7 @@ class CommandMaterial extends Model
       return $this->hasMany('App\RavitaillementVendeur','commands')->get();
     }
 
+    public function commandProduits() {
+      return $this->hasMany('App\CommandProduit','commande','id_commande');
+    }
 }

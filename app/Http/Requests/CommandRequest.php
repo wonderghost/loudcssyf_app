@@ -26,7 +26,7 @@ class CommandRequest extends FormRequest
         return [
             //
             'quantite'  =>  'required|numeric|min:1',
-            'mat-reference'   =>  'required|string',
+            'reference_material'   =>  'required|string',
             'prix_achat'  =>  'required|numeric'
         ];
     }
@@ -34,7 +34,8 @@ class CommandRequest extends FormRequest
     public function messages() {
       return [
         'required'  =>  'Champ `:attribute` Obligatoire',
-        'sting' =>  'Champ `:attribute` est une chaine de caratere'
+        'sting' =>  'Champ `:attribute` est une chaine de caratere',
+        'min' =>  '`:attribute` doit etre superieur a 0'
       ];
     }
 }
