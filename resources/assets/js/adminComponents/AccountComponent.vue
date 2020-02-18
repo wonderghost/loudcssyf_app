@@ -49,9 +49,9 @@
         </div>
       </li>
       <li>
-        <filter-user-component></filter-user-component>
         <div class="">
-          <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+          <filter-user-component></filter-user-component>
+          <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small uk-table-responsive">
   					<thead>
   						<tr>
   							<th v-for="head in soldeVendeurs"> {{head}} </th>

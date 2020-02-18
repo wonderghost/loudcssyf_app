@@ -354,7 +354,7 @@ class LogistiqueController extends Controller
     public function makeAddStock(RavitaillementRequest $request,$commande) {
       try {
         // existence de la commande pour le vendeur selectionne
-        
+
         if($this->isExisteCommandeForVendeur(
           $request->input('vendeur'),
           $commande)) {
@@ -728,6 +728,8 @@ class LogistiqueController extends Controller
       $commande = $c->find($slug);
       $rv = [];
       foreach($commande->commandProduits()->get() as $key => $value) {
+        $terminal = 0;
+        $parabole = 0;
         if($value->produits()->first()->with_serial == 1){
           $terminal = $this->getRestantPourRavitaillement($value->commande,$value->produit,$commande->vendeurs);
         } else {
@@ -755,7 +757,8 @@ class LogistiqueController extends Controller
       die(json_encode($e->getMessage()));
     }
   }
-  public function depotList (Depots $d) {
+
+  public function depotList (Depots $d , Produits $p) {
     try {
 
       $depots = $d->all();
@@ -763,6 +766,8 @@ class LogistiqueController extends Controller
       foreach($depots as $key => $value) {
         $stock = $value->stockMateriel()->get();
 
+        $terminal_quantite = 0 ;
+        $parabole_quantite = 0;
         foreach ($stock as $_value) {
           if($_value->produits()->first()->with_serial == 1) {
             $terminal_quantite = $_value->quantite;
@@ -785,6 +790,30 @@ class LogistiqueController extends Controller
       header("Erreur!",true,422);
       die(json_encode($e->getMessage()));
     }
+  }
+// RECUPERATION DES SERIALS NUMBER NON ATTRIBUE AUX VENDEURS
+  public function getSerialNumberForDepot(Exemplaire $sn , Stock $s) {
+    try {
+      $non_attribuer = $sn->select('serial_number')
+        ->whereNull('vendeurs')
+        ->get();
+      $stock = $s->whereIn('exemplaire',$non_attribuer)->orderBy('exemplaire','asc')->get();
 
+        $all = [];
+        foreach($stock as $key => $value) {
+          $all [$key] =[
+            'numero_materiel'  =>   $value->exemplaire,
+            'depot' =>  $value->depot,
+            'article' =>  "Terminal",
+            'origine' =>  $value->origine
+          ];
+        }
+      return response()
+        ->json($all);
+    }
+    catch (AppException $e) {
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
+    }
   }
 }

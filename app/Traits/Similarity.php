@@ -300,7 +300,7 @@ Trait Similarity {
           ])->first();
           if($attributionVendeurState) {
             // le numero n'est pas encore attribuer
-            return response()->json('success');
+            return response()->json('done');
           }
           else {
             throw new SerialException("Ce Numero est deja attribuer!");
@@ -310,7 +310,8 @@ Trait Similarity {
           throw new SerialException("Ce Numero n'existe pas dans votre stock!");
         }
       } catch (SerialException $e) {
-        return response()->json($e->getMessage());
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
       }
 
     }

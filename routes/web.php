@@ -79,8 +79,8 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/add-depot/auto-complete','LogistiqueController@findMaterial');
 	// list des materieles
 	Route::get('/admin/list-material','LogistiqueController@listMaterial');
-	Route::post('/admin/list-material','LogistiqueController@getListMaterial');
-	Route::get('/admin/get-serialNumber','LogistiqueController@ListSerialNumber');
+	// Route::post('/admin/list-material','LogistiqueController@getListMaterial');
+	// Route::get('/admin/get-serialNumber','LogistiqueController@ListSerialNumber');
 	// editer les infos utilisateurs
 	Route::get('/admin/edit-users/{username}','AdminController@editUser');
 	Route::post('/admin/edit-users/{username}','AdminController@makeEditUser');
@@ -88,15 +88,19 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/block-user','AdminController@blockUser');
 	Route::post('/admin/unblock-user','AdminController@unblockUser');
 	Route::get('/admin/history-depot','LogistiqueController@historyDepot');
-	Route::post('/admin/history-depot','LogistiqueController@getHistoryDepot');
+	// Route::post('/admin/history-depot','LogistiqueController@getHistoryDepot');
 	// Reinitialiser un utilisateur
 	Route::post('/admin/reset-user','AdminController@resetUser');
 	// liste des depots
 	Route::get('/admin/list-depot','AdminController@listDepot');
 	//
+	// INVENTAIRE SUR LE TERRAIN
 	Route::get('/admin/inventory','LogistiqueController@inventory');
 	Route::get('/admin/inventory/get-serial-number-list','LogistiqueController@getListMaterialByVendeurs');
 	Route::get('/admin/inventory/all-material','LogistiqueController@getAllMaterialForVendeurs');
+	// ##INVENTAIRE DANS LES DEPOTS /user/inventory/depot
+	Route::get('/admin/inventory/depot','LogistiqueController@depotList');
+	Route::get('/admin/inventory/depot/serialNumber','LogistiqueController@getSerialNumberForDepot');
 	// Route::get('/admin/inventory/all-credit-vendeurs','CreditController@')
 	// Editer les infos materiels
 	Route::get('/admin/edit-material/{reference}','LogistiqueController@editMaterial');
@@ -157,6 +161,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/commandes','LogistiqueController@allCommandes')->middleware('logistique');
 	Route::get('/logistique/commandes/all','AdminController@getAllCommandes')->middleware('logistique');
 	Route::get('/logistique/commandes/livraison','AdminController@getAllLivraison')->middleware('logistique');
+	Route::get('/user/commandes/livraison','AdminController@getAllLivraison');
 	// === MATERIELS
 	Route::get('/user/list-material','LogistiqueController@listMaterial')->middleware('logistique');
 	Route::post('/user/list-material','LogistiqueController@getListMaterial')->middleware('logistique');
@@ -183,6 +188,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// INVENTAIRE
 	Route::get('/user/inventory','LogistiqueController@inventory')->middleware('logistique');
 	Route::get('/user/inventory/get-serial-number-list','LogistiqueController@getListMaterialByVendeurs');
+	Route::get('/user/inventory/depot','LogistiqueController@depotList');
+	Route::get('/user/inventory/depot/serialNumber','LogistiqueController@getSerialNumberForDepot');
 
 	// VENDEURS
 
@@ -195,7 +202,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 
 	// ========= LISTE DES COMMANDES
 	Route::get('/user/list-command','CommandController@getList')->middleware('vendeur');
-	Route::post('/user/list-command','CommandController@getRequestList')->middleware('vendeur');
+	Route::get('/user/commandes/all','AdminController@getAllCommandes')->middleware('vendeur');
 	// DETAILS COMMANDES
 
 	Route::get('/user/details-command/{id}','CommandController@DetailsCommand')->middleware('vendeur');

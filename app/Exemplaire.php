@@ -24,5 +24,4 @@ class Exemplaire extends Model
     public function depot() {
       return $this->hasMany('App\Stock','exemplaire','serial_number')->first();
     }
-
 }

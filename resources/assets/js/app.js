@@ -27,6 +27,8 @@ Vue.component('pay-comission-component',require('./userComponents/PayComissionCo
 Vue.component('inventory',require('./userComponents/InventoryComponent.vue').default)
 Vue.component('new-command',require('./userComponents/NewCommandComponent.vue').default)
 Vue.component('ravitaillement-command',require('./userComponents/RavitaillementComponent.vue').default)
+Vue.component('livraison',require('./userComponents/LivraisonComponent.vue').default)
+Vue.component('inventory-depot',require('./userComponents/InventoryDepotComponent.vue').default)
 
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -38,7 +40,6 @@ import store from './store'
 Vue.use(Vuikit)
 Vue.use(Vuex)
 Vue.filter('numFormat', numFormat(numeral))
-
 const app = new Vue({
     el: '#app',
     store

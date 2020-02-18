@@ -36,7 +36,7 @@ class User extends Authenticatable
     }
 
     public function depot() {
-      return $this->hasOne('App\Depots','vendeurs','username');
+      return $this->hasMany('App\Depots','vendeurs','username');
     }
 
     public function cgaAccount() {

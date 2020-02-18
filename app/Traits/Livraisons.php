@@ -123,6 +123,9 @@ public function inventaireLivraison() {
       'password'  =>  'required|string'
     ]);
     try {
+      return response()
+        ->json($request);
+      die();
       // verifier si le status est non Livrer
       if($this->livraisonStatus($request->input('livraison')) == 'unlivred') {
         // verifier si le mots de passe correspond
@@ -140,7 +143,7 @@ public function inventaireLivraison() {
 
               $handle = fopen($file,'w');
               for ($i=0; $i < $request->input('quantite') ; $i++) {
-                fputs($handle,$request->input('serial-number-'.($i+1))."\n");
+                fputs($handle,$request->input('serial_number_'.($i+1))."\n");
               }
               fclose($handle);
               $fileSerial->save();
@@ -152,7 +155,6 @@ public function inventaireLivraison() {
               $ravit->livraison = 'confirmer';
               $ravit->save();
             }
-
             $livraison = Livraison::find($request->input('livraison'));
             // dump($livraison);
             // dump($livraison->ravitaillementVendeurs()->vendeurs());
@@ -163,8 +165,6 @@ public function inventaireLivraison() {
               ])->update([
                 'status'  =>  'livred'
               ]);
-
-
               $this->sendNotification("Livraison Materiel" ,"Livraison effectuee pour : ".$livraison->ravitaillementVendeurs()->vendeurs()->localisation." de la part du depot de : ".$livraison->depot,User::where('type','admin')->first()->username);
               // logistique
               $this->sendNotification("Validation de la livraison" ,"Vous avez une livraison en attente de validation ",User::where('type','logistique')->first()->username);
@@ -173,7 +173,8 @@ public function inventaireLivraison() {
               // depot de livraison
               $this->sendNotification("Livraison Materiel" ,"Vous avez effectue une livraison au compte de : ".$livraison->ravitaillementVendeurs()->vendeurs()->localisation,Auth::user()->username);
 
-              return redirect('/user/livraison')->withSuccess("Success!");
+              return response()
+                ->json('done');
           } else {
             throw new AppException("Le Code de confirmation est incorrect!",2);
           }
@@ -183,11 +184,10 @@ public function inventaireLivraison() {
       } else {
         throw new AppException("Erreur Deja Livrer",0);
       }
-
     } catch (AppException $e) {
-      return back()->with("_errors",$e->getMessage());
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
     }
-
   }
 
 // Verifier le status de la livraison (unlivred | livred)
@@ -219,14 +219,17 @@ public function inventaireLivraison() {
 
       $all[$key] = [
         'date'  =>  $date->toFormattedDateString(),
-        'vendeur' =>  $value->ravitaillementVendeurs()->vendeurs()->username.' _ '.$value->ravitaillementVendeurs()->vendeurs()->localisation,
+        'vendeur' => $value->ravitaillementVendeurs()->vendeurs()->localisation,
         'produit' =>  $value->produits()->libelle,
         'command' =>  $value->ravitaillementVendeurs()->commands,
         'quantite'  =>  $value->quantite,
         'status'  =>  $value->status,
+        'validation'  =>  $value->ravitaillementVendeurs()->livraison,
         'depot' =>  $value->depot()->first()->localisation,
-        'filename'  =>  url('livraison_serial_files').'/'.$value->serialFile(),
-        'id'  =>  $value->id
+        'filename'  =>  $value->serialFile() !== 'undefined' ? url('livraison_serial_files').'/'.$value->serialFile() : 'undefined',
+        'id'  =>  $value->id,
+        'code_livraison'  =>  $value->code_livraison,
+        'with_serial' =>  $value->produits()->with_serial
       ];
     }
     return response()->json($all);
@@ -255,7 +258,6 @@ public function inventaireLivraison() {
 
   public function livraisonRequest(Livraison $l) {
     return $l->whereIn('produits',Produits::select('reference')
-              ->where('with_serial',1)
               ->get())
               ->orderBy('created_at','desc')
               ->get();
