@@ -254,7 +254,7 @@ class CreditController extends Controller
 				$temp[$key] = [
 					'id'	=>	$value->id,
 					'date'	=>	$date->toFormattedDateString()." (".$date-> diffForHumans()." )",
-					'vendeurs'	=>	$value->vendeurs." (".$value->vendeurs()->localisation." )",
+					'vendeurs'	=>	$value->vendeurs()->localisation,
 					'type'	=>	$value->type,
 					'montant'	=>	number_format($value->montant),
 					'status'	=>	$value->status,

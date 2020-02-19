@@ -120,12 +120,14 @@ public function inventaireLivraison() {
       'livraison' =>  'required|exists:livraisons,id',
       'with_serial' =>  'required|exists:produits,with_serial',
       'confirm_code'  =>  'required|string',
-      'password'  =>  'required|string'
-    ]);
+      'password'  =>  'required|string',
+      "serial_number.*" =>  'string|distinct|exists:exemplaire,serial_number'
+    ],[
+    'distinct' => 'Vous ne pouvez envoyer le meme numero de serie plus d\'une fois :-(',
+    'exists'  =>  ':attribute est Inexistant :-('
+  ]);
     try {
-      return response()
-        ->json($request);
-      die();
+      
       // verifier si le status est non Livrer
       if($this->livraisonStatus($request->input('livraison')) == 'unlivred') {
         // verifier si le mots de passe correspond
@@ -143,7 +145,7 @@ public function inventaireLivraison() {
 
               $handle = fopen($file,'w');
               for ($i=0; $i < $request->input('quantite') ; $i++) {
-                fputs($handle,$request->input('serial_number_'.($i+1))."\n");
+                fputs($handle,$request->input('serial_number')[$i]."\n");
               }
               fclose($handle);
               $fileSerial->save();
@@ -156,9 +158,6 @@ public function inventaireLivraison() {
               $ravit->save();
             }
             $livraison = Livraison::find($request->input('livraison'));
-            // dump($livraison);
-            // dump($livraison->ravitaillementVendeurs()->vendeurs());
-            // die();
             // Changement de status de livraison
             Livraison::where([
               'id'  =>  $request->input('livraison')

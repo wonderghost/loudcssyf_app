@@ -228,7 +228,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/cga-credit/','CreditController@crediterVendeur')->middleware('cga');
 	Route::get('/user/credit-cga/commandes','CreditController@commandCredit')->middleware('cga');
 
-	Route::get('/user/commandes/credit-all','CreditController@getAllCommandes')->middleware('cga');
+	Route::get('/user/commandes/credit-all','CreditController@getAllCommandes');
 	Route::get('/user/get-soldes','CreditController@getSoldesVendeurs')->middleware('cga');
 	Route::get('user/get-global-solde','CreditController@getGlobalSolde')->middleware('cga');
 

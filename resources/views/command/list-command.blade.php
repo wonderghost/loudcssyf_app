@@ -8,6 +8,7 @@
 			 Toute les commandes</h3>
 			 <hr class="uk-divider-small">
 			 <command the-user="{{Auth::user()->localisation}}"></command>
+			 
 	</div>
 </div>
 @endsection

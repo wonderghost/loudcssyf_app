@@ -56,7 +56,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="credit in commandCredit.slice(start,end)">
+          <tr v-for="credit in filterCommandeCredit.slice(start,end)">
             <td>{{credit.date}}</td>
             <td>{{credit.vendeurs}}</td>
             <td>{{credit.type}}</td>
@@ -227,6 +227,16 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             return this.commandC.filter( (credit)  => {
                 return credit.status === this.statusCommandCredit
             })
+          },
+          filterCommandeCredit () {
+            if(this.typeUser == 'v_da' || this.typeUser == 'v_standart') {
+              return this.commandCredit.filter((credit) => {
+                return credit.vendeurs.match(this.theUser)
+              })
+            }
+            else {
+              return this.commandCredit
+            }
           },
           commandC () {
             return this.$store.state.commandCredit

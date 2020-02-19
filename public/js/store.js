@@ -13667,7 +13667,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     livraisonMaterial: [],
     commandCredit: [],
     typeCommand: 'en attente',
-    statusLivraison: 'unlivred',
+    statusLivraison: 'non_confirmer',
     statusCommandCredit: 'unvalidated',
     typeUserFilter: document.querySelector("input[id=user-type]").value,
     typeUser: document.querySelector("input[id=user-type]").value,

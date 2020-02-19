@@ -3056,6 +3056,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         return credit.status === _this.statusCommandCredit;
       });
     },
+    filterCommandeCredit: function filterCommandeCredit() {
+      var _this2 = this;
+
+      if (this.typeUser == 'v_da' || this.typeUser == 'v_standart') {
+        return this.commandCredit.filter(function (credit) {
+          return credit.vendeurs.match(_this2.theUser);
+        });
+      } else {
+        return this.commandCredit;
+      }
+    },
     commandC: function commandC() {
       return this.$store.state.commandCredit;
     },
@@ -3812,6 +3823,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -3821,9 +3834,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   components: {
     Loading: vue_loading_overlay__WEBPACK_IMPORTED_MODULE_1___default.a
   },
+  props: {
+    theUser: String
+  },
   mounted: function mounted() {
     this.getMaterialsDepot();
     this.getSerialNumberForDepot();
+
+    if (this.theUser !== "") {
+      this.filterState = this.theUser;
+    }
+
     this.isLoading = false;
   },
   data: function data() {
@@ -4118,6 +4139,28 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -4152,7 +4195,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         quantite: 0,
         serial_number: []
       },
-      errors: []
+      errors: [],
+      formDataConfirm: {
+        _token: "",
+        livraison: "",
+        password_confirmation: ""
+      }
     };
   },
   methods: {
@@ -4272,6 +4320,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 5:
                 response = _context2.sent;
                 console.log(response.data);
+                this.isLoading = false;
 
                 if (response.data == 'done') {
                   UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Une livraison effectuee :-)</div>").then(function () {
@@ -4279,11 +4328,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   });
                 }
 
-                _context2.next = 15;
+                _context2.next = 16;
                 break;
 
-              case 10:
-                _context2.prev = 10;
+              case 11:
+                _context2.prev = 11;
                 _context2.t0 = _context2["catch"](0);
                 this.isLoading = false;
                 UIkit.modal($("#modal-livraison-send")).show();
@@ -4298,12 +4347,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   this.errors.push(_context2.t0.response.data);
                 }
 
-              case 15:
+              case 16:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[0, 10]]);
+        }, _callee2, this, [[0, 11]]);
       }));
 
       function sendLivraison() {
@@ -4379,7 +4428,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _this = this;
 
       return this.livraisonM.filter(function (liv) {
-        return liv.status === _this.statusLivraison;
+        return liv.validation === _this.statusLivraison;
       });
     },
     livraisonM: function livraisonM() {
@@ -4591,6 +4640,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -4616,7 +4673,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         reference_material: ""
       },
       errors: [],
-      success: ""
+      success: "",
+      formDataCga: {
+        _token: "",
+        montant: 0
+      }
     };
   },
   methods: {
@@ -4734,6 +4795,63 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return sendCommandMaterial;
+    }(),
+    sendCommandCga: function () {
+      var _sendCommandCga = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+        var response, errorTab, prop;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                this.isLoading = true;
+                _context3.prev = 1;
+                this.formDataCga._token = this.myToken;
+                _context3.next = 5;
+                return axios.post('/user/new-command/cga', this.formDataCga);
+
+              case 5:
+                response = _context3.sent;
+
+                if (response.data == 'done') {
+                  this.isLoading = false;
+                  UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Votre commande a ete envoye :-)</div>").then(function () {
+                    location.reload();
+                  });
+                }
+
+                _context3.next = 13;
+                break;
+
+              case 9:
+                _context3.prev = 9;
+                _context3.t0 = _context3["catch"](1);
+                this.isLoading = false;
+
+                if (_context3.t0.response.data.errors) {
+                  errorTab = _context3.t0.response.data.errors;
+
+                  for (prop in errorTab) {
+                    this.errors.push(errorTab[prop][0]);
+                  }
+                } else {
+                  this.errors.push(_context3.t0.response.data);
+                }
+
+              case 13:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this, [[1, 9]]);
+      }));
+
+      function sendCommandCga() {
+        return _sendCommandCga.apply(this, arguments);
+      }
+
+      return sendCommandCga;
     }()
   },
   computed: {
@@ -20199,7 +20317,10 @@ var render = function() {
           _vm._m(0),
           _vm._v(" "),
           _c("li", [
-            _vm.typeUser == "admin" || _vm.typeUser == "gcga"
+            _vm.typeUser == "admin" ||
+            _vm.typeUser == "gcga" ||
+            _vm.typeUser == "v_da" ||
+            _vm.typeUser == "v_standart"
               ? _c(
                   "a",
                   {
@@ -20398,11 +20519,18 @@ var render = function() {
             2
           ),
           _vm._v(" "),
-          _vm.typeUser == "admin" || _vm.typeUser == "gcga"
+          _vm.typeUser == "admin" ||
+          _vm.typeUser == "gcga" ||
+          _vm.typeUser == "v_da" ||
+          _vm.typeUser == "v_standart"
             ? [
                 _c(
                   "li",
-                  [_c("credit-component", { attrs: { "the-user": "admin" } })],
+                  [
+                    _c("credit-component", {
+                      attrs: { "the-user": _vm.theUser }
+                    })
+                  ],
                   1
                 )
               ]
@@ -20715,107 +20843,108 @@ var render = function() {
             _vm._v(" "),
             _c(
               "tbody",
-              _vm._l(_vm.commandCredit.slice(_vm.start, _vm.end), function(
-                credit
-              ) {
-                return _c("tr", [
-                  _c("td", [_vm._v(_vm._s(credit.date))]),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(credit.vendeurs))]),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(credit.type))]),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(credit.montant))]),
-                  _vm._v(" "),
-                  credit.status == "unvalidated"
-                    ? _c("td", { staticClass: "uk-text-danger" }, [
-                        _vm._v(_vm._s(credit.status))
-                      ])
-                    : credit.status == "aborted"
-                    ? _c("td", { staticClass: "uk-text-warning" }, [
-                        _vm._v(_vm._s(credit.status))
-                      ])
-                    : _c("td", { staticClass: "uk-text-success" }, [
-                        _vm._v(_vm._s(credit.status))
-                      ]),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(credit.numero_recu))]),
-                  _vm._v(" "),
-                  credit.recu !== "undefined"
-                    ? _c("td", [
-                        _c("div", { attrs: { "uk-lightbox": "" } }, [
-                          _c(
-                            "a",
-                            {
-                              staticClass:
-                                "uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-default uk-text-capitalize",
-                              attrs: {
-                                href: "",
-                                "data-caption": credit.numero_recu
-                              }
-                            },
-                            [_vm._v("voir")]
-                          )
+              _vm._l(
+                _vm.filterCommandeCredit.slice(_vm.start, _vm.end),
+                function(credit) {
+                  return _c("tr", [
+                    _c("td", [_vm._v(_vm._s(credit.date))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(credit.vendeurs))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(credit.type))]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(credit.montant))]),
+                    _vm._v(" "),
+                    credit.status == "unvalidated"
+                      ? _c("td", { staticClass: "uk-text-danger" }, [
+                          _vm._v(_vm._s(credit.status))
                         ])
-                      ])
-                    : _c("td", [_vm._v(_vm._s(credit.recu))]),
-                  _vm._v(" "),
-                  _c(
-                    "td",
-                    [
-                      credit.status == "unvalidated" && _vm.typeUser == "gcga"
-                        ? [
+                      : credit.status == "aborted"
+                      ? _c("td", { staticClass: "uk-text-warning" }, [
+                          _vm._v(_vm._s(credit.status))
+                        ])
+                      : _c("td", { staticClass: "uk-text-success" }, [
+                          _vm._v(_vm._s(credit.status))
+                        ]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(credit.numero_recu))]),
+                    _vm._v(" "),
+                    credit.recu !== "undefined"
+                      ? _c("td", [
+                          _c("div", { attrs: { "uk-lightbox": "" } }, [
                             _c(
-                              "button",
+                              "a",
                               {
                                 staticClass:
-                                  "uk-text-capitalize uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small",
+                                  "uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-default uk-text-capitalize",
                                 attrs: {
-                                  type: "button",
-                                  "uk-toggle":
-                                    "target : #modal-validation-command",
-                                  name: "button"
-                                },
-                                on: {
-                                  click: function($event) {
-                                    _vm.commandToValidate = credit
-                                  }
+                                  href: "",
+                                  "data-caption": credit.numero_recu
                                 }
                               },
-                              [
-                                _vm._v(" validez "),
-                                _c("span", {
-                                  attrs: { "uk-icon": "icon : check" }
-                                })
-                              ]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "button",
-                              {
-                                staticClass:
-                                  "uk-text-capitalize uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small",
-                                attrs: { type: "button", name: "button" },
-                                on: {
-                                  click: function($event) {
-                                    return _vm.abortCommand(credit)
-                                  }
-                                }
-                              },
-                              [
-                                _vm._v(" annuler "),
-                                _c("span", {
-                                  attrs: { "uk-icon": "icon : close" }
-                                })
-                              ]
+                              [_vm._v("voir")]
                             )
-                          ]
-                        : _vm._e()
-                    ],
-                    2
-                  )
-                ])
-              }),
+                          ])
+                        ])
+                      : _c("td", [_vm._v(_vm._s(credit.recu))]),
+                    _vm._v(" "),
+                    _c(
+                      "td",
+                      [
+                        credit.status == "unvalidated" && _vm.typeUser == "gcga"
+                          ? [
+                              _c(
+                                "button",
+                                {
+                                  staticClass:
+                                    "uk-text-capitalize uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small",
+                                  attrs: {
+                                    type: "button",
+                                    "uk-toggle":
+                                      "target : #modal-validation-command",
+                                    name: "button"
+                                  },
+                                  on: {
+                                    click: function($event) {
+                                      _vm.commandToValidate = credit
+                                    }
+                                  }
+                                },
+                                [
+                                  _vm._v(" validez "),
+                                  _c("span", {
+                                    attrs: { "uk-icon": "icon : check" }
+                                  })
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "button",
+                                {
+                                  staticClass:
+                                    "uk-text-capitalize uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small",
+                                  attrs: { type: "button", name: "button" },
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.abortCommand(credit)
+                                    }
+                                  }
+                                },
+                                [
+                                  _vm._v(" annuler "),
+                                  _c("span", {
+                                    attrs: { "uk-icon": "icon : close" }
+                                  })
+                                ]
+                              )
+                            ]
+                          : _vm._e()
+                      ],
+                      2
+                    )
+                  ])
+                }
+              ),
               0
             )
           ]
@@ -21756,51 +21885,61 @@ var render = function() {
         2
       ),
       _vm._v(" "),
-      _c("div", { staticClass: "uk-grid-small", attrs: { "uk-grid": "" } }, [
-        _c("div", { staticClass: "uk-width-3-4@m" }),
-        _vm._v(" "),
-        _c("div", { staticClass: "uk-width-1-4@m" }, [
-          _c(
-            "select",
-            {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.filterState,
-                  expression: "filterState"
-                }
-              ],
-              staticClass: "uk-select uk-border-rounded",
-              on: {
-                change: function($event) {
-                  var $$selectedVal = Array.prototype.filter
-                    .call($event.target.options, function(o) {
-                      return o.selected
-                    })
-                    .map(function(o) {
-                      var val = "_value" in o ? o._value : o.value
-                      return val
-                    })
-                  _vm.filterState = $event.target.multiple
-                    ? $$selectedVal
-                    : $$selectedVal[0]
-                }
-              }
-            },
-            [
-              _c("option", { attrs: { value: "" } }, [_vm._v("Tous")]),
-              _vm._v(" "),
-              _vm._l(_vm.materials, function(d) {
-                return _c("option", { domProps: { value: d.localisation } }, [
-                  _vm._v(" " + _vm._s(d.localisation) + " ")
+      _vm.typeUser == "admin" || _vm.typeUser == "logistique"
+        ? [
+            _c(
+              "div",
+              { staticClass: "uk-grid-small", attrs: { "uk-grid": "" } },
+              [
+                _c("div", { staticClass: "uk-width-3-4@m" }),
+                _vm._v(" "),
+                _c("div", { staticClass: "uk-width-1-4@m" }, [
+                  _c(
+                    "select",
+                    {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.filterState,
+                          expression: "filterState"
+                        }
+                      ],
+                      staticClass: "uk-select uk-border-rounded",
+                      on: {
+                        change: function($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function(o) {
+                              return o.selected
+                            })
+                            .map(function(o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.filterState = $event.target.multiple
+                            ? $$selectedVal
+                            : $$selectedVal[0]
+                        }
+                      }
+                    },
+                    [
+                      _c("option", { attrs: { value: "" } }, [_vm._v("Tous")]),
+                      _vm._v(" "),
+                      _vm._l(_vm.materials, function(d) {
+                        return _c(
+                          "option",
+                          { domProps: { value: d.localisation } },
+                          [_vm._v(" " + _vm._s(d.localisation) + " ")]
+                        )
+                      })
+                    ],
+                    2
+                  )
                 ])
-              })
-            ],
-            2
-          )
-        ])
-      ]),
+              ]
+            )
+          ]
+        : _vm._e(),
       _vm._v(" "),
       _c("div", {}, [
         _c(
@@ -21887,7 +22026,7 @@ var render = function() {
         ])
       ])
     ],
-    1
+    2
   )
 }
 var staticRenderFns = []
@@ -21943,7 +22082,7 @@ var render = function() {
                 attrs: { href: "#" },
                 on: {
                   click: function($event) {
-                    return _vm.filterLivraison("unlivred")
+                    return _vm.filterLivraison("non_confirmer")
                   }
                 }
               },
@@ -21958,7 +22097,7 @@ var render = function() {
                 attrs: { href: "#" },
                 on: {
                   click: function($event) {
-                    return _vm.filterLivraison("livred")
+                    return _vm.filterLivraison("confirmer")
                   }
                 }
               },
@@ -22017,6 +22156,32 @@ var render = function() {
                   _c(
                     "td",
                     [
+                      _vm.typeUser == "logistique" &&
+                      livraison.status == "livred" &&
+                      livraison.validation == "non_confirmer"
+                        ? [
+                            _c(
+                              "button",
+                              {
+                                staticClass:
+                                  "uk-button uk-button-small uk-button-primary uk-border-rounded uk-text-capitalize",
+                                attrs: {
+                                  "uk-toggle":
+                                    "target : #modal-livraison-validate",
+                                  type: "button",
+                                  name: "button"
+                                },
+                                on: {
+                                  click: function($event) {
+                                    _vm.formDataConfirm.livraison = livraison
+                                  }
+                                }
+                              },
+                              [_vm._v("confirmer")]
+                            )
+                          ]
+                        : _vm._e(),
+                      _vm._v(" "),
                       livraison.status == "livred" &&
                       livraison.filename !== "undefined"
                         ? [
@@ -22404,6 +22569,45 @@ var render = function() {
               ]
             )
           ]
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.typeUser == "logistique"
+        ? [
+            _c(
+              "div",
+              {
+                staticClass: "uk-flex-top",
+                attrs: { id: "modal-livraison-validate", "uk-modal": "" }
+              },
+              [
+                _c("div", { staticClass: "uk-modal-dialog uk-modal-body" }, [
+                  _c("button", {
+                    staticClass: "uk-modal-close-default",
+                    attrs: { type: "button", "uk-close": "" }
+                  }),
+                  _vm._v(" "),
+                  _c("p", {}, [
+                    _vm._v("\n              Vous confirmez l'envoi de : "),
+                    _c("span", { staticClass: "uk-text-bold" }, [
+                      _vm._v(
+                        _vm._s(_vm.formDataConfirm.livraison.quantite) +
+                          " " +
+                          _vm._s(_vm.formDataConfirm.livraison.produit)
+                      )
+                    ]),
+                    _vm._v(" chez  :  "),
+                    _c("span", { staticClass: "uk-text-bold" }, [
+                      _vm._v(_vm._s(_vm.formDataConfirm.livraison.vendeur))
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("hr", { staticClass: "uk-divider-small" }),
+                  _vm._v(" "),
+                  _vm._m(3)
+                ])
+              ]
+            )
+          ]
         : _vm._e()
     ],
     2
@@ -22447,6 +22651,37 @@ var staticRenderFns = [
           attrs: { type: "submit", name: "button" }
         },
         [_vm._v("Fermer")]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("form", [
+      _c("div", { staticClass: "uk-margin-small" }, [
+        _c("label", { attrs: { for: "" } }, [
+          _vm._v("Confirmez votre Mot de passe")
+        ]),
+        _vm._v(" "),
+        _c("input", {
+          staticClass: "uk-input uk-border-rounded",
+          attrs: {
+            type: "password",
+            placeholder: "Entrez votre mot de passe ici",
+            value: ""
+          }
+        })
+      ]),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass:
+            "uk-button uk-button-small uk-button-primary uk-border-rounded",
+          attrs: { type: "button" }
+        },
+        [_vm._v("validez")]
       )
     ])
   }
@@ -22852,7 +23087,70 @@ var render = function() {
             )
           ]),
           _vm._v(" "),
-          _c("li"),
+          _c("li", [
+            _c(
+              "div",
+              { staticClass: "uk-grid-small", attrs: { "uk-grid": "" } },
+              [
+                _c("div", { staticClass: "uk-width-1-3@m" }, [
+                  _c(
+                    "form",
+                    {
+                      on: {
+                        submit: function($event) {
+                          $event.preventDefault()
+                          return _vm.sendCommandCga()
+                        }
+                      }
+                    },
+                    [
+                      _c("div", { staticClass: "uk-margin-small" }, [
+                        _c("label", { attrs: { for: "" } }, [
+                          _vm._v("Montant")
+                        ]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.formDataCga.montant,
+                              expression: "formDataCga.montant"
+                            }
+                          ],
+                          staticClass: "uk-input uk-border-rounded",
+                          attrs: { type: "number" },
+                          domProps: { value: _vm.formDataCga.montant },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.formDataCga,
+                                "montant",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        })
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "button",
+                        {
+                          staticClass:
+                            "uk-button uk-button-small uk-button-primary uk-border-rounded",
+                          attrs: { type: "submit" }
+                        },
+                        [_vm._v("validez")]
+                      )
+                    ]
+                  )
+                ])
+              ]
+            )
+          ]),
           _vm._v(" "),
           _vm.typeUser == "v_standart"
             ? [_c("li"), _vm._v(" "), _c("li")]
@@ -46304,7 +46602,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     livraisonMaterial: [],
     commandCredit: [],
     typeCommand: 'en attente',
-    statusLivraison: 'unlivred',
+    statusLivraison: 'non_confirmer',
     statusCommandCredit: 'unvalidated',
     typeUserFilter: document.querySelector("input[id=user-type]").value,
     typeUser: document.querySelector("input[id=user-type]").value,

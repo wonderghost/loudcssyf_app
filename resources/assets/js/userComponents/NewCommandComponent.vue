@@ -12,7 +12,6 @@
           <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">AFROCASH GROSSISTE</a></li>
       </template>
       </ul>
-
       <!-- Erreor block -->
             <template v-if="errors.length" v-for="error in errors">
             <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
@@ -27,7 +26,6 @@
             </div>
           </template>
       <ul class="uk-switcher uk -margin">
-
           <!-- ENVOI DE COMMANDE MATERIEL -->
           <li>
             <!-- COMMANDE MATERIEL -->
@@ -133,7 +131,17 @@
           <!-- // -->
         <li>
           <!-- COMMANDE CREDIT CGA -->
-
+          <div class="uk-grid-small" uk-grid>
+            <div class="uk-width-1-3@m">
+              <form @submit.prevent="sendCommandCga()">
+                <div class="uk-margin-small">
+                  <label for="">Montant</label>
+                  <input type="number" v-model="formDataCga.montant" class="uk-input uk-border-rounded">
+                </div>
+                <button type="submit"  class="uk-button uk-button-small uk-button-primary uk-border-rounded">validez</button>
+              </form>
+            </div>
+          </div>
           <!-- // -->
         </li>
         <template id="" v-if="typeUser == 'v_standart'">
@@ -177,7 +185,11 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               reference_material : ""
             },
             errors : [],
-            success : ""
+            success : "",
+            formDataCga : {
+              _token : "",
+              montant : 0
+            }
           }
         },
         methods : {
@@ -220,6 +232,31 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 this.isLoading = false
               }
             } catch (error) {
+              this.isLoading = false
+              if(error.response.data.errors) {
+                let errorTab = error.response.data.errors
+                for (var prop in errorTab) {
+                  this.errors.push(errorTab[prop][0])
+                }
+              } else {
+                  this.errors.push(error.response.data)
+              }
+            }
+          },
+          sendCommandCga : async function () {
+            this.isLoading = true
+            try {
+              this.formDataCga._token = this.myToken
+              let response = await axios.post('/user/new-command/cga',this.formDataCga)
+              if(response.data == 'done') {
+                this.isLoading = false
+                UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Votre commande a ete envoye :-)</div>")
+                  .then(function () {
+                    location.reload()
+                  })
+              }
+            }
+            catch (error) {
               this.isLoading = false
               if(error.response.data.errors) {
                 let errorTab = error.response.data.errors

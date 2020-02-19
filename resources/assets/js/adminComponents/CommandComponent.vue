@@ -7,7 +7,7 @@
     <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
         <li><a @click="start=0 , end=10 , currentPage = 1" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiel</a></li>
         <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Livraison</a></li>
-        <li><a v-if="typeUser == 'admin' || typeUser == 'gcga'" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Credit</a></li>
+        <li><a v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'v_da' || typeUser == 'v_standart'" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Credit</a></li>
     </ul>
     <ul class="uk-switcher uk-margin">
 			<li>
@@ -46,9 +46,9 @@
           <livraison :the-user="theUser"></livraison>
         </template>
       </li>
-      <template id="" v-if="typeUser == 'admin' || typeUser == 'gcga'">
+      <template id="" v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'v_da' || typeUser == 'v_standart'">
         <li>
-          <credit-component the-user="admin"></credit-component>
+          <credit-component :the-user="theUser"></credit-component>
         </li>
     </template>
     </ul>

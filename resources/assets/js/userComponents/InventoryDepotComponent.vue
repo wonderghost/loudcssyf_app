@@ -23,17 +23,19 @@
           </div>
         </template>
       </div>
-      <div class="uk-grid-small" uk-grid>
-        <div class="uk-width-3-4@m">
+      <template id="" v-if="typeUser == 'admin' || typeUser == 'logistique'">
+        <div class="uk-grid-small" uk-grid>
+          <div class="uk-width-3-4@m">
 
+          </div>
+          <div class="uk-width-1-4@m">
+            <select v-model="filterState" class="uk-select uk-border-rounded">
+              <option value="">Tous</option>
+              <option :value="d.localisation" v-for="d in materials"> {{d.localisation}} </option>
+            </select>
+          </div>
         </div>
-        <div class="uk-width-1-4@m">
-          <select v-model="filterState" class="uk-select uk-border-rounded">
-            <option value="">Tous</option>
-            <option :value="d.localisation" v-for="d in materials"> {{d.localisation}} </option>
-          </select>
-        </div>
-      </div>
+      </template>
       <div class="">
         <table class="uk-table uk-table-small uk-table-striped uk-table-hover uk-table-divider uk-table-responsive">
           <thead>
@@ -70,9 +72,15 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       components : {
         Loading
       },
+      props : {
+        theUser : String
+      },
       mounted() {
         this.getMaterialsDepot()
         this.getSerialNumberForDepot()
+        if(this.theUser !== "") {
+          this.filterState = this.theUser
+        }
         this.isLoading = false
       },
       data () {

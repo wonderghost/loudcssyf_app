@@ -5,8 +5,8 @@
         :is-full-page="fullPage"></loading>
 
         <ul class="uk-tab" uk-switcher="animation : uk-animation-slide-right">
-          <li> <a href="#" @click="filterLivraison('unlivred')">en attente de validation</a> </li>
-          <li> <a href="#" @click="filterLivraison('livred')">deja validee</a> </li>
+          <li> <a href="#" @click="filterLivraison('non_confirmer')">en attente de validation</a> </li>
+          <li> <a href="#" @click="filterLivraison('confirmer')">deja validee</a> </li>
         </ul>
         <div class="">
           <table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover uk-table-responsive">
@@ -27,7 +27,9 @@
                 <td>{{livraison.validation}}</td>
                 <td>{{livraison.depot}}</td>
                 <td>
-                   <!-- <a href="#" v-if="typeUser == 'logistique' && livraison.status == 'unlivred'" class="uk-button uk-button-small uk-button-primary uk-text-capitalize uk-border-rounded uk-box-shadow-small">validez <span uk-icon="icon : check"></span> </a> -->
+                   <template id="" v-if="typeUser == 'logistique' && livraison.status=='livred' && livraison.validation == 'non_confirmer'">
+                    <button @click="formDataConfirm.livraison = livraison" uk-toggle="target : #modal-livraison-validate" type="button" name="button" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-text-capitalize">confirmer</button>
+                   </template>
                    <template v-if="livraison.status == 'livred' && livraison.filename !== 'undefined'" id="">
                      <a download :href="livraison.filename" class="uk-button uk-button-small uk-button-default uk-text-capitalize uk-border-rounded uk-box-shadow-small">details <span uk-icon="icon : more"></span> </a>
                    </template>
@@ -108,6 +110,26 @@
         </div>
       </div>
     </template>
+    <!-- VALIDATION DE LA LIVRAISON CHEZ LA LOGISTIQUE -->
+    <template id="" v-if="typeUser == 'logistique'">
+      <div id="modal-livraison-validate" class="uk-flex-top" uk-modal>
+          <div class="uk-modal-dialog uk-modal-body">
+              <button class="uk-modal-close-default" type="button" uk-close></button>
+              <p class="">
+                Vous confirmez l'envoi de : <span class="uk-text-bold">{{formDataConfirm.livraison.quantite}} {{formDataConfirm.livraison.produit}}</span> chez  :  <span class="uk-text-bold">{{formDataConfirm.livraison.vendeur}}</span>
+              </p>
+
+              <hr class="uk-divider-small">
+              <form>
+                <div class="uk-margin-small">
+                  <label for="">Confirmez votre Mot de passe</label>
+                  <input type="password" class="uk-input uk-border-rounded" placeholder="Entrez votre mot de passe ici" value="">
+                </div>
+              <button type="button" class="uk-button uk-button-small uk-button-primary uk-border-rounded">validez</button>
+            </form>
+          </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -146,7 +168,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               quantite  : 0,
               serial_number : []
             },
-            errors : []
+            errors : [],
+            formDataConfirm : {
+              _token : "",
+              livraison : "",
+              password_confirmation : ""
+            }
           }
         },
         methods : {
@@ -201,6 +228,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               UIkit.modal($("#modal-livraison-send")).hide()
               let response = await axios.post('/user/livraison/confirm',this.formData)
               console.log(response.data)
+              this.isLoading = false
               if(response.data == 'done') {
                 UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Une livraison effectuee :-)</div>")
                   .then(function () {
@@ -254,7 +282,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         computed : {
           livraisonMaterial () {
             return  this.livraisonM.filter( (liv) => {
-              return liv.status === this.statusLivraison
+              return liv.validation === this.statusLivraison
             })
           },
           livraisonM() {
