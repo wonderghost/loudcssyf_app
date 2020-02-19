@@ -82,14 +82,16 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         Loading
       },
       methods : {
-        listUser : function () {
-          var tmp = this
-          axios.get('/admin/users/list').then(function (response) {
+        listUser :async function () {
+          try {
+            var tmp = this
+            let response = await axios.get('/admin/users/list')
             tmp.$store.state.users = response.data
-           }).catch(function (error) {
-             alert(error)
-           })
-           this.isLoading = false
+            this.isLoading = false;
+          }
+          catch (e) {
+            alert(e)
+          }
         },
         resetUser : function (event,username) {
           UIkit.modal($("#reset-modal")).hide()
