@@ -76,17 +76,22 @@ Trait Afrocashes {
 	}
 
 	// envoi de la commande semi grossiste
-	public function sendCommandSemiGrossiste(Request $request) {
+	public function sendCommandSemiGrossiste(Request $request , CommandCredit $cc) {
+
+
 		try {
 
-			if(CommandCredit::where('vendeurs',Auth::user()->username)->where('status','unvalidated')->where('type','afrocash_cash_sg')->first()) {
+			if($cc->where('vendeurs',$request->user()->username)
+				->where('status','unvalidated')
+				->where('type','afro_cash_sg')
+				->first()) {
 				throw new AppException("Une commande est deja en attente de validation !");
 			}
 
 			if(Auth::user()->type == 'v_standart') {
 				$validation = $request->validate([
 					'montant'	=>	'required',
-					'numero_recu'	=>	'required|string',
+					'numero_recu'	=>	'required|string|unique:command_credits,numero_recu',
 					'piece_jointe'	=>	'required|image'
 				]);
 				$credit = new	CommandCredit;
@@ -102,7 +107,8 @@ Trait Afrocashes {
 						// CREATION DE LA NOTIFICATION
 						$this->sendNotification("Commande Afrocash" , "Vous avez envoyer une command Afrocash Grossiste",Auth::user()->username);
 						$this->sendNotification("Commande Afrocash" , "Vous avez une commande Afrocash en attente de confirmation!",User::where('type','gcga')->first()->username);
-						return redirect('/user/new-command')->withSuccess("Success!");
+						return response()
+							->json('done');
 					} else {
 						throw new AppException("Erreur de telechargement !");
 					}
@@ -113,7 +119,8 @@ Trait Afrocashes {
 				throw new AppException("Action non autorisee!");
 			}
 		} catch (AppException $e) {
-			return back()->with("_error",$e->getMessage());
+			header("Erreur!",true,422);
+			die(json_encode($e->getMessage()));
 		}
 
 	}

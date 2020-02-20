@@ -120,12 +120,19 @@
               </p>
 
               <hr class="uk-divider-small">
-              <form>
+              <form @submit.prevent="confirmLivraison()">
+                <!-- Erreor block -->
+                <template v-if="errors.length" v-for="error in errors">
+                <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+                  <a href="#" class="uk-alert-close" uk-close></a>
+                  <p>{{error}}</p>
+                </div>
+              </template>
                 <div class="uk-margin-small">
                   <label for="">Confirmez votre Mot de passe</label>
-                  <input type="password" class="uk-input uk-border-rounded" placeholder="Entrez votre mot de passe ici" value="">
+                  <input type="password" v-model="formDataConfirm.password_confirmation" class="uk-input uk-border-rounded" placeholder="Entrez votre mot de passe ici" value="">
                 </div>
-              <button type="button" class="uk-button uk-button-small uk-button-primary uk-border-rounded">validez</button>
+              <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">validez</button>
             </form>
           </div>
       </div>
@@ -277,6 +284,37 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           },
           showConfirmationCode : function (livraison) {
             UIkit.modal.alert("<div class='uk-alert-info uk-border-rounded' uk-alert>Votre Code de confirmation pour la commande: <span class='uk-text-bold'>"+livraison.command+"</span> , est : <span class='uk-text-bold'>"+livraison.code_livraison+"</span></div>")
+          },
+          confirmLivraison : async function () {
+            this.isLoading = true
+            UIkit.modal($("#modal-livraison-validate")).hide()
+            try {
+              this.formDataConfirm._token = this.myToken
+              let response = await axios.post('/user/commandes/validate-livraison-serials',{
+                _token : this.formDataConfirm._token,
+                livraison : this.formDataConfirm.livraison.id,
+                password_confirmation : this.formDataConfirm.password_confirmation
+              })
+              if(response.data == 'done') {
+                this.isLoading = false
+                UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Commande validee avec success :-)</div>")
+                  .then(function () {
+                    location.reload()
+                  })
+              }
+            }
+            catch (error) {
+              this.isLoading = false
+              UIkit.modal($("#modal-livraison-validate")).show()
+              if(error.response.data.errors) {
+                let errorTab = error.response.data.errors
+                for (var prop in errorTab) {
+                  this.errors.push(errorTab[prop][0])
+                }
+              } else {
+                  this.errors.push(error.response.data)
+              }
+            }
           }
         },
         computed : {

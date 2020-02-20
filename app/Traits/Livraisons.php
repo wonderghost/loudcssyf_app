@@ -127,7 +127,7 @@ public function inventaireLivraison() {
     'exists'  =>  ':attribute est Inexistant :-('
   ]);
     try {
-      
+
       // verifier si le status est non Livrer
       if($this->livraisonStatus($request->input('livraison')) == 'unlivred') {
         // verifier si le mots de passe correspond
@@ -304,7 +304,7 @@ public function inventaireLivraison() {
     ]);
     try {
       // verifier la validite du mot de passe pour la confirmation
-      if(Hash::check($request->input('password_confirmation'),Auth::user()->password)) {
+      if(Hash::check($request->input('password_confirmation'),$request->user()->password)) {
         // Le mot de passe correspond
         #recuperation des numeros de serie
         $serials = [];
@@ -335,13 +335,15 @@ public function inventaireLivraison() {
         // depot concerne
         $this->sendNotification("Validation de Livraison","Livraison validee pour :".$ravitaillementVendeur->vendeurs()->localisation,$livraison->depot()->first()->vendeurs);
         // //
-        return redirect('/user/commandes')->with('success',"Success!");
+        return response()
+          ->json('done');
       } else {
         // Le mot de passe ne correspond pas
         throw new AppException("Mot de passe incorrect!");
       }
     } catch (AppException $e) {
-      return back()->with("_errors",$e->getMessage());
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
     }
   }
 }

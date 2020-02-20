@@ -150,7 +150,22 @@
           </li>
           <li>
             <!-- COMMAND AFROCASH GROSSISTE -->
-
+            <form @submit.prevent="sendCommandAfrocash()">
+              <div class="uk-width-1-3@m">
+                <div class="uk-margin-small">
+                  <label for="">Montant</label>
+                  <input type="number" class="uk-input uk-border-rounded"  v-model="formDataAfrocash.montant">
+                </div>
+                <div class="uk-margin-small">
+                  <label for="">Numero recu</label>
+                  <input type="text" class="uk-input uk-border-rounded" v-model="formDataAfrocash.numero_recu" >
+                </div>
+                <div class="uk-margin-small">
+                  <input type="file"  @change="fileUpload">
+                </div>
+               <button type="submit" class="uk-button uk-button-small uk-border-rounded uk-button-primary">validez</button>
+             </div>
+           </form>
           </li>
         </template>
       </ul>
@@ -166,8 +181,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       components : {
         Loading
       },
+      created () {
+        this.isLoading = true
+      },
         mounted() {
           this.getInfosMaterial()
+          this.isLoading = false
         },
         data () {
           return {
@@ -189,6 +208,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             formDataCga : {
               _token : "",
               montant : 0
+            },
+            formDataAfrocash : {
+              _token : "",
+              montant : 0,
+              numero_recu : "",
+              piece_jointe : ""
             }
           }
         },
@@ -251,6 +276,44 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               if(response.data == 'done') {
                 this.isLoading = false
                 UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Votre commande a ete envoye :-)</div>")
+                  .then(function () {
+                    location.reload()
+                  })
+              }
+            }
+            catch (error) {
+              this.isLoading = false
+              if(error.response.data.errors) {
+                let errorTab = error.response.data.errors
+                for (var prop in errorTab) {
+                  this.errors.push(errorTab[prop][0])
+                }
+              } else {
+                  this.errors.push(error.response.data)
+              }
+            }
+          },
+          fileUpload : function (e) {
+            this.formDataAfrocash.piece_jointe = e.target.files[0]
+          },
+          sendCommandAfrocash : async function () {
+            this.isLoading = true
+            this.formDataAfrocash._token = this.myToken
+            var form = new FormData()
+            form.append('montant',this.formDataAfrocash.montant)
+            form.append('numero_recu',this.formDataAfrocash.numero_recu)
+            form.append('piece_jointe',this.formDataAfrocash.piece_jointe)
+            form.append('_token',this.myToken)
+
+            try {
+              let response = await axios.post('/user/new-command/afrocash-sg',form,{
+                headers : {
+                  'content-type' : 'multipart/form-data'
+                }
+              })
+              if(response.data == 'done') {
+                this.isLoading = false
+                UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Commande envoyee avec success :-)</div>")
                   .then(function () {
                     location.reload()
                   })
