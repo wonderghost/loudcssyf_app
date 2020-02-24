@@ -72,9 +72,7 @@ Trait Rapports {
 						'distinct'	=>	"Doublons repere!",
 						'exists'	=>	'Numero inexistant! : `:attribute`'
 					]);
-					return response()
-						->json($request);
-						die();
+
 					if(!$this->isExistRapportOnThisDate(new Carbon($request->input('date')),$request->input('vendeurs'))) {
 						// verifier si le solde cga existe pour le vendeur
 						if($this->isCgaDisponible($request->input("vendeurs"),$request->input('montant'))) {
