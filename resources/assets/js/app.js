@@ -29,6 +29,7 @@ Vue.component('new-command',require('./userComponents/NewCommandComponent.vue').
 Vue.component('ravitaillement-command',require('./userComponents/RavitaillementComponent.vue').default)
 Vue.component('livraison',require('./userComponents/LivraisonComponent.vue').default)
 Vue.component('inventory-depot',require('./userComponents/InventoryDepotComponent.vue').default)
+Vue.component('add-rapport',require('./adminComponents/AddRapportComponent.vue').default)
 
 import Vue from 'vue'
 import Vuex from 'vuex'

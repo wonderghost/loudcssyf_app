@@ -28,6 +28,7 @@ use App\StockPrime;
 use App\Credit;
 use App\Promo;
 use App\TransactionCreditCentral;
+use Illuminate\Validation\Rule;
 
 Trait Rapports {
 	public function isExistRapportOnThisDate(Carbon $date,$vendeurs,$type = 'recrutement') {
@@ -50,7 +51,7 @@ Trait Rapports {
 	}
 
 	// ENREGISTREMENT D'UN RAPPORT
-	public function sendRapport(Request $request,$slug) {
+	public function sendRapport(Request $request,$slug , Exemplaire $e) {
 		try {
 		if($slug) {
 
@@ -58,26 +59,33 @@ Trait Rapports {
 					case 'recrutement':
 					$validation = $request->validate([
 						'quantite_materiel'  =>  'required|min:1',
-						'montant_ttc' =>  'required|numeric',
+						'montant_ttc' =>  'required|numeric|min:100000',
 						'vendeurs'   =>  'required|exists:users,username',
-						'date'  =>  'required|before_or_equal:'.(date("Y/m/d",strtotime("now")))
+						'date'  =>  'required|before_or_equal:'.(date("Y/m/d",strtotime("now"))),
+						'serial_number.*'	=>	'required|distinct|exists:exemplaire,serial_number'
 					],[
 						'required'  =>  'Veuillez remplir le champ `:attribute`',
 						'numeric'  =>  '`:attribute` doit etre une valeur numeric',
-						'before_or_equal' =>  'Vous ne pouvez ajouter de rapport a cette date'
+						'before_or_equal' =>  'Vous ne pouvez ajouter de rapport a cette date',
+						'distinct'	=>	"Doublons repere!",
+						'exists'	=>	'Numero inexistant! : `:attribute`'
 					]);
 
 					if(!$this->isExistRapportOnThisDate(new Carbon($request->input('date')),$request->input('vendeurs'))) {
 						// verifier si le solde cga existe pour le vendeur
 						if($this->isCgaDisponible($request->input("vendeurs"),$request->input('montant'))) {
 							// verification de l'existence des numeros de serie et de leur inactivite
+
+							foreach($request->input('serial_number') as $value) {
+								if(!$this->checkSerial($value,$request->input('vendeurs'),$e)) {
+									throw new AppException("Numero de Serie Invalide  : ". $value);
+								}
+							}
+
 							$rapport = new RapportVente;
 							do {
 								$rapport->id_rapport =  Str::random(10).'_'.time();
 							} while ($rapport->isExistRapportById());
-
-							// dump($rapport->id_rapport);
-							// die();
 
 							$temp_date = new Carbon($request->input('date'));
 							$rapport->date_rapport = $temp_date->toDateTimeString();
@@ -109,24 +117,20 @@ Trait Rapports {
 							$rapport->save();
 
 							// CHANGEMENT DE STATUS DES MATERIELS
-							for($i = 1 ; $i <= $request->input('quantite_materiel') ; $i++) {
-
+							foreach($request->input('serial_number') as $value) {
 								Exemplaire::where([
 									'vendeurs'  =>  $request->input('vendeurs'),
-									'serial_number' =>  $request->input('serial-number-'.$i),
+									'serial_number' =>  $value,
 									'status'  =>  'inactif'
-								])->update([
-									'status'  =>  'actif',
-									'rapports'  =>  $id_rapport
-								]);
+									])->update([
+										'status'  =>  'actif',
+										'rapports'  =>  $id_rapport
+									]);
+							}
 
-							}
 							// redirection
-							if(Auth::user()->type == 'admin') {
-									return redirect('/admin/add-rapport')->withSuccess("Success!");
-							} else {
-									return redirect('/user/add-rapport')->withSuccess("Success!");
-							}
+							return response()
+								->json('done');
 						} else {
 							throw new AppException("Solde Cga Indisponible!");
 						}
@@ -164,11 +168,8 @@ Trait Rapports {
 								]);
 
 								$rapport->save();
-								if(Auth::user()->type == 'admin') {
-									return redirect('/admin/add-rapport')->withSuccess("Success!");
-							} else {
-									return redirect('/user/add-rapport')->withSuccess("Success!");
-							}
+								return response()
+									->json('done');
 							} else if(($request->input('type_credit') == "rex") && $this->isRexDisponible($request->input('vendeurs'),$request->input('montant')) ) {
 								dd($request);
 							} else {
@@ -214,11 +215,10 @@ Trait Rapports {
 						StockVendeur::where('vendeurs',$request->input('vendeurs'))->update([
 							'quantite'  =>  $new_quantite
 						]);
-						if(Auth::user()->type == 'admin') {
-							return redirect('/admin/add-rapport')->withSuccess("Success!");
-						} else {
-							return redirect('/user/add-rapport')->withSuccess("Success!");
-						}
+
+						return response()
+							->json('done');
+
 					} else {
 						throw new AppException("Un rapport existe deja a cette date!");
 					}
@@ -231,31 +231,19 @@ Trait Rapports {
 				throw new AppException("Error!");
 			}
 		} catch (AppException $e) {
-				return back()->with('_errors',$e->getMessage());
+				header("Erreur",true,422);
+				die(json_encode($e->getMessage()));
 			}
-
 	}
 
 	// VERIFICATION DU NUMERO DE SERIE
-	public function checkSerial(Request $request) {
-		try {
-			$serial = Exemplaire::where([
-				'serial_number' =>  $request->input('ref-0'),
-				'vendeurs'  =>  $request->input('ref-1'),
-				'status'  =>  'inactif'
-				])->first();
-
-			if($serial) {
-
-				return response()->json('success');
-
-			} else {
-				throw new AppException("Numero invalide!");
-			}
-		} catch (AppException $e) {
-			return response()->json($e->getMessage());
-		}
-
+	public function checkSerial($serial,$vendeurs, Exemplaire $e) {
+		return $e->where([
+			'serial_number'	=>	$serial,
+			'vendeurs'	=>	$vendeurs,
+			'status'	=>	'inactif'
+		])
+		->first();
 	}
 	// LIST DES RAPPORTS
 	public function listRapport() {
