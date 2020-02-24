@@ -2408,16 +2408,31 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 _context2.prev = 2;
 
                 if (!(type == 'recrutement')) {
+                  _context2.next = 16;
+                  break;
+                }
+
+                if (!(this.typeUser == 'admin')) {
                   _context2.next = 10;
                   break;
                 }
 
-                _context2.next = 6;
+                _context2.next = 7;
                 return axios.post('/admin/send-rapport/recrutement', this.formData);
 
-              case 6:
+              case 7:
+                response = _context2.sent;
+                _context2.next = 13;
+                break;
+
+              case 10:
+                _context2.next = 12;
+                return axios.post('/user/send-rapport/recrutement', this.formData);
+
+              case 12:
                 response = _context2.sent;
 
+              case 13:
                 if (response.data == 'done') {
                   this.isLoading = false;
                   UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Rapport ajoute :-)</div>").then(function () {
@@ -2425,18 +2440,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   });
                 }
 
-                _context2.next = 11;
-                break;
-
-              case 10:
-                if (type == 'reabonnement') {} else {}
-
-              case 11:
                 _context2.next = 17;
                 break;
 
-              case 13:
-                _context2.prev = 13;
+              case 16:
+                if (type == 'reabonnement') {} else {}
+
+              case 17:
+                _context2.next = 23;
+                break;
+
+              case 19:
+                _context2.prev = 19;
                 _context2.t0 = _context2["catch"](2);
                 this.isLoading = false;
 
@@ -2450,12 +2465,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   this.errors.push(_context2.t0.response.data.message);
                 }
 
-              case 17:
+              case 23:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[2, 13]]);
+        }, _callee2, this, [[2, 19]]);
       }));
 
       function sendRapport(_x) {
@@ -2468,6 +2483,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   computed: {
     myToken: function myToken() {
       return this.$store.state.myToken;
+    },
+    typeUser: function typeUser() {
+      return this.$store.state.typeUser;
     }
   }
 });

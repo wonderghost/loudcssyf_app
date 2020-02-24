@@ -100,7 +100,12 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         this.formData._token = this.myToken
         try {
           if(type == 'recrutement') {
-            let response = await axios.post('/admin/send-rapport/recrutement',this.formData)
+            if(this.typeUser == 'admin') {
+              var response = await axios.post('/admin/send-rapport/recrutement',this.formData)
+            }
+            else {
+              var response = await axios.post('/user/send-rapport/recrutement',this.formData)
+            }
             if(response.data == 'done') {
               this.isLoading = false
               UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Rapport ajoute :-)</div>")
@@ -131,6 +136,9 @@ import 'vue-loading-overlay/dist/vue-loading.css';
     computed : {
       myToken () {
         return this.$store.state.myToken
+      },
+      typeUser () {
+        return this.$store.state.typeUser
       }
     }
   }
