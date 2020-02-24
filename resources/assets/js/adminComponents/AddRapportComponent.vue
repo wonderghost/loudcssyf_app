@@ -6,7 +6,7 @@
 
   <!-- Erreor block -->
         <template v-if="errors.length" v-for="error in errors">
-        <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+        <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert>
           <a href="#" class="uk-alert-close" uk-close></a>
           <p>{{error}}</p>
         </div>
@@ -14,12 +14,13 @@
         <div class="uk-grid" uk-grid>
           <div class="uk-width-1-2@m">
             <div class="uk-margin-small">
-              <label for="">Date</label>
+              <label for=""> <span uk-icon="icon : calendar"></span> Date</label>
               <input type="date" v-model="formData.date" class="uk-input uk-border-rounded" value="">
             </div>
             <div class="uk-margin-small">
-              <label for="">Vendeurs</label>
+              <label for=""> <span uk-icon="icon : users"></span> Vendeurs</label>
               <select class="uk-select uk-border-rounded" v-model="formData.vendeurs">
+                <option value="">--Choisir un Vendeurs--</option>
                 <option v-for="u in users" :value="u.username">{{u.localisation}}</option>
               </select>
             </div>
@@ -41,17 +42,37 @@
               </div>
               <!-- SERIAL NUMBERS -->
               <div v-if="with_serial" v-for="input in parseInt(formData.quantite_materiel)" class="uk-margin-small">
-                <input type="text" class="uk-input uk-border-rounded" v-model="formData.serial_number[input-1]" :placeholder="'Serial Number '+input">
+                <input type="text" class="uk-input uk-border-rounded" v-model="formData.serial_number[input-1]" required :placeholder="'Serial Number '+input">
               </div>
               <!-- // -->
               <div class="uk-margin-small">
-                <label for="">Montant TTC</label>
+                <label for=""> <span uk-icon="icon : credit-card"></span> Montant TTC</label>
                 <input type="number" v-model="formData.montant_ttc" class="uk-input uk-border-rounded" value="">
               </div>
   					<button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
           </form>
           </li>
-          <li></li>
+          <li>
+            <!-- REABONNEMENT -->
+  					<form @submit.prevent="sendRapport('reabonnement')" class="uk-width-1-2@m">
+                <div class="uk-margin-small">
+                  <label for=""> <span uk-icon="icon : credit-card"></span> Montant TTC</label>
+                  <input type="number" v-model="formData.montant_ttc" class="uk-input uk-border-rounded">
+                </div>
+    					<div class="uk-margin-small">
+    						<div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
+    	            <label>
+    								<input type="radio" name="type_credit" value="cga" checked> CGA
+    							</label>
+    	            <label>
+    								<input type="radio" name="type_credit" value="rex"> REX
+    							</label>
+    	        </div>
+    				</div>
+    				<button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
+          </form>
+            <!-- // -->
+          </li>
           <li></li>
         </ul>
   </div>
@@ -65,7 +86,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
       Loading
     },
     created (){
-
+      this.isLoading = true
     },
     mounted() {
       this.getUsers()
@@ -81,7 +102,8 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           vendeurs : "",
           date : "",
           montant_ttc : 0,
-          serial_number : []
+          serial_number : [],
+          type_credit : "cga"
         },
         errors : []
       }
@@ -91,12 +113,14 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         try {
           let response = await axios.get('/user/all-vendeurs')
           this.users = response.data
+          this.isLoading = false
         } catch (e) {
             alert(e)
         }
       },
       sendRapport : async function (type) {
         this.isLoading = true
+
         this.formData._token = this.myToken
         try {
           if(type == 'recrutement') {
@@ -115,7 +139,19 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             }
           }
           else if(type == 'reabonnement') {
-
+            if(this.typeUser == 'admin') {
+              var response = await axios.post('/admin/send-rapport/reabonnement',this.formData)
+            }
+            else {
+              var response = await axios.post('/user/send-rapport/reabonnement',this.formData)
+            }
+            if(response.data == 'done') {
+              this.isLoading = false
+              UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Rapport ajoute :-)</div>")
+                .then(function () {
+                  location.reload()
+                })
+            }
           }
           else {
 
@@ -128,7 +164,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
               this.errors.push(errorTab[prop][0])
             }
           } else {
-              this.errors.push(error.response.data.message)
+              this.errors.push(error.response.data)
           }
         }
       }

@@ -57,6 +57,8 @@ Trait Rapports {
 
 				switch ($slug) {
 					case 'recrutement':
+
+
 					$validation = $request->validate([
 						'quantite_materiel'  =>  'required|min:1',
 						'montant_ttc' =>  'required|numeric|min:100000',
@@ -70,7 +72,9 @@ Trait Rapports {
 						'distinct'	=>	"Doublons repere!",
 						'exists'	=>	'Numero inexistant! : `:attribute`'
 					]);
-
+					return response()
+						->json($request);
+						die();
 					if(!$this->isExistRapportOnThisDate(new Carbon($request->input('date')),$request->input('vendeurs'))) {
 						// verifier si le solde cga existe pour le vendeur
 						if($this->isCgaDisponible($request->input("vendeurs"),$request->input('montant'))) {
@@ -139,8 +143,9 @@ Trait Rapports {
 					}
 					break;
 					case 'reabonnement':
+
 						$validation = $request->validate([
-							'montant_ttc' =>  'required|numeric',
+							'montant_ttc' =>  'required|numeric|min : 100000',
 							'vendeurs'   =>  'required|exists:users,username',
 							'date'  =>  'required|before_or_equal:'.(date("Y/m/d",strtotime("now")))
 						],[
@@ -148,6 +153,7 @@ Trait Rapports {
 							'numeric'  =>  '`:attribute` doit etre une valeur numeric',
 							'before_or_equal' =>  'Vous ne pouvez ajouter de rapport a cette date'
 						]);
+
 						if(!$this->isExistRapportOnThisDate(new Carbon($request->input('date')),$request->input('vendeurs'),'reabonnement')) {
 							if(($request->input('type_credit') == "cga") && $this->isCgaDisponible($request->input("vendeurs"),$request->input('montant'))) {
 
