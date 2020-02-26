@@ -4,13 +4,14 @@
         :can-cancel="false"
         :is-full-page="fullPage"></loading>
 
-  <!-- Erreor block -->
+  <!-- Error block -->
         <template v-if="errors.length" v-for="error in errors">
         <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert>
           <a href="#" class="uk-alert-close" uk-close></a>
           <p>{{error}}</p>
         </div>
       </template>
+      <!-- // -->
         <div class="uk-grid" uk-grid>
           <div class="uk-width-1-2@m">
             <div class="uk-margin-small">
@@ -154,7 +155,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             }
           }
           else {
-
+            
           }
         } catch (error) {
           this.isLoading = false

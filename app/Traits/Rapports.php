@@ -29,13 +29,16 @@ use App\Credit;
 use App\Promo;
 use App\TransactionCreditCentral;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
 
 Trait Rapports {
+
 	public function isExistRapportOnThisDate(Carbon $date,$vendeurs,$type = 'recrutement') {
 	  $temp = RapportVente::where([
 	    'date_rapport'  =>  $date->toDateTimeString(),
 	    'vendeurs'  =>  $vendeurs,
-			'type'	=>	$type
+			'type'	=>	$type,
+			'state'	=>	'unaborted'
 	    ])->first();
 	  if($temp) {
 	    return $temp;
@@ -46,8 +49,8 @@ Trait Rapports {
 	// AJOUTER UN RAPPORT
 
 	public function addRapport() {
-			$vendeurs = User::whereIn('type',['v_standart','v_da'])->get();
-			return view('admin.add-rapport-vente')->withVendeurs($vendeurs);
+		$vendeurs = User::whereIn('type',['v_standart','v_da'])->get();
+		return view('admin.add-rapport-vente')->withVendeurs($vendeurs);
 	}
 
 	// ENREGISTREMENT D'UN RAPPORT
@@ -58,10 +61,9 @@ Trait Rapports {
 				switch ($slug) {
 					case 'recrutement':
 
-
 					$validation = $request->validate([
 						'quantite_materiel'  =>  'required|min:1',
-						'montant_ttc' =>  'required|numeric|min:100000',
+						'montant_ttc' =>  'required|numeric|min:10000',
 						'vendeurs'   =>  'required|exists:users,username',
 						'date'  =>  'required|before_or_equal:'.(date("Y/m/d",strtotime("now"))),
 						'serial_number.*'	=>	'required|distinct|exists:exemplaire,serial_number'
@@ -143,7 +145,7 @@ Trait Rapports {
 					case 'reabonnement':
 
 						$validation = $request->validate([
-							'montant_ttc' =>  'required|numeric|min : 100000',
+							'montant_ttc' =>  'required|numeric|min : 10000',
 							'vendeurs'   =>  'required|exists:users,username',
 							'date'  =>  'required|before_or_equal:'.(date("Y/m/d",strtotime("now")))
 						],[
@@ -254,10 +256,12 @@ Trait Rapports {
 		return view('admin.list-rapport-vente');
 	}
 
-// HISTORIQUE DE REABONNE POUR L'ADMINISTRATEUR
+// HISTORIQUE DE RAPPORT POUR L'ADMINISTRATEUR
 		public function getAllRapport(RapportVente $r) {
 			try {
-				$all = $r->select()->orderBy('date_rapport','desc')->limit(500)->get();
+				$all = $r->select()
+					->orderBy('date_rapport','desc')
+					->limit(500)->get();
 				return response()
 					->json($this->organizeRapport($all));
 			} catch (AppException $e) {
@@ -282,7 +286,8 @@ Trait Rapports {
 				'montant_ttc' =>  number_format($value->montant_ttc),
 				'commission'  =>  number_format($value->commission),
 				'promo'	=>	$value->promo > 0 ? '' : 'hors promo',
-				'paiement_commission' =>  $value->statut_paiement_commission
+				'paiement_commission' =>  $value->statut_paiement_commission,
+				'state'	=>	$value->state
 			];
 		}
 		return $all;
@@ -291,6 +296,7 @@ Trait Rapports {
 public function totalCommission(RapportVente $r) {
 	try {
 		$commission = $r->whereIn('type',['recrutement','reabonnement'])
+			->where('state','unaborted')
 			->whereNull('pay_comission_id')
 			->sum('commission');
 		return response()->json($commission);
@@ -298,6 +304,46 @@ public function totalCommission(RapportVente $r) {
 		header("Erreur!",true,422);
 		die(json_encode($e->getMessage()));
 	}
+}
+#@@@@@@@@@@@@@ ANNULATION DE RAPPORT DE VENTE @@@@@@@@@@@@@@@@@@@
+// SUPPRIMER UN RAPPORT
+public function abortRapport(Request $request , RapportVente $r) {
+	$validation = $request->validate([
+		'id_rapport' => 'required|exists:rapport_vente,id_rapport'
+	]);
+	try {
+		// verification du mot de passe
+		if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
+			throw new AppException("Mot de passe Invalide!");
+		}
+
+		$rapport = RapportVente::find($request->input('id_rapport'));
+		// verifier si le rapport est deja annuler
+		if($rapport->state == 'aborted') {
+			throw new AppException("Ce rapport n'est plus valide!");
+		}
+		// recuperation du compte cga
+		$vendeurs = $rapport->vendeurs();
+		if($rapport->credit_utilise == 'cga') {
+			// REX
+			$cga = $vendeurs->cgaAccount();
+			$cga->solde += $rapport->montant_ttc;
+			$rapport->state = 'aborted';
+
+			// enregistrement de la notification
+			$this->sendNotification("Annulation de Rapport","Le rapport du ".$rapport->date_rapport." a ete annule",$vendeurs->username);
+			$this->sendNotification("Annulation de Rapport","Vous avez annule le rapport du ".$rapport->date_rapport." pour : ".$vendeurs->localisation,Auth::user()->username);
+			$cga->save();
+			$rapport->save();
+		} else {
+			// REX
+		}
+		return response()->json('done');
+	} catch (AppException $e) {
+		header("Unprocessable entity",true , 422);
+		die(json_encode($e->getMessage()));
+	}
+
 }
 
 }

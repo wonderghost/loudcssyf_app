@@ -12,6 +12,9 @@
 */
 
 Route::middleware(['auth','admin'])->group(function () {
+	// annulation de rapport de vente
+	Route::post('/admin/rapport/abort','AdminController@abortRapport');
+	//
 	Route::post('admin/search/{slug}','AdminController@SearchText');
 	// COMMANDES
 	Route::get('/admin/commandes','AdminController@allCommandes');
@@ -79,8 +82,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/add-depot/auto-complete','LogistiqueController@findMaterial');
 	// list des materieles
 	Route::get('/admin/list-material','LogistiqueController@listMaterial');
-	// Route::post('/admin/list-material','LogistiqueController@getListMaterial');
-	// Route::get('/admin/get-serialNumber','LogistiqueController@ListSerialNumber');
+
 	// editer les infos utilisateurs
 	Route::get('/admin/edit-users/{username}','AdminController@editUser');
 	Route::post('/admin/edit-users/{username}','AdminController@makeEditUser');

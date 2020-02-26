@@ -662,33 +662,4 @@ class AdminController extends Controller
     }
   }
 
-  // SUPPRIMER UN RAPPORT
-  public function removeRapport(Request $request) {
-    $validation = $request->validate([
-      'ref-0' => 'required|exists:rapport_vente,id_rapport'
-    ]);
-    try {
-      $rapport = RapportVente::find($request->input('ref-0'));
-      // recuperation du compte cga
-      $vendeurs = $rapport->vendeurs();
-      if($rapport->credit_utilise == 'cga') {
-        // REX
-        $cga = $vendeurs->cgaAccount();
-      } else {
-        // REX
-      }
-      // enregistrement de la notification
-      $this->sendNotification("Annulation de Rapport","Le rapport du ".$rapport->date_rapport." a ete annule",$vendeurs->username);
-      $this->sendNotification("Annulation de Rapport","Vous avez annule le rapport du ".$rapport->date_rapport." pour : ".$vendeurs->localisation,Auth::user()->username);
-
-      $cga->solde+= $rapport->montant_ttc;
-      $cga->save();
-      $rapport->delete();
-      return response()->json('done');
-    } catch (AppException $e) {
-      header("Unprocessable entity",true , 422);
-      die(json_encode($e->getMessage));
-    }
-
-  }
 }

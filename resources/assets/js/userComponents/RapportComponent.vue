@@ -5,12 +5,46 @@
         :is-full-page="fullPage"></loading>
     <template id="">
     <div class="uk-grid-small" uk-grid>
-
       <div class="uk-width-1-6@m">
         <label for="">Comission Totale</label>
         <input type="text" name="" :value="commission | numFormat" class="uk-input uk-border-rounded uk-text-center uk-text-lead" disabled>
       </div>
     </div>
+  </template>
+
+  <template v-if="typeUser == 'admin'" id="">
+    <div id="modal-abort-rapport" uk-modal="esc-close : false ; bg-close : false;">
+      <div class="uk-modal-dialog">
+          <div class="uk-modal-header">
+              <div class="uk-alert-warning" uk-alert>
+                <p>
+                  <span uk-icon="icon : warning"></span> Vous etes sur de vouloir annuler le rapport du : <span class="uk-text-bold">{{activRapport.date}}</span>
+                  pour : <span class="uk-text-bold">{{activRapport.vendeurs}}</span> en : <span class="uk-text-bold">{{activRapport.type}}</span> ?
+                </p>
+              </div>
+          </div>
+          <div class="uk-modal-body">
+            <!-- Error block -->
+              <template v-if="errors.length" v-for="error in errors">
+              <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+                <a href="#" class="uk-alert-close" uk-close></a>
+                <p>{{error}}</p>
+              </div>
+            </template>
+
+            <form @submit.prevent="abortRapport()">
+              <div class="uk-margin-small">
+                <label for="">Confirmez le mot de passe Administrateur</label>
+                <input type="password" v-model="abortRapportFormData.password_confirmation" class="uk-input uk-border-rounded" placeholder="Entrez votre mot de passe" autofocus>
+              </div>
+              <button type="submit" class="uk-button uk-button-small uk-button-primary uk-text-capitalize uk-border-rounded">Validez <span uk-icon="icon : check"></span> </button>
+            </form>
+          </div>
+          <div class="uk-modal-footer">
+            <button type="button" class="uk-modal-close uk-button uk-button-small uk-button-danger uk-text-capitalize uk-border-rounded">Fermer</button>
+          </div>
+      </div>
+  </div>
   </template>
 
     <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
@@ -29,14 +63,15 @@
               <th>Type</th>
               <th>Credit</th>
               <th>Quantite</th>
-              <th>Montant Ttc</th>
+              <th>Ttc</th>
               <th>Commission</th>
               <th>Promo</th>
               <th>Paiement Commission</th>
+              <th>-</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="rap in rapportVentes.slice(start,end)">
+            <tr v-for="rap in stateRapportVentes.slice(start,end)">
               <td>{{rap.date}}</td>
               <td>{{rap.vendeurs}}</td>
               <td>{{rap.type}}</td>
@@ -46,6 +81,11 @@
               <td>{{rap.commission}}</td>
               <td>{{rap.promo}}</td>
               <td>{{rap.paiement_commission}}</td>
+              <td>
+                <template v-if="typeUser == 'admin' && rap.paiement_commission == 'non_paye'" id="">
+                  <button @click="activRapport = rap" uk-toggle="target : #modal-abort-rapport" type="button" class="uk-button uk-button-small uk-border-rounded uk-button-danger uk-text-capitalize">Annuler</button>
+                </template>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -132,6 +172,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           if(this.typeUser == 'v_da') {
             this.getPayComissionListForVendeur()
           }
+
         },
         components : {
           Loading
@@ -148,10 +189,43 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             passwordConfirm : "",
             errors : [],
             success : false,
-            payComission : false
+            payComission : false,
+            activRapport : {},
+            abortRapportFormData : {
+              _token : "",
+              password_confirmation : "",
+              id_rapport : ""
+            }
           }
         },
         methods : {
+          abortRapport : async function () {
+            this.isLoading = true
+            UIkit.modal($("#modal-abort-rapport")).hide()
+            this.abortRapportFormData._token = this.myToken
+            this.abortRapportFormData.id_rapport = this.activRapport.id
+            try {
+              let response = await axios.post('/admin/rapport/abort',this.abortRapportFormData)
+              if(response.data == 'done') {
+                this.isLoading = false
+                UIkit.modal.alert("<div class='uk-alert-success' uk-alert>un Rapport Annule :-(</div>")
+                  .then(function () {
+                    location.reload()
+                  })
+              }
+            } catch (error) {
+              UIkit.modal($("#modal-abort-rapport")).show()
+              this.isLoading = false
+              if(error.response.data.errors) {
+                let errorTab = error.response.data.errors
+                for (var prop in errorTab) {
+                  this.errors.push(errorTab[prop][0])
+                }
+              } else {
+                  this.errors.push(error.response.data)
+              }
+            }
+          },
           getRapportVente : async function () {
             try {
               if(this.typeUser == 'admin') {
@@ -228,11 +302,16 @@ import 'vue-loading-overlay/dist/vue-loading.css';
               return rapport.type === this.typeRapp
             })
           },
+          stateRapportVentes () {
+            return this.rapportVentes.filter( (rapport) => {
+              return rapport.state === 'unaborted'
+            })
+          },
           typeUser () {
             return this.$store.state.typeUser
           },
           myToken () {
-            this.$store.state.myToken
+            return this.$store.state.myToken
           },
           payComissionList () {
             return this.$store.state.payComissionList

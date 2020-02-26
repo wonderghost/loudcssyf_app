@@ -55,7 +55,8 @@ class RapportControlleur extends Controller
 
   public function getAllRapportForVendeur(Request $request , RapportVente $r) {
     try {
-      $result = $r->where('vendeurs',$request->user()->username)->orderBy('date_rapport','desc')->get();
+      $result = $r->where('vendeurs',$request->user()->username)
+        ->orderBy('date_rapport','desc')->get();
       return response()
         ->json($this->organizeRapport($result));
     } catch (AppException $e) {
@@ -68,6 +69,7 @@ class RapportControlleur extends Controller
   public function totalCommissionVendeur(Request $request , RapportVente $r) {
     try {
       $commission = $r->whereIn('type',['recrutement','reabonnement'])
+        ->where('state','unaborted')
         ->where('vendeurs',$request->user()->username)
         ->whereNull('pay_comission_id')
         ->sum('commission');
