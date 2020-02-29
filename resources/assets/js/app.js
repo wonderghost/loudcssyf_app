@@ -30,6 +30,8 @@ Vue.component('ravitaillement-command',require('./userComponents/RavitaillementC
 Vue.component('livraison',require('./userComponents/LivraisonComponent.vue').default)
 Vue.component('inventory-depot',require('./userComponents/InventoryDepotComponent.vue').default)
 Vue.component('add-rapport',require('./adminComponents/AddRapportComponent.vue').default)
+Vue.component('afrocash',require('./userComponents/AfrocashComponent.vue').default)
+
 
 import Vue from 'vue'
 import Vuex from 'vuex'

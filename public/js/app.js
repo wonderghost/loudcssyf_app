@@ -3675,6 +3675,226 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/userComponents/AfrocashComponent.vue?vue&type=script&lang=js&":
+/*!***************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/assets/js/userComponents/AfrocashComponent.vue?vue&type=script&lang=js& ***!
+  \***************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vue_loading_overlay__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-loading-overlay */ "./node_modules/vue-loading-overlay/dist/vue-loading.min.js");
+/* harmony import */ var vue_loading_overlay__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(vue_loading_overlay__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var vue_loading_overlay_dist_vue_loading_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-loading-overlay/dist/vue-loading.css */ "./node_modules/vue-loading-overlay/dist/vue-loading.css");
+/* harmony import */ var vue_loading_overlay_dist_vue_loading_css__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(vue_loading_overlay_dist_vue_loading_css__WEBPACK_IMPORTED_MODULE_2__);
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  components: {
+    Loading: vue_loading_overlay__WEBPACK_IMPORTED_MODULE_1___default.a
+  },
+  created: function created() {},
+  mounted: function mounted() {
+    this.accountList();
+  },
+  data: function data() {
+    return {
+      isLoading: false,
+      fullPage: true,
+      AfrocashData: {
+        _token: "",
+        numero_compte_courant: "",
+        montant: 0,
+        password: "",
+        type_operation: ""
+      },
+      accounts: [],
+      errors: []
+    };
+  },
+  methods: {
+    accountList: function () {
+      var _accountList = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        var response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.prev = 0;
+                _context.next = 3;
+                return axios.get('/user/afrocash/get-account-list');
+
+              case 3:
+                response = _context.sent;
+                this.accounts = response.data;
+                _context.next = 10;
+                break;
+
+              case 7:
+                _context.prev = 7;
+                _context.t0 = _context["catch"](0);
+                alert(_context.t0);
+
+              case 10:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this, [[0, 7]]);
+      }));
+
+      function accountList() {
+        return _accountList.apply(this, arguments);
+      }
+
+      return accountList;
+    }(),
+    afrocashDepot: function () {
+      var _afrocashDepot = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var response, errorTab, prop;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                this.isLoading = true;
+                this.AfrocashData._token = this.myToken;
+                this.AfrocashData.type_operation = 'depot';
+                _context2.prev = 3;
+                _context2.next = 6;
+                return axios.post('/user/afrocash/transaction', this.AfrocashData);
+
+              case 6:
+                response = _context2.sent;
+
+                if (response.data == 'done') {
+                  UIkit.modal.alert("<div class='uk-alert-success' uk-alert><span uk-icon='icon : check'></span> Transaction effectue avec success !</div>").then(function () {
+                    location.reload();
+                  });
+                }
+
+                _context2.next = 14;
+                break;
+
+              case 10:
+                _context2.prev = 10;
+                _context2.t0 = _context2["catch"](3);
+                this.isLoading = false;
+
+                if (_context2.t0.response.data.errors) {
+                  errorTab = _context2.t0.response.data.errors;
+
+                  for (prop in errorTab) {
+                    this.errors.push(errorTab[prop][0]);
+                  }
+                } else {
+                  this.errors.push(_context2.t0.response.data);
+                }
+
+              case 14:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this, [[3, 10]]);
+      }));
+
+      function afrocashDepot() {
+        return _afrocashDepot.apply(this, arguments);
+      }
+
+      return afrocashDepot;
+    }()
+  },
+  computed: {
+    typeUser: function typeUser() {
+      return this.$store.state.typeUser;
+    },
+    myToken: function myToken() {
+      return this.$store.state.myToken;
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/userComponents/InventoryComponent.vue?vue&type=script&lang=js&":
 /*!****************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/assets/js/userComponents/InventoryComponent.vue?vue&type=script&lang=js& ***!
@@ -22623,6 +22843,356 @@ var staticRenderFns = [
         [_vm._v("annuler")]
       )
     ])
+  }
+]
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/userComponents/AfrocashComponent.vue?vue&type=template&id=e983a228&":
+/*!*******************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/assets/js/userComponents/AfrocashComponent.vue?vue&type=template&id=e983a228& ***!
+  \*******************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {},
+    [
+      _c("loading", {
+        attrs: {
+          active: _vm.isLoading,
+          "can-cancel": false,
+          "is-full-page": _vm.fullPage
+        },
+        on: {
+          "update:active": function($event) {
+            _vm.isLoading = $event
+          }
+        }
+      }),
+      _vm._v(" "),
+      _c(
+        "ul",
+        {
+          staticClass: "uk-subnav uk-subnav-pill",
+          attrs: { "uk-switcher": "animation: uk-animation-slide-bottom" }
+        },
+        [
+          _vm.typeUser == "v_standart" ? [_vm._m(0)] : _vm._e(),
+          _vm._v(" "),
+          _vm._m(1),
+          _vm._v(" "),
+          _vm._m(2)
+        ],
+        2
+      ),
+      _vm._v(" "),
+      _vm._l(_vm.errors, function(error) {
+        return _vm.errors.length
+          ? [
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-3@m",
+                  attrs: { "uk-alert": "" }
+                },
+                [
+                  _c("a", {
+                    staticClass: "uk-alert-close",
+                    attrs: { href: "#", "uk-close": "" }
+                  }),
+                  _vm._v(" "),
+                  _c("p", [_vm._v(_vm._s(error))])
+                ]
+              )
+            ]
+          : _vm._e()
+      }),
+      _vm._v(" "),
+      _c(
+        "ul",
+        { staticClass: "uk-switcher uk-margin" },
+        [
+          _vm.typeUser == "v_standart"
+            ? [
+                _c("li", [
+                  _c("h3", [_vm._v("Effectuez un depot")]),
+                  _vm._v(" "),
+                  _c(
+                    "form",
+                    {
+                      staticClass: "uk-width-1-3@m",
+                      on: {
+                        submit: function($event) {
+                          $event.preventDefault()
+                          return _vm.afrocashDepot()
+                        }
+                      }
+                    },
+                    [
+                      _c("div", { staticClass: "uk-margin-small" }, [
+                        _vm._m(3),
+                        _vm._v(" "),
+                        _c(
+                          "select",
+                          {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.AfrocashData.numero_compte_courant,
+                                expression: "AfrocashData.numero_compte_courant"
+                              }
+                            ],
+                            staticClass: "uk-select uk-border-rounded",
+                            on: {
+                              change: function($event) {
+                                var $$selectedVal = Array.prototype.filter
+                                  .call($event.target.options, function(o) {
+                                    return o.selected
+                                  })
+                                  .map(function(o) {
+                                    var val = "_value" in o ? o._value : o.value
+                                    return val
+                                  })
+                                _vm.$set(
+                                  _vm.AfrocashData,
+                                  "numero_compte_courant",
+                                  $event.target.multiple
+                                    ? $$selectedVal
+                                    : $$selectedVal[0]
+                                )
+                              }
+                            }
+                          },
+                          [
+                            _c("option", { attrs: { value: "" } }, [
+                              _vm._v("--Selectionnez le vendeur--")
+                            ]),
+                            _vm._v(" "),
+                            _vm._l(_vm.accounts, function(a) {
+                              return _c(
+                                "option",
+                                { domProps: { value: a.numero_compte } },
+                                [_vm._v(_vm._s(a.vendeurs))]
+                              )
+                            })
+                          ],
+                          2
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "uk-margin-small" }, [
+                        _vm._m(4),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.AfrocashData.montant,
+                              expression: "AfrocashData.montant"
+                            }
+                          ],
+                          staticClass: "uk-border-rounded uk-input",
+                          attrs: {
+                            type: "number",
+                            min: "100000",
+                            placeholder: "Entrez le montant"
+                          },
+                          domProps: { value: _vm.AfrocashData.montant },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.AfrocashData,
+                                "montant",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        })
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "uk-margin-small" }, [
+                        _vm._m(5),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.AfrocashData.password,
+                              expression: "AfrocashData.password"
+                            }
+                          ],
+                          staticClass: "uk-input uk-border-rounded",
+                          attrs: {
+                            type: "password",
+                            placeholder: "Entrez votre de mot de passe"
+                          },
+                          domProps: { value: _vm.AfrocashData.password },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.AfrocashData,
+                                "password",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        })
+                      ]),
+                      _vm._v(" "),
+                      _vm._m(6)
+                    ]
+                  )
+                ])
+              ]
+            : _vm._e(),
+          _vm._v(" "),
+          _vm._m(7),
+          _vm._v(" "),
+          _vm._m(8)
+        ],
+        2
+      )
+    ],
+    2
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("li", [
+      _c(
+        "a",
+        {
+          staticClass:
+            "uk-button uk-button-small uk-border-rounded uk-box-shadow-small ",
+          attrs: { href: "#" }
+        },
+        [
+          _c("span", { attrs: { "uk-icon": "icon : arrow-down" } }),
+          _vm._v(" Depots")
+        ]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("li", [
+      _c(
+        "a",
+        {
+          staticClass:
+            "uk-button uk-button-small uk-border-rounded uk-box-shadow-small ",
+          attrs: { href: "#" }
+        },
+        [
+          _c("span", { attrs: { "uk-icon": "icon : shrink" } }),
+          _vm._v(" Transfert Courant")
+        ]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("li", [
+      _c(
+        "a",
+        {
+          staticClass:
+            "uk-button uk-button-small uk-border-rounded uk-box-shadow-small ",
+          attrs: { href: "#" }
+        },
+        [
+          _c("span", { attrs: { "uk-icon": "icon : arrow-up" } }),
+          _vm._v(" Retrait")
+        ]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("label", { attrs: { for: "" } }, [
+      _c("span", { attrs: { "uk-icon": "icon : users" } }),
+      _vm._v(" Vendeur")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("label", { attrs: { for: "" } }, [
+      _c("span", { attrs: { "uk-icon": "icon : credit-card" } }),
+      _vm._v(" Montant")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("label", { attrs: { for: "" } }, [
+      _c("span", { attrs: { "uk-icon": "icon : lock" } }),
+      _vm._v(" Mot de passe")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass:
+          "uk-button uk-button-small uk-button-primary uk-border-rounded",
+        attrs: { type: "submit", name: "button" }
+      },
+      [_vm._v("Envoyez "), _c("span", { attrs: { "uk-icon": "icon : check" } })]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("li", [
+      _c("h3", [_vm._v("Effectuez une transaction")]),
+      _vm._v(" "),
+      _c("form", { staticClass: "uk-width-1-3@m" })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("li", [_c("h3", [_vm._v("Effectuez un retrait")])])
   }
 ]
 render._withStripped = true
@@ -48251,6 +48821,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.component('ravitaillement-command', _
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.component('livraison', __webpack_require__(/*! ./userComponents/LivraisonComponent.vue */ "./resources/assets/js/userComponents/LivraisonComponent.vue")["default"]);
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.component('inventory-depot', __webpack_require__(/*! ./userComponents/InventoryDepotComponent.vue */ "./resources/assets/js/userComponents/InventoryDepotComponent.vue")["default"]);
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.component('add-rapport', __webpack_require__(/*! ./adminComponents/AddRapportComponent.vue */ "./resources/assets/js/adminComponents/AddRapportComponent.vue")["default"]);
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.component('afrocash', __webpack_require__(/*! ./userComponents/AfrocashComponent.vue */ "./resources/assets/js/userComponents/AfrocashComponent.vue")["default"]);
 
 
 
@@ -48347,6 +48918,75 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
   actions: {}
 });
 /* harmony default export */ __webpack_exports__["default"] = (store);
+
+/***/ }),
+
+/***/ "./resources/assets/js/userComponents/AfrocashComponent.vue":
+/*!******************************************************************!*\
+  !*** ./resources/assets/js/userComponents/AfrocashComponent.vue ***!
+  \******************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _AfrocashComponent_vue_vue_type_template_id_e983a228___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AfrocashComponent.vue?vue&type=template&id=e983a228& */ "./resources/assets/js/userComponents/AfrocashComponent.vue?vue&type=template&id=e983a228&");
+/* harmony import */ var _AfrocashComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AfrocashComponent.vue?vue&type=script&lang=js& */ "./resources/assets/js/userComponents/AfrocashComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _AfrocashComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _AfrocashComponent_vue_vue_type_template_id_e983a228___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _AfrocashComponent_vue_vue_type_template_id_e983a228___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/assets/js/userComponents/AfrocashComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/assets/js/userComponents/AfrocashComponent.vue?vue&type=script&lang=js&":
+/*!*******************************************************************************************!*\
+  !*** ./resources/assets/js/userComponents/AfrocashComponent.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AfrocashComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./AfrocashComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/userComponents/AfrocashComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AfrocashComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/assets/js/userComponents/AfrocashComponent.vue?vue&type=template&id=e983a228&":
+/*!*************************************************************************************************!*\
+  !*** ./resources/assets/js/userComponents/AfrocashComponent.vue?vue&type=template&id=e983a228& ***!
+  \*************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AfrocashComponent_vue_vue_type_template_id_e983a228___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./AfrocashComponent.vue?vue&type=template&id=e983a228& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/userComponents/AfrocashComponent.vue?vue&type=template&id=e983a228&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AfrocashComponent_vue_vue_type_template_id_e983a228___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AfrocashComponent_vue_vue_type_template_id_e983a228___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
 
 /***/ }),
 

@@ -307,6 +307,31 @@ Trait Afrocashes {
 		$afrocash_compte = Afrocash::where('type','courant')->whereIn('vendeurs',User::select('username')->whereIn('type',['v_da','v_standart']))->get();
 		return view('afrocash.operations')->withComptes($afrocash_compte);
 	}
+
+	#@@@ get account list
+	public function getAccountList(Afrocash $a,User $u) {
+		try {
+			$temp = $a->select(['numero_compte','vendeurs'])->where('type','courant')
+				->whereIn('vendeurs',$u->select('username')
+					->whereIn('type',['v_da','v_standart']))
+				->get();
+			return response()
+				->json($this->organizeAccountList($temp));
+		}catch (AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
+	public function organizeAccountList($data) {
+		$all =[];
+		foreach($data as $key => $value) {
+			$all [$key] =[
+				'numero_compte'	=>	$value->numero_compte ,
+				'vendeurs'	=>	$value->vendeurs()->localisation
+			];
+		}
+		return $all;
+	}
 // ENVOI DES TRANSACTION AFROCASH
 	public function sendDepot(Request $request) {
 
@@ -316,8 +341,11 @@ Trait Afrocashes {
 				$validation = $request->validate([
 						'type_operation'	=>	'required|string',
 						'numero_compte_courant'	=>	'required|string|exists:afrocashes,numero_compte',
-						'montant'	=>	'required',
+						'montant'	=>	'required|numeric|min:50000',
 						'password'	=>	'required|string'
+				],[
+					'required'	=>	'Champ(s) `:attribute` requis!',
+					'exists'	=>	'Compte afrocash inexistant'
 				]);
 
 				if(!Afrocash::where([
@@ -374,7 +402,9 @@ Trait Afrocashes {
 									// $this->sendNotificationForGestionnaire("Depot Afrocash" , "Depot de  ".number_format($request->input('montant'))." GNF effectué",$vendeurs);
 									$this->sendNotification("Depot Afrocash" , "Reception de ".number_format($request->input('montant'))." GNF de la part de ".Auth::user()->localisation,$vendeurs);
 									$this->sendNotification("Depot Afrocash" , "Vous avez effectue un depot de ".number_format($request->input('montant'))." GNF pour ".User::where('username',$vendeurs)->first()->localisation,Auth::user()->username);
-									return redirect('/user/afrocash')->withSuccess("Success!");
+
+									return response()
+										->json('done');
 
 							} else {
 								throw new AppException("Mot de passe Invalide!");
@@ -436,7 +466,9 @@ Trait Afrocashes {
 								 // $this->sendNotificationForGestionnaire("Transfert Afrocash" , "Transaction de  ".number_format($request->input('montant'))." GNF effectué",$request->input('vendeurs'));
 								 $this->sendNotification("Transfert Afrocash" , "Reception de ".number_format($request->input('montant'))." GNF de la part de ".Auth::user()->localisation,$request->input('vendeurs'));
 								 $this->sendNotification("Transfert Afrocash" , "Vous avez effectue un transfert de ".number_format($request->input('montant'))." GNF pour ".User::where('username',$request->input('vendeurs'))->first()->localisation,Auth::user()->username);
-								 return redirect('/user/afrocash')->withSuccess("Success!");
+
+								 return response()
+								 	->json('done');
 						 }
 						 else {
 							 throw new AppException("Mot de passe Invalide !");
@@ -455,7 +487,8 @@ Trait Afrocashes {
 				 dd($request);
 			 }
 		} catch (AppException $e) {
-				return back()->with('_error',$e->getMessage());
+				header("Erreur",true,422);
+				die(json_encode($e->getMessage()));
 		}
 
 	}
