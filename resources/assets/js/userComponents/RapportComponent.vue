@@ -3,6 +3,7 @@
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"></loading>
+
     <template id="">
     <div class="uk-grid-small" uk-grid>
       <div class="uk-width-1-6@m">
@@ -53,7 +54,31 @@
         <li><a @click="typeRapp = 'migration' , payComission = false" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-hover-small" href="#">Migration</a></li>
         <li><a @click="payComission = true" v-if="typeUser == 'v_da'" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-hover-small" href="#">Paiement Comission</a></li>
     </ul>
+
     <template v-if="!payComission" id="">
+
+      <template id="">
+        <div class="uk-grid-divider" uk-grid>
+
+          <div class="uk-width-1-5@m">
+            <label for=""> <span uk-icon="icon : tag"></span> Etat</label>
+            <select class="uk-select uk-border-rounded" v-model="stateRapp">
+              <option value="unaborted">valide</option>
+              <option value="aborted">invalide</option>
+            </select>
+          </div>
+
+          <div v-if="typeUser == 'admin' || typeUser == 'controleur'" class="uk-width-1-5@m">
+            <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
+            <select class="uk-select uk-border-rounded" v-model="filterUser">
+              <option value="">Tous les vendeurs</option>
+              <option v-for="u in users" :value="u.localisation"> {{u.localisation}} </option>
+            </select>
+          </div>
+
+        </div>
+      </template>
+
       <div class="">
         <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small uk-table-responsive">
           <thead>
@@ -71,7 +96,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="rap in stateRapportVentes.slice(start,end)">
+            <tr v-for="rap in rappWithUser.slice(start,end)">
               <td>{{rap.date}}</td>
               <td>{{rap.vendeurs}}</td>
               <td>{{rap.type}}</td>
@@ -169,6 +194,10 @@ import 'vue-loading-overlay/dist/vue-loading.css';
       },
         mounted() {
           this.getRapportVente()
+          if(this.typeUser == 'admin') {
+            this.allUsers()
+          }
+
           if(this.typeUser == 'v_da') {
             this.getPayComissionListForVendeur()
           }
@@ -195,10 +224,21 @@ import 'vue-loading-overlay/dist/vue-loading.css';
               _token : "",
               password_confirmation : "",
               id_rapport : ""
-            }
+            },
+            stateRapp : "unaborted",
+            filterUser : "",
+            users : []
           }
         },
         methods : {
+          allUsers : async function () {
+            try {
+              let response = await axios.get('/admin/all-vendeurs')
+              this.users = response.data
+            } catch (e) {
+                alert(e)
+            }
+          },
           abortRapport : async function () {
             this.isLoading = true
             UIkit.modal($("#modal-abort-rapport")).hide()
@@ -297,6 +337,12 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           }
         },
         computed : {
+          rappWithUser () {
+            return this.stateRapportVentes.filter( (rapport) => {
+              return rapport.vendeurs.match(this.filterUser) 
+            })
+          }
+          ,
           rapportVentes () {
             return this.$store.state.rapportVentes.filter( (rapport) => {
               return rapport.type === this.typeRapp
@@ -304,7 +350,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           },
           stateRapportVentes () {
             return this.rapportVentes.filter( (rapport) => {
-              return rapport.state === 'unaborted'
+              return rapport.state === this.stateRapp
             })
           },
           typeUser () {
