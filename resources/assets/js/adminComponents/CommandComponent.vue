@@ -8,9 +8,40 @@
         <li><a @click="start=0 , end=10 , currentPage = 1" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiel</a></li>
         <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Livraison</a></li>
         <li><a v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'v_da' || typeUser == 'v_standart'" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Credit</a></li>
+
+
     </ul>
     <ul class="uk-switcher uk-margin">
 			<li>
+        <!-- AFROCASH -->
+        <template id="" v-if="typeUser == 'logistique'">
+          <!-- modal retour afrocash -->
+          <div id="modal-retour-afrocash" uk-modal>
+              <div class="uk-modal-dialog">
+                  <div class="uk-modal-header">
+                      <h3 class="uk-modal-title"> <span uk-icon="icon : reply"></span> Retour Afrocash</h3>
+                  </div>
+                  <div class="uk-modal-body">
+                    
+                  </div>
+                  <div class="uk-modal-footer">
+                    <button type="button" class="uk-modal-close uk-button uk-button-small uk-button-danger uk-border-rounded">Fermer</button>
+                  </div>
+              </div>
+          </div>
+          <!-- // -->
+          <div class="uk-grid" uk-grid>
+            <div class="uk-width-1-4@m">
+              <div class="uk-margin-small">
+                <label for=""> <span uk-icon="icon : credit-card"></span> Solde (GNF)</label>
+                <span class="uk-input uk-border-rounded uk-text-center uk-text-bold">{{ afrocashLogistique.solde | numFormat}}</span>
+              </div>
+                <button uk-toggle="target : #modal-retour-afrocash" type="button" class="uk-button uk-button-primary uk-align-right uk-border-rounded uk-button-small">retour afrocash <span uk-icon="icon : reply"></span> </button>
+            </div>
+            <div class="uk-width-1-4@m"></div>
+          </div>
+        </template>
+        <!-- LOGISTIQUE -->
         <ul class="uk-tab" uk-switcher="animation : uk-animation-slide-right">
           <li> <a href="#" @click="filterCommande('en attente')">En attente de confirmation</a> </li>
           <li> <a href="#" @click="filterCommande('confirmer')">Deja confirmee</a> </li>
@@ -64,6 +95,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       },
         mounted() {
           this.getMaterialCommande()
+          this.getSoldeLogistique()
         },
         components : {
           Loading
@@ -78,10 +110,19 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             end : 10,
             currentPage : 1,
             isLoading : false,
-            fullPage : true
+            fullPage : true,
+            afrocashLogistique : {}
           }
         },
         methods : {
+          getSoldeLogistique : async function () {
+            try {
+              let response = await axios.get('/user/logistique/afrocash-solde')
+              this.afrocashLogistique = response.data
+            } catch (e) {
+                alert(e)
+            }
+          },
           getMaterialCommande : async function () {
             try {
               if(this.typeUser == 'admin') {

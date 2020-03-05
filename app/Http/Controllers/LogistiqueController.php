@@ -838,6 +838,16 @@ class LogistiqueController extends Controller
       header("Erreur",true,422);
       die(json_encode($e->getMessage()));
     }
-
+  }
+  // @@@ get Solde Afrocash Logistique
+  public function getSoldeLogistique(Request $request) {
+    try {
+      return response()
+        ->json($request->user()->afrocashAccount());
+    }
+    catch (AppException $e) {
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
+    }
   }
 }

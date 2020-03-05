@@ -43,6 +43,10 @@ class User extends Authenticatable
       return  CgaAccount::where('vendeur',$this->username)->first();
     }
 
+    public function afrocashAccount() {
+      return $this->hasMany('App\Afrocash','vendeurs','username')->first();
+    }
+
     public function afroCash($type = 'courant') {
       return $this->hasOne('App\Afrocash','vendeurs','username')->where("type",$type);
     }

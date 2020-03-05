@@ -162,6 +162,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/confirm-command/{id}','LogistiqueController@confirmCommand')->middleware('logistique');
 	// 	LISTE DES COMMANDES
 	Route::get('/user/commandes','LogistiqueController@allCommandes')->middleware('logistique');
+	Route::get('/user/logistique/afrocash-solde','LogistiqueController@getSoldeLogistique')->middleware('logistique');	//Recuperation du solde afrocash de la logistique
 	Route::get('/logistique/commandes/all','AdminController@getAllCommandes')->middleware('logistique');
 	Route::get('/logistique/commandes/livraison','AdminController@getAllLivraison')->middleware('logistique');
 	Route::get('/user/commandes/livraison','AdminController@getAllLivraison');
