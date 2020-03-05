@@ -10,55 +10,56 @@
             <p>{{error}}</p>
           </div>
         </template>
-
-        <form @submit.prevent="sendRavitaillement()">
-          <!-- SELECT VENDEURS -->
-          <div class="uk-grid-small" uk-grid>
-              <div class="uk-width-1-3@m">
-                <label>Vendeur</label>
-                <input type="text" disabled class="uk-input uk-border-rounded" :value="commande.vendeurs_localisation">
-              </div>
-              <div class="uk-width-1-6@m">
-                <label>Parabole du</label>
-                <input type="text" class="uk-input uk-border-rounded" disabled :value="commande.parabole_du">
-              </div>
-              <div class="uk-width-1-5@m">
-                  <label>Terminal restant</label>
-                  <input type="text" class="uk-input uk-border-rounded" disabled :value="commande.restant_ravit.terminal">
-              </div>
-              <div class="uk-width-1-5@m">
-                <label for="">Parabole restant</label>
-                <input type="text" class="uk-input uk-border-rounded" disabled :value="commande.restant_ravit.parabole">
-              </div>
-            <!-- SELECT MATERIAL -->
-            <div class="uk-width-1-6@m">
-              <label for="">Materiel</label>
-              <select  class="uk-select uk-border-rounded" v-model="formData.produit">
-                <option value="">--Materiel--</option>
-                <option v-for="p in commande.materials" :value="p.reference"> {{p.libelle}}</option>
-              </select>
-            </div>
-            <!-- SELECT DEPOT -->
+    <template id="">
+      <form @submit.prevent="sendRavitaillement()">
+        <!-- SELECT VENDEURS -->
+        <div class="uk-grid-small" uk-grid>
             <div class="uk-width-1-3@m">
-              <label for="">Depot</label>
-              <select id="depot" class="uk-select uk-border-rounded" v-model="formData.depot">
-                <option value="">-- Choisissez un depot --</option>
-                <option :value="dep.localisation"  v-for="dep in depots">{{dep.localisation}} | Terminal : {{dep.terminal}} | Parabole: {{dep.parabole}}</option>
-              </select>
+              <label>Vendeur</label>
+              <input type="text" disabled class="uk-input uk-border-rounded" :value="commande.vendeurs_localisation">
             </div>
+            <div class="uk-width-1-6@m">
+              <label>Parabole du</label>
+              <input type="text" class="uk-input uk-border-rounded" disabled :value="commande.parabole_du">
+            </div>
+            <div class="uk-width-1-5@m">
+                <label>Terminal restant</label>
+                <input type="text" class="uk-input uk-border-rounded" disabled :value="commande.restant_ravit.terminal">
+            </div>
+            <div class="uk-width-1-5@m">
+              <label for="">Parabole restant</label>
+              <input type="text" class="uk-input uk-border-rounded" disabled :value="commande.restant_ravit.parabole">
+            </div>
+          <!-- SELECT MATERIAL -->
           <div class="uk-width-1-6@m">
-            <label>Quantite</label>
-            <input type="number" required min="1" class="uk-input uk-border-rounded" v-model="formData.quantite">
+            <label for="">Materiel</label>
+            <select  class="uk-select uk-border-rounded" v-model="formData.produit">
+              <option value="">--Materiel--</option>
+              <option v-for="p in commande.materials" :value="p.reference"> {{p.libelle}}</option>
+            </select>
           </div>
-          <div class="uk-width-1-6@m">
-            <label>Compense</label>
-            <input type="text" class="uk-input uk-border-rounded" v-model="formData.compense">
+          <!-- SELECT DEPOT -->
+          <div class="uk-width-1-3@m">
+            <label for="">Depot</label>
+            <select id="depot" class="uk-select uk-border-rounded" v-model="formData.depot">
+              <option value="">-- Choisissez un depot --</option>
+              <option :value="dep.localisation"  v-for="dep in depots">{{dep.localisation}} | Terminal : {{dep.terminal}} | Parabole: {{dep.parabole}}</option>
+            </select>
           </div>
-          <div class="uk-width-1-1@m">
-            <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small">valider <span uk-icon="icon:check;ratio:.8"></span></button>
-          </div>
-          </div>
-        </form>
+        <div class="uk-width-1-6@m">
+          <label>Quantite</label>
+          <input type="number" required min="1" class="uk-input uk-border-rounded" v-model="formData.quantite">
+        </div>
+        <div class="uk-width-1-6@m">
+          <label>Compense</label>
+          <input type="text" class="uk-input uk-border-rounded" v-model="formData.compense">
+        </div>
+        <div class="uk-width-1-1@m">
+          <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small">valider <span uk-icon="icon:check;ratio:.8"></span></button>
+        </div>
+        </div>
+      </form>
+    </template>
   </div>
 </template>
 

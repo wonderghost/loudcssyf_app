@@ -67,19 +67,22 @@ class LogistiqueController extends Controller
     }
     // ravitailler un depot
     public function ravitaillerDepot() {
-      $materiel = Produits::all();
-      $depot = Depots::all();
-      return view('logistique.ravitailler-depot')->withMateriel($materiel)
-        ->withDepots($depot);
+      return view('logistique.ravitailler-depot');
     }
 
     // Ravitaillement des depot par le responsable logistique
 
     public function sendRavitaillementDepot(Request $request) {
+
       $validationRules = $request->validate([
         'produit' =>  'required|string|exists:produits,reference',
         'depot' =>  'required|string|exists:depots,localisation',
-        'quantite'  =>  'required|min:1'
+        'quantite'  =>  'required|min:1',
+        'serials.*' =>  'distinct|unique:exemplaire,serial_number'
+      ],[
+        'distinct'  =>  'Champs :attribute a ete duplique',
+        'required'  =>  'Champs :attribute obligatoire',
+        'unique'  =>  'Champs :attribute existant'
       ]);
 
       try {
@@ -87,12 +90,72 @@ class LogistiqueController extends Controller
         if($this->isQuantiteValidInDepotCentral($request->input('produit'),$request->input('quantite'))) {
           // verifier si le serial_number existe
           if($this->isWithSerialNumber($request->input('produit'))) {
+
             session([
               'quantite'  =>  $request->input('quantite'),
               'produit' =>  $request->input('produit'),
               'depot' =>  $request->input('depot')
             ]);
-            return redirect('/user/add-material/complete-registration');
+            #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@22222
+            $produit = Produits::find(session('produit'));
+
+            // ENREGISTREMENT DES SERIAL NUMBER
+            for($i=0;$i<session('quantite');$i++) {
+
+                DB::table('exemplaire')->insert(
+                    [
+                        'serial_number' => $request->input("serials")[$i],
+                        'produit' => $produit->reference
+                    ]
+                );
+                DB::table('stock_central')->insert(
+                    [
+                        'exemplaire' => $request->input("serials")[$i],
+                        'depot' => session('depot')
+                    ]
+                );
+            }
+            // ENREGISTREMENT DANS LE STOCK PRIME
+            $entreeDepot = new RavitaillementDepot;
+            $entreeDepot->produit = $produit->reference;
+            $entreeDepot->depot = session('depot');
+            $entreeDepot->quantite = session('quantite');
+
+            if($prod = $this->isInStock($produit->reference,session('depot'))) {
+                //LE PRODUIT EST DEJA PRESENT ON AUGMENTE LA QUANTITE
+                $_quantite = $prod->quantite;
+                $_quantite += session('quantite');
+                StockPrime::select()->where('produit',$produit->reference)->where('depot',session('depot'))->update([
+                    'quantite'=> $_quantite
+                ]);
+
+            } else {
+                // LE PRODUIT N'EST PAS PRESENT ON L'AJOUTE
+                $stockPrime = new StockPrime;
+                $stockPrime->produit = $produit->reference;
+                $stockPrime->depot = session('depot');
+                $stockPrime->quantite = session('quantite');
+                $stockPrime->save();
+            }
+            // modification dans le depot central
+            $newQuantite = $produit->quantite_centrale - session('quantite');
+            $produit->quantite_centrale = $newQuantite;
+            // ENVOI DE LA NOTIFICATION
+            $_depot = Depots::find(session('depot'));
+
+            $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".session('depot'),Auth::user()->username);
+            $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".session('depot'),$_depot->vendeurs);
+            $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".session('depot'),User::where("type",'admin')->first()->username);
+            $entreeDepot->save();
+            $produit->save();
+            session()->forget(['produit','quantite','depot']);
+
+            return response()->json('done');
+
+
+
+            #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
           } else {
             // le numero de serie n'existe pas
 
@@ -131,14 +194,17 @@ class LogistiqueController extends Controller
             $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".$request->input('depot'),$_depot->vendeurs);
             $entreeDepot->save();
             $produit->save();
-            return redirect("/user/list-material")->withSuccess("Success!");
+            // return redirect("/user/list-material")->withSuccess("Success!");
+            return response()
+              ->json('done');
           }
         } else {
           throw new AppException("Quantite indisponible");
         }
 
       } catch (AppException $e) {
-        return back()->with("_errors",$e->getMessage());
+          header("Erreur",true,422);
+          die(json_encode($e->getMessage()));
       }
 
     }
@@ -211,60 +277,7 @@ class LogistiqueController extends Controller
     }
 
     public function completRegistrationFinal(Request $request) {
-        $produit = Produits::find(session('produit'));
-        // return response()->json($produit);
 
-        // ENREGISTREMENT DES SERIAL NUMBER
-        for($i=0;$i<session('quantite');$i++) {
-
-            DB::table('exemplaire')->insert(
-                [
-                    'serial_number' => $request->input("serial-number-".($i+1)),
-                    'produit' => $produit->reference
-                ]
-            );
-            DB::table('stock_central')->insert(
-                [
-                    'exemplaire' => $request->input("serial-number-".($i+1)),
-                    'depot' => session('depot')
-                ]
-            );
-        }
-        // ENREGISTREMENT DANS LE STOCK PRIME
-        $entreeDepot = new RavitaillementDepot;
-        $entreeDepot->produit = $produit->reference;
-        $entreeDepot->depot = session('depot');
-        $entreeDepot->quantite = session('quantite');
-
-        if($prod = $this->isInStock($produit->reference,session('depot'))) {
-            //LE PRODUIT EST DEJA PRESENT ON AUGMENTE LA QUANTITE
-            $_quantite = $prod->quantite;
-            $_quantite += session('quantite');
-            StockPrime::select()->where('produit',$produit->reference)->where('depot',session('depot'))->update([
-                'quantite'=> $_quantite
-            ]);
-
-        } else {
-            // LE PRODUIT N'EST PAS PRESENT ON L'AJOUTE
-            $stockPrime = new StockPrime;
-            $stockPrime->produit = $produit->reference;
-            $stockPrime->depot = session('depot');
-            $stockPrime->quantite = session('quantite');
-            $stockPrime->save();
-        }
-        // modification dans le depot central
-        $newQuantite = $produit->quantite_centrale - session('quantite');
-        $produit->quantite_centrale = $newQuantite;
-        // ENVOI DE LA NOTIFICATION
-        $_depot = Depots::find(session('depot'));
-
-        $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".session('depot'),Auth::user()->username);
-        $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".session('depot'),$_depot->vendeurs);
-        $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".session('depot'),User::where("type",'admin')->first()->username);
-        $entreeDepot->save();
-        $produit->save();
-        session()->forget(['produit','quantite','depot']);
-        return response()->json('success');
     }
 
 
@@ -815,5 +828,16 @@ class LogistiqueController extends Controller
       header("Erreur",true,422);
       die(json_encode($e->getMessage()));
     }
+  }
+  // @@@@@@ get material @@@@@@@@@///
+  public function getMateriel(Produits $p) {
+    try {
+      return response()
+        ->json($p->select(['reference','libelle','with_serial'])->get());
+    } catch (AppException $e) {
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
+    }
+
   }
 }
