@@ -49,8 +49,24 @@
             <li>
               <h3>Effectuez une transaction</h3>
               <!-- TRANSACTION COURANT -->
-              <form class="uk-width-1-3@m">
 
+              <form @submit.prevent="afrocashTransfertCourant()" class="uk-width-1-3@m">
+                <div class="uk-margin-small">
+                  <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
+                  <select class="uk-select uk-border-rounded" v-model="AfrocashCourant.vendeurs">
+                    <option value="">-- Destinataire --</option>
+                    <option :value="a.id_vendeurs" v-for="a in accounts">{{ a.vendeurs }}</option>
+                  </select>
+                </div>
+                <div class="uk-margin-small">
+                  <label for=""> <span uk-icon="icon : credit-card"></span> Montant</label>
+                  <input type="number" min="10000" required class="uk-input uk-border-rounded" v-model="AfrocashCourant.montant"  placeholder="Entrez le montant">
+                </div>
+                <div class="uk-margin-small">
+                  <label><span uk-icon="icon : lock"></span> Confirmez le mot de passe</label>
+                  <input type="password" class="uk-input uk-border-rounded" v-model="AfrocashCourant.password" placeholder="Entrez votre mot de passe">
+                </div>
+                <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez <span uk-icon="icon : check"></span> </button>
               </form>
               <!-- // -->
             </li>
@@ -88,6 +104,13 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           password : "",
           type_operation : ""
         },
+        AfrocashCourant : {
+          _token : "",
+          vendeurs : "",
+          montant : 0,
+          password : "",
+          type_operation : "transfert_courant"
+        },
         accounts : [],
         errors : []
       }
@@ -114,6 +137,32 @@ import 'vue-loading-overlay/dist/vue-loading.css';
               })
           }
         } catch (error) {
+          this.isLoading = false
+          if(error.response.data.errors) {
+            let errorTab = error.response.data.errors
+            for (var prop in errorTab) {
+              this.errors.push(errorTab[prop][0])
+            }
+          } else {
+              this.errors.push(error.response.data)
+          }
+        }
+      },
+      afrocashTransfertCourant : async function () {
+        this.isLoading = true
+        this.AfrocashCourant._token = this.myToken
+
+        try {
+          let response = await axios.post('/user/afrocash/transaction',this.AfrocashCourant)
+          if(response.data == 'done') {
+            this.isLoading = false
+            UIkit.modal.alert("<div class='uk-alert-success uk-border-rounded' uk-alert><span uk-icon='icon : check'></span> Transaction effectue avec success!</div>")
+              .then(function () {
+                location.reload()
+              })
+          }
+        }
+        catch (error) {
           this.isLoading = false
           if(error.response.data.errors) {
             let errorTab = error.response.data.errors

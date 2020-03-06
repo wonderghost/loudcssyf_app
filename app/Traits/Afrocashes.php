@@ -327,7 +327,8 @@ Trait Afrocashes {
 		foreach($data as $key => $value) {
 			$all [$key] =[
 				'numero_compte'	=>	$value->numero_compte ,
-				'vendeurs'	=>	$value->vendeurs()->localisation
+				'vendeurs'	=>	$value->vendeurs()->localisation,
+				'id_vendeurs'	=>	$value->vendeurs
 			];
 		}
 		return $all;
@@ -420,16 +421,19 @@ Trait Afrocashes {
 				 // transfert courant
 				 $validation = $request->validate([
 					 'vendeurs'	=>	'required|exists:users,username',
-					 'montant'	=>	'required',
+					 'montant'	=>	'required|numeric|min:10000',
 					 'password'	=>	'required|string'
+				 ],[
+					 'required'	=>	'Champs :attribute requis!',
+					 'exists'	=>	':attribute n\'existe pas dans la base de donnees'
 				 ]);
 				 // verification du compte courant
 				 if($this->getAfrocashAccountByUsername(Auth::user()->username) && $this->getAfrocashAccountByUsername($request->input('vendeurs'))) {
-					 if($this->montantAfrocashAccount($this->getAfrocashAccountByUsername(Auth::user()->username)->numero_compte)) {
+					 if($this->montantAfrocashAccount($this->getAfrocashAccountByUsername(Auth::user()->username)->numero_compte) > 0
+					 		&&
+					 		$this->montantAfrocashAccount($this->getAfrocashAccountByUsername(Auth::user()->username)->numero_compte) >= $request->input('montant')) {
 						 if(Hash::check($request->input('password'),Auth::user()->password)) {
-
 							 // debiter l'expediteur
-
 							 $new_solde_expediteur = Afrocash::where([
 								 'numero_compte'	=>	$this->getAfrocashAccountByUsername(Auth::user()->username)->numero_compte
 							 ])->first()->solde - $request->input('montant');

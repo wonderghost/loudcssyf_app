@@ -273,6 +273,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/afrocash','CreditController@afrocashOperation')->middleware('vendeur');
 	Route::get('/user/afrocash/get-account-list','CreditController@getAccountList')->middleware('vendeur');
 	Route::post('/user/afrocash/transaction','CreditController@sendDepot')->middleware("vendeur");
+
 	Route::get('/user/afrocash/transactions','CreditController@allTransactionAfrocash')->middleware('cga');
 	Route::get('/user/afrocash/all-transactions','CreditController@allTransactionAfrocashVendeur')->middleware('vendeur');
 	Route::post("/user/afrocash/all-transactions",'CreditController@getAllTransactionAfrocashVendeur')->middleware('vendeur');
