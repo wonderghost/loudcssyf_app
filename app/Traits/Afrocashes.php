@@ -518,19 +518,41 @@ Trait Afrocashes {
 	}
 	// Toutes les transaction afrocash
 	public function allTransactionAfrocash() {
-		$transactions = TransactionAfrocash::select()->orderBy('created_at','desc')->paginate(10);
-		return view('afrocash.transactions')->withTransactions($transactions);
+		return view('afrocash.transactions');
 	}
 
-	public function allTransactionAfrocashVendeur() {
-		$transactions = TransactionAfrocash::where([
-			'compte_debite'	=>	Afrocash::where('vendeurs',Auth::user()->username)->first()->numero_compte
+	public function getAllTransaction(TransactionAfrocash $t) {
+		try {
+			$all = [];
+			foreach($t->select()->orderBy('created_at','desc')->get() as $key	=>	$value) {
+				$c = new Carbon($value->created_at);
+				$all[$key] = [
+					'date'	=>	$c->toDateTimeString(),
+					'expediteur'	=>	$value->compte_debite ? $value->afrocash()->vendeurs()->localisation : '-',
+					'destinataire'	=>	$value->compte_credite ? $value->afrocashcredite()->vendeurs()->localisation : '-',
+					'montant'	=>	$value->montant,
+					'motif'	=>	''
+				];
+			}
+			return response()
+				->json($all);
+		} catch (AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
+
+
+	public function allTransactionAfrocashVendeur(Afrocash $a , TransactionAfrocash $t) {
+		$transactions = $t->where([
+			'compte_debite'	=>	$a->where('vendeurs',Auth::user()->username)->first()->numero_compte
 			])->orWhere([
-				'compte_credite'	=>	afroCash::where('vendeurs',Auth::user()->username)->first()->numero_compte
+				'compte_credite'	=>	$a->where('vendeurs',Auth::user()->username)->first()->numero_compte
 			])->orderBy('created_at','desc')->get();
 
 		return view('afrocash.transactions')->withTransac($transactions);
 	}
+
 
 	public function getAllTransactionAfrocashVendeur(Request $request , $filter = false) {
 		try {
@@ -578,6 +600,6 @@ public function filterTransactionAfrocash(Request $request) {
 		header("unprocessible entity",true,422);
 		die(json_encode($e->getMessage()));
 	}
-
 }
+
 }

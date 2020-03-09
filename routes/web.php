@@ -36,6 +36,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/afrocash','AdminController@operationAfrocash');
 	Route::post('/admin/afrocash/apport','AdminController@apportCapital');
 	Route::get('/admin/afrocash/all-transactions','CreditController@allTransactionAfrocash');
+
 	// recuperation des soldes vendeurs
 	Route::get('/admin/get-soldes','CreditController@getSoldesVendeurs');
 	// etat depot Central
@@ -276,7 +277,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 
 	Route::get('/user/afrocash/transactions','CreditController@allTransactionAfrocash')->middleware('cga');
 	Route::get('/user/afrocash/all-transactions','CreditController@allTransactionAfrocashVendeur')->middleware('vendeur');
-	Route::post("/user/afrocash/all-transactions",'CreditController@getAllTransactionAfrocashVendeur')->middleware('vendeur');
+	// Route::post("/user/afrocash/all-transactions",'CreditController@getAllTransactionAfrocashVendeur')->middleware('vendeur');
+	Route::get('/{slug}/afrocash/get-transactions','CreditController@getAllTransaction');
 	Route::post('/user/afrocash/filter-transactions','CreditController@filterTransactionAfrocash')->middleware('vendeur');
 
 	// RECOUVREMENTS
