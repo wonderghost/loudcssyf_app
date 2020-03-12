@@ -3,8 +3,9 @@
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"></loading>
-
-        <div class="uk-grid-small" uk-grid>
+        
+        <template v-if="theUser == 'admin'">
+            <div class="uk-grid-small" uk-grid>
             <div class="uk-width-1-3@m uk-card uk-padding-remove uk-margin-remove uk-card-default uk-card-small" style="box-shadow : none;">
                 <div class="uk-card-header">
                     <h5 class="uk-card-title">Utilisateurs</h5>
@@ -38,6 +39,7 @@
                 </div>
             </div>
         </div>
+        </template>
     </div>
 </template>
 <script>
@@ -61,6 +63,9 @@ export default {
     },
     mounted() {
         this.buildChart()
+    },
+    props : {
+        theUser : String
     },
     data() {
         return {

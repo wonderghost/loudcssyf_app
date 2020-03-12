@@ -174,7 +174,7 @@ Trait Afrocashes {
 								'status'	=>	'validated'
 							]);
 							// ENVOI DE LA NOTIFICATION
-							$n = $this->sendNotification("Commande Credit cga" ,"Une commande cga a ete valide",User::where('type','admin')->first()->username);
+							$n = $this->sendNotification("Commande Credit cga" ,"Une commande cga a ete valide pour : ".$commande->vendeurs()->localisation,User::where('type','admin')->first()->username);
 							$n->save();
 							$n = $this->sendNotification("Commande Credit Cga" , "Votre Commande cga a ete valide",$commande->vendeurs);
 							$n->save();

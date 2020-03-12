@@ -69,3 +69,13 @@ html , body {
   position : absolute ;
   margin-left : 5% !important ;
 }
+
+.more-tools {
+  position : fixed;
+  z-index : 1;
+  top : 20%;
+  right : 0;
+}
+.more-tools > a{
+  border : none !important;
+}

@@ -5,7 +5,7 @@
   <div class="uk-container">
     <h3>Tableau de bord</h3>
     <hr class="uk-divider-small">
-    <dashboard></dashboard>
+    <dashboard the-user='admin'></dashboard>
   </div>
 </div>
 
