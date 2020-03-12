@@ -156,9 +156,12 @@ class CommandController extends Controller
 
 					$transaction->save();
 					// ENREGISTREMENT DE LA NOTIFICATION
-					$this->sendNotification("Commande Materiel" ,"Il y a une commande en attente de confirmation pour : ".Auth::user()->localisation,User::where('type','admin')->first()->username);
-					$this->sendNotification("Commande Materiel" ,"Votre commande est en attente de confirmation!",Auth::user()->username);
-					$this->sendNotification("Commande Materiel" ,"Vous avez une commande en attente de la part de ".Auth::user()->localisation,User::where('type','logistique')->first()->username);
+					$n = $this->sendNotification("Commande Materiel" ,"Il y a une commande en attente de confirmation pour : ".Auth::user()->localisation,User::where('type','admin')->first()->username);
+					$n->save();
+					$n = $this->sendNotification("Commande Materiel" ,"Votre commande est en attente de confirmation!",Auth::user()->username);
+					$n->save();
+					$n = $this->sendNotification("Commande Materiel" ,"Vous avez une commande en attente de la part de ".Auth::user()->localisation,User::where('type','logistique')->first()->username);
+					$n->save();
 
 					return response()
 						->json('done');

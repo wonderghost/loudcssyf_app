@@ -107,8 +107,10 @@ Trait Afrocashes {
 					if($request->file('piece_jointe')->move(config('image.path'),$credit->recu)) {
 						$credit->save();
 						// CREATION DE LA NOTIFICATION
-						$this->sendNotification("Commande Afrocash" , "Vous avez envoyer une command Afrocash Grossiste",Auth::user()->username);
-						$this->sendNotification("Commande Afrocash" , "Vous avez une commande Afrocash en attente de confirmation!",User::where('type','gcga')->first()->username);
+						$n = $this->sendNotification("Commande Afrocash" , "Vous avez envoyer une command Afrocash Grossiste",Auth::user()->username);
+						$n->save();
+						$n = $this->sendNotification("Commande Afrocash" , "Vous avez une commande Afrocash en attente de confirmation!",User::where('type','gcga')->first()->username);
+						$n->save();
 						return response()
 							->json('done');
 					} else {
@@ -172,11 +174,13 @@ Trait Afrocashes {
 								'status'	=>	'validated'
 							]);
 							// ENVOI DE LA NOTIFICATION
-							$this->sendNotification("Commande Credit cga" ,"Une commande cga a ete valide",User::where('type','admin')->first()->username);
-							$this->sendNotification("Commande Credit Cga" , "Votre Commande cga a ete valide",$commande->vendeurs);
-							$this->sendNotification("Commande Credit Cga" , "Vous avez valide une commande cga",Auth::user()->username);
+							$n = $this->sendNotification("Commande Credit cga" ,"Une commande cga a ete valide",User::where('type','admin')->first()->username);
+							$n->save();
+							$n = $this->sendNotification("Commande Credit Cga" , "Votre Commande cga a ete valide",$commande->vendeurs);
+							$n->save();
+							$n = $this->sendNotification("Commande Credit Cga" , "Vous avez valide une commande cga",Auth::user()->username);
+							$n->save();
 
-							// return redirect('/user/credit-cga/commandes')->withSuccess("Success!");
 							return response()
 								->json('done');
 
@@ -221,9 +225,12 @@ Trait Afrocashes {
 								'status'	=>	'validated'
 							]);
 
-							$this->sendNotification("Commande Afrocash" ,"Une Afrocash a ete valide",User::where('type','admin')->first()->username);
-							$this->sendNotification("Commande Afrocash" , "Votre Commande Afrocash a ete valide!",$commande->vendeurs);
-							$this->sendNotification("Commande Afrocash" , "Vous avez valide une commande Afrocash!",Auth::user()->username);
+							$n = $this->sendNotification("Commande Afrocash" ,"Une Afrocash a ete valide",User::where('type','admin')->first()->username);
+							$n->save();
+							$n = $this->sendNotification("Commande Afrocash" , "Votre Commande Afrocash a ete valide!",$commande->vendeurs);
+							$n->save();
+							$n = $this->sendNotification("Commande Afrocash" , "Vous avez valide une commande Afrocash!",Auth::user()->username);
+							$n->save();
 
 							return response()
 								->json('done');
@@ -474,8 +481,10 @@ Trait Afrocashes {
 								 $transaction_depot->save();
 								 $transaction_credit->save();
 								 // $this->sendNotificationForGestionnaire("Transfert Afrocash" , "Transaction de  ".number_format($request->input('montant'))." GNF effectué",$request->input('vendeurs'));
-								 $this->sendNotification("Transfert Afrocash" , "Reception de ".number_format($request->input('montant'))." GNF de la part de ".Auth::user()->localisation,$request->input('vendeurs'));
-								 $this->sendNotification("Transfert Afrocash" , "Vous avez effectue un transfert de ".number_format($request->input('montant'))." GNF pour ".User::where('username',$request->input('vendeurs'))->first()->localisation,Auth::user()->username);
+								 $n = $this->sendNotification("Transfert Afrocash" , "Reception de ".number_format($request->input('montant'))." GNF de la part de ".Auth::user()->localisation,$request->input('vendeurs'));
+								 $n->save();
+								 $n = $this->sendNotification("Transfert Afrocash" , "Vous avez effectue un transfert de ".number_format($request->input('montant'))." GNF pour ".User::where('username',$request->input('vendeurs'))->first()->localisation,Auth::user()->username);
+								 $n->save();
 
 								 return response()
 								 	->json('done');
