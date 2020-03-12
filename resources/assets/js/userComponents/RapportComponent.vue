@@ -295,7 +295,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           }
           ,
           nextPage : function () {
-            if(this.rapportVentes.length > this.end) {
+            if(this.rappWithUser.length > this.end) {
               let ecart = this.end - this.start
               this.start = this.end
               this.end += ecart

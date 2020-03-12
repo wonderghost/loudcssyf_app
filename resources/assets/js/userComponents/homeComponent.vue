@@ -32,7 +32,7 @@
     <template v-if="typeUser == 'admin' || typeUser == 'gcga'" id="">
       <a class="uk-button uk-button-small border-button button-pay-comission" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
     </template>
-
+    <a class="uk-button uk-button-small border-button" uk-tooltip="Recherche" uk-toggle="target : #modal-search-serial"><i class="material-icons">search</i></a>
     </div>
     <div class="uk-navbar-right uk-visible@m">
       <a class="uk-button"><span uk-icon="icon : user ;"></span> {{userLocalisation}} </a>

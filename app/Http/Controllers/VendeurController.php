@@ -99,30 +99,4 @@ class VendeurController extends Controller
       return response()->json($all);
     }
 
-    // @@@@ CONSTRUCTION DU TABLEAU DE BORD
-    public function statistiqueVente(Request $request) {
-      try {
-        $recrutement = RapportVente::where([
-          'type'  =>  'recrutement',
-          'vendeurs'  =>  $request->input('ref-0')
-          ])->get()->count();
-        $reabonnement = RapportVente::where([
-          'type'  =>  'reabonnement',
-          'vendeurs'  =>  $request->input('ref-0')
-          ])->get()->count();
-        $migration = RapportVente::where([
-          'type'  =>  'migration',
-          'vendeurs'  =>  $request->input('ref-0')
-          ])->get()->count();
-        return response()->json([
-          'recrutement' =>  $recrutement,
-          'reabonnement'  =>  $reabonnement,
-          'migration' =>  $migration
-        ]);
-      } catch (AppException $e) {
-        header("Unprocessible entity",true,422);
-        die($e->getMessage());
-      }
-
-    }
 }

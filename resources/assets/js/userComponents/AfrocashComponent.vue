@@ -88,7 +88,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
       Loading
     },
     created () {
-
+      this.isLoading = true
     },
     mounted() {
       //
@@ -121,6 +121,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         try {
           let response = await axios.get('/user/afrocash/get-account-list')
           this.accounts = response.data
+          this.isLoading = false
         } catch (e) {
             alert(e)
         }

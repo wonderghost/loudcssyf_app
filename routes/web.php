@@ -23,7 +23,8 @@ Route::middleware(['auth','admin'])->group(function () {
 	// Route::get('/admin/commandes/validated','AdminController@getValidatedCommandesMaterial');
 	Route::get('/admin/commandes/credit-all','CreditController@getAllCommandes');
 	// DASHBOARD DATA
-
+	Route::get('/admin/chart/user-stat','ChartController@userStat');
+	Route::get('/admin/chart/command-stat','ChartController@commandStat');
 	// Promo
 	Route::post('/admin/promo/add','AdminController@addPromo');
 	Route::post('/admin/promo/list','AdminController@getPromo');
@@ -66,8 +67,6 @@ Route::middleware(['auth','admin'])->group(function () {
 
 	// admin routing
 	Route::get('/admin','AdminController@dashboard');
-
-	Route::post('/admin/transaction-for-dashboard','AdminController@getTransactionForDashboardView');
 // //
 	Route::get('/admin/add-user','AdminController@getFormUser');
 	Route::post('/admin/add-user','AdminController@addUser');
@@ -117,7 +116,6 @@ Auth::routes();
 Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/{slug}/all-vendeurs','LogistiqueController@allVendeurs');
 	// CONSTRUCTION DU TABLEAU DE BORD
-	Route::post('/user/dashboard/chart-vente','VendeurController@statistiqueVente');
 	// rapport pour controleur
 	Route::get('user/add-rapport','RapportControlleur@addRapport')->middleware('controleur');
 	Route::post('/user/send-rapport/{slug}','RapportControlleur@sendRapport')->middleware('controleur');
@@ -299,6 +297,9 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/notification/mark-as-read','NotificationController@markAsRead');
 	// CHAT SERVICES
 	Route::get('/user/chat-service/users-list','ChatController@UserList');
+	// RECHERCHE INFORMATIONS  DE SERIAL NUMBER
+	Route::get('/user/search/serial/{slug}','SearchController@finSerialNumber');
+
 });
 
 Route::middleware(['auth'])->group(function () {

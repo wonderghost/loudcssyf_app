@@ -33,6 +33,8 @@ Vue.component('afrocash',require('./userComponents/AfrocashComponent.vue').defau
 Vue.component('ravitaillement-depot',require('./adminComponents/RavitaillementDepotComponent.vue').default)
 Vue.component('transaction-afrocash',require('./userComponents/TransactionAfrocashComponent.vue').default)
 Vue.component('recouvrement',require('./userComponents/RecouvrementComponent.vue').default)
+Vue.component('serial-search',require('./userComponents/SerialSearchComponent.vue').default)
+Vue.component('dashboard',require('./adminComponents/DashboardComponent.vue').default)
 
 import Vue from 'vue'
 import Vuex from 'vuex'
