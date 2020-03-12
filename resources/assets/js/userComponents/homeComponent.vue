@@ -8,9 +8,24 @@
     </div>
     <div class="uk-navbar-center uk-visible@m">
       <a class="uk-button uk-button-small border-button" href="/" uk-tooltip="Tableau de bord"><i class="material-icons">home</i></a>
-      <a class="uk-button uk-button-small border-button" href="" uk-tooltip="Notifications"><i class="material-icons">notifications</i></a>
-      <a class="uk-button uk-button-small border-button" href="" uk-tooltip="Conversations"><i class="material-icons">message</i></a>
-      <a class="uk-button uk-button-small border-button" href="" uk-tooltip="Alertes"><i class="material-icons">alarm</i></a>
+      <div class="uk-inline">
+        <a class="uk-button uk-button-small border-button" uk-tooltip="Notifications"><i class="material-icons">notifications</i><span class="">{{unreadNotifications.length}}</span> </a>
+        <div class="" uk-drop="mode: click ; animation: uk-animation-slide-top-small;">
+          <div class="uk-card-default uk-box-shadow-small notification-container uk-overflow-auto" style="background : #fefefe !important;border : solid 1px #ddd !important; ">
+            <ul class="uk-list uk-list-divider">
+              <li v-for="n in unreadNotifications.slice(0,5)">
+                <span class="">
+                  <span class="uk-text-bold">{{n.titre}}</span>
+                  <p class="uk-margin-remove">{{n.description}}</p>
+                </span>
+              </li>
+            </ul>
+            <a class="uk-button uk-button-link uk-text-capitalize" href="#all-notification" uk-toggle>Tout voir</a>
+          </div>
+        </div>
+      </div>
+      <a class="uk-button uk-button-small border-button" uk-tooltip="Conversations"><i class="material-icons">message</i></a>
+      <a class="uk-button uk-button-small border-button" uk-tooltip="Alertes"><i class="material-icons">alarm</i></a>
       <template v-if="typeUser == 'admin'" id="">
       	<a class="uk-button uk-button-small uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span> Promo</a>
     </template>
@@ -27,6 +42,40 @@
     </form>
     </div>
   </div>
+
+  <!-- TOUTES LES NOTIFICATIOS -->
+  <div id="all-notification" uk-modal="esc-close : false ; bg-close : false">
+      <div class="uk-modal-dialog uk-modal-body">
+          <h4 class="uk-modal-title"><i class="material-icons">notifications</i> Toutes les notifications</h4>
+          <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-left-medium">
+              <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Non Lues</a></li>
+              <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Lues</a></li>
+          </ul>
+
+          <ul class="uk-switcher uk-margin uk-overflow-auto uk-height-medium">
+              <li>
+                <ul class="uk-list uk-list-divider">
+                  <li v-for="n in unreadNotifications.slice(0,50)">
+                    <span class="uk-text-bold">{{n.titre}}</span>
+                    <p class="uk-margin-remove">{{n.description}}</p>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <ul class="uk-list uk-list-divider">
+                  <li v-for="n in readNotifications.slice(0,50)">
+                    <span class="uk-text-bold">{{n.titre}}</span>
+                    <p class="uk-margin-remove">{{n.description}}</p>
+                  </li>
+                </ul>
+              </li>
+          </ul>
+          <p class="uk-text-right">
+             <button class="uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small uk-modal-close" type="button">Fermer</button>
+          </p>
+      </div>
+  </div>
+  <!-- // -->
 
 <div class="">
   <div id="side-nav"  uk-offcanvas="mode:push;bg-close:true;">
@@ -197,6 +246,16 @@
                 </ul>
             </li>
           </template>
+          <template id="" v-if="typeUser == 'coursier'">
+            <!-- LE COURSIER -->
+            <li class="uk-parent">
+                <a href="#"><span uk-icon="icon:cart;ratio:0.9"></span> Operations</a>
+                <ul class="uk-nav-sub">
+                  <li><a href="/user/recouvrement"><span uk-icon="icon:arrow-right"></span> Recouvrement</a></li>
+                </ul>
+            </li>
+            <!-- // -->
+          </template>
           <template v-if="typeUser !== 'admin'" id="">
             <li class="uk-parent">
               <a href="#"> <span uk-icon="icon : settings ; ratio : .9"></span> Parametres</a>
@@ -215,7 +274,12 @@
 <script type="application/javascript">
     export default {
         mounted() {
+          this.getAllNotifications()
 
+          Echo.channel("notification")
+            .listen('AfrocashNotification', (e) => {
+              console.log(e)
+            });
         },
         props : {
 
@@ -223,11 +287,19 @@
         ,
         data () {
           return {
-
+            notifications : []
           }
         },
         methods : {
-
+          getAllNotifications : async function () {
+            try {
+              let response = await axios.get('/user/notification/getlist')
+              console.log(response.data)
+              this.notifications = response.data
+            } catch (e) {
+                alert(e)
+            }
+          }
         },
         computed : {
           typeUser() {
@@ -241,6 +313,16 @@
           },
           username () {
             return this.$store.state.userName
+          },
+          unreadNotifications() {
+            return this.notifications.filter((n) => {
+              return n.status == "unread"
+            })
+          },
+          readNotifications() {
+            return this.notifications.filter((n) => {
+              return n.status == "read"
+            })
           }
         }
     }

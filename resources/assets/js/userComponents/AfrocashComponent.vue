@@ -91,6 +91,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
 
     },
     mounted() {
+      //
       this.accountList()
     },
     data () {

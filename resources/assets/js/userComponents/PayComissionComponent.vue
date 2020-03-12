@@ -1,5 +1,6 @@
 <template>
   <div class="">
+    
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"></loading>

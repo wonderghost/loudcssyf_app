@@ -15,13 +15,5 @@
       @endif
     </div>
 </div>
+</div>
 @endsection('content')
-@section('script')
-<script type="text/javascript">
-  $(function () {
-    @if(Auth::user()->type == 'v_standart' || Auth::user()->type == 'v_da')
-    $logistique.venteChart("{{csrf_token()}}","{{url('/user/dashboard/chart-vente')}}","{{Auth::user()->username}}")
-    @endif
-  })
-</script>
-@endsection

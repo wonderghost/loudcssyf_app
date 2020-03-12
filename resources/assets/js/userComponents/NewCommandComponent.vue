@@ -36,7 +36,7 @@
                   <label uk-tooltip="">Kit Complet</label>
               </div>
               <div id="">
-                <label>Qte <input min="1" required @keyup="chooseQuantite()" @change="chooseQuantite()" type="number" v-model="formData.quantite"  class="uk-input uk-border-rounded"   > </label>
+                <label>Qte <input min="1" required @keyup="chooseQuantite()" @change="chooseQuantite()" type="number" v-model="formData.quantite"  class="uk-input uk-border-rounded" placeholder="Quantite"> </label>
               </div>
               <div>
                 <label>Prix TTC (GNF)<input type="text" :value="material.ttc | numFormat"  disabled  class="uk-input uk-border-rounded" ></label>
@@ -136,7 +136,7 @@
               <form @submit.prevent="sendCommandCga()">
                 <div class="uk-margin-small">
                   <label for="">Montant</label>
-                  <input type="number" v-model="formDataCga.montant" class="uk-input uk-border-rounded">
+                  <input type="number" v-model="formDataCga.montant" class="uk-input uk-border-rounded" placeholder="Montant">
                 </div>
                 <button type="submit"  class="uk-button uk-button-small uk-button-primary uk-border-rounded">validez</button>
               </form>
@@ -198,7 +198,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             montantTtc : 0,
             montantTtcSubv : 0,
             formData : {
-              quantite : 0,
+              quantite : "",
               prix_achat : 0,
               _token : "",
               reference_material : ""
@@ -207,7 +207,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             success : "",
             formDataCga : {
               _token : "",
-              montant : 0
+              montant : ""
             },
             formDataAfrocash : {
               _token : "",

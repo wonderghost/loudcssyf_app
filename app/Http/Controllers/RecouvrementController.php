@@ -18,8 +18,7 @@ class RecouvrementController extends Controller
     use Similarity;
 
     public function operations() {
-      $users = User::where('type','v_standart')->get();
-      return view('recouvrements.operations')->withUsers($users);
+      return view('recouvrements.operations');
     }
 
     public function addRecouvrement(Request $request) {
@@ -30,7 +29,10 @@ class RecouvrementController extends Controller
       ]);
 
       try {
-        if($request->input('montant_du') === $request->input('montant')) {
+        if($request->input('montant_du') <= 0) {
+          throw new AppException("Recouvrement Impossible !");
+        }
+        if($request->input('montant_du') == $request->input('montant')) {
           $recouvrement = new Recouvrement;
           $recouvrement->makeId();
           $recouvrement->montant = $request->input('montant');
@@ -40,9 +42,12 @@ class RecouvrementController extends Controller
           $temp = $recouvrement->id;
 
           // ENVOI DE LA NOTIFICATION
-          $this->sendNotification("Recouvrement","Recouvrement de : ".number_format($recouvrement->montant)." GNF effectue !",$recouvrement->vendeurs);
-          $this->sendNotification("Recouvrement","Vous avez effectue un recouvrement de ".number_format($recouvrement->montant)." GNF pour : ".$recouvrement->vendeurs()->localisation,Auth::user()->username);
-          $this->sendNotification("Recouvrement","Recouvrement effectue au compte de : ".$recouvrement->vendeurs()->localisation,'admin');
+          $n = $this->sendNotification("Recouvrement","Recouvrement de : ".number_format($recouvrement->montant)." GNF effectue !",$recouvrement->vendeurs);
+          $n->save();
+          $n = $this->sendNotification("Recouvrement","Vous avez effectue un recouvrement de ".number_format($recouvrement->montant)." GNF pour : ".$recouvrement->vendeurs()->localisation,Auth::user()->username);
+          $n->save();
+          $n = $this->sendNotification("Recouvrement","Recouvrement effectue au compte de : ".$recouvrement->vendeurs()->localisation,'admin');
+          $n->save();
 
           $recouvrement->save();
           // AJOUT DE L'ID DE RECOUVREMENT DANS LA TABLE TRANSACTIONS
@@ -52,45 +57,27 @@ class RecouvrementController extends Controller
           ])->get())->where('recouvrement',NULL)->update([
             'recouvrement'  =>  $temp
           ]);
-          return redirect('user/recouvrement')->withSuccess("Success!");
+          return response()
+            ->json('done');
         } else {
           throw new AppException("Erreur sur le montant!");
         }
       } catch (AppException $e) {
-        return back()->with("_errors",$e->getMessage());
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
       }
     }
 
-    public function allTransactions(Request $request) {
+    public function allTransactions(Request $request , TransactionAfrocash $ta) {
       try {
-        if($request->input('ref-0') == "all") {
-          if($request->input('ref-1') == "all") {
-            $transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('type','semi_grossiste')->get())->get();
-          } else {
-            if($request->input('ref-1') == "recouvre") {
-              $transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('type','semi_grossiste')->get())->whereNotNull('recouvrement')->get();
-            } else {
-              $transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('type','semi_grossiste')->get())->whereNull('recouvrement')->get();
-            }
-          }
-        } else {
-          if($request->input('ref-1') == "all") {
-            $transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('vendeurs',$request->input('ref-0'))->where('type','semi_grossiste')->get())->get();
-          } else {
-            if($request->input('ref-1') == "recouvre") {
-              $transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('vendeurs',$request->input('ref-0'))->where('type','semi_grossiste')->get())->whereNotNull('recouvrement')->get();
-            } else {
-              $transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('vendeurs',$request->input('ref-0'))->where('type','semi_grossiste')->get())->whereNull('recouvrement')->get();
-            }
-          }
-          // $transactions = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where('type','semi_grossiste')->where('vendeurs',$request->input('ref-0'))->get())->get();
-        }
+        $transactions = $ta->whereIn('compte_debite',Afrocash::select('numero_compte')->where('type','semi_grossiste')->get())
+          ->orderBy('created_at','desc')->get();
         $all = [];
         foreach($transactions as $key => $value) {
           $date = new Carbon($value->created_at);
           $date->setLocale('fr_FR');
           $all[$key]  = [
-            'date'  =>  $date->toFormattedDateString()." (".$date->diffForHumans().") ",
+            'date'  =>  $date->toFormattedDateString(),
             'expediteur'  => $value->afrocash()->vendeurs()->localisation,
             'destinataire'  => $value->afrocashcredite()->vendeurs()->localisation,
             'montant' =>  number_format($value->montant),
@@ -101,36 +88,32 @@ class RecouvrementController extends Controller
         }
         return response()->json($all);
       } catch (AppException $e) {
-        header("Unprocessible entity", true,422);
-        die($e->getMessage());
+        header("Erreur!", true,422);
+        die(json_encode($e->getMessage()));
       }
     }
 
     // RECUPERATION DU MONTANT DU
 
-    public function getMontantDuRecouvrement(Request $request) {
+    public function getMontantDuRecouvrement(TransactionAfrocash $ta , $vendeur) {
       try {
-        $total = TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where([
+        $total = $ta->whereIn('compte_debite',Afrocash::select('numero_compte')->where([
           'type'  =>  'semi_grossiste',
-          'vendeurs'  =>  $request->input('ref-0')
-        ])->get())->where('recouvrement',NULL)->sum('montant');
-        return response()->json($total);
+          'vendeurs'  =>  $vendeur
+        ])->get())->whereNull('recouvrement')->sum('montant');
+        return response()
+          ->json($total);
       } catch (AppException $e) {
-        header("Unprocessible entity",true,422);
-        die($e->getMessage());
+        header("Erreur!",true,422);
+        die(json_encode($e->getMessage()));
       }
     }
 
     // TOUS LES RECOUVREMENTS
-    public function allRecouvrement(Request $request) {
+    public function allRecouvrement(Recouvrement $r) {
       try {
-        if($request->input('ref-0') == "all") {
-          $recouvrement = Recouvrement::all();
-        } else {
-          $recouvrement = Recouvrement::where('vendeurs',$request->input('ref-0'))->get();
-        }
         $all=[];
-        foreach($recouvrement as $key=>$value) {
+        foreach($r->select()->orderBy('created_at','desc')->get() as $key=>$value) {
           $date = new Carbon($value->created_at);
           $date->setLocale('fr_FR');
           $all[$key]  = [
@@ -143,8 +126,8 @@ class RecouvrementController extends Controller
         }
         return response()->json($all);
       } catch (AppException $e) {
-        header("Unprocessible entity",true,422);
-        die($e->getMessage());
+        header("Erreur!",true,422);
+        die(json_encode($e->getMessage()));
       }
 
     }

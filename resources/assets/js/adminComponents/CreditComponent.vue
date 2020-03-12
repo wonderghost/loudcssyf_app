@@ -17,12 +17,12 @@
                   </div>
                   <div class="uk-modal-body">
                     <!-- Erreor block -->
-                          <template v-if="errors.length" v-for="error in errors">
-                          <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
-                            <a href="#" class="uk-alert-close" uk-close></a>
-                            <p>{{error}}</p>
-                          </div>
-                        </template>
+                      <template v-if="errors.length" v-for="error in errors">
+                      <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+                        <a href="#" class="uk-alert-close" uk-close></a>
+                        <p>{{error}}</p>
+                      </div>
+                    </template>
                     <form @submit.prevent="validateCommandCredit()">
                       <div class="uk-margin-small">
                         <label for="">Entrez le montant</label>

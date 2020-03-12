@@ -33,19 +33,25 @@
     <input type="hidden" id="user-type" value="{{Auth::user()->type}}">
     <input type="hidden" id="user-localisation" value="{{Auth::user()->localisation}}">
     <input type="hidden" id="username" value="{{Auth::user()->username}}">
+
     <div id="app">
       <home-component></home-component>
       <pay-comission-component></pay-comission-component>
       @yield('content')
     </div>
+
     <script type="application/javascript" src="{{asset('js/jquery-3.4.1.min.js')}}"></script>
     <script type="application/javascript" src="{{asset('js/jquery-ui.min.js')}}"></script>
     <!-- UIkit JS -->
     <script type="application/javascript" src="{{asset('js/uikit.min.js')}}"></script>
     <script type="application/javascript" src="{{asset('js/uikit-icons.min.js')}}"></script>
 
-    <script src="{{ mix('js/app.js') }}" ></script>
-    <script src="{{ mix('js/store.js') }}" ></script>
-    <script src="{{ mix('js/echo.js') }}" ></script>
+    <script type="application/javascript" src="{{ mix('js/echo.js') }}" ></script>
+    <script type="application/javascript" src="{{ mix('js/store.js') }}" ></script>
+    <script type="application/javascript" src="{{mix('js/app.js')}}" ></script>
+    <script type="text/javascript">
+
+
+    </script>
   </body>
 </html>

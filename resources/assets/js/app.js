@@ -7,7 +7,6 @@
 
 window.Vue = require('vue');
 window.axios = require('axios')
-window.$ = window.jQuery = require('jquery')
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -33,7 +32,7 @@ Vue.component('add-rapport',require('./adminComponents/AddRapportComponent.vue')
 Vue.component('afrocash',require('./userComponents/AfrocashComponent.vue').default)
 Vue.component('ravitaillement-depot',require('./adminComponents/RavitaillementDepotComponent.vue').default)
 Vue.component('transaction-afrocash',require('./userComponents/TransactionAfrocashComponent.vue').default)
-
+Vue.component('recouvrement',require('./userComponents/RecouvrementComponent.vue').default)
 
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -41,10 +40,10 @@ import Vuikit from 'vuikit'
 import numeral from 'numeral';
 import numFormat from 'vue-filter-number-format'
 import store from './store'
-
 Vue.use(Vuikit)
 Vue.use(Vuex)
 Vue.filter('numFormat', numFormat(numeral))
+
 const app = new Vue({
     el: '#app',
     store

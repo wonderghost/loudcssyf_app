@@ -38,6 +38,8 @@ use App\CommandMaterial;
 use App\Livraison;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Events\AfrocashNotification;
+use App\Notifications;
 
 class AdminController extends Controller
 {
@@ -48,6 +50,18 @@ class AdminController extends Controller
     use Cga;
     use Livraisons;
 
+    // TABLEAU DE BORD
+    public function dashboard(Request $request) {
+      // $n = new Notifications;
+      // $n->makeId();
+      // $n->titre = "Notification de Connection";
+      // $n->description = "Bonjour ".$request->user()->localisation;
+      // $n->vendeurs = $request->user()->username;
+      // $n->save();
+      // broadcast(new AfrocashNotification($n ,$request->user()));
+
+      return view('admin.dashboard');
+    }
     // etat du depot central
     public function etatDepotCentral() {
 
@@ -103,38 +117,6 @@ class AdminController extends Controller
         }
     }
 
-    // TABLEAU DE BORD
-    public function dashboard() {
-      // recapitulatif solde cga
-      $cga = [
-        'solde_central' =>  Credit::where('designation','cga')->first()->solde,
-        'solde_vstandart' => CgaAccount::whereIn('vendeur',User::select('username')->where('type','v_standart')->get())->sum('solde'),
-        'solde_reseau'  =>  CgaAccount::whereIn('vendeur',User::select("username")->where("type",'v_da')->get())->sum('solde')
-        ] ;
-        // recapitulatif solde afrocash
-        $afrocash = [
-          'solde_central' =>  Credit::where('designation','afrocash')->first()->solde,
-          'solde_semigrossiste' =>  Afrocash::whereIn('vendeurs',User::select('username')->where('type','v_standart'))->where('type','semi_grossiste')->sum('solde'),
-          'solde_courant_reseau' =>  Afrocash::whereIn('vendeurs',User::select('username')->where('type','v_da'))->where('type','courant')->sum('solde'),
-          'solde_courant_vstandart' =>  Afrocash::whereIn('vendeurs',User::select('username')->where('type','v_standart'))->where('type','courant')->sum('solde')
-        ];
-        // Utilisateurs
-        $users = [
-          'da'  =>  User::where('type','v_da')->count(),
-          'v_standart'  =>  User::where('type','v_standart')->count()
-        ];
-        // MATERIELS
-
-        $materiel = [
-          'entrepot'  =>  Produits::all(),
-          'depot' =>  StockPrime::select()->sum('quantite')
-        ];
-        return view('admin.dashboard')
-          ->withCga($cga)
-          ->withAfrocash($afrocash)
-          ->withUsers($users)
-          ->withMateriels($materiel);
-    }
     // AJOUTER UN USER
     public function getFormUser() {
     	return view('admin.add-user');

@@ -12,37 +12,14 @@ class NotificationController extends Controller
 {
     //
 
-    public function getList(Request $request) {
+    public function getList(Request $request,Notifications $n) {
       try {
-        $all = [];
-        $all = Notifications::where('status','unread')->where('vendeurs',Auth::user()->username)->orderBy('created_at','desc')->limit(4)->get();
-        $read = Notifications::where('status','read')->where('vendeurs',Auth::user()->username)->orderBy('created_at','desc')->get();
-        $unread = Notifications::where('status','unread')->where('vendeurs',Auth::user()->username)->orderBy('created_at','desc')->get();
-
-        $all->each(function ($element , $index) {
-          $element->humanDate();
-        });
-
-        $unread->each(function ($element, $index) {
-          $element->humanDate();
-        });
-
-        $read->each(function ($element , $index) {
-          $element->humanDate();
-        });
-
-
-        return response()->json([
-          'all' =>  $all,
-          'count' =>  $unread->count(),
-          'all_read'  => $read,
-          'all_unread'  => $unread
-        ]);
+        return response()
+          ->json($n->where('vendeurs',$request->user()->username)->orderBy('created_at','desc')->get());
       } catch (AppException $e) {
-        header("unprocessible entity",true,422);
-        die($e->getMessage());
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
       }
-
     }
 
     public function markAsRead(Request $request) {

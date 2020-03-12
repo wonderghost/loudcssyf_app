@@ -9995,12 +9995,9 @@ window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
   key: 'b476b70191cad8842947',
   cluster: 'eu',
-  forceTLS: true
+  forceTLS: true,
+  logToConsole: true
 }); //
-// var channel = Echo.channel('my-channel')
-// channel.listen('.my-event',function (data) {
-//   alert(JSON.stringify(data))
-// })
 
 /***/ }),
 

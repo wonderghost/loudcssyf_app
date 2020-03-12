@@ -260,8 +260,7 @@ Trait Rapports {
 		public function getAllRapport(RapportVente $r) {
 			try {
 				$all = $r->select()
-					->orderBy('date_rapport','desc')
-					->limit(500)->get();
+					->orderBy('date_rapport','desc')->get();
 				return response()
 					->json($this->organizeRapport($all));
 			} catch (AppException $e) {

@@ -20,6 +20,8 @@ use Carbon\Carbon;
 use App\Notifications;
 use App\Alert;
 use Illuminate\Support\Facades\DB;
+use App\Events\AfrocashNotification;
+
 Trait Afrocashes {
 
 	public function  newAccount($username,$type = 'courant') {
@@ -335,7 +337,6 @@ Trait Afrocashes {
 	}
 // ENVOI DES TRANSACTION AFROCASH
 	public function sendDepot(Request $request) {
-
 		try {
 			if($request->input('type_operation') == 'depot') {
 
@@ -400,12 +401,17 @@ Trait Afrocashes {
 									$transaction_depot->save();
 									$transaction_credit->save();
 									$vendeurs = Afrocash::where('numero_compte',$request->input('numero_compte_courant'))->first()->vendeurs ;
-									// $this->sendNotificationForGestionnaire("Depot Afrocash" , "Depot de  ".number_format($request->input('montant'))." GNF effectué",$vendeurs);
-									$this->sendNotification("Depot Afrocash" , "Reception de ".number_format($request->input('montant'))." GNF de la part de ".Auth::user()->localisation,$vendeurs);
-									$this->sendNotification("Depot Afrocash" , "Vous avez effectue un depot de ".number_format($request->input('montant'))." GNF pour ".User::where('username',$vendeurs)->first()->localisation,Auth::user()->username);
-
+									$n = $this->sendNotification("Depot Afrocash" , "Depot de  ".number_format($request->input('montant'))." GNF effectué",'admin');
+									event(new AfrocashNotification($n));
+									$n->save();
+									$n = $this->sendNotification("Depot Afrocash" , "Reception de ".number_format($request->input('montant'))." GNF de la part de ".Auth::user()->localisation,$vendeurs);
+									event(new AfrocashNotification($n));
+									$n->save();
+									$n = $this->sendNotification("Depot Afrocash" , "Vous avez effectue un depot de ".number_format($request->input('montant'))." GNF pour ".User::where('username',$vendeurs)->first()->localisation,Auth::user()->username);
+									event(new AfrocashNotification($n));
+									$n->save();
 									return response()
-										->json('done');
+									->json('done');
 
 							} else {
 								throw new AppException("Mot de passe Invalide!");

@@ -482,7 +482,8 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
     $notification->description = $description;
     $notification->vendeurs = $vendeurs;
     // ENREGISTREMENT DE LA NOTIFICATION
-    $notification->save();
+    // $notification->save();
+    return $notification;
   }
 
 }

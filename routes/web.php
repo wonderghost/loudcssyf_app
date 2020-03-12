@@ -23,8 +23,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	// Route::get('/admin/commandes/validated','AdminController@getValidatedCommandesMaterial');
 	Route::get('/admin/commandes/credit-all','CreditController@getAllCommandes');
 	// DASHBOARD DATA
-	Route::post('/admin/dashboard/user-data','AdminController@dataForUserChart');
-	Route::post('/admin/dashboard/depot-data','AdminController@dataForDepotChart');
+
 	// Promo
 	Route::post('/admin/promo/add','AdminController@addPromo');
 	Route::post('/admin/promo/list','AdminController@getPromo');
@@ -67,6 +66,7 @@ Route::middleware(['auth','admin'])->group(function () {
 
 	// admin routing
 	Route::get('/admin','AdminController@dashboard');
+
 	Route::post('/admin/transaction-for-dashboard','AdminController@getTransactionForDashboardView');
 // //
 	Route::get('/admin/add-user','AdminController@getFormUser');
@@ -284,9 +284,9 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// RECOUVREMENTS
 	Route::get('user/recouvrement','RecouvrementController@operations')->middleware('coursier');
 	Route::post('/user/recouvrement/add','RecouvrementController@addRecouvrement')->middleware('coursier');
-	Route::post('/user/recouvrement/all-transactions','RecouvrementController@allTransactions')->middleware('coursier');
-	Route::post('/user/recouvrement/get-montant-du','RecouvrementController@getMontantDuRecouvrement')->middleware('coursier');
-	Route::post('/user/recouvrement/all-recouvrement','RecouvrementController@allRecouvrement')->middleware('coursier');
+	Route::get('/user/recouvrement/all-transactions','RecouvrementController@allTransactions')->middleware('coursier');
+	Route::get('/user/recouvrement/get-montant-du/{vendeur}','RecouvrementController@getMontantDuRecouvrement')->middleware('coursier');
+	Route::get('/user/recouvrement/all-recouvrement','RecouvrementController@allRecouvrement')->middleware('coursier');
 
 	// ENVOI DE LA DEMANDE DE PAIEMENT DE COMMISSION
 	Route::post('/user/rapport-ventes/pay-commission','RapportControlleur@payCommission')->middleware('vendeur');
@@ -295,7 +295,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/rapport-ventes/validate-pay-commission','RapportControlleur@validatePayComission')->middleware('cga');
 	Route::get('/user/pay-comissions/all','RapportControlleur@payComissionList')->middleware('cga');
 	// NOTIFICATIONS
-	Route::post('/user/notification/getlist','NotificationController@getList');
+	Route::get('/user/notification/getlist','NotificationController@getList');
 	Route::post('/user/notification/mark-as-read','NotificationController@markAsRead');
 	// CHAT SERVICES
 	Route::get('/user/chat-service/users-list','ChatController@UserList');
