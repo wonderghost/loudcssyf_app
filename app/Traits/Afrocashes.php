@@ -111,6 +111,8 @@ Trait Afrocashes {
 						$n->save();
 						$n = $this->sendNotification("Commande Afrocash" , "Vous avez une commande Afrocash en attente de confirmation!",User::where('type','gcga')->first()->username);
 						$n->save();
+						$n = $this->sendNotification("Commande Afrocash" , "Il y a une commande Afrocash en attente de confirmation pour : ".Auth::user()->localisation,'admin');
+						$n->save();
 						return response()
 							->json('done');
 					} else {
@@ -225,11 +227,11 @@ Trait Afrocashes {
 								'status'	=>	'validated'
 							]);
 
-							$n = $this->sendNotification("Commande Afrocash" ,"Une Afrocash a ete valide",User::where('type','admin')->first()->username);
+							$n = $this->sendNotification("Commande Afrocash" ,"Une Afrocash a ete valide pour :".$commande->vendeurs()->localisation,User::where('type','admin')->first()->username);
 							$n->save();
 							$n = $this->sendNotification("Commande Afrocash" , "Votre Commande Afrocash a ete valide!",$commande->vendeurs);
 							$n->save();
-							$n = $this->sendNotification("Commande Afrocash" , "Vous avez valide une commande Afrocash!",Auth::user()->username);
+							$n = $this->sendNotification("Commande Afrocash" , "Vous avez valide une commande Afrocash! pour : ".$commande->vendeurs()->localisation,Auth::user()->username);
 							$n->save();
 
 							return response()
@@ -409,13 +411,10 @@ Trait Afrocashes {
 									$transaction_credit->save();
 									$vendeurs = Afrocash::where('numero_compte',$request->input('numero_compte_courant'))->first()->vendeurs ;
 									$n = $this->sendNotification("Depot Afrocash" , "Depot de  ".number_format($request->input('montant'))." GNF effectué",'admin');
-									event(new AfrocashNotification($n));
 									$n->save();
 									$n = $this->sendNotification("Depot Afrocash" , "Reception de ".number_format($request->input('montant'))." GNF de la part de ".Auth::user()->localisation,$vendeurs);
-									event(new AfrocashNotification($n));
 									$n->save();
 									$n = $this->sendNotification("Depot Afrocash" , "Vous avez effectue un depot de ".number_format($request->input('montant'))." GNF pour ".User::where('username',$vendeurs)->first()->localisation,Auth::user()->username);
-									event(new AfrocashNotification($n));
 									$n->save();
 									return response()
 									->json('done');

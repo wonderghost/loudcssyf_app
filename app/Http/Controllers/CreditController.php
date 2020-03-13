@@ -128,14 +128,6 @@ class CreditController extends Controller
         return view('credit.crediter-vendeur');
     }
 
-    // public function getListVendeur(Request $request) {
-    //     $all = User::select()->where('type','v_da')->orWhere('type','v_standart')->get();
-    //     if($all) {
-    //         return response()->json($all);
-    //     }
-    //     return response()->json('fail');
-    // }
-
     public function isValidMontant($montant,$account = 'cga') {
         $temp = Credit::select()->where('designation',$account)->first();
         if($temp->solde >= $montant) {
@@ -143,109 +135,6 @@ class CreditController extends Controller
         }
         return false;
     }
-
-    // // ENVOI DE CREDIT CGA
-    // public function sendCga(CgaRequest $request) {
-    //     $cga = CgaAccount::select()->where('vendeur',$request->input('vendeur'))->first();
-    //     // dd($cga);
-    //     // die();
-    //     // VERIFIER SI LE MONTANT EST VALIDE
-    //     if($request->input('montant') && $request->input('montant') > 0) {
-    //         // VERIFIER SI LE MONTANT EST DISPONIBLE
-    //         if($temp = $this->isValidMontant($request->input('montant'))) {
-    //             // DEBIT DANS LE SOLDE PRINCIPALE
-    //             $soldeNow = $temp->solde - $request->input('montant');
-    //             Credit::select()->where('designation','cga')->update([
-    //                 'solde' => $soldeNow
-    //             ]);
-    //             //CREDIT DANS LE SOLDE VENDEUR
-    //             $cga->solde = $cga->solde + $request->input('montant');
-    //             CgaAccount::select()->where('vendeur',$request->input('vendeur'))->update([
-    //                 'solde' => $cga->solde
-    //             ]);
-    //             // ENREGISTREMENT DE L'HISTORIQUE
-    //             $histo = new TransactionCga;
-    //             $histo->cga = $cga->numero;
-    //             $histo->montant = $request->input('montant');
-    //             $histo->save();
-		// 						// ENVOI DE LA NOTIFICATION
-		// 						// $this->sendNotificationForGestionnaire("Commande Credit Cga" , "Command Cga Validée!",$request->input('vendeur'));
-    //             return redirect('/user/cga-credit')->with('success',"Transaction effectuée !");
-    //         } else {
-    //             // MONTANT INDISPONIBLE
-    //             return redirect('/user/cga-credit')->with('_errors',"Montant indisponible!");
-    //         }
-		//
-    //     } else {
-    //         // MONTANT INVALIDE
-    //         return redirect('/user/cga-credit')->with('_errors',"Montant invalide!");
-    //     }
-    // }
-
-    //  ENVOI DE CREDIT REX
-    // public function sendRex(RexRequest $request) {
-    //     // dd(Auth::user());
-    //     $rex = RexAccount::select()->where('numero',User::select()->where('username',$request->input('vendeur'))->first()->rex)->first();
-    //     // VERIFIER SI LE MONTANT EST VALIDES
-    //     if($request->input('montant') && $request->input('montant') > 0) {
-    //         // VERIFIER SI LE MONTANT EST DISPONIBLE
-    //         if($temp = $this->isValidMontant($request->input('montant'),'rex')) {
-    //             // DEBIT DANS LE SOLDE PRINCIPALE
-    //             $soldeNow = $temp->solde - $request->input('montant');
-    //             Credit::select()->where('designation','rex')->update([
-    //                 'solde' => $soldeNow
-    //             ]);
-    //             // CREDITER LE SOLDE REX
-    //             $rex->solde = $rex->solde + $request->input('montant');
-    //             RexAccount::select()->where('numero',$rex->numero)->update([
-    //                 'solde' => $rex->solde
-    //             ]);
-    //             //
-    //             $histo = new TransactionRex;
-    //             $histo->rex = $rex->numero;
-    //             $histo->montant = $request->input('montant');
-    //             $histo->save();
-    //             return redirect('/user/rex-credit')->with('success',"Transaction effectuée!");
-    //         } else {
-    //             return redirect('/user/rex-credit')->with('_errors',"Montant indisponible!");
-    //         }
-    //     } else {
-    //         // MONTANT INVALIDE
-    //         return redirect('/user/rex-credit')->with('_errors',"Montant invalide!");
-    //     }
-    // }
-
-		// public function getListCommandGcga(Request $request) {
-		// 	$commands_unvalidated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','unvalidated')->orderBy('created_at','desc')->limit(30)->get();
-		// 	$commands_validated = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','validated')->orderBy('created_at','desc')->limit(30)->get();
-		// 	$commands_aborted = CommandCredit::whereIn('type',['cga','afro_cash_sg'])->where('status','aborted')->orderBy('created_at','desc')->limit(30)->get();
-		//
-		// 	$all_unvalidated = $this->organizeCommandGcga($commands_unvalidated);
-		//
-		// 	$all_validated = $this->organizeCommandGcga($commands_validated);
-		//
-		// 	$all_aborted = $this->organizeCommandGcga($commands_aborted);
-		//
-		// 	return response()->json([
-		// 		'unvalidated'	=>	$all_unvalidated,
-		// 		'validated'	=>	$all_validated,
-		// 		'aborted'	=>	$all_aborted
-		// 	]);
-		// }
-
-		// public function getListCommandGrex(Request $request) {
-		// 	$commands_unvalidated = CommandCredit::whereIn('type',['rex'])->where('status','unvalidated')->orderBy('created_at','desc')->get();
-		// 	$commands_validated = CommandCredit::whereIn('type',['rex'])->where('status','validated')->orderBy('created_at','desc')->get();
-		// 	$all_unvalidated = $this->organizeCommandGcga($commands_unvalidated);
-		//
-		// 	$all_validated = $this->organizeCommandGcga($commands_validated);
-		//
-		// 	return response()->json([
-		// 		'unvalidated'	=>	$all_unvalidated,
-		// 		'validated'	=>	$all_validated
-		// 	]);
-		// }
-
 		public function organizeCommandGcga($list) {
 			$temp = [];
 			foreach($list as $key => $value) {
