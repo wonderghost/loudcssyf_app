@@ -6,7 +6,7 @@
         
         <template v-if="theUser == 'admin'">
             <div class="uk-grid-small" uk-grid>
-            <div class="uk-width-1-3@m uk-card uk-padding-remove uk-margin-remove uk-card-default uk-card-small" style="box-shadow : none;">
+            <div class="uk-width-1-4@m uk-card uk-padding-remove uk-margin-remove uk-card-default uk-card-small" style="box-shadow : none;">
                 <div class="uk-card-header">
                     <h5 class="uk-card-title">Utilisateurs</h5>
                 </div>
@@ -14,7 +14,7 @@
                     <ve-pie class="uk-padding-remove" :data="userData"></ve-pie>
                 </div>
             </div>
-            <div class="uk-width-1-3@m uk-card uk-card-default uk-margin-remove uk-padding-remove uk-card-small" style="box-shadow : none;">
+            <div class="uk-width-1-4@m uk-card uk-card-default uk-margin-remove uk-padding-remove uk-card-small" style="box-shadow : none;">
                 <div class="uk-card-header">
                     <h5 class="uk-card-title">Commande</h5>
                 </div>
@@ -22,6 +22,8 @@
                     <ve-pie :data="commandData"></ve-pie>
                 </div>
             </div>
+            <div class="uk-width-1-4@m"></div>
+            <div class="uk-width-1-4@m"></div>
             <div class="uk-width-1-2@m uk-card uk-padding-remove uk-margin-remove uk-card-default uk-card-small" style="box-shadow : none;">
                 <div class="uk-card-header">
                     <h5 class="uk-card-title">Depots</h5>

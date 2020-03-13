@@ -71,11 +71,23 @@ html , body {
 }
 
 .more-tools {
-  position : fixed;
-  z-index : 1;
-  top : 20%;
-  right : 0;
+ cursor : pointer !important;
+ border-radius: 100px 100px 100px 100px !important;
+ padding : 5px !important;
 }
-.more-tools > a{
+
+div.vue-radial-menu-wrapper {
+  position : fixed ;
+  /* top : 20% !important; */
+  right : 1% !important;
+  bottom : 10% !important;
+  cursor : pointer;
+  background : #1e87f0 !important;
+  color : #fff !important; 
+  z-index: 1 !important;
+}
+
+div.vue-radial-menu-wrapper .vue-radial-menu-item {
   border : none !important;
+  box-shadow:  none !important;
 }

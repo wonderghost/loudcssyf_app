@@ -43,7 +43,7 @@
         </template>
         <!-- // -->
 
-    <ul class="uk-tab" uk-switcher="animation : uk-animation-slide-right">
+    <ul class="uk-tab" uk-switcher="animation : uk-animation-slide-bottom">
       <li> <a @click="filterCommandCredit('unvalidated')" href="#">En attente de validation</a> </li>
       <li> <a @click="filterCommandCredit('validated')" href="#">Deja validee</a> </li>
       <li> <a @click="filterCommandCredit('aborted')" href="#">commandes annullee</a> </li>
