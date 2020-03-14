@@ -58,17 +58,29 @@
     <template v-if="!payComission" id="">
 
       <template id="">
-        <div class="uk-grid-divider" uk-grid>
+        <div class="uk-grid-small" uk-grid>
 
-          <div class="uk-width-1-5@m">
+          <div class="uk-width-1-4@m">
             <label for=""> <span uk-icon="icon : tag"></span> Etat</label>
             <select class="uk-select uk-border-rounded" v-model="stateRapp">
               <option value="unaborted">valide</option>
               <option value="aborted">invalide</option>
             </select>
           </div>
+          <div class="uk-width-1-2@m">
+            <div class="uk-grid-small" uk-grid>
+              <div class="uk-width-1-2@m">
+                <label for=""><span uk-icon="icon : calendar"></span> Du</label>
+                <input type="date" class="uk-input uk-border-rounded" v-model="filterDate.debut">
+              </div>
+              <div class="uk-width-1-2@m">
+                <label for=""><span uk-icon="icon : calendar"></span> Au</label>
+                <input type="date" class="uk-input uk-border-rounded" v-model="filterDate.fin">
+              </div>
+            </div>
+          </div>
 
-          <div v-if="typeUser == 'admin' || typeUser == 'controleur'" class="uk-width-1-5@m">
+          <div v-if="typeUser == 'admin' || typeUser == 'controleur'" class="uk-width-1-4@m">
             <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
             <select class="uk-select uk-border-rounded" v-model="filterUser">
               <option value="">Tous les vendeurs</option>
@@ -96,7 +108,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="rap in rappWithUser.slice(start,end)">
+            <tr v-for="rap in rappWithDate.slice(start,end)">
               <td>{{rap.date}}</td>
               <td>{{rap.vendeurs}}</td>
               <td>{{rap.type}}</td>
@@ -187,6 +199,7 @@
 <script>
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
+import datepicker from 'vue-date-picker'
 
     export default {
       created () {
@@ -194,6 +207,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
       },
         mounted() {
           this.getRapportVente()
+          this.showRapport = this.rappWithUser
           if(this.typeUser == 'admin') {
             this.allUsers()
           }
@@ -201,10 +215,10 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           if(this.typeUser == 'v_da') {
             this.getPayComissionListForVendeur()
           }
-
         },
         components : {
-          Loading
+          Loading,
+          datepicker
         },
         data () {
           return {
@@ -227,10 +241,32 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             },
             stateRapp : "unaborted",
             filterUser : "",
-            users : []
+            users : [],
+            filterDate : {
+              debut : "",
+              fin : ""
+            },
+            showRapport : []
           }
         },
         methods : {
+          checkDate : function() {
+            try {
+              if(this.filterDate.debut == "" || this.filterDate.fin == "") {
+                throw "Selectionnez une date"
+              }
+              let debut = new Date(this.filterDate.debut)
+              let fin = new Date(this.filterDate.fin)
+              if(debut > fin) {
+                console.log('ok')
+              }else {
+                console.log('non')
+              }
+            } 
+            catch(error) {
+              alert(error)
+            }
+          },
           allUsers : async function () {
             try {
               let response = await axios.get('/admin/all-vendeurs')
@@ -295,7 +331,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           }
           ,
           nextPage : function () {
-            if(this.rappWithUser.length > this.end) {
+            if(this.rappWithDate.length > this.end) {
               let ecart = this.end - this.start
               this.start = this.end
               this.end += ecart
@@ -337,6 +373,19 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           }
         },
         computed : {
+          rappWithDate() {
+            return this.rappWithUser.filter( (rapport) => {
+              if(this.filterDate.debut !== "" && this.filterDate.fin !== "") {
+                let debut = new Date(this.filterDate.debut)
+                let fin = new Date(this.filterDate.fin)
+                let rappDate = new Date(rapport.date)
+                return (rappDate >= debut && rappDate <= fin)
+              }
+              else {
+                return true
+              }
+            })
+          },
           rappWithUser () {
             return this.stateRapportVentes.filter( (rapport) => {
               return rapport.vendeurs.match(this.filterUser) 

@@ -324,7 +324,7 @@ public function abortRapport(Request $request , RapportVente $r) {
 		// recuperation du compte cga
 		$vendeurs = $rapport->vendeurs();
 		if($rapport->credit_utilise == 'cga') {
-			// REX
+			// CGA
 			$cga = $vendeurs->cgaAccount();
 			$cga->solde += $rapport->montant_ttc;
 			$rapport->state = 'aborted';

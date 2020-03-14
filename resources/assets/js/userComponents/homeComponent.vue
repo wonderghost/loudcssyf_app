@@ -103,6 +103,7 @@
               <ul class="uk-nav-sub">
                 <li><a href="/admin/afrocash"><span uk-icon="icon :arrow-right;"></span> Operations</a>	</li>
                 <li><a href="/admin/afrocash/all-transactions"><span uk-icon="icon : arrow-right;"></span> Toutes les transactions</a>	</li>
+                <li><a href="#"><span uk-icon="icon : arrow-right"></span> Recouvrements</a></li>
               </ul>
             </li>
             <li class="uk-parent">
@@ -294,7 +295,6 @@
           getAllNotifications : async function () {
             try {
               let response = await axios.get('/user/notification/getlist')
-              console.log(response.data)
               this.notifications = response.data
             } catch (e) {
                 alert(e)
