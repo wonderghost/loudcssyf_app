@@ -62,9 +62,12 @@ class AdminController extends Controller
 
       return view('admin.dashboard');
     }
+    // RECOUVREMENT 
+    public function recourvementIndex() {
+      return view('recouvrement.operations');
+    }
     // etat du depot central
     public function etatDepotCentral() {
-
       return view('admin.depot-central');
     }
     // recuperation etat du depot Central

@@ -180,7 +180,7 @@ Trait Afrocashes {
 							$n->save();
 							$n = $this->sendNotification("Commande Credit Cga" , "Votre Commande cga a ete valide",$commande->vendeurs);
 							$n->save();
-							$n = $this->sendNotification("Commande Credit Cga" , "Vous avez valide une commande cga",Auth::user()->username);
+							$n = $this->sendNotification("Commande Credit Cga" , "Vous avez valide une commande cga pour : ".$commande->vendeurs()->localisation,Auth::user()->username);
 							$n->save();
 
 							return response()
@@ -227,7 +227,7 @@ Trait Afrocashes {
 								'status'	=>	'validated'
 							]);
 
-							$n = $this->sendNotification("Commande Afrocash" ,"Une Afrocash a ete valide pour :".$commande->vendeurs()->localisation,User::where('type','admin')->first()->username);
+							$n = $this->sendNotification("Commande Afrocash" ,"Une Commande Afrocash a ete valide pour :".$commande->vendeurs()->localisation,User::where('type','admin')->first()->username);
 							$n->save();
 							$n = $this->sendNotification("Commande Afrocash" , "Votre Commande Afrocash a ete valide!",$commande->vendeurs);
 							$n->save();

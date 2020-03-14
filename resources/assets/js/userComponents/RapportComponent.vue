@@ -59,15 +59,38 @@
 
       <template id="">
         <div class="uk-grid-small" uk-grid>
-
           <div class="uk-width-1-4@m">
-            <label for=""> <span uk-icon="icon : tag"></span> Etat</label>
+            <label for="">Commission Cumulee</label>
+            <span class="uk-input uk-text-center uk-text-bold uk-border-rounded">{{comissionCummule | numFormat}}</span>
+          </div>
+        </div>
+        <div class="uk-grid-small" uk-grid>
+
+          <div class="uk-width-1-6@m">
+            <label for=""> <span uk-icon="icon : info"></span> Etat</label>
             <select class="uk-select uk-border-rounded" v-model="stateRapp">
+              <option value="">Tous</option>
               <option value="unaborted">valide</option>
               <option value="aborted">invalide</option>
             </select>
           </div>
-          <div class="uk-width-1-2@m">
+          <div class="uk-width-1-6@m">
+            <label for=""><span uk-icon="icon : tag"></span> Promo</label>
+            <select class="uk-select uk-border-rounded">
+              <option value="">Tous</option>
+              <option value="">Hors Promo</option>
+              <option value="">En Promo</option>
+            </select>
+          </div>
+          <div class="uk-width-1-6@m">
+            <label for=""><span uk-icon="icon : credit-card"></span> Paiement</label>
+            <select class="uk-select uk-border-rounded" v-model="payFilter">
+              <option value="">Tous</option>
+              <option value="paye">Paye</option>
+              <option value="non_paye">Impaye</option>
+            </select>
+          </div>
+          <div class="uk-width-1-3@m">
             <div class="uk-grid-small" uk-grid>
               <div class="uk-width-1-2@m">
                 <label for=""><span uk-icon="icon : calendar"></span> Du</label>
@@ -80,14 +103,13 @@
             </div>
           </div>
 
-          <div v-if="typeUser == 'admin' || typeUser == 'controleur'" class="uk-width-1-4@m">
+          <div v-if="typeUser == 'admin' || typeUser == 'controleur'" class="uk-width-1-6@m">
             <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
             <select class="uk-select uk-border-rounded" v-model="filterUser">
               <option value="">Tous les vendeurs</option>
               <option v-for="u in users" :value="u.localisation"> {{u.localisation}} </option>
             </select>
           </div>
-
         </div>
       </template>
 
@@ -114,8 +136,8 @@
               <td>{{rap.type}}</td>
               <td>{{rap.credit}}</td>
               <td>{{rap.quantite}}</td>
-              <td>{{rap.montant_ttc}}</td>
-              <td>{{rap.commission}}</td>
+              <td>{{rap.montant_ttc| numFormat}}</td>
+              <td>{{rap.commission | numFormat}}</td>
               <td>{{rap.promo}}</td>
               <td>{{rap.paiement_commission}}</td>
               <td>
@@ -215,6 +237,7 @@ import datepicker from 'vue-date-picker'
           if(this.typeUser == 'v_da') {
             this.getPayComissionListForVendeur()
           }
+          //
         },
         components : {
           Loading,
@@ -239,34 +262,17 @@ import datepicker from 'vue-date-picker'
               password_confirmation : "",
               id_rapport : ""
             },
-            stateRapp : "unaborted",
+            stateRapp : "",
             filterUser : "",
             users : [],
             filterDate : {
               debut : "",
               fin : ""
             },
-            showRapport : []
+            payFilter : ""
           }
         },
         methods : {
-          checkDate : function() {
-            try {
-              if(this.filterDate.debut == "" || this.filterDate.fin == "") {
-                throw "Selectionnez une date"
-              }
-              let debut = new Date(this.filterDate.debut)
-              let fin = new Date(this.filterDate.fin)
-              if(debut > fin) {
-                console.log('ok')
-              }else {
-                console.log('non')
-              }
-            } 
-            catch(error) {
-              alert(error)
-            }
-          },
           allUsers : async function () {
             try {
               let response = await axios.get('/admin/all-vendeurs')
@@ -373,8 +379,15 @@ import datepicker from 'vue-date-picker'
           }
         },
         computed : {
+          comissionCummule() {
+            var som = 0
+            this.rappWithDate.forEach( r => {
+              som = som + r.commission
+            })
+            return som
+          },
           rappWithDate() {
-            return this.rappWithUser.filter( (rapport) => {
+            return this.rappWithPay.filter( (rapport) => {
               if(this.filterDate.debut !== "" && this.filterDate.fin !== "") {
                 let debut = new Date(this.filterDate.debut)
                 let fin = new Date(this.filterDate.fin)
@@ -386,6 +399,17 @@ import datepicker from 'vue-date-picker'
               }
             })
           },
+          rappWithPay() {
+            return this.rappWithUser.filter( (rapport) => {
+              if(this.payFilter == "") {
+                return true
+              }
+              else {
+                return rapport.paiement_commission == this.payFilter
+              }
+            })
+          }
+          ,
           rappWithUser () {
             return this.stateRapportVentes.filter( (rapport) => {
               return rapport.vendeurs.match(this.filterUser) 
@@ -399,7 +423,12 @@ import datepicker from 'vue-date-picker'
           },
           stateRapportVentes () {
             return this.rapportVentes.filter( (rapport) => {
-              return rapport.state === this.stateRapp
+              if(this.stateRapp == "") {
+                return true
+              }
+              else {
+                return rapport.state === this.stateRapp
+              } 
             })
           },
           typeUser () {

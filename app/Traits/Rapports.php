@@ -282,8 +282,8 @@ Trait Rapports {
 				'type'  =>  $value->type,
 				'credit'  =>  $value->credit_utilise,
 				'quantite'  =>  $value->quantite,
-				'montant_ttc' =>  number_format($value->montant_ttc),
-				'commission'  =>  number_format($value->commission),
+				'montant_ttc' =>  $value->montant_ttc,
+				'commission'  =>  $value->commission,
 				'promo'	=>	$value->promo > 0 ? '' : 'hors promo',
 				'paiement_commission' =>  $value->statut_paiement_commission,
 				'state'	=>	$value->state

@@ -12,6 +12,12 @@
 */
 
 Route::middleware(['auth','admin'])->group(function () {
+	// recouvrement coursier
+	Route::get('/admin/recouvrement/operations','RecouvrementController@operations');
+	Route::get('/admin/recouvrement/all-transactions','RecouvrementController@allTransactions');
+	Route::get('/admin/recouvrement/get-montant-du/{vendeur}','RecouvrementController@getMontantDuRecouvrement');
+	Route::get('/admin/recouvrement/all-recouvrement','RecouvrementController@allRecouvrement');
+
 	// annulation de rapport de vente
 	Route::post('/admin/rapport/abort','AdminController@abortRapport');
 	//

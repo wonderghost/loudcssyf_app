@@ -114,7 +114,7 @@ class CreditController extends Controller
 				} else {
 					$credit->save();
 				}
-				// return redirect('/admin/add-account-credit')->with('success',"Compte $credit->designation Credité de ".number_format($credit->solde)." GNF !");
+				
 				return response()
 					->json('done');
 			} catch (AppException $e) {

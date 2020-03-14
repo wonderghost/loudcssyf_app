@@ -103,7 +103,7 @@
               <ul class="uk-nav-sub">
                 <li><a href="/admin/afrocash"><span uk-icon="icon :arrow-right;"></span> Operations</a>	</li>
                 <li><a href="/admin/afrocash/all-transactions"><span uk-icon="icon : arrow-right;"></span> Toutes les transactions</a>	</li>
-                <li><a href="#"><span uk-icon="icon : arrow-right"></span> Recouvrements</a></li>
+                <li><a href="/admin/recouvrement/operations"><span uk-icon="icon : arrow-right"></span> Recouvrements</a></li>
               </ul>
             </li>
             <li class="uk-parent">

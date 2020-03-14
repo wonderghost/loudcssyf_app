@@ -20,7 +20,8 @@
 
     <ul class="uk-switcher uk-margin">
       <li>
-        <form @submit.prevent="sendRecouvrement()" class="uk-width-1-2@m">
+        <template v-if="theUser == 'coursiser'">
+          <form @submit.prevent="sendRecouvrement()" class="uk-width-1-2@m">
           <h3>Enregistrer un recouvrement</h3>
           <div class="uk-margin-small">
             <label for="">Vendeurs</label>
@@ -31,7 +32,6 @@
           </div>
           <div class="uk-margin-small">
             <label for="">Montant du</label>
-            <!-- <input type="text" class="uk-input uk-border-rounded" v-model="recouvrementData.montant_du"> -->
             <span class="uk-input uk-border-rounded">{{recouvrementData.montant_du | numFormat}}</span>
           </div>
           <div class="uk-margin-small">
@@ -44,6 +44,12 @@
           </div>
           <button type="submit" class="uk-button uk-button-small uk-border-rounded uk-button-primary">Envoyez</button>
         </form>
+        </template>
+        <template v-else>
+          <div class="uk-alert-warning uk-border-rounded uk-box-shadow-small" uk-alert>
+            <p class="uk-text-center"> <span uk-icon="icon : warning"></span>   Vous n'etes pas autorise a effectuer cette action !</p>
+          </div>
+        </template>
       </li>
       <li>
         <table class="uk-table uk-table-small uk-table-divider uk-table-hover uk-table-striped uk-table-responsive">
@@ -123,6 +129,9 @@ import 'vue-loading-overlay/dist/vue-loading.css';
     components : {
       Loading
     },
+    props : {
+      theUser : String
+    },
     created() {
       this.isLoading = true
     },
@@ -153,15 +162,26 @@ import 'vue-loading-overlay/dist/vue-loading.css';
     },
     methods : {
       getData : async function () {
-        let response = await axios.get('/user/all-vendeurs')
-        this.vendeurs = response.data
+        if(this.theUser == 'coursier') {
+          let response = await axios.get('/user/all-vendeurs')
+          this.vendeurs = response.data
 
-        response = await axios.get('/user/recouvrement/all-recouvrement')
-        this.recouvrements = response.data
+          response = await axios.get('/user/recouvrement/all-recouvrement')
+          this.recouvrements = response.data
 
-        response = await axios.get('/user/recouvrement/all-transactions')
-        this.transactions = response.data
+          response = await axios.get('/user/recouvrement/all-transactions')
+          this.transactions = response.data
+        } 
+        else {
+          let response = await axios.get('/admin/all-vendeurs')
+          this.vendeurs = response.data
 
+          response = await axios.get('/admin/recouvrement/all-recouvrement')
+          this.recouvrements = response.data
+
+          response = await axios.get('/admin/recouvrement/all-transactions')
+          this.transactions = response.data
+        }
         this.isLoading = false
       },
       nextPage : function () {
