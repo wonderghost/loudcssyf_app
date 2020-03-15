@@ -91,3 +91,36 @@ div.vue-radial-menu-wrapper .vue-radial-menu-item {
   border : none !important;
   box-shadow:  none !important;
 }
+/*  */
+.img-bg {
+  width : 100% !important;
+  height :640px !important;
+}
+.login-page-content {
+  /* border : solid 1px #ccc; */
+  margin-top : 5% !important;
+  width : 90% !important;
+  height : 60% !important;
+  margin-left : 2.5% !important;
+  z-index : 1;
+  background : rgba(0,0,0,0.4) !important;
+}
+
+/*  */
+
+@media screen and (max-width : 959) {
+  /* .login-page-content {
+    border : solid 1px #ccc;
+    margin-top : 5% !important;
+    width : 50% !important;
+    height : 400px !important;
+    margin-left : 0px !important;
+    z-index : 1;
+    background : rgba(0,0,0,0.4) !important;
+  }
+
+  .img-bg {
+    width : 100% !important;
+    height :640px !important;
+  } */
+}

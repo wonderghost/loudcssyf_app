@@ -1,0 +1,106 @@
+<template>
+    <div class="">
+        <loading :active.sync="isLoading"
+        :can-cancel="false"
+        :is-full-page="fullPage"></loading>
+        <div class="uk-inline">
+            <img src="img/background.jpg" class="img-bg" alt="">
+            <div class="uk-overlay uk-overlay-default uk-position-top login-page-content uk-border-rounded uk-box-shadow-small">
+                <div class="uk-grid" uk-grid>
+                    <div class="uk-width-1-3@m uk-width-1-1@s uk-margin-large-left">
+                        <div class="uk-card uk-card-default uk-border-rounded uk-box-shadow-small">
+                            <div class="uk-card-header">
+                                <h4 class="uk-card-title"><span uk-icon="icon : unlock"></span> Se Connecter</h4>
+                            </div>
+                            <div class="uk-card-body">
+                                <!-- Erreor block -->
+                                <template v-if="errors.length" v-for="error in errors">
+                                <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+                                    <a href="#" class="uk-alert-close" uk-close></a>
+                                    <p>{{error}}</p>
+                                </div>
+                                </template>
+                                <form @submit.prevent="login()">
+                                    <div class="uk-margin-small">
+                                        <label for=""><span uk-icon="icon : user"></span> Username</label>
+                                        <input v-model="formData.username" type="text" class="uk-input uk-border-rounded" placeholder="Nom d'utilisateur">
+                                    </div>
+                                    <div class="uk-margin-small">
+                                        <label for=""><span uk-icon="icon : lock"></span> Password</label>
+                                        <input v-model="formData.password" type="password" class="uk-input uk-border-rounded" placeholder="Mot de passe">                                           
+                                    </div>
+                                    <button type="submit" class="uk-buton uk-button-small uk-button-primary uk-border-rounded" style="cursor : pointer">Login <span uk-icon="icon : arrow-right"></span></button>
+                                </form>
+                            </div>
+                            <div class="uk-card-footer">
+                                <div class="uk-child-width-1-2@m uk-grid-small" uk-grid>
+                                    <div><a class="uk-text-xsmall uk-text-meta" href="">Mot de passe oubli&eacute;?</a></div>
+                                    <div><a class="uk-text-xsmall uk-text-meta" href="">Besoin d'aide?</a></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="">
+                            <p class="uk-text-meta uk-text-small" style="font-size : 8px">
+                                En me connectant , je reconnais avoir lu et accepter les conditions generales
+                                affichees sur le site web de Loudcssyf
+                            </p>
+                        </div>
+                    </div>
+                    <div class="uk-width-1-2@m uk-margin-large-right"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+import Loading from 'vue-loading-overlay'
+import 'vue-loading-overlay/dist/vue-loading.css'
+
+export default {
+    components : {
+        Loading
+    },
+    mounted() {
+
+    },
+    data() {
+        return {
+            formData : {
+                _token : "",
+                useranme : "",
+                password : ""
+            },
+            isLoading : false,
+            fullPage : true,
+            errors : []
+        }
+    },
+    methods : {
+        login : async function () {
+            this.isLoading = true
+            try {
+                this.formData._token = this.myToken
+                let response = await axios.post('/login',this.formData)
+                if(response.data == 'done') {
+                    location.reload()
+                }
+            } catch(error) {
+                this.isLoading = false
+              if(error.response.data.errors) {
+                let errorTab = error.response.data.errors
+                for (var prop in errorTab) {
+                  this.errors.push(errorTab[prop][0])
+                }
+              } else {
+                  this.errors.push(error.response.data)
+              }
+            }
+        }
+    },
+    computed : {
+        myToken() {
+            return this.$store.state.myToken
+        }
+    }
+}
+</script>

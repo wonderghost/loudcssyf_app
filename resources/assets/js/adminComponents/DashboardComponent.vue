@@ -5,7 +5,7 @@
         :is-full-page="fullPage"></loading>
         
         <template v-if="theUser == 'admin'">
-            <div class="uk-grid-small" uk-grid>
+            <div class="uk-grid-small uk-grid-divider" uk-grid>
             <div class="uk-width-1-4@m uk-card uk-padding-remove uk-margin-remove uk-card-default uk-card-small" style="box-shadow : none;">
                 <div class="uk-card-header">
                     <h5 class="uk-card-title">Utilisateurs</h5>

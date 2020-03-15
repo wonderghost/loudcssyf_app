@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use \App\Exceptions\AppException;
 class LoginController extends Controller
 {
     /*
@@ -41,26 +42,24 @@ class LoginController extends Controller
 
     public function connexion(LoginRequest $request) {
         // dd($request);
-        $validator = Validator::make($request->all(), [
-            'username' => 'required|string',
-            'password' => 'required|string',
+        $validator = $request->validate([
+            'username'  =>  'required',
+            'password'  =>  'required'
+        ],[
+            'required'  =>  'Champ(s) :attribute requis!',
         ]);
-
-        if ($validator->fails()) {
-            return redirect('.connexion')
-                        ->withErrors($validator)
-                        ->withInput();
-        }
-
+        try {
             $credentials = $request->only('username', 'password');
-
             if (Auth::attempt($credentials)) {
             // Authentication passed...
-            return redirect('/');
-        } else {
-            return redirect('/')->with('_errors',"login data incorrect");
+            return response()
+                ->json('done');
+            } else {
+                throw new AppException("Donnees de connexions invalides!");
+            }
+        } catch (AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
         }
-
-
     }
 }

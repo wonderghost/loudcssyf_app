@@ -1,50 +1,46 @@
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
-<head>
+<html lang="fr" dir="ltr">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-130660555-4"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-130660555-4');
+    </script> -->
+
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- CSRF Token -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <title>{{ config('app.name', 'Laravel') }}</title>
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/css/uikit.min.css" />
-    <link rel="stylesheet" href="{{asset('css/style.css')}}">
-</head>
-<body>
-  <!-- loader -->
-	<div id="loader">
-		<div class="uk-border-rounded uk-dark uk-width-1-1@s uk-width-1-3@m uk-align-center uk-background-default uk-margin-xlarge-top uk-padding uk-flex uk-flex-middle uk-flex-center" style="margin-top : 10% !important;">
-			<div class="uk-margin-right" uk-spinner></div>  Patientez svp ...
-		</div>
-	</div>
-    <!-- NAVBAR-->
-<div class="uk-navbar-container" uk-sticky uk-navbar>
-    <div class="uk-navbar-center">
-        <a href="" class="uk-navbar-item uk-logo">Loudcssyf-Sarl</a>
+    <meta name="csrf-token" content="{{csrf_token()}}">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<!-- UIkit CSS -->
+  <link rel="stylesheet" href="{{asset('css/uikit.min.css')}}">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.css" integrity="sha256-IvM9nJf/b5l2RoebiFno92E5ONttVyaEEsdemDC6iQA=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="{{asset('css/style.css')}}">
+  <script type="text/javascript">
+  function noBack(){window.history.forward()}
+  noBack();
+  window.onload=noBack;
+  window.onpageshow=function(evt){if(evt.persisted)noBack()}
+  window.onunload=function(){void(0)}
+  </script>
+  <title>Loudcssyf</title>
+  </head>
+  <body>
+    <div id="app">
+      @yield('content')
     </div>
-</div>
-<!-- // -->
-@yield('content')
-    <!-- Scripts -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
-<!-- UIkit JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/js/uikit.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/js/uikit-icons.min.js"></script>
-<script type="text/javascript">
-  $(function () {
-    $('form').on('submit',function (e) {
 
-			window.scrollTo({
-				top : 0
-			})
-			$("#loader").show()
-
-		})
-  })
-</script>
-</body>
+    <script type="application/javascript" src="{{asset('js/jquery-3.4.1.min.js')}}"></script>
+    <script type="application/javascript" src="{{asset('js/jquery-ui.min.js')}}"></script>
+    <!-- UIkit JS -->
+    <script type="application/javascript" src="{{asset('js/uikit.min.js')}}"></script>
+    <script type="application/javascript" src="{{asset('js/uikit-icons.min.js')}}"></script>
+    <script type="application/javascript" src="{{ mix('js/echo.js') }}" ></script>
+    <script type="application/javascript" src="{{ mix('js/store.js') }}" ></script>
+    <script type="application/javascript" src="{{mix('js/app.js')}}" ></script>
+  </body>
 </html>

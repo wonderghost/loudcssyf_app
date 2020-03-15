@@ -36,6 +36,7 @@ Vue.component('recouvrement',require('./userComponents/RecouvrementComponent.vue
 Vue.component('serial-search',require('./userComponents/SerialSearchComponent.vue').default)
 Vue.component('dashboard',require('./adminComponents/DashboardComponent.vue').default)
 Vue.component('tools',require('./userComponents/ToolsComponent.vue').default)
+Vue.component('login',require('./userComponents/LoginComponent.vue').default)
 
 import Vue from 'vue'
 import Vuex from 'vuex'
