@@ -94,7 +94,7 @@ div.vue-radial-menu-wrapper .vue-radial-menu-item {
 /*  */
 .img-bg {
   width : 100% !important;
-  height :640px !important;
+  height : 100% !important;
 }
 .login-page-content {
   /* border : solid 1px #ccc; */

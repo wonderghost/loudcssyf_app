@@ -20,7 +20,7 @@
 
     <ul class="uk-switcher uk-margin">
       <li>
-        <template v-if="theUser == 'coursiser'">
+        <template v-if="theUser == 'coursier'">
           <form @submit.prevent="sendRecouvrement()" class="uk-width-1-2@m">
           <h3>Enregistrer un recouvrement</h3>
           <div class="uk-margin-small">
