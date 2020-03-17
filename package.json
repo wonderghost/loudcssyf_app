@@ -35,6 +35,7 @@
         "vue-quick-menu": "^1.0.7",
         "vue-radial-menu": "^1.1.1",
         "vue-socialmedia-share": "^1.0.1",
+        "vue-trix": "^1.1.9",
         "vuex": "^3.1.2",
         "vuikit": "^0.8.10"
     }

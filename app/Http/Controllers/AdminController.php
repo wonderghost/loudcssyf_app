@@ -50,6 +50,10 @@ class AdminController extends Controller
     use Cga;
     use Livraisons;
 
+    public function emailTest() {
+      return view('emails.deblocage-cga');
+    }
+
     // TABLEAU DE BORD
     public function dashboard(Request $request) {
       // $n = new Notifications;

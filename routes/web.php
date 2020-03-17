@@ -12,6 +12,7 @@
 */
 
 Route::middleware(['auth','admin'])->group(function () {
+	Route::get('tmp','AdminController@emailTest');
 	// recouvrement coursier
 	Route::get('/admin/recouvrement/operations','RecouvrementController@operations');
 	Route::get('/admin/recouvrement/all-transactions','RecouvrementController@allTransactions');
@@ -305,7 +306,10 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/chat-service/users-list','ChatController@UserList');
 	// RECHERCHE INFORMATIONS  DE SERIAL NUMBER
 	Route::get('/user/search/serial/{slug}','SearchController@finSerialNumber');
-
+	// SEND DEBLOCAGE FORM
+	Route::post('/user/tools/deblocage-cga','ToolsController@deblocageCga');
+	Route::get('tmp','AdminController@emailTest');
+	Route::get('/user/deblocage/get-infos','ToolsController@getInfos');
 });
 
 Route::middleware(['auth'])->group(function () {
