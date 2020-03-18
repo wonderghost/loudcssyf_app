@@ -60,6 +60,10 @@ return [
         'name' => env('MAIL_FROM_NAME', 'LOUDCSSYF-SARL'),
     ],
 
+    'reply_to' => [
+        'address' => 'reseautiers@loudcssyf.com',
+        'name' => 'LOUDCSSYF-SARL',
+    ],
     /*
     |--------------------------------------------------------------------------
     | E-Mail Encryption Protocol

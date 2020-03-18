@@ -35,6 +35,7 @@ class ToolsController extends Controller
                 'michelmawuena.adjavon@canal-plus.com',
                 'amadou.tall@canal-plus.com'
             ];
+            // @@@@@@@@@@@@@@
             Mail::to('relationdistributeur@canalplus-afrique.com')
                 ->cc($arrayMails)
                 ->send(new DeblocageCga($request->user(),[

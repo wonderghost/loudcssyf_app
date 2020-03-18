@@ -29,7 +29,8 @@
                             <div class="uk-alert-info uk-width-1-1@m uk-border-rounded" uk-alert>
                                 <p class="uk-text-center"><span uk-icon="icon : info"></span> Envoyez une demande de deblocage de compte Cga</p>
                             </div>
-                            <form class="uk-grid-small" @submit.prevent="sendDeblocageForm()" uk-grid>   
+                            <template v-if="theUser == 'v_da'">
+                                <form class="uk-grid-small" @submit.prevent="sendDeblocageForm()" uk-grid>   
                                     <div class="uk-width-1-2@m">
                                         <label for=""><span uk-icon="icon : check"></span> Numero Distributeur</label>
                                         <!-- <input type="text" class="uk-input uk-border-rounded" v-model="deblocageForm.num_dist"> -->
@@ -56,11 +57,12 @@
                                         <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
                                     </div>
                                 </form>
+                            </template>
                         </li>
                         <li>    
                             <!-- ERREUR DE SAISIE -->
-                            <div class="uk-alert-info uk-width-1-2@m" uk-alert>
-                                <p><i class="material-icons uk-float-left uk-border-rounded uk-box-shadow-small">info</i>Envoyez une demande d'annulation de Saisie</p>
+                            <div class="uk-alert-info uk-width-1-1@m" uk-alert>
+                                <p class="uk-text-center"><span uk-icon="icon : info"></span> Envoyez une demande d'annulation de Saisie</p>
                             </div>
                         </li>
                     </ul>
@@ -107,6 +109,9 @@ export default {
     },
     mounted() {
         this.getInfosForm()
+    },
+    props : {
+        theUser : String
     },
     data(){
         return {

@@ -33,7 +33,7 @@
         <div class="container">
             <nav class="uk-navbar-container" uk-navbar>
                 <div class="uk-navbar-center">
-                    <a class="uk-navbar-item uk-logo" href="#">LOUDCSSYF-SARL</a>
+                    <a class="uk-navbar-item uk-logo">LOUDCSSYF-SARL</a>
                 </div>
             </nav>
             <!-- BODY -->

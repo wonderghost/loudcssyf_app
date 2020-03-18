@@ -37,7 +37,7 @@
     <div id="app">
       <serial-search></serial-search>
       <home-component></home-component>
-      <tools></tools>
+      <tools the-user="{{Auth::user()->type}}"></tools>
       <pay-comission-component></pay-comission-component>
       @yield('content')
     </div>
