@@ -33,8 +33,11 @@ class ToolsController extends Controller
                 'mamoudou.diallo@canal-plus.com',
                 'reseautiers@loudcssyf.com',
                 'michelmawuena.adjavon@canal-plus.com',
-                'amadou.tall@canal-plus.com'
+                'amadou.tall@canal-plus.com',
+                'loudcssyf@hotmail.com',
+                $request->user()->email
             ];
+
             // @@@@@@@@@@@@@@
             Mail::to('relationdistributeur@canalplus-afrique.com')
                 ->cc($arrayMails)
@@ -43,6 +46,7 @@ class ToolsController extends Controller
                     'nom_prenom'    =>  $request->input('nom_prenom'),
                     'comment'   =>  $request->input('comment')
                 ]));
+            
             return response()
                 ->json('done');
 
@@ -58,6 +62,17 @@ class ToolsController extends Controller
                 ->json($request->user()->agence());
         } catch(AppException $e) {
             headder("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function annulationSaisi(Request $request) {
+        try {
+
+            return response()
+                ->json($request);
+        } catch(AppException $e) {
+            header("Erreur",true,422);
             die(json_encode($e->getMessage()));
         }
     }

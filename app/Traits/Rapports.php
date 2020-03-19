@@ -49,8 +49,7 @@ Trait Rapports {
 	// AJOUTER UN RAPPORT
 
 	public function addRapport() {
-		$vendeurs = User::whereIn('type',['v_standart','v_da'])->get();
-		return view('admin.add-rapport-vente')->withVendeurs($vendeurs);
+		return view('admin.add-rapport-vente');
 	}
 
 	// ENREGISTREMENT D'UN RAPPORT

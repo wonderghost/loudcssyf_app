@@ -431,10 +431,14 @@ class LogistiqueController extends Controller
                 $ravitaillementVendeur->save();
                 $livraison->save();
                 // ENREGISTREMENT DE LA NOTIFICATION
-                $this->sendNotification("Ravitaillement Materiel","Ravitaillement materiel effectue au compte de :".User::where('username',$request->input('vendeur'))->first()->localisation,User::where('type','admin')->first()->username);
-      					$this->sendNotification("Ravitaillement Materiel" ,"Vous avez effectue un ravitaillement au compte de ".User::where("username",$request->input('vendeur'))->first()->localisation,Auth::user()->username);
-      					$this->sendNotification("Ravitaillement Materiel" ,"Votre commande materiel a ete confirme , rendez vous dans le depot : ".$request->input('depot'),$request->input('vendeur'));
-                $this->sendNotification("Livraison Materiel" ,"Vous avez une livraison a effectue au compte de : ".User::where('username',$request->input('vendeur'))->first()->localisation , Depots::where("localisation",$request->input("depot"))->first()->vendeurs);
+                $n = $this->sendNotification("Ravitaillement Materiel","Ravitaillement materiel effectue au compte de :".User::where('username',$request->input('vendeur'))->first()->localisation,User::where('type','admin')->first()->username);
+                $n->save();
+                $n = $this->sendNotification("Ravitaillement Materiel" ,"Vous avez effectue un ravitaillement au compte de ".User::where("username",$request->input('vendeur'))->first()->localisation,Auth::user()->username);
+                $n->save();
+                $n = $this->sendNotification("Ravitaillement Materiel" ,"Votre commande materiel a ete confirme , rendez vous dans le depot : ".$request->input('depot'),$request->input('vendeur'));
+                $n->save();
+                $n = $this->sendNotification("Livraison Materiel" ,"Vous avez une livraison a effectue au compte de : ".User::where('username',$request->input('vendeur'))->first()->localisation , Depots::where("localisation",$request->input("depot"))->first()->vendeurs);
+                $n->save();
                 return response()
                   ->json('done');
               } else {

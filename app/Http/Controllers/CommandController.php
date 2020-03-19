@@ -104,6 +104,11 @@ class CommandController extends Controller
 				$command->id_commande = "CM-".time();
 				$command->vendeurs = Auth::user()->username;
 
+				// cas des promos en cours
+				if($request->input('promo_id') !== "") {
+					$command->promos_id = $request->input('promo_id');
+				}
+				// ##
 				$command_produit->commande = $command->id_commande;
 				$command_produit_parabole->commande = $command->id_commande;
 
@@ -121,7 +126,7 @@ class CommandController extends Controller
 
 
 					$command_produit_parabole->quantite_commande = $request->input('quantite');
-					$command_produit_parabole->parabole_a_livrer = $parabole_a_livrer;
+					$command_produit_parabole->parabole_a_livrer = $parabole_a_livrer < 0 ? 0 : $parabole_a_livrer;
 
 					$command_produit->quantite_commande = $request->input('quantite');
 					$command_produit->parabole_a_livrer = $request->input('quantite');

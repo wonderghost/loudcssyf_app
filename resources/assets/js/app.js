@@ -37,6 +37,7 @@ Vue.component('serial-search',require('./userComponents/SerialSearchComponent.vu
 Vue.component('dashboard',require('./adminComponents/DashboardComponent.vue').default)
 Vue.component('tools',require('./userComponents/ToolsComponent.vue').default)
 Vue.component('login',require('./userComponents/LoginComponent.vue').default)
+Vue.component('promo',require('./adminComponents/PromoComponent.vue').default)
 
 import Vue from 'vue'
 import Vuex from 'vuex'

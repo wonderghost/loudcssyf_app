@@ -34,7 +34,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/chart/command-stat','ChartController@commandStat');
 	// Promo
 	Route::post('/admin/promo/add','AdminController@addPromo');
-	Route::post('/admin/promo/list','AdminController@getPromo');
+	Route::get('/admin/promo/list','AdminController@getPromo');
 	Route::post('/admin/promo/edit','AdminController@editPromo');
 	Route::post('/admin/promo/interrompre','AdminController@interruptionPromo');
 	// Depenses
@@ -310,6 +310,10 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/tools/deblocage-cga','ToolsController@deblocageCga');
 	Route::get('tmp','AdminController@emailTest');
 	Route::get('/user/deblocage/get-infos','ToolsController@getInfos');
+	// SEND ANNULATION DE SAISIE FORM
+	Route::post('/user/tools/annulation-saisie','ToolsController@annulationSaisi');
+	// 
+	Route::get('/user/promo/list','AdminController@getPromo');
 });
 
 Route::middleware(['auth'])->group(function () {

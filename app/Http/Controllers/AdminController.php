@@ -51,7 +51,7 @@ class AdminController extends Controller
     use Livraisons;
 
     public function emailTest() {
-      return view('emails.deblocage-cga');
+      return view('emails.annulation-saisie');
     }
 
     // TABLEAU DE BORD
@@ -445,10 +445,10 @@ class AdminController extends Controller
       'debut' =>  'required|date|before:fin',
       'fin' =>  'required|date|after_or_equal:'.(date("Y/m/d",strtotime("now")))
     ],[
-      'required'  =>  '`:attribute` ne peut etre vide',
-      'string'  =>  '`:attribute` est une chaine de caractere',
-      'date'  =>  '`:attribute` doit etre une date',
-      'before'  =>  'date de `:attribute` invalide',
+      'required'  =>  'Champ(s) `:attribute` ne peut etre vide',
+      'string'  =>  'Champ(s) `:attribute` est une chaine de caractere',
+      'date'  =>  'Champ(s) `:attribute` doit etre une date',
+      'before'  =>  'Champ(s) date de `:attribute` invalide',
       'after_or_equal'  =>  'date de `:attribute` invalide'
     ]);
     try {
@@ -462,6 +462,9 @@ class AdminController extends Controller
           $promo->description = $request->input('description');
           $prix_vente_normal = Produits::where('with_serial',1)->first() ? Produits::where('with_serial',1)->first()->prix_vente : 0;
           $promo->prix_vente = $prix_vente_normal - $request->input('subvention');
+          if($promo->prix_vente <= 0) {
+            throw new AppException("Valeur de la subvention invalide!");
+          }
           $promo->save();
           return response()->json('done');
         } else {
@@ -487,27 +490,32 @@ class AdminController extends Controller
 
   // /// recuperation de la promo active
   public function getPromo(Request $request) {
-    $temp = $this->isExistPromo();
-    if($temp) {
-      $all = [];
-      $debut = new Carbon($temp->debut);
-      $fin = new Carbon($temp->fin);
-      $debut->setLocale('fr_FR');
-      $fin->setLocale('fr_FR');
-      $all = [
-        'id'  =>  $temp->id,
-        'intitule'  =>  $temp->intitule,
-        'debut' =>  $temp->debut,
-        'fin' =>  $temp->fin,
-        'subvention'  =>  $temp->subvention,
-        'prix_materiel' =>  $temp->prix_vente,
-        'description' =>  $temp->description
-      ];
+    try {
+      $temp = $this->isExistPromo();
+      if($temp) {
+        $all = [];
+        $debut = new Carbon($temp->debut);
+        $fin = new Carbon($temp->fin);
+        $debut->setLocale('fr_FR');
+        $fin->setLocale('fr_FR');
+        $all = [
+          'id'  =>  $temp->id,
+          'intitule'  =>  $temp->intitule,
+          'debut' =>  $temp->debut,
+          'fin' =>  $temp->fin,
+          'subvention'  =>  $temp->subvention,
+          'prix_materiel' =>  $temp->prix_vente,
+          'description' =>  $temp->description
+        ];
 
-      return response()->json($all);
-    }
-    else {
-      return response()->json('fail');
+        return response()->json($all);
+      }
+      else {
+        return response()->json('fail');
+      }
+    } catch(AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
     }
   }
 
@@ -546,7 +554,7 @@ class AdminController extends Controller
         throw new AppException("Error!");
       }
     } catch (AppException $e) {
-        header("Unprocessable entity",true,422);
+        header("Erreur!",true,422);
         die(json_encode($e->getMessage()));
     }
   }
@@ -554,10 +562,10 @@ class AdminController extends Controller
 
   public function interruptionPromo(Request $request) {
     $validation = $request->validate([
-      'ref-0' =>  'required|exists:promos,id'
+      'id_promo' =>  'required|exists:promos,id'
     ]);
     try {
-      $promo = Promo::find($request->input('ref-0'));
+      $promo = Promo::find($request->input('id_promo'));
       if($promo) {
         $promo->status_promo = 'inactif';
         $promo->save();
@@ -566,7 +574,7 @@ class AdminController extends Controller
         throw new AppException("Erreur!");
       }
     } catch (AppException $e) {
-      header("Unprocessable entity",true,422);
+      header("Erreur",true,422);
       die(json_encode($e->getMessage()));
     }
   }

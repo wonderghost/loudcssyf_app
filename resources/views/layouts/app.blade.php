@@ -29,7 +29,7 @@
   </script>
   <title>Loudcssyf</title>
   </head>
-  <body>
+  <body onselectstart="return false" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;">
     <div id="app">
       @yield('content')
     </div>

@@ -33,7 +33,6 @@
                                 <form class="uk-grid-small" @submit.prevent="sendDeblocageForm()" uk-grid>   
                                     <div class="uk-width-1-2@m">
                                         <label for=""><span uk-icon="icon : check"></span> Numero Distributeur</label>
-                                        <!-- <input type="text" class="uk-input uk-border-rounded" v-model="deblocageForm.num_dist"> -->
                                         <span class="uk-input uk-border-rounded uk-text-bold uk-text-center">{{deblocageForm.num_dist}}</span>
                                     </div>
                                     <div class="uk-width-1-2@m">
@@ -64,6 +63,41 @@
                             <div class="uk-alert-info uk-width-1-1@m" uk-alert>
                                 <p class="uk-text-center"><span uk-icon="icon : info"></span> Envoyez une demande d'annulation de Saisie</p>
                             </div>
+                            <template v-if="theUser == 'v_da'">
+                                <form @submit.prevent="sendAnnuleSaisi()" class="uk-grid-small" uk-grid>
+                                    <div class="uk-width-1-2@m">
+                                        <label for=""><span uk-icon="icon : check"></span> Numero Distributeur</label>
+                                        <span class="uk-input uk-border-rounded uk-text-bold uk-text-center">{{annuleSaisiForm.num_dist}}</span>
+                                    </div>
+                                    <div class="uk-width-1-2@m">
+                                        <label for=""><span uk-icon="icon : user"></span> Numero Abonn&eacute;</label>
+                                        <input type="text" class="uk-input uk-border-rounded" v-model="annuleSaisiForm.num_abonne">
+                                    </div>
+                                    <div class="uk-width-1-2@m">
+                                        <label for=""><span uk-icon="icon : pencil"></span> Saisie &eacute;rrone&eacute;</label>
+                                        <input type="text" v-model="annuleSaisiForm.saisie_errone" class="uk-input uk-border-rounded">        
+                                    </div>
+                                    <div class="uk-width-1-2@m">
+                                        <label for=""><span uk-icon="icon : pencil"></span> Saisie correcte</label>
+                                        <input type="text" v-model="annuleSaisiForm.saisie_correcte" class="uk-input uk-border-rounded">        
+                                    </div>
+                                    <div class="uk-width-1-2@m">
+                                        <label for=""><span uk-icon="icon : calendar"></span> Date de saisie</label>
+                                        <input type="date" v-model="annuleSaisiForm.date_saisie" class="uk-input uk-border-rounded">
+                                    </div>
+                                    <div class="uk-width-1-2@m">
+                                        <label for=""><span uk-icon="icon : lock"></span> Confirmez votre mote de passe</label>
+                                        <input type="password" v-model="annuleSaisiForm.password" class="uk-input uk-border-rounded">
+                                    </div>
+                                    <div class="uk-width-1-1@m">
+                                        <label for=""><span uk-icon="icon : comment"></span> Commentaire</label>
+                                        <VueTrix v-model="annuleSaisiForm.comment" placeholder="Contenut"/>
+                                    </div>
+                                    <div>
+                                        <button class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
+                                    </div>
+                                </form>
+                            </template>
                         </li>
                     </ul>
                 </div>
@@ -126,6 +160,16 @@ export default {
                 password : "",
                 comment : ""
             },
+            annuleSaisiForm : {
+                num_dist : "",
+                _token : "",
+                num_abonne : "",
+                saisie_errone : "",
+                saisie_correcte : "",
+                date_saisie : "",
+                password : "",
+                comment : ""
+            },
             errors : [],
             isLoading : false,
             fullPage : true
@@ -158,10 +202,20 @@ export default {
                 }
             }
         },
+        sendAnnuleSaisi : async function() {
+            try {
+                this.annuleSaisiForm._token = this.myToken
+                let response = await axios.post('/user/tools/annulation-saisie',this.annuleSaisiForm)
+                console.log(response.data)
+            } catch(error) {
+                alert(error)
+            }
+        },
         getInfosForm : async function() {
             try {
                 let response = await axios.get('/user/deblocage/get-infos')
                 this.deblocageForm.num_dist = response.data.num_dist
+                this.annuleSaisiForm.num_dist = response.data.num_dist
             } catch(error) {
                 alert(error)
             }

@@ -201,7 +201,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               quantite : "",
               prix_achat : 0,
               _token : "",
-              reference_material : ""
+              reference_material : "",
+              promo_id : ""
             },
             errors : [],
             success : "",
@@ -214,7 +215,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               montant : 0,
               numero_recu : "",
               piece_jointe : ""
-            }
+            },
+            promo : {},
+            promoState : false
           }
         },
         methods : {
@@ -232,6 +235,15 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 ht : Math.round(this.material.marge/1.18),
                 tva : Math.round(this.material.marge - (this.material.marge/1.18))
               }
+              response  = await axios.get('/user/promo/list')
+              if(response.data == 'fail') {
+                // la promo n'existe pas
+                this.promoState = false
+              } else {
+                  this.promoState = true
+                  this.promo = response.data
+                  this.formData.promo_id = this.promo.id
+              }
             } catch (e) {
               alert(e)
             }
@@ -240,11 +252,25 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             this.montantTtc = parseInt(this.formData.quantite) * this.material.ttc
             this.montantTtcSubv = parseInt(this.formData.quantite) * this.material.subvention
             this.material.parabole_du = parseInt(this.formData.quantite) - (this.material.migration - this.material.compense)
-            if(this.typeUser == 'v_da') {
-              this.formData.prix_achat = parseInt(this.formData.quantite) * (this.material.prix_vente - (this.marge.ht))
+
+            if(this.promoState) {
+              // la promo est active
+              if(this.typeUser == 'v_da') {
+                  // distributeur agree
+                  this.formData.prix_achat = parseInt(this.formData.quantite) * ((this.material.prix_vente - (this.marge.ht)) - this.promo.subvention)
+              } else {
+                  // vendeurs standart
+                  this.formData.prix_achat = parseInt(this.formData.quantite) * (this.material.prix_vente - this.promo.subvention)
+              }
             } else {
-              this.formData.prix_achat = parseInt(this.formData.quantite) * this.material.prix_vente
+                // la promo est inactive
+                if(this.typeUser == 'v_da') {
+                  this.formData.prix_achat = parseInt(this.formData.quantite) * (this.material.prix_vente - (this.marge.ht))
+                } else {
+                    this.formData.prix_achat = parseInt(this.formData.quantite) * this.material.prix_vente
+                  }
             }
+
           },
           sendCommandMaterial : async function () {
             this.isLoading = true
