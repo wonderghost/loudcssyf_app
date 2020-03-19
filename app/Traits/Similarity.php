@@ -433,27 +433,28 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
         $date = new Carbon($values->created_at);
         $date->setLocale('fr_FR');
         $command_produit = CommandProduit::where([
-          'commande'  =>  $values->id_commande
-          ])->first();
+        'commande'  =>  $values->id_commande
+        ])->first();
 
-          $migration = RapportVente::where('vendeurs',$values->vendeurs)->where('type','migration')->sum('quantite');
-          $compense = Compense::where([
-            'vendeurs'	=>	Auth::user()->username,
-            'materiel'	=>	Produits::where('libelle','Parabole')->first()->reference
-            ])->sum('quantite');
+        $migration = RapportVente::where('vendeurs',$values->vendeurs)->where('type','migration')->sum('quantite');
+        $compense = Compense::where([
+        'vendeurs'	=>	Auth::user()->username,
+        'materiel'	=>	Produits::where('libelle','Parabole')->first()->reference
+        ])->sum('quantite');
 
-          $parabole_a_livrer  = $command_produit->parabole_a_livrer - ($migration + $compense);
-
+        $parabole_a_livrer  = $command_produit->parabole_a_livrer - ($migration + $compense);
+        $_promo = $values->promos_id;
         $all [$key] = [
           'date'  =>  $date->toFormattedDateString().' | '.$date->toTimeString(),
           'vendeurs'  =>  $vendeurs->agence()->societe."_".$vendeurs->localisation,
           'item' => 'Kit complet',
-            'quantite' => $command_produit->quantite_commande,
-            'parabole_a_livrer' =>  $parabole_a_livrer,
-            'status' =>  ($values->status == 'unconfirmed') ? 'en attente' : 'confirmer',
-            'id' => $values->id,
-            'link'  =>  url('user/ravitailler',[$values->id_commande])
-                ];
+          'quantite' => $command_produit->quantite_commande,
+          'parabole_a_livrer' =>  $parabole_a_livrer,
+          'status' =>  ($values->status == 'unconfirmed') ? 'en attente' : 'confirmer',
+          'promo' =>  $_promo ? 'En Promo' : 'Hors Promo',
+          'id' => $values->id,
+          'link'  =>  url('user/ravitailler',[$values->id_commande])
+        ];
     }
     return $all ;
   }

@@ -410,7 +410,7 @@ Trait Afrocashes {
 									$transaction_depot->save();
 									$transaction_credit->save();
 									$vendeurs = Afrocash::where('numero_compte',$request->input('numero_compte_courant'))->first()->vendeurs ;
-									$n = $this->sendNotification("Depot Afrocash" , "Depot de  ".number_format($request->input('montant'))." GNF effectué",'admin');
+									$n = $this->sendNotification("Depot Afrocash" , "Depot de  ".number_format($request->input('montant'))." GNF effectué par :".Auth::user()->localisation." sur le compte de :".User::where('username',$vendeurs)->first()->localisation,'admin');
 									$n->save();
 									$n = $this->sendNotification("Depot Afrocash" , "Reception de ".number_format($request->input('montant'))." GNF de la part de ".Auth::user()->localisation,$vendeurs);
 									$n->save();

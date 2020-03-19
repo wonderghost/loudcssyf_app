@@ -10,7 +10,7 @@
 </style>
 
 <article>
-    <h1>Maintence en cours ...</h1>
+    <h1>Maintenance en cours ...</h1>
     <div>
         <p>&mdash; Veuillez contactez l'administrateur</p>
     </div>

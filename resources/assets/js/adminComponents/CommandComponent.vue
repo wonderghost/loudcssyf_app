@@ -105,7 +105,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         },
         data () {
           return {
-            materialCommand : ['date','vendeurs','designation','quantite','parabole a livrer','status'],
+          materialCommand : ['date','vendeurs','designation','quantite','parabole a livrer','promo','status'],
             start : 0,
             end : 10,
             currentPage : 1,
