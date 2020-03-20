@@ -240,33 +240,41 @@ class LogistiqueController extends Controller
 
     // ajout d'un material dans le depot central
     public function addMaterial(MaterialRequest $request) {
-      $produit = new Produits;
-      // verifier l'unicite de la reference
-      // dd($request);
-      do {
-          $produit->reference = 'LMAT-'.mt_rand(100000,999999);
-      } while ($this->isExisteMaterial($produit->reference));
-      $produit->libelle = $request->input('libelle');
-      $produit->prix_vente=$request->input('prix_unitaire');
-      $produit->quantite_centrale = $request->input("quantite");
-      $produit->prix_initial = $request->input('prix_initial');
-      $produit->marge = $request->input('marge');
-      if($request->input('with_serial')) {
-        $produit->with_serial = $request->input('with_serial');
-      } else {
-        $produit->with_serial = 0;
+      try {
+          $produit = new Produits;
+          // verifier l'unicite de la reference
+          do {
+              $produit->reference = 'LMAT-'.mt_rand(100000,999999);
+          } while ($this->isExisteMaterial($produit->reference));
+          $produit->libelle = $request->input('libelle');
+          $produit->prix_vente=$request->input('prix_unitaire');
+          $produit->quantite_centrale = $request->input("quantite");
+          $produit->prix_initial = $request->input('prix_initial');
+          $produit->marge = $request->input('marge');
+
+          if($request->input('with_serial')) {
+            $produit->with_serial = $request->input('with_serial');
+          } else {
+            $produit->with_serial = 0;
+          }
+
+          if($this->isExisteMaterialName($request->input('libelle'))) {
+            // le materiel existe deja donc augmenter juste la quantite
+            $newQuantite  = Produits::where('libelle',$request->input('libelle'))->first()->quantite_centrale + $request->input('quantite');
+            Produits::where('libelle',$request->input('libelle'))->update([
+              'quantite_centrale' =>  $newQuantite
+            ]);
+          } else  {
+            // le materiel n'existe pas donc l'ajouter
+            $produit->save();
+          }
+          
+          return response()
+            ->json('done');
+      } catch(AppException $e) {
+          header("Erreur",true,422);
+          die(json_encode($e->getMessage()));
       }
-      if($this->isExisteMaterialName($request->input('libelle'))) {
-        // le materiel existe deja donc augmenter juste la quantite
-        $newQuantite  = Produits::where('libelle',$request->input('libelle'))->first()->quantite_centrale + $request->input('quantite');
-        Produits::where('libelle',$request->input('libelle'))->update([
-          'quantite_centrale' =>  $newQuantite
-        ]);
-      } else  {
-        // le materiel n'existe pas donc l'ajouter
-        $produit->save();
-      }
-      return redirect('/admin/add-depot')->with('success',"Enregistrement reussi!");
     }
 
     public function completeRegistration() {
