@@ -48,7 +48,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/get-soldes','CreditController@getSoldesVendeurs');
 	// etat depot Central
 	Route::get('/admin/depot-central','AdminController@etatDepotCentral');
-	Route::post('/admin/depot-central','AdminController@getEtatDepotCentral');
+	Route::get('/admin/entrepot/all','AdminController@getEtatDepotCentral');
 	// PARAMETRES
 	Route::get('/admin/settings','Settings@index');
 	Route::post('/admin/change-password','Settings@changePassword');

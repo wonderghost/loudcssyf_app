@@ -277,10 +277,10 @@
         mounted() {
           this.getAllNotifications()
 
-          Echo.channel("notification")
-            .listen('AfrocashNotification', (e) => {
-              console.log(e)
-            });
+          var channel = Echo.channel('notification');
+          channel.listen('notify', function(data) {
+            alert(JSON.stringify(data));
+          });
         },
         props : {
 

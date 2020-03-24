@@ -11,23 +11,28 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Notifications;
 
-class AfrocashNotification
+class AfrocashNotification implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $notification;
-    public $user;
+    // public $notification;
+    // public $user;
+    public $message;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(\App\Notifications $n,\App\User $u)
-    {
-        //
-      $this->notification = $n;
-      $this->user = $u;
-    }
+    // public function __construct(\App\Notifications $n,\App\User $u)
+    // {
+    //     //
+    //   $this->notification = $n;
+    //   $this->user = $u;
+    // }
+
+    public function __construct($text) {
+        $this->message = $text;
+    }   
 
     /**
      * Get the channels the event should broadcast on.
@@ -36,6 +41,10 @@ class AfrocashNotification
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('notification');
+        return new Channel('notification');
+    }
+
+    public function broadcastAs() {
+        return 'notify';
     }
 }

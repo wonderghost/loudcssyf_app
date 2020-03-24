@@ -63,7 +63,7 @@ class AdminController extends Controller
       // $n->vendeurs = $request->user()->username;
       // $n->save();
       // broadcast(new AfrocashNotification($n ,$request->user()));
-
+      // event(new AfrocashNotification("bonjour"));
       return view('admin.dashboard');
     }
     // RECOUVREMENT 
@@ -75,10 +75,9 @@ class AdminController extends Controller
       return view('admin.depot-central');
     }
     // recuperation etat du depot Central
-    public function getEtatDepotCentral(Request $request) {
+    public function getEtatDepotCentral(Request $request , Produits $p) {
       //
-      $produits = Produits::all();
-      return response()->json($produits);
+      return response()->json($p->all());
     }
     // VERIFIER SI LE NUMEROD N'EXISTE PAS EN DB
     public function isExistNumeroCga($numero) {

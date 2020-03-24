@@ -12,8 +12,9 @@
             </div>
         </template>
         <ul class="uk-subnav uk-subnav-pill" uk-switcher>
-            <li><a href="#">Nouveau Material</a></li>
-            <li><a href="#">Nouvau Depot</a></li>
+            <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Nouveau Material</a></li>
+            <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Nouvau Depot</a></li>
+            <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Inventaire</a></li>
         </ul>
         
         <ul class="uk-switcher">
@@ -54,6 +55,30 @@
                 <!-- // -->
             </li>
             <li></li>
+            <li>
+                <!-- ENTREPOT -->
+                <div class="uk-child-width-1-4@m uk-grid-small" uk-grid>
+                    <template>
+                    <!-- INVENTAIRE DES MATERIELS -->
+                        <div v-for="m in materials"  class="">
+                            <div class="uk-card uk-border-rounded uk-box-shadow-hover-small uk-background-muted uk-dark uk-card-body uk-padding-small">
+                            <h3 class="uk-card-title">{{m.libelle}}</h3>
+                            <p>
+                                <ul class="uk-list uk-list-divider">
+                                <li>
+                                    <span class="uk-card-title">Prix : {{m.prix_vente | numFormat}}</span> ,
+                                </li>
+                                <li>
+                                    <span class="uk-card-title">Qte : {{m.quantite_centrale}}</span>
+                                </li>
+                                </ul>
+                            </p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                <!-- // -->
+            </li>
         </ul>        
     </div>
 </template>
@@ -62,8 +87,11 @@ import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 
 export default {
+    created() {
+        this.isLoading = true
+    },
     mounted() {
-
+        this.etatEntrepot()
     },
     components : {
         Loading
@@ -82,7 +110,8 @@ export default {
             },
             isLoading : false,
             fullPage : true,
-            errors : []
+            errors : [],
+            materials : []
         }
     },
     methods : {
@@ -98,6 +127,7 @@ export default {
                 this.newMaterialForm.prix_unitaire = response.data.prix_vente
                 this.newMaterialForm.marge = response.data.marge
                 this.newMaterialForm.quanite = 0
+
             } catch(error) {
                 alert(error)
             }
@@ -123,6 +153,15 @@ export default {
                 } else {
                     this.errors.push(error.response.data)
                 }
+            }
+        },
+        etatEntrepot : async function() {
+            try {
+                let response = await axios.get('/admin/entrepot/all')
+                this.materials = response.data
+                this.isLoading = false
+            } catch(error) {
+                alert(error)
             }
         }
     },
