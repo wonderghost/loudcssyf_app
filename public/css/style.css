@@ -106,6 +106,14 @@ div.vue-radial-menu-wrapper .vue-radial-menu-item {
   background : rgba(0,0,0,0.4) !important;
 }
 
+.promo-da {
+  position : absolute;
+  right : 0;
+  margin-top : 1%;
+  margin-right : 40%;
+  width : 20%;
+}
+
 /*  */
 
 @media screen and (max-width : 959) {

@@ -28,8 +28,11 @@ use App\StockPrime;
 use App\Credit;
 use App\Promo;
 use App\TransactionCreditCentral;
+use App\RapportPromo;
+use App\CommandMaterial;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+
 
 Trait Rapports {
 
@@ -53,7 +56,7 @@ Trait Rapports {
 	}
 
 	// ENREGISTREMENT D'UN RAPPORT
-	public function sendRapport(Request $request,$slug , Exemplaire $e) {
+	public function sendRapport(Request $request,$slug , Exemplaire $e ,RapportPromo $rp , Promo $p) {
 		try {
 		if($slug) {
 
@@ -100,12 +103,14 @@ Trait Rapports {
 							$rapport->calculCommission('recrutement');
 
 							// DEBIT DU CREDIT CGA
+
 							$new_solde_cga = CgaAccount::where('vendeur',$request->input('vendeurs'))->first()->solde - $request->input('montant_ttc');
 							CgaAccount::where('vendeur',$request->input('vendeurs'))->update([
 								'solde' =>  $new_solde_cga
 							]);
 
 							// DEBIT DE LA QUANTITE DANS LE STOCK DU VENDEURS
+
 							$new_quantite = StockVendeur::where([
 								'vendeurs'  =>  $request->input('vendeurs'),
 								'produit' =>  Produits::where('with_serial',1)->first()->reference
@@ -117,6 +122,20 @@ Trait Rapports {
 							]);
 
 							$id_rapport = $rapport->id_rapport;
+							
+							// LA PROMO EXISTE
+							if($tmp_promo = $this->isExistPromo()) {
+								// AJOUT DU RAPPORT PROMO
+								do {
+									$rp->id =  Str::random(10).'_'.time();
+								} while ($rp->isExistId());
+
+								$rp->quantite_a_compenser = $request->input('quantite_materiel');
+								$rp->compense_espece = $request->input('quantite_materiel') * $tmp_promo->subvention;
+								$rp->promo = $tmp_promo->id;
+								$rapport->id_rapport_promo = $rp->id;
+								$rp->save();
+							}
 							$rapport->save();
 
 							// CHANGEMENT DE STATUS DES MATERIELS
@@ -240,6 +259,31 @@ Trait Rapports {
 				die(json_encode($e->getMessage()));
 			}
 	}
+
+	// RECUPERATION DES MATERIELS COMMANDES LORS DE LA PROMO
+
+	// public function getCommandPromo($vendeur , commandMaterial $cm) {
+	// 	$commande =  $cm->whereNotNull('promos_id')
+	// 		->where('vendeurs',$vendeur)
+	// 		->where('status','confirmed')
+	// 		->get();
+	// }
+	// RECUPERATION DES RAPPORTS DE VENTE LORS DE PROMO
+
+	// public function getRapportPromo($vendeur , Exemplaire $e) {
+	// 	$rapp = RapportVente::select('id_rapport')
+	// 		->whereNotNull('id_rapport_promo')
+	// 		->where('vendeurs',$vendeur)
+	// 		->get();
+		
+	// 	# ON RECUPERE TOUS LES MATERIELS ACTIVES LORS DE LA PROMO
+		
+	// 	$materials_promo = $e->select('serial_number')
+	// 		->whereIn($rapp)
+	// 		->where('vendeurs',$vendeurs)
+	// 		->where('status','actif');
+		
+	// }
 
 	// VERIFICATION DU NUMERO DE SERIE
 	public function checkSerial($serial,$vendeurs, Exemplaire $e) {

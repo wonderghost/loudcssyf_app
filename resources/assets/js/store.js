@@ -13,7 +13,7 @@ const store = new Vuex.Store({
     commandMaterial :[],
     livraisonMaterial :[],
     commandCredit :[],
-    typeCommand : 'en attente',
+    typeCommand : 'unconfirmed',
     statusLivraison : 'non_confirmer',
     statusCommandCredit : 'unvalidated',
     typeUserFilter : document.querySelector("input[id=user-type]") ? document.querySelector("input[id=user-type]").value : '',

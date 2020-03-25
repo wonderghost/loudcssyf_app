@@ -32,7 +32,7 @@ use App\Compense;
 use App\Notifications;
 use App\Alert;
 use App\CommandCredit;
-
+use App\Promo;
 
 
 Trait Similarity {
@@ -450,7 +450,7 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
           'item' => 'Kit complet',
           'quantite' => $command_produit->quantite_commande,
           'parabole_a_livrer' =>  $parabole_a_livrer,
-          'status' =>  ($values->status == 'unconfirmed') ? 'en attente' : 'confirmer',
+          'status' =>  $values->status,
           'promo' =>  $_promo ? 'En Promo' : 'Hors Promo',
           'id' => $values->id,
           'link'  =>  url('user/ravitailler',[$values->id_commande])
@@ -485,6 +485,46 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
     // ENREGISTREMENT DE LA NOTIFICATION
     // $notification->save();
     return $notification;
+  }
+
+   // VERIFIER SI UNE PROMO N'EST PAS DEJA ACTIVE
+   public function isExistPromo() {
+    $temp = Promo::where('status_promo','actif')->first();
+    if($temp) {
+      return $temp;
+    }
+    return false;
+  }
+
+  // /// recuperation de la promo active
+  public function getPromo(Request $request) {
+    try {
+      $temp = $this->isExistPromo();
+      if($temp) {
+        $all = [];
+        $debut = new Carbon($temp->debut);
+        $fin = new Carbon($temp->fin);
+        $debut->setLocale('fr_FR');
+        $fin->setLocale('fr_FR');
+        $all = [
+          'id'  =>  $temp->id,
+          'intitule'  =>  $temp->intitule,
+          'debut' =>  $temp->debut,
+          'fin' =>  $temp->fin,
+          'subvention'  =>  $temp->subvention,
+          'prix_materiel' =>  $temp->prix_vente,
+          'description' =>  $temp->description
+        ];
+
+        return response()->json($all);
+      }
+      else {
+        return response()->json('fail');
+      }
+    } catch(AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
+    }
   }
 
 }

@@ -12,7 +12,7 @@ class RavitaillementVendeur extends Model
     protected $keyType = 'string';
 
     public function livraison() {
-      return $this->hasMany('App\Livraison');
+      return $this->hasMany('App\Livraison','ravitaillement','id_ravitaillement');
     }
 
     public function vendeurs() {

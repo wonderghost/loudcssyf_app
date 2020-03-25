@@ -130,7 +130,9 @@ class CommandController extends Controller
 
 					$command_produit->quantite_commande = $request->input('quantite');
 					$command_produit->parabole_a_livrer = $request->input('quantite');
-
+					
+					$transaction = new TransactionAfrocash;
+					$transaction->command_material_id = $command->id_commande;
 
 					$command->save();
 					$command_produit->save();
@@ -154,7 +156,7 @@ class CommandController extends Controller
 					$afrocash_courant_vendeurs->save();
 					$afrocash_courant_logistique->save();
 
-					$transaction = new TransactionAfrocash;
+					$transaction->motif = "Commande Materiel";
 					$transaction->compte_debite = $afrocash_courant_vendeurs->numero_compte;
 					$transaction->compte_credite = $afrocash_courant_logistique->numero_compte;
 					$transaction->montant = $request->input('prix_achat');

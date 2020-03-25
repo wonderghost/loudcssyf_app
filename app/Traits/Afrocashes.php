@@ -21,6 +21,14 @@ use App\Notifications;
 use App\Alert;
 use Illuminate\Support\Facades\DB;
 use App\Events\AfrocashNotification;
+use App\Promo;
+use App\CommandMaterial;
+use App\Exemplaire;
+use Illuminate\Support\Arr;
+use App\RavitaillementVendeur;
+use App\Livraison;
+use App\Produits;
+use App\LivraisonSerialFile;
 
 Trait Afrocashes {
 
@@ -545,7 +553,7 @@ Trait Afrocashes {
 					'expediteur'	=>	$value->compte_debite ? $value->afrocash()->vendeurs()->localisation : '-',
 					'destinataire'	=>	$value->compte_credite ? $value->afrocashcredite()->vendeurs()->localisation : '-',
 					'montant'	=>	$value->montant,
-					'motif'	=>	''
+					'motif'	=>	$value->motif
 				];
 			}
 			return response()
@@ -612,6 +620,62 @@ public function filterTransactionAfrocash(Request $request) {
 		}
 	} catch (AppException $e) {
 		header("unprocessible entity",true,422);
+		die(json_encode($e->getMessage()));
+	}
+}
+
+// GET INFOS REMBOURSEMENT PROMO 
+
+public function getInfosRemboursementPromo(Request $request,
+	Produits $produit,
+	Livraison $l ,
+	Promo $p , 
+	commandMaterial $cm , 
+	Exemplaire $e , 
+	RavitaillementVendeur $rv,
+	LivraisonSerialFile $lf
+	) {
+	try {
+		#command material promo 
+		$promo = $this->isExistPromo();
+
+		$command_promo = $cm->select('id_commande')->where('promos_id',$promo->id)->get();
+
+		$ravs = $rv->select('id_ravitaillement')->whereIn('commands',$command_promo)
+			->where('livraison','confirmer')
+			->get();
+		$terminal = $produit->where('with_serial',1)->first();
+		
+		$livs = $l->select('id')
+			->whereIn('ravitaillement',$ravs)
+			->where('produits',$terminal->reference)->get();
+
+		$serialsFile = $lf->select('filename')
+			->whereIn('livraison_id',$livs)
+			->get();
+		$serials =[];
+
+		foreach($serialsFile as $key => $value) {
+			$tmp = $this->getSerialInFileText(config('serial_file.path').'/'.$value->filename);
+			$tmp = Arr::where($tmp, function ($value , $key ) {
+				return !empty($value);
+			  });
+			array_push($serials,$tmp);
+		}
+		$_serials = Arr::collapse($serials);
+
+		$serialsInactifs = $e->whereIn('serial_number',$_serials)
+			->where('status','inactif')
+			->where('vendeurs',$request->user()->username)
+			->get();
+		return response()
+			->json([
+				'kits'	=>	$serialsInactifs->count(),
+				'remboursement'	=>	$serialsInactifs->count() * $promo->subvention
+			]);
+		
+	} catch(AppException $e) {
+		header("Erreur",true,422);
 		die(json_encode($e->getMessage()));
 	}
 }

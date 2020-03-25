@@ -32,6 +32,7 @@ use App\StockPrime;
 use App\Exemplaire;
 use App\Credit;
 use App\TransactionCreditCentral;
+use App\TransactionAfrocash;
 use App\Exceptions\AppException;
 use App\Promo;
 use App\CommandMaterial;
@@ -478,45 +479,7 @@ class AdminController extends Controller
     }
   }
 
-  // VERIFIER SI UNE PROMO N'EST PAS DEJA ACTIVE
-  public function isExistPromo() {
-    $temp = Promo::where('status_promo','actif')->first();
-    if($temp) {
-      return $temp;
-    }
-    return false;
-  }
-
-  // /// recuperation de la promo active
-  public function getPromo(Request $request) {
-    try {
-      $temp = $this->isExistPromo();
-      if($temp) {
-        $all = [];
-        $debut = new Carbon($temp->debut);
-        $fin = new Carbon($temp->fin);
-        $debut->setLocale('fr_FR');
-        $fin->setLocale('fr_FR');
-        $all = [
-          'id'  =>  $temp->id,
-          'intitule'  =>  $temp->intitule,
-          'debut' =>  $temp->debut,
-          'fin' =>  $temp->fin,
-          'subvention'  =>  $temp->subvention,
-          'prix_materiel' =>  $temp->prix_vente,
-          'description' =>  $temp->description
-        ];
-
-        return response()->json($all);
-      }
-      else {
-        return response()->json('fail');
-      }
-    } catch(AppException $e) {
-        header("Erreur",true,422);
-        die(json_encode($e->getMessage()));
-    }
-  }
+ 
 
   // editer une promo
   public function editPromo(Request $request) {
@@ -587,7 +550,6 @@ class AdminController extends Controller
   public function getAllCommandes(Request $request , CommandMaterial $c) {
     try {
       $commands= $c->select()->orderBy('created_at','desc')->get();
-
       $all =  $this->organizeCommandList($commands);
 
       return response()->json($all);
@@ -621,6 +583,75 @@ class AdminController extends Controller
     } catch (AppException $e) {
       header("Erreur!",true,422);
       die(json_encode($e->getMessage()));
+    }
+  }
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  public function abortCommandMaterial(Request $request ,CommandMaterial $cm , Afrocash $a , TransactionAfrocash $ta) {
+    try {
+      $command = $cm->where('id',request()->id)->first();
+      if($command->status == 'confirmed' || $command->status == 'aborted') {
+        throw new AppException("Action Indisponible!");
+      }
+      
+      // get account afrocash for user(da|vendeur)
+      $accountAfrocashVendeur = $a->where('vendeurs',$command->vendeurs)
+        ->where('type','courant')
+        ->first();
+
+      // get account afrocash for logistique
+      $accountAfrocashLogistique = $a->where('vendeurs',$request->user()->username)
+        ->where('type','courant')
+        ->first();
+      
+        // get transactionInfos
+      $transactionCommand = $ta->where('command_material_id',$command->id_commande)
+        ->where('compte_debite',$accountAfrocashVendeur->numero_compte)
+        ->first();
+
+      // debit du compte afrocash logistique et credit du compte afrocash vendeur
+      $accountAfrocashVendeur->solde += $transactionCommand->montant;
+      $accountAfrocashLogistique->solde -= $transactionCommand->montant;
+
+      $transactionAborted = new $ta;
+      $transactionAborted->compte_debite = $accountAfrocashLogistique->numero_compte;
+      $transactionAborted->compte_credite = $accountAfrocashVendeur->numero_compte;
+      $transactionAborted->montant = $transactionCommand->montant;
+      $transactionAborted->motif = "Annulation de commande materiel";
+      $transactionAborted->command_material_id = $command->id_commande;
+
+      $n = $this->sendNotification("Annulation de commande" , 
+        "Vous avez annuler une commande Materiel pour : ".$accountAfrocashVendeur->vendeurs()->localisation,
+        $request->user()->username);
+      $n->save();
+
+      $n = $this->sendNotification("Annulation de commande",
+        "Une Commande materiel a ete annule pour :".$accountAfrocashVendeur->vendeurs()->localisation,
+        'admin');
+      $n->save();
+
+      $n = $this->sendNotification("Annulation de commande",
+        "Une Commande materiel a ete annule pour :".$accountAfrocashVendeur->vendeurs()->localisation,
+        'root');
+      $n->save();
+
+      $n = $this->sendNotification("Annulation de commande",
+        "Votre commande materiel a ete annule",
+        $accountAfrocashVendeur->vendeurs);
+      $n->save();
+
+      $command->status = 'aborted';
+
+      $command->save();
+      $accountAfrocashVendeur->save();
+      $accountAfrocashLogistique->save();
+      $transactionAborted->save();
+
+      
+      return response()
+        ->json('done');
+    } catch(AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
     }
   }
 

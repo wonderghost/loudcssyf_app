@@ -9,10 +9,14 @@ use App\Traits\Similarity;
 use App\Traits\Abonnements;
 use App\Traits\Recrutement;
 use App\Traits\Cga;
+use App\Traits\Afrocashes;
+use App\Traits\Livraisons;
 use App\Client;
 use App\Repertoire;
 use App\Exemplaire;
 use App\RapportVente;
+use App\Promo;
+
 
 
 class VendeurController extends Controller
@@ -22,6 +26,9 @@ class VendeurController extends Controller
     use Similarity;
     use Recrutement;
     use Abonnements;
+    use Livraisons;
+    use Afrocashes;
+
 
     protected $materialPrice    =   0;
 

@@ -752,9 +752,10 @@ class LogistiqueController extends Controller
     try {
       $commande = $c->find($slug);
       $rv = [];
+      $terminal = 0;
+      $parabole = 0;
+      
       foreach($commande->commandProduits()->get() as $key => $value) {
-        $terminal = 0;
-        $parabole = 0;
         if($value->produits()->first()->with_serial == 1){
           $terminal = $this->getRestantPourRavitaillement($value->commande,$value->produit,$commande->vendeurs);
         } else {

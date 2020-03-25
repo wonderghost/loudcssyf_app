@@ -171,6 +171,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/logistique/afrocash-solde','LogistiqueController@getSoldeLogistique')->middleware('logistique');	//Recuperation du solde afrocash de la logistique
 	Route::get('/logistique/commandes/all','AdminController@getAllCommandes')->middleware('logistique');
 	Route::get('/logistique/commandes/livraison','AdminController@getAllLivraison')->middleware('logistique');
+	Route::post('/logistique/commandes/abort','AdminController@abortCommandMaterial')->middleware('logistique');
 	Route::get('/user/commandes/livraison','AdminController@getAllLivraison');
 	// === MATERIELS
 	Route::get('/user/list-material','LogistiqueController@listMaterial')->middleware('logistique');
@@ -314,6 +315,10 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/tools/annulation-saisie','ToolsController@annulationSaisi');
 	// 
 	Route::get('/user/promo/list','AdminController@getPromo');
+	
+	// Infos compense Promo
+	Route::get('/user/promo/infos-compense','VendeurController@getInfosRemboursementPromo')->middleware('vendeur');
+
 });
 
 Route::middleware(['auth'])->group(function () {

@@ -2,14 +2,14 @@
 <html lang="fr" dir="ltr">
   <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-130660555-4"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-130660555-4"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
       gtag('config', 'UA-130660555-4');
-    </script> -->
+    </script>
     
     <meta http-equiv="Cache-Control" content="no-cache">
     <meta charset="utf-8">
@@ -31,6 +31,7 @@
   <title>Loudcssyf</title>
   </head>
   <body onselectstart="return false" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;">
+  <!-- <body> -->
     <input type="hidden" id="user-type" value="{{Auth::user()->type}}">
     <input type="hidden" id="user-localisation" value="{{Auth::user()->localisation}}">
     <input type="hidden" id="username" value="{{Auth::user()->username}}">
@@ -40,7 +41,7 @@
       <home-component></home-component>
       <tools the-user="{{Auth::user()->type}}"></tools>
       <pay-comission-component></pay-comission-component>
-      <promo></promo>
+      <promo the-user="{{Auth::user()->type}}"></promo>
       @yield('content')
     </div>
 

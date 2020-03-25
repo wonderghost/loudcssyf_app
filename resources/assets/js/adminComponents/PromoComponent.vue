@@ -3,7 +3,24 @@
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"></loading>
-        <!-- MODAL PROMO -->
+
+        <template v-if="theUser == 'v_da'">
+            <div class="promo-da">
+                <div class="uk-grid-small" uk-grid>
+                    <div class="uk-width-1-2@m">
+                        <label for=""><span uk-icon="icon : settings"></span> Kits Promo</label>
+                        <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.kits}}</span>
+                    </div>
+                    <div class="uk-width-1-2@m">
+                        <label for=""><span uk-icon="icon : credit-card"></span> Remboursement</label>
+                        <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.remboursement | numFormat}}</span>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template v-if="theUser == 'admin'">
+            <!-- MODAL PROMO -->
 	<div id="modal-promo" class="uk-modal-container" uk-modal>
         <div class="uk-modal-dialog  uk-margin-auto-vertical">
             <div class="uk-modal-header">
@@ -84,7 +101,7 @@
             </div>
         </div>
     </div>
-
+        </template>
 	<!-- // -->
     </div>
 </template>
@@ -96,8 +113,12 @@ export default {
     components : {
         Loading
     },
+    props : {
+        theUser : String
+    },  
     mounted() {
         this.getInfosPromo()
+        this.getCompensePromoInfos()
     },
     data() {
         return {
@@ -115,7 +136,11 @@ export default {
             fullPage : true,
             errors : [],
             activePromo : {},
-            formState : ""
+            formState : "",
+            compensePromo : {
+                kits : 0,
+                remboursement : 0
+            }
         }
     },
     methods : {
@@ -202,6 +227,14 @@ export default {
                     this.activePromo = response.data
                     this.formState = 'edit'
                 }
+            } catch(error) {
+                alert(error)
+            }
+        },
+        getCompensePromoInfos : async function() {
+            try {
+                let response = await axios.get('/user/promo/infos-compense')
+                this.compensePromo = response.data
             } catch(error) {
                 alert(error)
             }

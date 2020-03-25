@@ -43,9 +43,9 @@
         </template>
         <!-- LOGISTIQUE -->
         <ul class="uk-tab" uk-switcher="animation : uk-animation-slide-right">
-          <li> <a href="#" @click="filterCommande('en attente')">En attente de confirmation</a> </li>
-          <li> <a href="#" @click="filterCommande('confirmer')">Deja confirmee</a> </li>
-          <li> <a href="#" @click="filterCommande('')">Toutes les commandes</a> </li>
+          <li> <a href="#" @click="filterCommande('unconfirmed')">En attente de confirmation</a> </li>
+          <li> <a href="#" @click="filterCommande('confirmed')">Deja confirmee</a> </li>
+          <li> <a href="#" @click="filterCommande('aborted')">Annule</a> </li>
         </ul>
 
           <div class="">
@@ -59,9 +59,14 @@
               <tbody>
                 <tr v-for="command in commandList.slice(start,end)">
                   <td v-for="(column , name) in command" v-if="name != 'link' && name != 'id' && name!='status'">{{column}}</td>
-                  <td class="uk-text-danger" v-if="command.status == 'en attente'">{{command.status}}</td>
-                  <td class="uk-text-success" v-else >{{command.status}}</td>
+
+                  <td class="uk-text-danger" v-if="command.status == 'unconfirmed'">{{command.status}}</td>
+                  <td class="uk-text-success" v-if="command.status == 'confirmed'" >{{command.status}}</td>
+                  <td class="uk-text-warning" v-if="command.status == 'aborted'" >{{command.status}}</td>
                   <td> <a :href="command.link" v-if="typeUser == 'logistique' && command.status == 'en attente'" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-text-capitalize">confirmer</a> </td>
+                  <td v-if="command.status == 'unconfirmed'">
+                    <a @click="abortCommandMaterial(command.id)" class="uk-button-small uk-button uk-button-danger uk-border-rounded uk-text-capitalize">Annuler</a>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -105,13 +110,13 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         },
         data () {
           return {
-          materialCommand : ['date','vendeurs','designation','quantite','parabole a livrer','promo','status'],
+            materialCommand : ['date','vendeurs','designation','quantite','parabole a livrer','promo','status'],
             start : 0,
             end : 10,
             currentPage : 1,
             isLoading : false,
             fullPage : true,
-            afrocashLogistique : {}
+            afrocashLogistique : {},
           }
         },
         methods : {
@@ -162,6 +167,23 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               this.end -= ecart
               this.currentPage--
             }
+          },
+          abortCommandMaterial : async function(e) {
+            try {
+              this.isLoading = true
+              let response = await axios.post('/logistique/commandes/abort', {
+                id : e
+              })
+              if(response.data == 'done') {
+                this.isLoading = false
+                UIkit.modal.alert("<div class='uk-alert-success uk-border-rounded'  uk-alert>Vous avez annule une commande Materiel</div>")
+                  .then(function() {
+                    location.reload()
+                  })
+              }
+            } catch(error) {
+                alert(error.response.data)
+            }
           }
         },
         computed : {
@@ -170,7 +192,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               return this.commandMaterial
             }
             else {
-              return this.commandMaterial.filter( (command) => {
+              return this.commandMaterial.filter((command) => {
                 return command.vendeurs.match(this.theUser)
               })
             }
@@ -178,7 +200,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           ,
           commandMaterial () {
             return this.cMaterial.filter( (command) => {
-              return command.status.match(this.typeCommand)
+              return command.status == this.typeCommand
             })
           },
           typeUser () {

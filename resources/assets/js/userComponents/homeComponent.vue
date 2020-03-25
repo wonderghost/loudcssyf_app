@@ -109,8 +109,8 @@
             <li class="uk-parent">
                 <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Materiels</a>
                 <ul class="uk-nav-sub">
-                    <li><a href="/admin/add-depot"><span uk-icon="icon:arrow-right"></span> Nouveau Materiel</a></li>
-                    <li><a href="/admin/depot-central"><span uk-icon="icon:arrow-right"></span> Entrepot</a></li>
+                    <li><a href="/admin/add-depot"><span uk-icon="icon:arrow-right"></span> Entrepot</a></li>
+                    <!-- <li><a href="/admin/depot-central"><span uk-icon="icon:arrow-right"></span> Entrepot</a></li> -->
                     <li><a href="/admin/list-material"><span uk-icon="icon:arrow-right"></span> Tous les materiels</a></li>
                     <li><a href="/admin/history-depot"><span uk-icon="icon:arrow-right"></span> Historique </a></li>
                 </ul>
@@ -139,6 +139,14 @@
             <ul class="uk-nav-sub">
               <li><a href="/admin/formule"><span uk-icon="icon:check"></span> Formule</a></li>
               <li><a href="/admin/settings"><span uk-icon="icon:user"></span> Profile</a></li>
+              <li>
+                  <form action="/logout" method="post">
+                    <input type="hidden" name="_token" :value="myToken">
+                    <button style="border : none;" class="uk-button uk-button-small uk-button-default uk-text-capitalize" type="submit">
+                      <span uk-icon="icon:sign-out"></span> Deconnexion
+                    </button>
+                </form>
+                </li>
             </ul>
           </li>
           </template>
@@ -257,11 +265,20 @@
             </li>
             <!-- // -->
           </template>
+
           <template v-if="typeUser !== 'admin'" id="">
             <li class="uk-parent">
               <a href="#"> <span uk-icon="icon : settings ; ratio : .9"></span> Parametres</a>
               <ul class="uk-nav-sub">
                 <li><a href="/user/settings"><span uk-icon="icon:user"></span> Profile</a></li>
+                <li>
+                  <form action="/logout" method="post">
+                    <input type="hidden" name="_token" :value="myToken">
+                    <button style="border : none;" class="uk-button uk-button-small uk-button-default uk-text-capitalize" type="submit">
+                      <span uk-icon="icon:sign-out"></span> Deconnexion
+                    </button>
+                </form>
+                </li>
               </ul>
             </li>
           </template>

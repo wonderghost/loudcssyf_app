@@ -16,7 +16,7 @@ class AddPromoIdToCommandMaterial extends Migration
         Schema::table('command_material', function (Blueprint $table) {
             //
             $table->unsignedBigInteger('promos_id')->nullable();
-            $table->foreign('promos_id')->references('id')->on('promos');
+            $table->foreign('promos_id')->references('id')->on('promos')->onDelete('cascade');
         });
     }
 
@@ -29,6 +29,7 @@ class AddPromoIdToCommandMaterial extends Migration
     {
         Schema::table('command_material', function (Blueprint $table) {
             //
+            $table->dropForeign('command_material_promos_id_foreign');
             $table->dropColumn('promos_id');
         });
     }
