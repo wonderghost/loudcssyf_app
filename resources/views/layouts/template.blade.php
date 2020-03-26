@@ -30,7 +30,7 @@
   </script>
   <title>Loudcssyf</title>
   </head>
-  <body onselectstart="return false" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;">
+  <body onselectstart="return true" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;">
   <!-- <body> -->
     <input type="hidden" id="user-type" value="{{Auth::user()->type}}">
     <input type="hidden" id="user-localisation" value="{{Auth::user()->localisation}}">
@@ -42,7 +42,9 @@
       <tools the-user="{{Auth::user()->type}}"></tools>
       <pay-comission-component></pay-comission-component>
       <promo the-user="{{Auth::user()->type}}"></promo>
-      @yield('content')
+      <div class="uk-margin-bottom">
+        @yield('content')
+      </div>
     </div>
 
     <script type="application/javascript" src="{{asset('js/jquery-3.4.1.min.js')}}"></script>

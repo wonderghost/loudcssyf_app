@@ -65,7 +65,7 @@
                   <td class="uk-text-warning" v-if="command.status == 'aborted'" >{{command.status}}</td>
                   <td> <a :href="command.link" v-if="typeUser == 'logistique' && command.status == 'unconfirmed'" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-text-capitalize">confirmer</a> </td>
                   <td v-if="command.status == 'unconfirmed'">
-                    <a @click="abortCommandMaterial(command.id)" class="uk-button-small uk-button uk-button-danger uk-border-rounded uk-text-capitalize">Annuler</a>
+                    <a @click="abortCommandMaterial(command.id)" v-if="typeUser == 'logistique'" class="uk-button-small uk-button uk-button-danger uk-border-rounded uk-text-capitalize">Annuler</a>
                   </td>
                 </tr>
               </tbody>

@@ -12,10 +12,10 @@
               <div class="uk-width-1-3@m"></div>
             <div class="uk-width-1-3@m">
               <form @submit.prevent="serialSearch()" class="uk-grid-small" uk-grid>
-                <div class="uk-width-2-3@m">
+                <div class="uk-width-2-3@m uk-width-5-6@s">
                   <input type="search" class="uk-input uk-border-rounded" v-model="searchForm.dataSearch" placeholder="Trouvez un materiel ...">
                 </div>
-                <div class="uk-width-1-3@m">
+                <div class="uk-width-1-3@m uk-width-1-6@s">
                   <button type="submit" class="uk-button uk-button-link uk-border-rounded" style="margin-top : 6%"> <i class="material-icons">search</i> </button>
                 </div>
             </form>

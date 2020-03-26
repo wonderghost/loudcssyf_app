@@ -5,7 +5,7 @@
         :is-full-page="fullPage"></loading>
 
         <template v-if="theUser == 'v_da'">
-            <div class="promo-da">
+            <div class="promo-da uk-visible@m">
                 <div class="uk-grid-small" uk-grid>
                     <div class="uk-width-1-2@m">
                         <label for=""><span uk-icon="icon : settings"></span> Kits Promo</label>
@@ -16,6 +16,22 @@
                         <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.remboursement | numFormat}}</span>
                     </div>
                 </div>
+            </div>
+            <div class="uk-hidden@m">
+                <nav class="uk-navbar-container uk-box-shadow-small  uk-position-bottom uk-position-fixed uk-position-z-index promo-da-responsive" uk-navbar>
+                    <div class="uk-navbar-right">
+                        <div class="uk-grid-small" uk-grid>
+                            <div class="uk-width-1-2@s">
+                                <label for=""><span uk-icon="icon : settings"></span> Kits Promo</label>
+                                <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.kits}}</span>
+                            </div>
+                            <div class="uk-width-1-2@s">
+                                <label for=""><span uk-icon="icon : credit-card"></span> Remboursement</label>
+                                <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.remboursement | numFormat}}</span>
+                            </div>
+                        </div>                        
+                    </div>
+                </nav>                
             </div>
         </template>
 
