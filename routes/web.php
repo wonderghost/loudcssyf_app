@@ -37,6 +37,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/promo/list','AdminController@getPromo');
 	Route::post('/admin/promo/edit','AdminController@editPromo');
 	Route::post('/admin/promo/interrompre','AdminController@interruptionPromo');
+	Route::get('/admin/promo/get-remboursement','AdminController@getRemboursementForUsers'); // vue sur les remboursements lies a la promo
 	// Depenses
 	Route::post('/admin/depenses/add','AdminController@addDepenses');
 	//

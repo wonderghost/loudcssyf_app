@@ -637,47 +637,115 @@ public function getInfosRemboursementPromo(Request $request,
 	) {
 	try {
 		#command material promo 
-		$promo = $this->isExistPromo();
-
-		$command_promo = $cm->select('id_commande')->where('promos_id',$promo->id)->get();
-
-		$ravs = $rv->select('id_ravitaillement')->whereIn('commands',$command_promo)
-			->where('livraison','confirmer')
-			->get();
-		$terminal = $produit->where('with_serial',1)->first();
-		
-		$livs = $l->select('id')
-			->whereIn('ravitaillement',$ravs)
-			->where('produits',$terminal->reference)->get();
-
-		$serialsFile = $lf->select('filename')
-			->whereIn('livraison_id',$livs)
-			->get();
-		$serials =[];
-
-		foreach($serialsFile as $key => $value) {
-			$tmp = $this->getSerialInFileText(config('serial_file.path').'/'.$value->filename);
-			$tmp = Arr::where($tmp, function ($value , $key ) {
-				return !empty($value);
-			  });
-			array_push($serials,$tmp);
-		}
-		$_serials = Arr::collapse($serials);
-
-		$serialsInactifs = $e->whereIn('serial_number',$_serials)
-			->where('status','inactif')
-			->where('vendeurs',$request->user()->username)
-			->get();
 		return response()
-			->json([
-				'kits'	=>	$serialsInactifs->count(),
-				'remboursement'	=>	$serialsInactifs->count() * $promo->subvention
-			]);
+			->json($this->getInfosRemboursementByUsers(
+				$request->user()->username,
+				$produit,
+				$l,
+				$p,
+				$cm,
+				$e,
+				$rv,
+				$lf
+				)
+			);
 		
 	} catch(AppException $e) {
 		header("Erreur",true,422);
 		die(json_encode($e->getMessage()));
 	}
 }
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	public function getInfosRemboursementByUsers($vendeur,
+		Produits $produit,
+		Livraison $l ,
+		Promo $p , 
+		commandMaterial $cm , 
+		Exemplaire $e , 
+		RavitaillementVendeur $rv,
+		LivraisonSerialFile $lf
+		) {
+		
+			#command material promo 
+			$promo = $this->isExistPromo();
+			if(!$promo) {
+				throw new AppException("Aucune promo en cours !");
+			}
+			$command_promo = $cm->select('id_commande')
+				->where('vendeurs',$vendeur)
+				->where('promos_id',$promo->id)->get();
 
+			$ravs = $rv->select('id_ravitaillement')->whereIn('commands',$command_promo)
+				->where('livraison','confirmer')
+				->get();
+			$terminal = $produit->where('with_serial',1)->first();
+			
+			$livs = $l->select('id')
+				->whereIn('ravitaillement',$ravs)
+				->where('produits',$terminal->reference)->get();
+
+			$serialsFile = $lf->select('filename')
+				->whereIn('livraison_id',$livs)
+				->get();
+			$serials =[];
+
+			foreach($serialsFile as $key => $value) {
+				$tmp = $this->getSerialInFileText(config('serial_file.path').'/'.$value->filename);
+				$tmp = Arr::where($tmp, function ($value , $key ) {
+					return !empty($value);
+				});
+				array_push($serials,$tmp);
+			}
+			$_serials = Arr::collapse($serials);
+
+			$serialsInactifs = $e->whereIn('serial_number',$_serials)
+				->where('status','inactif')
+				->where('vendeurs',$vendeur)
+				->get();
+
+			return [
+					'kits'	=>	$serialsInactifs->count(),
+					'remboursement'	=>	$serialsInactifs->count() * $promo->subvention
+				];
+	}
+	#LISTING DES REMBOURSEMENT LIEES A LA PROMO
+	public function getRemboursementForUsers( 
+		Request $request,
+		User $u,
+		Produits $produit,
+		Livraison $l ,
+		Promo $p , 
+		commandMaterial $cm , 
+		Exemplaire $e , 
+		RavitaillementVendeur $rv,
+		LivraisonSerialFile $lf
+		) {
+		try {
+			$vendeurs = $u->whereIn('type',['v_da','v_user'])
+				->get();
+			$data = [];
+			foreach($vendeurs as $key => $value) {
+				$data[$key] = [
+					'vendeur'	=>	$value->localisation,
+					'remboursement'	=>	$this->getInfosRemboursementByUsers(
+						$value->username,
+						$produit,
+						$l,
+						$p,
+						$cm,
+						$e,
+						$rv,
+						$lf
+					),
+					'pay_at'	=>	'-',
+					'status'	=>	'-'
+				];
+			}
+			return response()
+				->json($data);
+		} catch(AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
 }
