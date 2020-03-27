@@ -192,6 +192,7 @@ export default {
         if(this.theUser == 'v_da' || this.theUser == 'v_standart') {
             this.getCompensePromoInfos()
         }
+        this.isLoading = false
     },
     data() {
         return {
@@ -333,7 +334,6 @@ export default {
             try {
                 let response = await axios.get('/admin/promo/get-remboursement')
                 this.remboursementPromo = response.data
-                this.isLoading = false
             } catch(error) {
                 alert(error)
             }
