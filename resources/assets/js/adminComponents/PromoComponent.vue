@@ -135,6 +135,12 @@
                                 <h4>Remboursement ({{activePromo.intitule}} , fini le {{activePromo.fin}})</h4>
                                 <hr class="uk-divider-small">
                                 <!-- // -->
+                                <div class="uk-grid-small" uk-grid>
+                                    <div class="uk-width-1-4@m">
+                                        <label for=""><span uk-icon="icon : search"></span> Rechercher</label>
+                                        <input type="search" class="uk-input uk-border-rounded">
+                                    </div>
+                                </div>
                                 <table class="uk-table uk-table-striped uk-table-hover uk-table-small uk-table-divider">
                                     <thead>
                                         <tr>
@@ -329,7 +335,6 @@ export default {
               }
             }
         },
-
         getRemboursementForUsers : async function () {
             try {
                 let response = await axios.get('/admin/promo/get-remboursement')

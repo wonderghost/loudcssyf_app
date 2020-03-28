@@ -124,17 +124,26 @@ Trait Rapports {
 							$id_rapport = $rapport->id_rapport;
 							
 							// LA PROMO EXISTE
-							if($tmp_promo = $this->isExistPromo()) {
-								// AJOUT DU RAPPORT PROMO
-								do {
-									$rp->id =  Str::random(10).'_'.time();
-								} while ($rp->isExistId());
+							$tmp_promo = $this->isExistPromo();
+							
+							if($tmp_promo) {
+								$promo_fin_to_carbon_date = new Carbon($tmp_promo->fin);
+								$promo_debut_to_carbon_date = new Carbon($tmp_promo->debut);
+								$rapport_date_to_carbon_date = new Carbon($request->input('date'));
+								if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
+									// le rapport est en mode promo
+									// AJOUT DU RAPPORT PROMO
+									do {
+										$rp->id =  Str::random(10).'_'.time();
+									} while ($rp->isExistId());
 
-								$rp->quantite_a_compenser = $request->input('quantite_materiel');
-								$rp->compense_espece = $request->input('quantite_materiel') * $tmp_promo->subvention;
-								$rp->promo = $tmp_promo->id;
-								$rapport->id_rapport_promo = $rp->id;
-								$rp->save();
+									$rp->quantite_a_compenser = $request->input('quantite_materiel');
+									$rp->compense_espece = $request->input('quantite_materiel') * $tmp_promo->subvention;
+									$rp->promo = $tmp_promo->id;
+									$rapport->id_rapport_promo = $rp->id;
+									$rapport->promo = $tmp_promo->id;
+									$rp->save();
+								}
 							}
 							$rapport->save();
 
@@ -191,6 +200,19 @@ Trait Rapports {
 									'solde' =>  $new_solde_cga
 								]);
 
+								// LA PROMO EXISTE
+								$tmp_promo = $this->isExistPromo();
+								
+								if($tmp_promo) {
+									$promo_fin_to_carbon_date = new Carbon($tmp_promo->fin);
+									$promo_debut_to_carbon_date = new Carbon($tmp_promo->debut);
+									$rapport_date_to_carbon_date = new Carbon($request->input('date'));
+									if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
+										// le rapport est en mode promo
+										$rapport->promo = $tmp_promo->id;
+									}
+								}
+
 								$rapport->save();
 								return response()
 									->json('done');
@@ -219,6 +241,18 @@ Trait Rapports {
 						$rapport->type = 'migration';
 
 						$id_rapport = $rapport->id_rapport;
+						// LA PROMO EXISTE
+						$tmp_promo = $this->isExistPromo();
+								
+						if($tmp_promo) {
+							$promo_fin_to_carbon_date = new Carbon($tmp_promo->fin);
+							$promo_debut_to_carbon_date = new Carbon($tmp_promo->debut);
+							$rapport_date_to_carbon_date = new Carbon($request->input('date'));
+							if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
+								// le rapport est en mode promo
+								$rapport->promo = $tmp_promo->id;
+							}
+						}
 						$rapport->save();
 						// CHANGEMENT DE STATUS DES MATERIELS
 						for($i = 1 ; $i <= $request->input('quantite_materiel') ; $i++) {
@@ -260,30 +294,6 @@ Trait Rapports {
 			}
 	}
 
-	// RECUPERATION DES MATERIELS COMMANDES LORS DE LA PROMO
-
-	// public function getCommandPromo($vendeur , commandMaterial $cm) {
-	// 	$commande =  $cm->whereNotNull('promos_id')
-	// 		->where('vendeurs',$vendeur)
-	// 		->where('status','confirmed')
-	// 		->get();
-	// }
-	// RECUPERATION DES RAPPORTS DE VENTE LORS DE PROMO
-
-	// public function getRapportPromo($vendeur , Exemplaire $e) {
-	// 	$rapp = RapportVente::select('id_rapport')
-	// 		->whereNotNull('id_rapport_promo')
-	// 		->where('vendeurs',$vendeur)
-	// 		->get();
-		
-	// 	# ON RECUPERE TOUS LES MATERIELS ACTIVES LORS DE LA PROMO
-		
-	// 	$materials_promo = $e->select('serial_number')
-	// 		->whereIn($rapp)
-	// 		->where('vendeurs',$vendeurs)
-	// 		->where('status','actif');
-		
-	// }
 
 	// VERIFICATION DU NUMERO DE SERIE
 	public function checkSerial($serial,$vendeurs, Exemplaire $e) {
@@ -327,7 +337,7 @@ Trait Rapports {
 				'quantite'  =>  $value->quantite,
 				'montant_ttc' =>  $value->montant_ttc,
 				'commission'  =>  $value->commission,
-				'promo'	=>	$value->promo > 0 ? '' : 'hors promo',
+				'promo'	=>	$value->promo != 0 ? 'en promo' : 'hors promo',
 				'paiement_commission' =>  $value->statut_paiement_commission,
 				'state'	=>	$value->state
 			];
