@@ -40,7 +40,54 @@
           </div>
         </div>
       </template>
-
+      <template v-if="typeUser == 'admin'">
+        <div class="uk-width-1-1@m">
+        <ul uk-accordion>
+          <li>
+            <a class="uk-accordion-title uk-text-capitalize uk-border-rounded uk-button-default uk-box-shadow-small uk-button uk-button-small uk-width-1-6@m" href="#">Transfert Materiel</a>
+            <div class="uk-accordion-content">
+              <div class="uk-card uk-card-default uk-border-rounded uk-grid-small uk-box-shadow-small" uk-grid>
+                <div class="uk-card-body uk-width-1-1@m">
+                  <form class="uk-grid-small" uk-grid>
+                    <div class="uk-width-1-2@m uk-grid-small" uk-grid>
+                      <div class="uk-width-1-1@m uk-margin-remove">
+                        <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
+                        <select name="" id="" class="uk-select uk-border-rounded"></select>
+                      </div>
+                      <div class="uk-width-1-6@m uk-margin-remove">
+                        <label for="">Quantite</label>
+                        <input v-model="transfertData.quantite" type="number" max="10" class="uk-input uk-border-rounded" min="1">
+                      </div>
+                      <div class="uk-width-1-1@m uk-margin-remove">
+                        <label for=""><span uk-icon="icon : commenting"></span> Motif du transfert</label>
+                        <textarea cols="30" rows="4" class="uk-textarea uk-border-rounded"></textarea>
+                      </div>
+                      <div class="uk-width-1-1@m uk-margin-remove">
+                        <label for=""><span uk-icon="icon : lock"></span> Confirmez le mot de passe</label>
+                        <input type="password" class="uk-input uk-border-rounded">
+                      </div>
+                      <div>
+                        <button type="button" class="uk-button uk-button-small uk-border-rounded uk-button-primary">
+                        Envoyez
+                        </button>
+                      </div>
+                    </div>
+                    <div class="uk-width-1-2@m">
+                      <div class="uk-grid-small" uk-grid>
+                        <div v-for="i in parseInt(transfertData.quantite)" class="uk-width-1-2@m uk-margin-remove">
+                          <label for="">Serial-{{i}}</label>
+                          <input type="text" class="uk-input uk-border-rounded">
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      </template>
     </div>
 
     <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
@@ -114,7 +161,10 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             materials : [],
             credits : [],
             users : [],
-            userFilter : ""
+            userFilter : "",
+            transfertData : {
+              quantite : 0
+            }
           }
         },
         methods : {

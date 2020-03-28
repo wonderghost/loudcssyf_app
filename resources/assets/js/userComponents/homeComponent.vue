@@ -117,7 +117,7 @@
                     <li><a href="/admin/add-depot"><span uk-icon="icon:arrow-right"></span> Entrepot</a></li>
                     <!-- <li><a href="/admin/depot-central"><span uk-icon="icon:arrow-right"></span> Entrepot</a></li> -->
                     <li><a href="/admin/list-material"><span uk-icon="icon:arrow-right"></span> Tous les materiels</a></li>
-                    <li><a href="/admin/history-depot"><span uk-icon="icon:arrow-right"></span> Historique </a></li>
+                    <!-- <li><a href="/admin/history-depot"><span uk-icon="icon:arrow-right"></span> Historique </a></li> -->
                 </ul>
             </li>
             <li class="uk-parent">

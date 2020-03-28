@@ -410,6 +410,7 @@ Trait Afrocashes {
 									])->first()->numero_compte;
 									$transaction_depot->compte_credite = $request->input('numero_compte_courant');
 									$transaction_depot->montant	=	$request->input('montant');
+									$transaction_depot->motif = "Depot Afrocash";
 									// enregistrement dans la table transaction credit
 									$transaction_credit	=	new TransactionCredit;
 									$transaction_credit->credits = 'afrocash';
@@ -480,6 +481,7 @@ Trait Afrocashes {
 
 								 $transaction_depot->compte_credite = $this->getAfrocashAccountByUsername($request->input('vendeurs'))->numero_compte;
 								 $transaction_depot->montant	=	$request->input('montant');
+								 $transaction_depot->motif = "Transfert Afrocash";
 								 // enregistrement dans la table transaction credit
 								 $transaction_credit	=	new TransactionCredit;
 								 $transaction_credit->credits = 'afrocash';

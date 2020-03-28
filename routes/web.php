@@ -32,6 +32,8 @@ Route::middleware(['auth','admin'])->group(function () {
 	// DASHBOARD DATA
 	Route::get('/admin/chart/user-stat','ChartController@userStat');
 	Route::get('/admin/chart/command-stat','ChartController@commandStat');
+	Route::get('/admin/chart/command-material-stat','ChartController@commandMaterialStat');
+	Route::get('/admin/chart/livraison-stat','ChartController@livraisonMaterialStat');
 	// Promo
 	Route::post('/admin/promo/add','AdminController@addPromo');
 	Route::get('/admin/promo/list','AdminController@getPromo');
