@@ -124,6 +124,8 @@ return array(
     'App\\TransactionCredit' => $baseDir . '/app/TransactionCredit.php',
     'App\\TransactionCreditCentral' => $baseDir . '/app/TransactionCreditCentral.php',
     'App\\TransactionRex' => $baseDir . '/app/TransactionRex.php',
+    'App\\TransfertMateriel' => $baseDir . '/app/TransfertMateriel.php',
+    'App\\TransfertSerial' => $baseDir . '/app/TransfertSerial.php',
     'App\\User' => $baseDir . '/app/User.php',
     'Carbon\\Carbon' => $vendorDir . '/nesbot/carbon/src/Carbon/Carbon.php',
     'Carbon\\CarbonImmutable' => $vendorDir . '/nesbot/carbon/src/Carbon/CarbonImmutable.php',

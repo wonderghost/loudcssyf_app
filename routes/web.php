@@ -110,6 +110,8 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/inventory','LogistiqueController@inventory');
 	Route::get('/admin/inventory/get-serial-number-list','LogistiqueController@getListMaterialByVendeurs');
 	Route::get('/admin/inventory/all-material','LogistiqueController@getAllMaterialForVendeurs');
+	# transfert de materiel d'un vendeur a un autre
+	Route::post('/admin/inventory/transfert-material','AdminController@transfertMaterialToOtherUser');
 	// ##INVENTAIRE DANS LES DEPOTS /user/inventory/depot
 	Route::get('/admin/inventory/depot','LogistiqueController@depotList');
 	Route::get('/admin/inventory/depot/serialNumber','LogistiqueController@getSerialNumberForDepot');

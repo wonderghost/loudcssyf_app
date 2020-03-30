@@ -41,6 +41,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Events\AfrocashNotification;
 use App\Notifications;
+use App\TransfertMateriel;
+use App\TransfertSerial;
 
 class AdminController extends Controller
 {
@@ -645,7 +647,6 @@ class AdminController extends Controller
       $accountAfrocashVendeur->save();
       $accountAfrocashLogistique->save();
       $transactionAborted->save();
-
       
       return response()
         ->json('done');
@@ -655,4 +656,102 @@ class AdminController extends Controller
     }
   }
 
+  // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+  public function transfertMaterialToOtherUser(Request $request,Exemplaire $e , User $u , Produits $p) {
+    try {
+        $validation = $request->validate([
+          'quantite'  =>  'required|min:1|max:10',
+          'expediteur' =>  'required|exists:users,username',
+          'destinataire'  =>  'required|exists:users,username',
+          'password'  =>  'required|string',
+          'serialsNumber.*' =>  'required|exists:exemplaire,serial_number',
+        ],[
+          'required'  =>  'Champ(s) :attribute requis !',
+          'min' =>  'La Quantite minimale requise est de 1',
+          'max' =>  'La Quantite maximale requise est de 10',
+          'exists'  =>  'Champ(s) :attribute n\'existe pas en base de donne'
+        ]);
+        // VERIFIER LA VALIDITE DU MOT DE PASSE 
+        if(Hash::check($request->input('password'),$request->user()->password)) {
+          # MOT DE PASSE VALIDE :)
+            // VERIFIER SI LE NUMERO EST ATTRIBUE A UN VENDEUR
+            $compteur = 0;
+            foreach($request->input('serialsNumber') as $serial) {
+              if($serialNumber = $e->where('serial_number',$serial)
+                ->where('vendeurs',$request->input('expediteur'))->first()) {
+                  #tous les numeros on ete verifie ils sont bien attribue a ce vendeur
+                  #changement de vendeurs pour les numeros de series selectionnees :)
+                    $compteur++;
+                } else {
+                    $exp = $u->where('username',$request->input('expediteur'))->first();
+                    throw new AppException("Le terminal suivant : '".$serial."' n'est pas attribue au vendeur choisis ('".$exp->localisation."')");
+                }
+            }
+            $_compteur = 0;
+            if($compteur == $request->input('quantite')) {
+
+              $transMateriel = new TransfertMateriel;
+              $transMateriel->code = Str::random().'_'.time();
+              $transMateriel->expediteur = $request->input('expediteur');
+              $transMateriel->destinataire = $request->input('destinataire');
+              $transMateriel->quantite = $request->input('quantite');
+              $tmp = $transMateriel->code;
+              $transMateriel->save();
+
+              $stockExpediteur = StockVendeur::where('vendeurs',$request->input('expediteur'))
+                ->where('produit',$p->where('with_serial',1)->first()->reference)->first();
+
+              $stockDestinataire = StockVendeur::where('vendeurs',$request->input('destinataire'))
+                ->where('produit',$p->where('with_serial',1)->first()->reference)->first();
+
+              if(!$stockDestinataire){
+                  $_stock = new StockVendeur;
+                  $_stock->vendeurs = $request->input('destinataire');
+                  $_stock->produit = $p->where('with_serial',1)->first()->reference;
+                  $_stock->quantite = $request->input('quantite');
+                  $_stock->save();
+              } else {
+                  $qt = $stockDestinataire->quantite + $request->input('quantite');
+                  StockVendeur::where('vendeurs',$request->input('destinataire'))
+                    ->where('produit',$p->where('with_serial',1)->first()->reference)
+                    ->update([
+                      'quantite' => $qt
+                    ]);
+              }
+
+              foreach($request->input('serialsNumber') as $serial) {
+                // on effectue le changement de vendeur sur tous les materiels 
+                $serialNumber = $e->find($serial);
+                if($serialNumber) {
+
+                    $transSerial = new TransfertSerial;
+                    $transSerial->id_transfert = $tmp;
+                    $transSerial->serial = $serialNumber->serial_number;
+                    $transSerial->save();
+
+                    $serialNumber->vendeurs = $request->input('destinataire');
+                    $serialNumber->save();
+                    
+                    $_compteur++;
+                } else {
+                    throw new AppException("Erreur , Veuillez ressayez !");
+                }
+              }
+              if($_compteur == $request->input('quantite')) {
+                return response()->json('done');
+              } else {
+                  throw new AppException("Erreur , Veuillez ressayez !");
+              }
+            } else {
+                throw new AppException("Erreur , veuillez ressayer !");
+            }
+        } else {
+            throw new AppException("Mot de passe Invalide ! Veuillez ressayez...");
+        }
+    } catch(AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
+    }
+  }
 }

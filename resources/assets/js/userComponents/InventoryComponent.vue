@@ -48,11 +48,30 @@
             <div class="uk-accordion-content">
               <div class="uk-card uk-card-default uk-border-rounded uk-grid-small uk-box-shadow-small" uk-grid>
                 <div class="uk-card-body uk-width-1-1@m">
-                  <form class="uk-grid-small" uk-grid>
+                  <!-- ERROR BLOCK -->
+                    <template v-if="errors.length" v-for="error in errors">
+                      <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert>
+                        <a href="#" class="uk-alert-close" uk-close></a>
+                        <p>{{error}}</p>
+                      </div>
+                    </template>
+                    <!-- // -->
+                  <form @submit.prevent="transfertMaterialToOtherUser()" class="uk-grid-small" uk-grid>
                     <div class="uk-width-1-2@m uk-grid-small" uk-grid>
-                      <div class="uk-width-1-1@m uk-margin-remove">
-                        <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
-                        <select name="" id="" class="uk-select uk-border-rounded"></select>
+                      <div class="uk-width-1-2@m uk-margin-remove">
+                        <label for=""><span uk-icon="icon : users"></span> Expediteur</label>
+                        <select name="" id="" class="uk-select uk-border-rounded" v-model="transfertData.expediteur">
+                          <!-- LIST USERS -->
+                          <option value="">-- Selectionnez un vendeur --</option>
+                          <option :value="u.username" v-for="u in users">{{u.localisation}}</option>
+                        </select>
+                      </div>
+                      <div class="uk-width-1-2@m uk-margin-remove">
+                        <label for=""><span uk-icon="icon : users"></span> Destinataire</label>
+                        <select class="uk-select uk-border-rounded" v-model="transfertData.destinataire">
+                          <option value="">-- Selectionnez un vendeur --</option>
+                          <option v-for="u in users" :value="u.username">{{u.localisation}}</option>
+                        </select>
                       </div>
                       <div class="uk-width-1-6@m uk-margin-remove">
                         <label for="">Quantite</label>
@@ -60,25 +79,26 @@
                       </div>
                       <div class="uk-width-1-1@m uk-margin-remove">
                         <label for=""><span uk-icon="icon : commenting"></span> Motif du transfert</label>
-                        <textarea cols="30" rows="4" class="uk-textarea uk-border-rounded"></textarea>
+                        <textarea v-model="transfertData.motif_transfert" cols="30" rows="4" class="uk-textarea uk-border-rounded"></textarea>
                       </div>
                       <div class="uk-width-1-1@m uk-margin-remove">
                         <label for=""><span uk-icon="icon : lock"></span> Confirmez le mot de passe</label>
-                        <input type="password" class="uk-input uk-border-rounded">
-                      </div>
-                      <div>
-                        <button type="button" class="uk-button uk-button-small uk-border-rounded uk-button-primary">
-                        Envoyez
-                        </button>
+                        <input type="password" v-model="transfertData.password" class="uk-input uk-border-rounded">
                       </div>
                     </div>
                     <div class="uk-width-1-2@m">
                       <div class="uk-grid-small" uk-grid>
                         <div v-for="i in parseInt(transfertData.quantite)" class="uk-width-1-2@m uk-margin-remove">
                           <label for="">Serial-{{i}}</label>
-                          <input type="text" class="uk-input uk-border-rounded">
+                          <input type="text" v-model="transfertData.serialsNumber[i-1]" class="uk-input uk-border-rounded" 
+                            :placeholder="'Materiel-'+(i)">
                         </div>
                       </div>
+                    </div>
+                    <div>
+                      <button type="submit" class="uk-button uk-button-small uk-border-rounded uk-button-primary">
+                      Envoyez
+                      </button>
                     </div>
                   </form>
                 </div>
@@ -163,11 +183,41 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             users : [],
             userFilter : "",
             transfertData : {
-              quantite : 0
-            }
+              _token : "",
+              quantite : 1,
+              expediteur : "",
+              destinataire : "",
+              motif_transfert : "",
+              password : "",
+              serialsNumber : []
+            },
+            errors : []
           }
         },
         methods : {
+          transfertMaterialToOtherUser : async function() { // envoi de la requete de transfert de materiel d'un vendeur a l'autre
+            try {
+              this.isLoading = true
+              this.transfertData._token = this.myToken
+              let response = await axios.post('/admin/inventory/transfert-material',this.transfertData)
+              if(response.data == 'done') {
+                UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Transfert Effectue!</div>")
+                  .then(function() {
+                    location.reload()
+                  })
+              }
+            } catch(error) {
+                this.isLoading = false
+                if(error.response.data.errors) {
+                let errorTab = error.response.data.errors
+                for (var prop in errorTab) {
+                  this.errors.push(errorTab[prop][0])
+                }
+              } else {
+                  this.errors.push(error.response.data)
+              }
+            }
+          },
           getSerialNumberList : async function () { // listing des numeros de series
             try {
               if(this.typeUser == 'admin') {
