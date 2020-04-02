@@ -556,7 +556,7 @@ class AdminController extends Controller
 
       return response()->json($all);
     } catch (AppException $e) {
-      header("Unprocessable entity",true,422);
+      header("Erreur",true,422);
       die(json_encode($e->getMessage()));
     }
   }
@@ -704,7 +704,13 @@ class AdminController extends Controller
 
               $stockDestinataire = StockVendeur::where('vendeurs',$request->input('destinataire'))
                 ->where('produit',$p->where('with_serial',1)->first()->reference)->first();
-
+              // DEBIT DANS LE STOCK DE L'EXPEDITEUR
+              $_qt = $stockExpediteur->quantite - $request->input('quantite');
+              StockVendeur::where('vendeurs',$request->input('expediteur'))
+                ->where('produit',$p->where('with_serial',1)->first()->reference)
+                ->update([
+                  'quantite'  =>  $_qt
+                ]);
               if(!$stockDestinataire){
                   $_stock = new StockVendeur;
                   $_stock->vendeurs = $request->input('destinataire');

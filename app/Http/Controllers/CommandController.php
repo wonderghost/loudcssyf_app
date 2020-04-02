@@ -8,7 +8,7 @@ use App\Http\Requests\CommandRequest;
 use App\CommandMaterial;
 use Illuminate\Support\Facades\Auth;
 use App\RapportVente;
-use App\Compense;
+use App\CompenseMaterial;
 use App\Exemplaire;
 use App\CommandProduit;
 use App\Livraison;
@@ -35,19 +35,20 @@ class CommandController extends Controller
 		use Cga;
 		use Afrocashes;
 		// RECUPERATION DES INFORMATIONS LIEES AU MATERIAL
-		public function infoMaterial(Request $request , Produits $p , RapportVente $r ,Compense $c) {
+		public function infoMaterial(Request $request , Produits $p , RapportVente $r ,CompenseMaterial $c , CommandMaterial $cm) {
 			try {
 				$item = $p->where("with_serial",1)->first();
 				$parabole = $p->where('with_serial',0)->first();
+
 				// trouver le nombre de parabole a livrer
+
 				$migration = $r->where('vendeurs',$request->user()->username)
 					->where('type','migration')
 					->sum('quantite');
-
-				$compense = $c->where('vendeurs',$request->user()->username)
-					->where('materiel',$parabole->reference)
-					->sum('quantite');
+				$command = $cm->select('id_commande')->where('vendeurs',$request->user()->username)->get();
+				$compense = $c->whereIn('commande_id',$command)->sum('quantite');
 				//
+
 				$all = [
 					'ttc'	=>	$item->prix_initial,
 					'ht'	=>	ceil($item->prix_vente/1.18),
@@ -56,9 +57,10 @@ class CommandController extends Controller
 					'subvention'	=>	$item->prix_initial - $item->prix_vente,
 					'prix_vente'	=>	$item->prix_vente,
 					'reference'	=>	$item->reference ,
-					'migration'	=>	$migration,
-					'compense'	=>	$compense
+					'migration'	=>	$migration - $compense,
+					'compense'	=>	0
 				];
+				
 				return response()
 					->json($all);
 			} catch (AppException $e) {
@@ -114,16 +116,14 @@ class CommandController extends Controller
 
 				$command_produit_parabole->produit = Produits::where('libelle','Parabole')->first()->reference;
 				$command_produit->produit = $request->input('reference_material');
-
-				// QUANTITE DE PARABOLE A LIVRER
+				
+				// QUANTITE DE PARABOLE A LIVRER	
 				$migration = RapportVente::where('vendeurs',Auth::user()->username)->where('type','migration')->sum('quantite');
-				$compense = Compense::where([
-					'vendeurs'	=>	Auth::user()->username,
-					'materiel'	=>	Produits::where('with_serial',0)->first()->reference
-					])->sum('quantite');
+
+				$commandAll = CommandMaterial::select('id_commande')->where('vendeurs',$request->user()->username)->get();
+				$compense = CompenseMaterial::whereIn('commande_id',$commandAll)->sum('quantite');
 
 					$parabole_a_livrer = $request->input('quantite') - ($migration - $compense);
-
 
 					$command_produit_parabole->quantite_commande = $request->input('quantite');
 					$command_produit_parabole->parabole_a_livrer = $parabole_a_livrer < 0 ? 0 : $parabole_a_livrer;

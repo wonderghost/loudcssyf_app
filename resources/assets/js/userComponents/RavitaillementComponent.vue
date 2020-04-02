@@ -52,7 +52,7 @@
         </div>
         <div class="uk-width-1-6@m">
           <label>Compense</label>
-          <input type="text" class="uk-input uk-border-rounded" v-model="formData.compense">
+          <input type="text" class="uk-input uk-border-rounded" disabled v-model="formData.compense">
         </div>
         <div class="uk-width-1-1@m">
           <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small">valider <span uk-icon="icon:check;ratio:.8"></span></button>
@@ -103,6 +103,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             try {
               let response = await axios.get("/logistique/ravitaillement/"+this.commande.id+"/infos")
               this.commande = response.data
+              this.formData.compense = this.commande.parabole_du
               response = await axios.get("/logistique/ravitaillement/list-depot")
               this.depots = response.data
               this.formData._token = this.myToken

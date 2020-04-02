@@ -18,6 +18,7 @@ return array(
     'App\\CommandMaterial' => $baseDir . '/app/CommandMaterial.php',
     'App\\CommandProduit' => $baseDir . '/app/CommandProduit.php',
     'App\\Compense' => $baseDir . '/app/Compense.php',
+    'App\\CompenseMaterial' => $baseDir . '/app/CompenseMaterial.php',
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
     'App\\Conversation' => $baseDir . '/app/Conversation.php',
     'App\\Credit' => $baseDir . '/app/Credit.php',

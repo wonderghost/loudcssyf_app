@@ -74,7 +74,21 @@
           </form>
             <!-- // -->
           </li>
-          <li></li>
+          <li>
+            <!-- MIGRATION -->
+            <form @submit.prevent="sendRapport('migration')" class="uk-width-1-2@m">
+              <div class="uk-margin-small">
+                <label for="">Quantite Materiel</label>
+                <input type="number" v-model="formData.quantite_materiel" min="1" class="uk-input uk-margin-small uk-border-rounded">
+              </div>
+              <!-- SERIAL NUMBERS -->
+              <div v-if="with_serial" v-for="input in parseInt(formData.quantite_materiel)" class="uk-margin-small">
+                <input type="text" class="uk-input uk-border-rounded" v-model="formData.serial_number[input-1]" required :placeholder="'Serial Number '+input">
+              </div>
+              <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
+            </form>
+            <!-- // -->
+          </li>
         </ul>
   </div>
 </template>
@@ -133,7 +147,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             }
             if(response.data == 'done') {
               this.isLoading = false
-              UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Rapport ajoute :-)</div>")
+              UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Rapport ajoute :)</div>")
                 .then(function () {
                   location.reload()
                 })
@@ -148,14 +162,25 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             }
             if(response.data == 'done') {
               this.isLoading = false
-              UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Rapport ajoute :-)</div>")
+              UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Rapport ajoute :)</div>")
                 .then(function () {
                   location.reload()
                 })
             }
           }
           else {
-            
+            // ENVOI DU RAPPORT DE MIGRATION
+            if(this.typeUser == 'admin') {
+                var response = await axios.post('/admin/send-rapport/migration',this.formData)
+            } else {
+                var response = await axios.post('/user/send-rapport/migration',this.formData)
+            }
+            if(response.data == 'done') {
+              UIkit.modal.alert("<div class='uk-alert-success uk-border-rounded' uk-alert>Rapport ajoute :)</div>")
+                .then(function () {
+                  location.reload()
+                })
+            }
           }
         } catch (error) {
           this.isLoading = false

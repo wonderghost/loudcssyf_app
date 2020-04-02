@@ -194,12 +194,12 @@ Route::middleware(['auth','unblocked'])->group(function () {
 
 
 	// COMPLETER LE RAVITAILLEMENT EN SAISISSANT LES NUMEROS DE SERIE
-	Route::get('/user/history-depot','LogistiqueController@historyDepot')->middleware('logistique');
-	Route::get('/user/ravitailler/{commande}/complete-transfert','LogistiqueController@completeTransfert')->middleware('logistique');
-	Route::post('/user/ravitailler/{commande}/complete-transfert','LogistiqueController@completeTransfertFinal')->middleware('logistique');
+	// Route::get('/user/history-depot','LogistiqueController@historyDepot')->middleware('logistique');
+	// Route::get('/user/ravitailler/{commande}/complete-transfert','LogistiqueController@completeTransfert')->middleware('logistique');
+	// Route::post('/user/ravitailler/{commande}/complete-transfert','LogistiqueController@completeTransfertFinal')->middleware('logistique');
 
-	Route::post('/user/complete-transfert/find-serial-number','LogistiqueController@getSerialNumber')->middleware('logistique');
-	Route::post('/user/ravitailler/{commande}/abort-transfert','LogistiqueController@abortTransfert')->middleware('logistique');
+	// Route::post('/user/complete-transfert/find-serial-number','LogistiqueController@getSerialNumber')->middleware('logistique');
+	// Route::post('/user/ravitailler/{commande}/abort-transfert','LogistiqueController@abortTransfert')->middleware('logistique');
 	Route::get('/user/inventory/all-material','LogistiqueController@getAllMaterialForVendeurs')->middleware('logistique');
 	// INVENTAIRE
 	Route::get('/user/inventory','LogistiqueController@inventory')->middleware('logistique');

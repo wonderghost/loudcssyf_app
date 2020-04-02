@@ -99,9 +99,9 @@ Trait Similarity {
       'commande'  =>  $commande->id_commande,
       'produit' =>  $request->input('produit')
     ])->first();
-    // $livraisons
+    
     //   dd($comProd->quantite_commande >= ($livraisons+$request->input('quantite')));
-      return ($comProd->quantite_commande >= ($livraisons+$request->input('quantite')));
+      return ($comProd->parabole_a_livrer >= ($livraisons+$request->input('quantite')));
   }
 
   public function CommandChangeStatus ($commande,$vendeur) {
@@ -136,9 +136,8 @@ Trait Similarity {
         $rav = RavitaillementVendeur::select('id_ravitaillement')->where('commands',$commande)->where('vendeurs',$vendeur)->where('livraison','non_confirmer')->get();
         $live[$key] = Livraison::where('status','unlivred')->whereIn('ravitaillement',$rav)->where('produits',$item->produit)->sum('quantite');
         if($live[$key]) {
-          // dump($item->quantite_commande);
-          // dump($live[$key]->quantite);
-          if($item->quantite_commande > $live[$key]) {
+          
+          if($item->parabole_a_livrer > $live[$key]) {
             // 0  => non_confirmer , 1  =>  confirmer
             $flag[$item->produit] = 0;
           } else {
@@ -433,23 +432,22 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
         $date = new Carbon($values->created_at);
         $date->setLocale('fr_FR');
         $command_produit = CommandProduit::where([
-        'commande'  =>  $values->id_commande
+        'commande'  =>  $values->id_commande,
+        'produit' =>  Produits::where('with_serial',1)->first()->reference
         ])->first();
 
-        $migration = RapportVente::where('vendeurs',$values->vendeurs)->where('type','migration')->sum('quantite');
-        $compense = Compense::where([
-        'vendeurs'	=>	Auth::user()->username,
-        'materiel'	=>	Produits::where('libelle','Parabole')->first()->reference
-        ])->sum('quantite');
+        $parabole = CommandProduit::where([
+          'commande'  =>  $values->id_commande,
+          'produit' =>  Produits::where('with_serial',0)->first()->reference
+          ])->first();
 
-        $parabole_a_livrer  = $command_produit->parabole_a_livrer - ($migration + $compense);
         $_promo = $values->promos_id;
         $all [$key] = [
-          'date'  =>  $date->toFormattedDateString().' | '.$date->toTimeString(),
-          'vendeurs'  =>  $vendeurs->agence()->societe."_".$vendeurs->localisation,
+          'date'  =>  $date->toDateString(),
+          'vendeurs'  => $vendeurs->localisation,
           'item' => 'Kit complet',
-          'quantite' => $command_produit->quantite_commande,
-          'parabole_a_livrer' =>  $parabole_a_livrer,
+          'quantite' => $command_produit ? $command_produit->quantite_commande : '',
+          'parabole_a_livrer' =>  $parabole ? $parabole->parabole_a_livrer : '',
           'status' =>  $values->status,
           'promo' =>  $_promo ? 'En Promo' : 'Hors Promo',
           'id' => $values->id,

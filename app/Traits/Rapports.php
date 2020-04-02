@@ -229,8 +229,21 @@ Trait Rapports {
 					$validation = $request->validate([
 						'date'  =>  'required|date|before_or_equal :'.(date("Y/m/d",strtotime("now"))),
 						'vendeurs'  =>  'required|exists:users,username',
-						'quantite_materiel' =>  'required|min:1'
+						'quantite_materiel' =>  'required|min:1',
+						'serial_number.*'	=>	'required|distinct|exists:exemplaire,serial_number'
+					],[
+						'required'	=>	'Champ(s) :attribute est obligatoire!',
+						'exists'	=>	':attribute n\'existe dans la base de donnees',
+						'distinct'	=>	':attribute est duplique'
 					]);
+
+					// verification de l'existence des numeros de serie et de leur inactivite
+
+					foreach($request->input('serial_number') as $value) {
+						if(!$this->checkSerial($value,$request->input('vendeurs'),$e)) {
+							throw new AppException("Numero de Serie Invalide  : ". $value);
+						}
+					}
 
 					if(!$this->isExistRapportOnThisDate(new Carbon($request->input('date')),$request->input('vendeurs'),'migration')) {
 						$rapport = new RapportVente;
@@ -253,24 +266,30 @@ Trait Rapports {
 								$rapport->promo = $tmp_promo->id;
 							}
 						}
+						
 						$rapport->save();
+
 						// CHANGEMENT DE STATUS DES MATERIELS
-						for($i = 1 ; $i <= $request->input('quantite_materiel') ; $i++) {
+						for($i = 0 ; $i < $request->input('quantite_materiel') ; $i++) {
 							Exemplaire::where([
 								'vendeurs'  =>  $request->input('vendeurs'),
-								'serial_number' =>  $request->input('serial-number-'.$i),
+								'serial_number' =>  $request->input('serial_number')[$i],
 								'status'  =>  'inactif'
 							])->update([
 								'status'  =>  'actif',
 								'rapports'  =>  $id_rapport
 							]);
 						}
+
 						// DEBIT DE LA QUANTITE DANS LE STOCK DU VENDEURS
 						$new_quantite = StockVendeur::where([
 							'vendeurs'  =>  $request->input('vendeurs'),
 							'produit' =>  Produits::where('with_serial',1)->first()->reference
 						])->first()->quantite - $request->input('quantite_materiel');
-						StockVendeur::where('vendeurs',$request->input('vendeurs'))->update([
+
+						StockVendeur::where('vendeurs',$request->input('vendeurs'))
+						->where('produit',Produits::where('with_serial',1)->first()->reference)
+						->update([
 							'quantite'  =>  $new_quantite
 						]);
 
@@ -369,6 +388,9 @@ public function abortRapport(Request $request , RapportVente $r) {
 			throw new AppException("Mot de passe Invalide!");
 		}
 
+		#BLOQUER L'ACCESS A L'ANNULATION DU RAPPORT
+		throw new AppException("Action non disponible pour le moment");
+		
 		$rapport = RapportVente::find($request->input('id_rapport'));
 		// verifier si le rapport est deja annuler
 		if($rapport->state == 'aborted') {
@@ -387,7 +409,9 @@ public function abortRapport(Request $request , RapportVente $r) {
 			$this->sendNotification("Annulation de Rapport","Vous avez annule le rapport du ".$rapport->date_rapport." pour : ".$vendeurs->localisation,Auth::user()->username);
 			$cga->save();
 			$rapport->save();
-		} else {
+			
+		}
+		else {
 			// REX
 		}
 		return response()->json('done');
