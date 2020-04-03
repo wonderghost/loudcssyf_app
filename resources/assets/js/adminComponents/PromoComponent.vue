@@ -7,11 +7,11 @@
         <template v-if="theUser == 'v_da'">
             <div class="promo-da uk-visible@m">
                 <div class="uk-grid-small" uk-grid>
-                    <div class="uk-width-1-2@m">
+                    <div class="uk-width-1-3@m">
                         <label for=""><span uk-icon="icon : settings"></span> Kits Promo</label>
                         <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.kits}}</span>
                     </div>
-                    <div class="uk-width-1-2@m">
+                    <div class="uk-width-1-3@m">
                         <label for=""><span uk-icon="icon : credit-card"></span> Remboursement</label>
                         <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.remboursement | numFormat}}</span>
                     </div>
@@ -21,11 +21,11 @@
                 <nav class="uk-navbar-container uk-box-shadow-small  uk-position-bottom uk-position-fixed uk-position-z-index promo-da-responsive" uk-navbar>
                     <div class="uk-navbar-right">
                         <div class="uk-grid-small" uk-grid>
-                            <div class="uk-width-1-2@s">
+                            <div class="uk-width-1-3@s">
                                 <label for=""><span uk-icon="icon : settings"></span> Kits Promo</label>
                                 <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.kits}}</span>
                             </div>
-                            <div class="uk-width-1-2@s">
+                            <div class="uk-width-1-3@s">
                                 <label for=""><span uk-icon="icon : credit-card"></span> Remboursement</label>
                                 <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.remboursement | numFormat}}</span>
                             </div>
@@ -47,7 +47,6 @@
                             <li><a href="#" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small">Promo en cours</a></li>
                             <li><a href="#" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small">Toutes les promos</a></li>
                             <li><a href="#" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small">Remboursement</a></li>
-                            <li><a href="#" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small">Compense</a></li>
                         </ul>
                         <ul class="uk-switcher">
                             <li>
@@ -162,12 +161,7 @@
                                     </tbody>
                                 </table>
                             </li>
-                            <li>
-                                <!-- COMPENSE -->
-                                <h4>COMPENSE</h4>
-                                <hr class="uk-divider-small">
-                                <!-- // -->
-                            </li>
+                            
                         </ul>                        
                     </div>
                 </div>

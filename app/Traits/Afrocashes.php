@@ -23,12 +23,14 @@ use Illuminate\Support\Facades\DB;
 use App\Events\AfrocashNotification;
 use App\Promo;
 use App\CommandMaterial;
+use App\CommandProduit;
 use App\Exemplaire;
 use Illuminate\Support\Arr;
 use App\RavitaillementVendeur;
 use App\Livraison;
 use App\Produits;
 use App\LivraisonSerialFile;
+use App\RapportVente;
 
 Trait Afrocashes {
 
@@ -635,7 +637,8 @@ public function getInfosRemboursementPromo(Request $request,
 	commandMaterial $cm , 
 	Exemplaire $e , 
 	RavitaillementVendeur $rv,
-	LivraisonSerialFile $lf
+	LivraisonSerialFile $lf,
+	CommandProduit $cp
 	) {
 	try {
 		#command material promo 
@@ -648,7 +651,8 @@ public function getInfosRemboursementPromo(Request $request,
 				$cm,
 				$e,
 				$rv,
-				$lf
+				$lf,
+				$cp
 				)
 			);
 		
@@ -665,7 +669,8 @@ public function getInfosRemboursementPromo(Request $request,
 		commandMaterial $cm , 
 		Exemplaire $e , 
 		RavitaillementVendeur $rv,
-		LivraisonSerialFile $lf
+		LivraisonSerialFile $lf,
+		CommandProduit $cp
 		) {
 		
 			#command material promo 
@@ -673,41 +678,25 @@ public function getInfosRemboursementPromo(Request $request,
 			if(!$promo) {
 				throw new AppException("Aucune promo en cours !");
 			}
+			$terminal = $produit->where('with_serial',1)->first();
+
 			$command_promo = $cm->select('id_commande')
 				->where('vendeurs',$vendeur)
 				->where('promos_id',$promo->id)->get();
 
-			$ravs = $rv->select('id_ravitaillement')->whereIn('commands',$command_promo)
-				->where('livraison','confirmer')
-				->get();
-			$terminal = $produit->where('with_serial',1)->first();
+			$commandPromoQuantite = $cp->whereIn('commande',$command_promo)
+				->where('produit',$terminal->reference)
+				->sum('quantite_commande');
 			
-			$livs = $l->select('id')
-				->whereIn('ravitaillement',$ravs)
-				->where('produits',$terminal->reference)->get();
-
-			$serialsFile = $lf->select('filename')
-				->whereIn('livraison_id',$livs)
-				->get();
-			$serials =[];
-
-			foreach($serialsFile as $key => $value) {
-				$tmp = $this->getSerialInFileText(config('serial_file.path').'/'.$value->filename);
-				$tmp = Arr::where($tmp, function ($value , $key ) {
-					return !empty($value);
-				});
-				array_push($serials,$tmp);
-			}
-			$_serials = Arr::collapse($serials);
-
-			$serialsInactifs = $e->whereIn('serial_number',$_serials)
-				->where('status','inactif')
+			$rapportPromo = RapportVente::where('promo',$promo->id)
 				->where('vendeurs',$vendeur)
-				->get();
+				->whereIn('type',['recrutement','migration'])
+				->whereBetween('date_rapport',[$promo->debut,$promo->fin])
+				->sum('quantite');
 
 			return [
-					'kits'	=>	$serialsInactifs->count(),
-					'remboursement'	=>	$serialsInactifs->count() * $promo->subvention
+					'kits'	=>	$commandPromoQuantite - $rapportPromo,
+					'remboursement'	=>	($commandPromoQuantite - $rapportPromo) * $promo->subvention
 				];
 	}
 	#LISTING DES REMBOURSEMENT LIEES A LA PROMO
@@ -720,7 +709,8 @@ public function getInfosRemboursementPromo(Request $request,
 		commandMaterial $cm , 
 		Exemplaire $e , 
 		RavitaillementVendeur $rv,
-		LivraisonSerialFile $lf
+		LivraisonSerialFile $lf,
+		CommandProduit $cp
 		) {
 		try {
 			$vendeurs = $u->whereIn('type',['v_da','v_user'])
@@ -737,7 +727,8 @@ public function getInfosRemboursementPromo(Request $request,
 						$cm,
 						$e,
 						$rv,
-						$lf
+						$lf,
+						$cp
 					),
 					'pay_at'	=>	'-',
 					'status'	=>	'-'

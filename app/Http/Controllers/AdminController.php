@@ -745,6 +745,28 @@ class AdminController extends Controller
                 }
               }
               if($_compteur == $request->input('quantite')) {
+
+                $n = $this->sendNotification(
+                  "Transfert Materiel",
+                  "Un materiel est transfere au compte de : ".$u->where('username',$request->input('destinataire'))->first()->localisation,
+                  'admin'
+                );
+                $n->save();
+
+                $n->sendNotification(
+                  'Transfert Materiel',
+                  "Vous avez recu un materiel de la part de :".$u->where('username',$request->input('expediteur')->first()->localisation,
+                  $request->input('destinataire'))
+                );
+                $n->save();
+
+                $n->sendNotification(
+                  "Transfert Materiel",
+                  "Materiel sortant a destination de :".$u->where("username",$request->input('destinataire'))->first()->localisation,
+                  $request->input('expediteur')
+                );
+                $n->save();
+
                 return response()->json('done');
               } else {
                   throw new AppException("Erreur , Veuillez ressayez !");

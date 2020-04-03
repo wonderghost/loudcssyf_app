@@ -15,23 +15,21 @@
         <!-- <td v-for="column in user">{{column}}</td> -->
         <td>{{user.username}}</td>
         <td>{{user.type}}</td>
-        <td :uk-tooltip="user.email">{{user.email.substring(0,10)+'...'}}</td>
+        <td :uk-tooltip="user.email">{{user.email.substring(0,30)+'...'}}</td>
         <td>{{user.phone}}</td>
-        <td :uk-tooltip="user.localisation">{{user.localisation.substring(0,10)+'...'}}</td>
+        <td :uk-tooltip="user.localisation">{{user.localisation.substring(0,30)+'...'}}</td>
         <td>{{user.status}}</td>
-        <td> <a :href="userEditLink+'/'+user.username" :id="user.username" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-text-capitalize uk-box-shadow-small">editer <span uk-icon="icon : pencil"></span> </a> </td>
         <td> 
+          <a :href="userEditLink+'/'+user.username" :id="user.username" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-text-capitalize uk-box-shadow-small">editer <span uk-icon="icon : pencil"></span> </a>
           <button
             uk-toggle="target : #reset-modal"
             @click="userToReset = user.localisation , userId = user.username"
             :id="user.username"
             class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small uk-text-capitalize"> reset <span uk-icon="icon : refresh"></span>
-        </button> 
+          </button> 
+          <button @click="blockUser(user.username)" v-if="user.status === 'unblocked'" :id="user.username" class="uk-button uk-button-small uk-button-danger uk-text-capitalize uk-border-rounded uk-box-shadow-small">bloquer <span uk-icon="icon : lock"></span> </button>
+          <button @click="unblockUser(user.username)" v-else :id="user.username" class="uk-button uk-button-small uk-button-default uk-alert-success uk-text-capitalize uk-border-rounded uk-box-shadow-small">debloquer <span uk-icon="icon : unlock"></span> </button>
         </td>
-        <td>
-           <button @click="blockUser(user.username)" v-if="user.status === 'unblocked'" :id="user.username" class="uk-button uk-button-small uk-button-danger uk-text-capitalize uk-border-rounded uk-box-shadow-small">bloquer <span uk-icon="icon : lock"></span> </button>
-           <button @click="unblockUser(user.username)" v-else :id="user.username" class="uk-button uk-button-small uk-button-default uk-alert-success uk-text-capitalize uk-border-rounded uk-box-shadow-small">debloquer <span uk-icon="icon : unlock"></span> </button>
-         </td>
       </tr>
     </tbody>
   </table>
