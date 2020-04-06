@@ -4350,6 +4350,35 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -4395,13 +4424,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         kits: 0,
         remboursement: 0
       },
-      remboursementPromo: [] // accessible par l'administrateur
-
+      remboursementPromo: [],
+      // accessible par l'administrateur
+      msgCompense: {
+        'remboursement': "Vous allez effectue un remboursement de : ",
+        'compense': "Vous allez recevoir une compense de : "
+      },
+      confirmRemboursementData: {
+        _token: "",
+        password: ""
+      }
     };
   },
   methods: {
-    abortPromo: function () {
-      var _abortPromo = _asyncToGenerator(
+    confirmSendRemboursement: function () {
+      var _confirmSendRemboursement = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
         var response;
@@ -4410,14 +4447,52 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context.prev = _context.next) {
               case 0:
                 _context.prev = 0;
+                _context.next = 3;
+                return axios.post('');
+
+              case 3:
+                response = _context.sent;
+                console.log(response);
+                _context.next = 10;
+                break;
+
+              case 7:
+                _context.prev = 7;
+                _context.t0 = _context["catch"](0);
+                alert(_context.t0);
+
+              case 10:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, null, [[0, 7]]);
+      }));
+
+      function confirmSendRemboursement() {
+        return _confirmSendRemboursement.apply(this, arguments);
+      }
+
+      return confirmSendRemboursement;
+    }(),
+    abortPromo: function () {
+      var _abortPromo = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.prev = 0;
                 this.isLoading = true;
                 this.formData.id_promo = this.activePromo.id;
                 this.formData._token = this.myToken;
-                _context.next = 6;
+                _context2.next = 6;
                 return axios.post('/admin/promo/interrompre', this.formData);
 
               case 6:
-                response = _context.sent;
+                response = _context2.sent;
 
                 if (response.data == 'done') {
                   this.isLoading = false;
@@ -4426,20 +4501,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   });
                 }
 
-                _context.next = 13;
+                _context2.next = 13;
                 break;
 
               case 10:
-                _context.prev = 10;
-                _context.t0 = _context["catch"](0);
-                alert(_context.t0);
+                _context2.prev = 10;
+                _context2.t0 = _context2["catch"](0);
+                alert(_context2.t0);
 
               case 13:
               case "end":
-                return _context.stop();
+                return _context2.stop();
             }
           }
-        }, _callee, this, [[0, 10]]);
+        }, _callee2, this, [[0, 10]]);
       }));
 
       function abortPromo() {
@@ -4468,27 +4543,27 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     addPromo: function () {
       var _addPromo = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
         var response, errorTab, prop;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
                 this.isLoading = true;
                 UIkit.modal($("#modal-promo")).hide();
-                _context2.prev = 2;
+                _context3.prev = 2;
                 this.formData._token = this.myToken;
 
                 if (!(this.formState == 'add')) {
-                  _context2.next = 11;
+                  _context3.next = 11;
                   break;
                 }
 
-                _context2.next = 7;
+                _context3.next = 7;
                 return axios.post('/admin/promo/add', this.formData);
 
               case 7:
-                response = _context2.sent;
+                response = _context3.sent;
 
                 if (response.data == 'done') {
                   UIkit.modal.alert("<div class='uk-alert-success uk-border-rounded' uk-alert>Promo ajoute avec success !</div>").then(function () {
@@ -4496,20 +4571,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   });
                 }
 
-                _context2.next = 16;
+                _context3.next = 16;
                 break;
 
               case 11:
                 if (!(this.formState == 'edit')) {
-                  _context2.next = 16;
+                  _context3.next = 16;
                   break;
                 }
 
-                _context2.next = 14;
+                _context3.next = 14;
                 return axios.post('/admin/promo/edit', this.formData);
 
               case 14:
-                response = _context2.sent;
+                response = _context3.sent;
 
                 if (response.data == 'done') {
                   UIkit.modal.alert("<div class='uk-alert-success uk-border-rounded' uk-alert>Promo Modifie !</div>").then(function () {
@@ -4518,31 +4593,31 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 }
 
               case 16:
-                _context2.next = 23;
+                _context3.next = 23;
                 break;
 
               case 18:
-                _context2.prev = 18;
-                _context2.t0 = _context2["catch"](2);
+                _context3.prev = 18;
+                _context3.t0 = _context3["catch"](2);
                 this.isLoading = false;
                 UIkit.modal($("#modal-promo")).show();
 
-                if (_context2.t0.response.data.errors) {
-                  errorTab = _context2.t0.response.data.errors;
+                if (_context3.t0.response.data.errors) {
+                  errorTab = _context3.t0.response.data.errors;
 
                   for (prop in errorTab) {
                     this.errors.push(errorTab[prop][0]);
                   }
                 } else {
-                  this.errors.push(_context2.t0.response.data);
+                  this.errors.push(_context3.t0.response.data);
                 }
 
               case 23:
               case "end":
-                return _context2.stop();
+                return _context3.stop();
             }
           }
-        }, _callee2, this, [[2, 18]]);
+        }, _callee3, this, [[2, 18]]);
       }));
 
       function addPromo() {
@@ -4554,18 +4629,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     getInfosPromo: function () {
       var _getInfosPromo = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
         var response;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
-                _context3.prev = 0;
-                _context3.next = 3;
+                _context4.prev = 0;
+                _context4.next = 3;
                 return axios.get('/admin/promo/list');
 
               case 3:
-                response = _context3.sent;
+                response = _context4.sent;
 
                 if (response.data == 'fail') {
                   // la promo n'existe pas
@@ -4578,20 +4653,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   this.formState = 'edit';
                 }
 
-                _context3.next = 10;
+                _context4.next = 10;
                 break;
 
               case 7:
-                _context3.prev = 7;
-                _context3.t0 = _context3["catch"](0);
-                alert(_context3.t0);
+                _context4.prev = 7;
+                _context4.t0 = _context4["catch"](0);
+                alert(_context4.t0);
 
               case 10:
               case "end":
-                return _context3.stop();
+                return _context4.stop();
             }
           }
-        }, _callee3, this, [[0, 7]]);
+        }, _callee4, this, [[0, 7]]);
       }));
 
       function getInfosPromo() {
@@ -4603,28 +4678,28 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     getCompensePromoInfos: function () {
       var _getCompensePromoInfos = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5() {
         var response, errorTab, prop;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context5.prev = _context5.next) {
               case 0:
-                _context4.prev = 0;
-                _context4.next = 3;
+                _context5.prev = 0;
+                _context5.next = 3;
                 return axios.get('/user/promo/infos-compense');
 
               case 3:
-                response = _context4.sent;
+                response = _context5.sent;
                 this.compensePromo = response.data;
-                _context4.next = 10;
+                _context5.next = 10;
                 break;
 
               case 7:
-                _context4.prev = 7;
-                _context4.t0 = _context4["catch"](0);
+                _context5.prev = 7;
+                _context5.t0 = _context5["catch"](0);
 
-                if (_context4.t0.response.data.errors) {
-                  errorTab = _context4.t0.response.data.errors;
+                if (_context5.t0.response.data.errors) {
+                  errorTab = _context5.t0.response.data.errors;
 
                   for (prop in errorTab) {
                     UIkit.notification({
@@ -4635,7 +4710,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   }
                 } else {
                   UIkit.notification({
-                    message: _context4.t0.response.data,
+                    message: _context5.t0.response.data,
                     status: 'primary',
                     pos: 'bottom-left'
                   });
@@ -4643,10 +4718,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 10:
               case "end":
-                return _context4.stop();
+                return _context5.stop();
             }
           }
-        }, _callee4, this, [[0, 7]]);
+        }, _callee5, this, [[0, 7]]);
       }));
 
       function getCompensePromoInfos() {
@@ -4658,33 +4733,33 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     getRemboursementForUsers: function () {
       var _getRemboursementForUsers = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5() {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee6() {
         var response;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee6$(_context6) {
           while (1) {
-            switch (_context5.prev = _context5.next) {
+            switch (_context6.prev = _context6.next) {
               case 0:
-                _context5.prev = 0;
-                _context5.next = 3;
+                _context6.prev = 0;
+                _context6.next = 3;
                 return axios.get('/admin/promo/get-remboursement');
 
               case 3:
-                response = _context5.sent;
+                response = _context6.sent;
                 this.remboursementPromo = response.data;
-                _context5.next = 10;
+                _context6.next = 10;
                 break;
 
               case 7:
-                _context5.prev = 7;
-                _context5.t0 = _context5["catch"](0);
-                alert(_context5.t0);
+                _context6.prev = 7;
+                _context6.t0 = _context6["catch"](0);
+                alert(_context6.t0);
 
               case 10:
               case "end":
-                return _context5.stop();
+                return _context6.stop();
             }
           }
-        }, _callee5, this, [[0, 7]]);
+        }, _callee6, this, [[0, 7]]);
       }));
 
       function getRemboursementForUsers() {
@@ -56463,7 +56538,87 @@ var render = function() {
                   ])
                 ]
               )
-            ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { attrs: { id: "modal-remboursement", "uk-modal": "" } },
+              [
+                _c("div", { staticClass: "uk-modal-dialog" }, [
+                  _vm._m(4),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "uk-modal-body" }, [
+                    _c(
+                      "div",
+                      {
+                        staticClass: "uk-alert-info uk-border-rounded",
+                        attrs: { "uk-alert": "" }
+                      },
+                      [
+                        _vm.compensePromo.remboursement < 0
+                          ? _c("p", [
+                              _vm._v(
+                                _vm._s(_vm.msgCompense.compense) +
+                                  "\n                                "
+                              ),
+                              _c("span", { staticClass: "uk-text-bold" }, [
+                                _vm._v(
+                                  _vm._s(
+                                    _vm._f("numFormat")(
+                                      -1 * _vm.compensePromo.remboursement
+                                    )
+                                  )
+                                )
+                              ])
+                            ])
+                          : _c("p", [
+                              _vm._v(
+                                _vm._s(_vm.msgCompense.remboursement) +
+                                  "\n                                "
+                              ),
+                              _c("span", { staticClass: "uk-text-bold" }, [
+                                _vm._v(
+                                  " " +
+                                    _vm._s(
+                                      _vm._f("numFormat")(
+                                        -1 * _vm.compensePromo.remboursement
+                                      )
+                                    )
+                                )
+                              ])
+                            ])
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c("div", [
+                      _c(
+                        "form",
+                        {
+                          on: {
+                            submit: function($event) {
+                              $event.preventDefault()
+                            }
+                          }
+                        },
+                        [
+                          _vm._m(5),
+                          _vm._v(" "),
+                          _c(
+                            "button",
+                            {
+                              staticClass:
+                                "uk-button uk-button-small uk-border-rounded uk-button-primary",
+                              attrs: { type: "submit" }
+                            },
+                            [_vm._v("Envoyez")]
+                          )
+                        ]
+                      )
+                    ])
+                  ])
+                ])
+              ]
+            )
           ]
         : _vm._e(),
       _vm._v(" "),
@@ -56480,10 +56635,10 @@ var render = function() {
                   "div",
                   { staticClass: "uk-modal-dialog  uk-margin-auto-vertical" },
                   [
-                    _vm._m(4),
+                    _vm._m(6),
                     _vm._v(" "),
                     _c("div", { staticClass: "uk-modal-body" }, [
-                      _vm._m(5),
+                      _vm._m(7),
                       _vm._v(" "),
                       _c("ul", { staticClass: "uk-switcher" }, [
                         _c("li", [
@@ -56551,7 +56706,7 @@ var render = function() {
                                           "div",
                                           { staticClass: "uk-width-1-2@m" },
                                           [
-                                            _vm._m(6),
+                                            _vm._m(8),
                                             _vm._v(" "),
                                             _c("input", {
                                               directives: [
@@ -56588,7 +56743,7 @@ var render = function() {
                                           "div",
                                           { staticClass: "uk-width-1-2@m" },
                                           [
-                                            _vm._m(7),
+                                            _vm._m(9),
                                             _vm._v(" "),
                                             _c("input", {
                                               directives: [
@@ -56625,7 +56780,7 @@ var render = function() {
                                           "div",
                                           { staticClass: "uk-width-1-2@m" },
                                           [
-                                            _vm._m(8),
+                                            _vm._m(10),
                                             _vm._v(" "),
                                             _c("input", {
                                               directives: [
@@ -56663,7 +56818,7 @@ var render = function() {
                                           "div",
                                           { staticClass: "uk-width-1-2@m" },
                                           [
-                                            _vm._m(9),
+                                            _vm._m(11),
                                             _vm._v(" "),
                                             _c("input", {
                                               directives: [
@@ -56702,7 +56857,7 @@ var render = function() {
                                           "div",
                                           { staticClass: "uk-width-1-1@m" },
                                           [
-                                            _vm._m(10),
+                                            _vm._m(12),
                                             _vm._v(" "),
                                             _c("textarea", {
                                               directives: [
@@ -56980,7 +57135,7 @@ var render = function() {
                           )
                         ]),
                         _vm._v(" "),
-                        _vm._m(11),
+                        _vm._m(13),
                         _vm._v(" "),
                         _c("li", [
                           _c("h4", [
@@ -56995,7 +57150,7 @@ var render = function() {
                           _vm._v(" "),
                           _c("hr", { staticClass: "uk-divider-small" }),
                           _vm._v(" "),
-                          _vm._m(12),
+                          _vm._m(14),
                           _vm._v(" "),
                           _c(
                             "table",
@@ -57004,7 +57159,7 @@ var render = function() {
                                 "uk-table uk-table-striped uk-table-hover uk-table-small uk-table-divider"
                             },
                             [
-                              _vm._m(13),
+                              _vm._m(15),
                               _vm._v(" "),
                               _c(
                                 "tbody",
@@ -57083,6 +57238,31 @@ var staticRenderFns = [
     return _c("label", { attrs: { for: "" } }, [
       _c("span", { attrs: { "uk-icon": "icon : credit-card" } }),
       _vm._v(" Remboursement")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "uk-modal-header" }, [
+      _c("h2", { staticClass: "uk-modal-title" }, [
+        _vm._v("Remboursement promo")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "uk-margin-small" }, [
+      _c("label", { attrs: { for: "" } }, [
+        _vm._v("Confirmez votre mot de passe")
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "uk-border-rounded uk-input",
+        attrs: { type: "password", placeholder: "Entrez votre mot de passe" }
+      })
     ])
   },
   function() {
@@ -65207,7 +65387,11 @@ var staticRenderFns = [
       "a",
       {
         staticClass: "uk-button uk-button-small border-button",
-        attrs: { "uk-tooltip": "Paiement Remboursement" }
+        attrs: {
+          href: "#modal-remboursement",
+          "uk-toggle": "",
+          "uk-tooltip": "Paiement Remboursement"
+        }
       },
       [_c("i", { staticClass: "material-icons" }, [_vm._v("payment")])]
     )

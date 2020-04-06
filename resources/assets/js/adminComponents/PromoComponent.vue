@@ -33,6 +33,35 @@
                     </div>
                 </nav>                
             </div>
+
+            <!-- MODAL REMBOURSEMENT FORM -->
+            <div id="modal-remboursement" uk-modal>
+                <div class="uk-modal-dialog">
+                    <div class="uk-modal-header">
+                        <h2 class="uk-modal-title">Remboursement promo</h2>
+                    </div>
+                    <div class="uk-modal-body">
+                        <div class="uk-alert-info uk-border-rounded" uk-alert>
+                            <p v-if="compensePromo.remboursement < 0">{{msgCompense.compense}}
+                                <span class="uk-text-bold">{{ -1 * compensePromo.remboursement | numFormat}}</span>
+                            </p>
+                            <p v-else>{{msgCompense.remboursement}}
+                                <span class="uk-text-bold"> {{ -1 * compensePromo.remboursement | numFormat}}</span>
+                            </p>
+                        </div>
+                        <div>
+                            <form @submit.prevent="">
+                                <div class="uk-margin-small">
+                                    <label for="">Confirmez votre mot de passe</label>
+                                    <input type="password" class="uk-border-rounded uk-input" placeholder="Entrez votre mot de passe">
+                                </div>
+                                <button type="submit" class="uk-button uk-button-small uk-border-rounded uk-button-primary">Envoyez</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- // -->
         </template>
 
         <template v-if="theUser == 'admin'">
@@ -216,9 +245,25 @@ export default {
                 remboursement : 0
             },
             remboursementPromo : [],// accessible par l'administrateur
+            msgCompense : {
+                'remboursement' : "Vous allez effectue un remboursement de : ",
+                'compense' : "Vous allez recevoir une compense de : "
+            },
+            confirmRemboursementData : {
+                _token : "",
+                password : "",
+            }
         }
     },
     methods : {
+        confirmSendRemboursement : async function () {
+            try {
+                let response = await axios.post('')
+                console.log(response)
+            } catch(error) {
+                alert(error)
+            }
+        },
         abortPromo : async function () {
             // ENVOI DE LA REQUETE D'INTERRUPTION DE LA PROMO EN COURS 
             try {
