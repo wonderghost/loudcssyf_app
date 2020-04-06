@@ -4363,22 +4363,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -56540,85 +56524,7 @@ var render = function() {
               )
             ]),
             _vm._v(" "),
-            _c(
-              "div",
-              { attrs: { id: "modal-remboursement", "uk-modal": "" } },
-              [
-                _c("div", { staticClass: "uk-modal-dialog" }, [
-                  _vm._m(4),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "uk-modal-body" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass: "uk-alert-info uk-border-rounded",
-                        attrs: { "uk-alert": "" }
-                      },
-                      [
-                        _vm.compensePromo.remboursement < 0
-                          ? _c("p", [
-                              _vm._v(
-                                _vm._s(_vm.msgCompense.compense) +
-                                  "\n                                "
-                              ),
-                              _c("span", { staticClass: "uk-text-bold" }, [
-                                _vm._v(
-                                  _vm._s(
-                                    _vm._f("numFormat")(
-                                      -1 * _vm.compensePromo.remboursement
-                                    )
-                                  )
-                                )
-                              ])
-                            ])
-                          : _c("p", [
-                              _vm._v(
-                                _vm._s(_vm.msgCompense.remboursement) +
-                                  "\n                                "
-                              ),
-                              _c("span", { staticClass: "uk-text-bold" }, [
-                                _vm._v(
-                                  " " +
-                                    _vm._s(
-                                      _vm._f("numFormat")(
-                                        -1 * _vm.compensePromo.remboursement
-                                      )
-                                    )
-                                )
-                              ])
-                            ])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", [
-                      _c(
-                        "form",
-                        {
-                          on: {
-                            submit: function($event) {
-                              $event.preventDefault()
-                            }
-                          }
-                        },
-                        [
-                          _vm._m(5),
-                          _vm._v(" "),
-                          _c(
-                            "button",
-                            {
-                              staticClass:
-                                "uk-button uk-button-small uk-border-rounded uk-button-primary",
-                              attrs: { type: "submit" }
-                            },
-                            [_vm._v("Envoyez")]
-                          )
-                        ]
-                      )
-                    ])
-                  ])
-                ])
-              ]
-            )
+            _vm._m(4)
           ]
         : _vm._e(),
       _vm._v(" "),
@@ -56635,10 +56541,10 @@ var render = function() {
                   "div",
                   { staticClass: "uk-modal-dialog  uk-margin-auto-vertical" },
                   [
-                    _vm._m(6),
+                    _vm._m(5),
                     _vm._v(" "),
                     _c("div", { staticClass: "uk-modal-body" }, [
-                      _vm._m(7),
+                      _vm._m(6),
                       _vm._v(" "),
                       _c("ul", { staticClass: "uk-switcher" }, [
                         _c("li", [
@@ -56706,7 +56612,7 @@ var render = function() {
                                           "div",
                                           { staticClass: "uk-width-1-2@m" },
                                           [
-                                            _vm._m(8),
+                                            _vm._m(7),
                                             _vm._v(" "),
                                             _c("input", {
                                               directives: [
@@ -56743,7 +56649,7 @@ var render = function() {
                                           "div",
                                           { staticClass: "uk-width-1-2@m" },
                                           [
-                                            _vm._m(9),
+                                            _vm._m(8),
                                             _vm._v(" "),
                                             _c("input", {
                                               directives: [
@@ -56780,7 +56686,7 @@ var render = function() {
                                           "div",
                                           { staticClass: "uk-width-1-2@m" },
                                           [
-                                            _vm._m(10),
+                                            _vm._m(9),
                                             _vm._v(" "),
                                             _c("input", {
                                               directives: [
@@ -56818,7 +56724,7 @@ var render = function() {
                                           "div",
                                           { staticClass: "uk-width-1-2@m" },
                                           [
-                                            _vm._m(11),
+                                            _vm._m(10),
                                             _vm._v(" "),
                                             _c("input", {
                                               directives: [
@@ -56857,7 +56763,7 @@ var render = function() {
                                           "div",
                                           { staticClass: "uk-width-1-1@m" },
                                           [
-                                            _vm._m(12),
+                                            _vm._m(11),
                                             _vm._v(" "),
                                             _c("textarea", {
                                               directives: [
@@ -57135,7 +57041,7 @@ var render = function() {
                           )
                         ]),
                         _vm._v(" "),
-                        _vm._m(13),
+                        _vm._m(12),
                         _vm._v(" "),
                         _c("li", [
                           _c("h4", [
@@ -57150,7 +57056,7 @@ var render = function() {
                           _vm._v(" "),
                           _c("hr", { staticClass: "uk-divider-small" }),
                           _vm._v(" "),
-                          _vm._m(14),
+                          _vm._m(13),
                           _vm._v(" "),
                           _c(
                             "table",
@@ -57159,7 +57065,7 @@ var render = function() {
                                 "uk-table uk-table-striped uk-table-hover uk-table-small uk-table-divider"
                             },
                             [
-                              _vm._m(15),
+                              _vm._m(14),
                               _vm._v(" "),
                               _c(
                                 "tbody",
@@ -57244,25 +57150,16 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "uk-modal-header" }, [
-      _c("h2", { staticClass: "uk-modal-title" }, [
-        _vm._v("Remboursement promo")
+    return _c("div", { attrs: { id: "modal-remboursement", "uk-modal": "" } }, [
+      _c("div", { staticClass: "uk-modal-dialog" }, [
+        _c("div", { staticClass: "uk-modal-header" }, [
+          _c("h2", { staticClass: "uk-modal-title" }, [
+            _vm._v("Remboursement promo")
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "uk-modal-body" })
       ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "uk-margin-small" }, [
-      _c("label", { attrs: { for: "" } }, [
-        _vm._v("Confirmez votre mot de passe")
-      ]),
-      _vm._v(" "),
-      _c("input", {
-        staticClass: "uk-border-rounded uk-input",
-        attrs: { type: "password", placeholder: "Entrez votre mot de passe" }
-      })
     ])
   },
   function() {

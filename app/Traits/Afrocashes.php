@@ -31,6 +31,7 @@ use App\Livraison;
 use App\Produits;
 use App\LivraisonSerialFile;
 use App\RapportVente;
+use App\RemboursementPromo;
 
 Trait Afrocashes {
 
@@ -676,7 +677,8 @@ public function getInfosRemboursementPromo(Request $request,
 			#command material promo 
 			$promo = $this->isExistPromo();
 			if(!$promo) {
-				throw new AppException("Aucune promo en cours !");
+				// throw new AppException("Aucune promo en cours !");
+				$promo = $p->all()->first();
 			}
 			$terminal = $produit->where('with_serial',1)->first();
 
@@ -696,7 +698,8 @@ public function getInfosRemboursementPromo(Request $request,
 
 			return [
 					'kits'	=>	$commandPromoQuantite - $rapportPromo,
-					'remboursement'	=>	($commandPromoQuantite - $rapportPromo) * $promo->subvention
+					'remboursement'	=>	($commandPromoQuantite - $rapportPromo) * $promo->subvention,
+					'promo_id'	=>	$promo->id
 				];
 	}
 	#LISTING DES REMBOURSEMENT LIEES A LA PROMO
@@ -733,12 +736,34 @@ public function getInfosRemboursementPromo(Request $request,
 					'pay_at'	=>	'-',
 					'status'	=>	'-'
 				];
+				// MISE A JOUR DE LA TABLE DE REMBOURSEMENT
+				$this->updateRemboursementTable($data[$key] , $value->username);
 			}
 			return response()
 				->json($data);
 		} catch(AppException $e) {
 			header("Erreur",true,422);
 			die(json_encode($e->getMessage()));
+		}
+	}
+
+	// MISE A JOUR DANS LA TABLE DE REMBOURSEMENT
+
+	public function updateRemboursementTable($remboursementData , $vendeur) {
+		$_rm = RemboursementPromo::where('vendeurs',$vendeur)
+			->where('promo_id',$remboursementData['remboursement']['promo_id'])
+			->first();
+		if(!$_rm) {
+			$rm = new RemboursementPromo;
+			$rm->vendeurs = $vendeur;
+			$rm->kits  = $remboursementData['remboursement']['kits'];
+			$rm->montant = $remboursementData['remboursement']['remboursement'];
+			$rm->promo_id = $remboursementData['remboursement']['promo_id'];
+			$rm->save();
+		} else {
+			$_rm->kits = $remboursementData['remboursement']['kits'];
+			$_rm->montant = $remboursementData['remboursement']['remboursement'];
+			$_rm->save();
 		}
 	}
 }
