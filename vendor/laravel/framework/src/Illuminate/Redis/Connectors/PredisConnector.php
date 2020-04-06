@@ -8,6 +8,9 @@ use Illuminate\Contracts\Redis\Connector;
 use Illuminate\Redis\Connections\PredisConnection;
 use Illuminate\Redis\Connections\PredisClusterConnection;
 
+/**
+ * @deprecated Predis is no longer maintained by its original author
+ */
 class PredisConnector implements Connector
 {
     /**

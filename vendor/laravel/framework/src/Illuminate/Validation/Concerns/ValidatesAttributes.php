@@ -914,6 +914,10 @@ trait ValidatesAttributes
             return $this->getSize($attribute, $value) > $parameters[0];
         }
 
+        if ($this->hasRule($attribute, $this->numericRules) && is_numeric($value) && is_numeric($comparedToValue)) {
+            return $value > $comparedToValue;
+        }
+
         if (! $this->isSameType($value, $comparedToValue)) {
             return false;
         }
@@ -939,6 +943,10 @@ trait ValidatesAttributes
 
         if (is_null($comparedToValue) && (is_numeric($value) && is_numeric($parameters[0]))) {
             return $this->getSize($attribute, $value) < $parameters[0];
+        }
+
+        if ($this->hasRule($attribute, $this->numericRules) && is_numeric($value) && is_numeric($comparedToValue)) {
+            return $value < $comparedToValue;
         }
 
         if (! $this->isSameType($value, $comparedToValue)) {
@@ -968,6 +976,10 @@ trait ValidatesAttributes
             return $this->getSize($attribute, $value) >= $parameters[0];
         }
 
+        if ($this->hasRule($attribute, $this->numericRules) && is_numeric($value) && is_numeric($comparedToValue)) {
+            return $value >= $comparedToValue;
+        }
+
         if (! $this->isSameType($value, $comparedToValue)) {
             return false;
         }
@@ -993,6 +1005,10 @@ trait ValidatesAttributes
 
         if (is_null($comparedToValue) && (is_numeric($value) && is_numeric($parameters[0]))) {
             return $this->getSize($attribute, $value) <= $parameters[0];
+        }
+
+        if ($this->hasRule($attribute, $this->numericRules) && is_numeric($value) && is_numeric($comparedToValue)) {
+            return $value <= $comparedToValue;
         }
 
         if (! $this->isSameType($value, $comparedToValue)) {

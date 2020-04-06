@@ -337,7 +337,7 @@ class Handler implements ExceptionHandlerContract
     protected function renderExceptionWithWhoops(Exception $e)
     {
         return tap(new Whoops, function ($whoops) {
-            $whoops->pushHandler($this->whoopsHandler());
+            $whoops->appendHandler($this->whoopsHandler());
 
             $whoops->writeToOutput(false);
 
