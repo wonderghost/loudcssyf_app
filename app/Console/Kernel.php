@@ -14,7 +14,6 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
-        Commands\scheduleTest::class
     ];
 
     /**
@@ -25,9 +24,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('command:testsch')
-            ->everyMinute()
-            ->runInBackground();
+        // $schedule->command('inspire')
+        //          ->hourly();
     }
 
     /**
@@ -38,6 +36,7 @@ class Kernel extends ConsoleKernel
     protected function commands()
     {
         $this->load(__DIR__.'/Commands');
+
         require base_path('routes/console.php');
     }
 }
