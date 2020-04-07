@@ -7,7 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class Promo extends Model
 {
     //
-    protected $table = 'promos';
-
-    
+    protected $table = 'promos';    
 }

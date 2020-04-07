@@ -766,4 +766,15 @@ public function getInfosRemboursementPromo(Request $request,
 			$_rm->save();
 		}
 	}
+	// LISTING TABLE REMBOURSEMENT PROMO
+	public function getRemboursementListring(Request $request , RemboursementPromo $rp) {
+		try {
+			$data = $rp->where('vendeurs',$request->user()->username);
+			return response()
+				->json('done');
+		} catch(AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
 }

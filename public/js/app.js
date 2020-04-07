@@ -4363,6 +4363,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -4751,6 +4765,44 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return getRemboursementForUsers;
+    }(),
+    getRemboursementListring: function () {
+      var _getRemboursementListring = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee7() {
+        var response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee7$(_context7) {
+          while (1) {
+            switch (_context7.prev = _context7.next) {
+              case 0:
+                _context7.prev = 0;
+                _context7.next = 3;
+                return axios.get('');
+
+              case 3:
+                response = _context7.sent;
+                console.log(response.data);
+                _context7.next = 10;
+                break;
+
+              case 7:
+                _context7.prev = 7;
+                _context7.t0 = _context7["catch"](0);
+                alert(_context7.t0);
+
+              case 10:
+              case "end":
+                return _context7.stop();
+            }
+          }
+        }, _callee7, null, [[0, 7]]);
+      }));
+
+      function getRemboursementListring() {
+        return _getRemboursementListring.apply(this, arguments);
+      }
+
+      return getRemboursementListring;
     }()
   },
   computed: {
@@ -57150,17 +57202,47 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { attrs: { id: "modal-remboursement", "uk-modal": "" } }, [
-      _c("div", { staticClass: "uk-modal-dialog" }, [
-        _c("div", { staticClass: "uk-modal-header" }, [
-          _c("h2", { staticClass: "uk-modal-title" }, [
-            _vm._v("Remboursement promo")
+    return _c(
+      "div",
+      {
+        staticClass: "uk-modal-container",
+        attrs: { id: "modal-remboursement", "uk-modal": "" }
+      },
+      [
+        _c("div", { staticClass: "uk-modal-dialog" }, [
+          _c("div", { staticClass: "uk-modal-header" }, [
+            _c("h2", { staticClass: "uk-modal-title" }, [
+              _vm._v("Remboursement promo")
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "uk-modal-body" }, [
+            _c(
+              "table",
+              {
+                staticClass:
+                  "uk-table uk-table-small uk-table-hover uk-table-striped uk-table-divider"
+              },
+              [
+                _c("thead", [
+                  _c("tr", [
+                    _c("th", [_vm._v("Kits Promo")]),
+                    _vm._v(" "),
+                    _c("th", [_vm._v("Montant")]),
+                    _vm._v(" "),
+                    _c("th", [_vm._v("Paye le ")]),
+                    _vm._v(" "),
+                    _c("th", [_vm._v("Status")])
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("tbody", [_c("tr")])
+              ]
+            )
           ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "uk-modal-body" })
-      ])
-    ])
+        ])
+      ]
+    )
   },
   function() {
     var _vm = this

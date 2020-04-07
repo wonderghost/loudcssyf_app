@@ -35,13 +35,27 @@
             </div>
 
             <!-- MODAL REMBOURSEMENT FORM -->
-            <div id="modal-remboursement" uk-modal>
+            <div id="modal-remboursement" class="uk-modal-container" uk-modal>
                 <div class="uk-modal-dialog">
                     <div class="uk-modal-header">
                         <h2 class="uk-modal-title">Remboursement promo</h2>
                     </div>
                     <div class="uk-modal-body">
-                        
+                        <table class="uk-table uk-table-small uk-table-hover uk-table-striped uk-table-divider">
+                            <thead>
+                                <tr>
+                                    <th>Kits Promo</th>
+                                    <th>Montant</th>
+                                    <th>Paye le </th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -363,6 +377,15 @@ export default {
                 let response = await axios.get('/admin/promo/get-remboursement')
                 this.remboursementPromo = response.data
             } catch(error) {
+                alert(error)
+            }
+        },
+        getRemboursementListring : async function () {
+            try {
+                let response = await axios.get('')
+                console.log(response.data)
+            }
+            catch(error) {
                 alert(error)
             }
         }
