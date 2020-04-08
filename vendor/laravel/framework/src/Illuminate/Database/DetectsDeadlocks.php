@@ -3,23 +3,18 @@
 namespace Illuminate\Database;
 
 use Exception;
-use PDOException;
 use Illuminate\Support\Str;
 
-trait DetectsConcurrencyErrors
+trait DetectsDeadlocks
 {
     /**
-     * Determine if the given exception was caused by a concurrency error such as a deadlock or serialization failure.
+     * Determine if the given exception was caused by a deadlock.
      *
      * @param  \Exception  $e
      * @return bool
      */
-    protected function causedByConcurrencyError(Exception $e)
+    protected function causedByDeadlock(Exception $e)
     {
-        if ($e instanceof PDOException && $e->getCode() === '40001') {
-            return true;
-        }
-
         $message = $e->getMessage();
 
         return Str::contains($message, [
