@@ -91,7 +91,6 @@ Trait Afrocashes {
 	// envoi de la commande semi grossiste
 	public function sendCommandSemiGrossiste(Request $request , CommandCredit $cc) {
 
-
 		try {
 
 			if($cc->where('vendeurs',$request->user()->username)
@@ -105,33 +104,34 @@ Trait Afrocashes {
 				$validation = $request->validate([
 					'montant'	=>	'required',
 					'numero_recu'	=>	'required|string|unique:command_credits,numero_recu',
-					'piece_jointe'	=>	'required|image'
+					// 'piece_jointe'	=>	'required|image'
 				]);
 				$credit = new	CommandCredit;
 				$credit->montant = $request->input('montant');
 				$credit->type = 'afro_cash_sg';
 				$credit->numero_recu = $request->input('numero_recu');
 				$credit->vendeurs = Auth::user()->username;
-				if($request->hasFile('piece_jointe')) {
-					$extension = $request->file('piece_jointe')->getClientOriginalExtension();
-					$credit->recu =	Str::random()."_recu_".time().'.'.$extension;
-					if($request->file('piece_jointe')->move(config('image.path'),$credit->recu)) {
-						$credit->save();
-						// CREATION DE LA NOTIFICATION
-						$n = $this->sendNotification("Commande Afrocash" , "Vous avez envoyer une command Afrocash Grossiste",Auth::user()->username);
-						$n->save();
-						$n = $this->sendNotification("Commande Afrocash" , "Vous avez une commande Afrocash en attente de confirmation!",User::where('type','gcga')->first()->username);
-						$n->save();
-						$n = $this->sendNotification("Commande Afrocash" , "Il y a une commande Afrocash en attente de confirmation pour : ".Auth::user()->localisation,'admin');
-						$n->save();
-						return response()
-							->json('done');
-					} else {
-						throw new AppException("Erreur de telechargement !");
-					}
-				} else {
-					throw new AppException("Erreur de telechargement !");
-				}
+				// if($request->hasFile('piece_jointe')) {
+				// 	$extension = $request->file('piece_jointe')->getClientOriginalExtension();
+				// 	$credit->recu =	Str::random()."_recu_".time().'.'.$extension;
+				// 	if($request->file('piece_jointe')->move(config('image.path'),$credit->recu)) {
+					
+				$credit->save();
+				// CREATION DE LA NOTIFICATION
+				$n = $this->sendNotification("Commande Afrocash" , "Vous avez envoyer une command Afrocash Grossiste",Auth::user()->username);
+				$n->save();
+				$n = $this->sendNotification("Commande Afrocash" , "Vous avez une commande Afrocash en attente de confirmation!",User::where('type','gcga')->first()->username);
+				$n->save();
+				$n = $this->sendNotification("Commande Afrocash" , "Il y a une commande Afrocash en attente de confirmation pour : ".Auth::user()->localisation,'admin');
+				$n->save();
+				return response()
+					->json('done');
+					// } else {
+					// 	throw new AppException("Erreur de telechargement !");
+					// }
+				// } else {
+				// 	throw new AppException("Erreur de telechargement !");
+				// }
 			} else {
 				throw new AppException("Action non autorisee!");
 			}
@@ -139,7 +139,6 @@ Trait Afrocashes {
 			header("Erreur!",true,422);
 			die(json_encode($e->getMessage()));
 		}
-
 	}
 
 	// ENVOI DE CREDIT AFROCASH ,CGA ET REX
@@ -767,11 +766,21 @@ public function getInfosRemboursementPromo(Request $request,
 		}
 	}
 	// LISTING TABLE REMBOURSEMENT PROMO
-	public function getRemboursementListring(Request $request , RemboursementPromo $rp) {
+	public function getRemboursementListing(Request $request , RemboursementPromo $rp) {
 		try {
-			$data = $rp->where('vendeurs',$request->user()->username);
+			$data = $rp->where('vendeurs',$request->user()->username)->get();
+			$_data = [];
+			foreach($data as $key => $value) {
+				$_data[$key] = [
+					'kits'	=>	$value->kits,
+					'montant'	=>	$value->montant,
+					'pay_at'	=>	$value->pay_at ? $value->pay_at : '-',
+					'status'	=>	'-',
+					'promo'	=>	$value->promos()
+				];
+			}
 			return response()
-				->json('done');
+				->json($_data);
 		} catch(AppException $e) {
 			header("Erreur",true,422);
 			die(json_encode($e->getMessage()));

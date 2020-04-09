@@ -160,9 +160,9 @@
                   <label for="">Numero recu</label>
                   <input type="text" class="uk-input uk-border-rounded" v-model="formDataAfrocash.numero_recu" >
                 </div>
-                <div class="uk-margin-small">
+                <!-- <div class="uk-margin-small">
                   <input type="file"  @change="fileUpload">
-                </div>
+                </div> -->
                <button type="submit" class="uk-button uk-button-small uk-border-rounded uk-button-primary">validez</button>
              </div>
            </form>
@@ -328,7 +328,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             var form = new FormData()
             form.append('montant',this.formDataAfrocash.montant)
             form.append('numero_recu',this.formDataAfrocash.numero_recu)
-            form.append('piece_jointe',this.formDataAfrocash.piece_jointe)
+            // form.append('piece_jointe',this.formDataAfrocash.piece_jointe)
             form.append('_token',this.myToken)
 
             try {

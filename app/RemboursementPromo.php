@@ -10,6 +10,6 @@ class RemboursementPromo extends Model
     protected $table = 'remboursement_promo';
     
     public function promos() {
-        return $this->belongsTo('App\Promo');
+        return $this->belongsTo('App\Promo','promo_id','id')->first();
     }
 }

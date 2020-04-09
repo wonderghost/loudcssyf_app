@@ -351,73 +351,106 @@ class AdminController extends Controller
 
     //
     public function operationAfrocash() {
-      $depenses = TransactionCreditCentral::where('type','depense')->orderBy('created_at','desc')->get();
-      $apports = TransactionCreditCentral::where('type','apport')->orderBy('created_at','desc')->get();
-      return view('admin.afrocash-credit')->withDepenses($depenses)->withApports($apports);
+      return view('admin.afrocash-credit');
+    }
+
+    public function historiqueApport() {
+      try {
+          $apports = TransactionCreditCentral::where('type','apport')->orderBy('created_at','desc')->get();
+          return response()
+            ->json($apports);
+      } catch(AppException $e) {
+          header("Erreur",true,422);
+          die(json_encode($e->getMessage()));
+      }
+    }
+
+    public function historiqueDepenses() {
+      try{
+          $depenses = TransactionCreditCentral::where('type','depense')->orderBy('created_at','desc')->get();
+          return response()
+            ->json($depenses);
+      } catch(AppException $e) {
+          header("Erreur",true,422);
+          die(json_encode($e->getMessage()));
+      }
     }
 
     //
     public function apportCapital(Request $request) {
+      try {
+        $validation = $request->validate([
+          'montant' =>  'required|numeric|min:1000000',
+          'description' =>  'string',
+        ],[
+          'required'  =>  'Veuillez remplir le champ :attribute',
+          'string'  =>  ':attribute doit etre une chaine de caractere'
+        ]);
+  
+        
 
-      $validation = $request->validate([
-        'montant' =>  'required|numeric|min:1000000',
-        'description' =>  'string',
-      ],[
-        'required'  =>  'Veuillez remplir le champ :attribute',
-        'string'  =>  ':attribute doit etre une chaine de caractere'
-      ]);
-
-      $new_solde = Credit::where('designation','afrocash')->first()->solde + $request->input('montant');
-      // ajout de la transaction dans l'historique
-
-      $transaction = new TransactionCreditCentral;
-      $transaction->destinataire  = 'afrocash';
-      $transaction->montant   = $request->input('montant');
-      $transaction->solde_anterieur = Credit::where('designation','afrocash')->first()->solde;
-      $transaction->nouveau_solde = $new_solde;
-      $transaction->motif = 'autres';
-      $transaction->type = 'apport';
-      $transaction->description = $request->input('description');
-      $transaction->save();
-
-      Credit::where('designation','afrocash')->update([
-        'solde' =>  $new_solde
-      ]);
-
-      return redirect('/admin/afrocash')->withSuccess("Success!");
+        $new_solde = Credit::where('designation','afrocash')->first()->solde + $request->input('montant');
+        // ajout de la transaction dans l'historique
+  
+        $transaction = new TransactionCreditCentral;
+        $transaction->destinataire  = 'afrocash';
+        $transaction->montant   = $request->input('montant');
+        $transaction->solde_anterieur = Credit::where('designation','afrocash')->first()->solde;
+        $transaction->nouveau_solde = $new_solde;
+        $transaction->motif = 'autres';
+        $transaction->type = 'apport';
+        $transaction->description = $request->input('description');
+        $transaction->save();
+          
+        Credit::where('designation','afrocash')->update([
+          'solde' =>  $new_solde
+        ]);
+        return response()
+          ->json('done');
+          
+      } catch(AppException $e) {
+          header("Erreur",true,422);
+          die(json_encode($e->getMessage()));
+      }
     }
 
     // AJOUTER UNE DEPENSES
 
     public function addDepenses(Request $request) {
-      $validation = $request->validate([
-        'motif' =>  'required',
-        'montant' =>  'required|numeric|min:10000',
-        'description' =>  'string'
-      ],[
-        'required'  =>  'Veuillez remplir le champ :attribute',
-        'numeric' =>  'Le champs :attribute doit etre une valeur numerique',
-        'string'  =>  'Le champs :attribute doit etre une chaine de caractere'
-      ]);
-
-      $new_solde_afrocash = Credit::where('designation','afrocash')->first()->solde - $request->input('montant');
-
-
-      $depenses = new TransactionCreditCentral;
-      $depenses->motif  = $request->input('motif');
-      $depenses->description  = $request->input('description');
-      $depenses->montant  = $request->input('montant');
-      $depenses->solde_anterieur = Credit::where('designation','afrocash')->first()->solde;
-      $depenses->nouveau_solde = $new_solde_afrocash;
-      $depenses->expediteur =  'afrocash';
-      $depenses->type   = 'depense';
-      $depenses->save();
-      // debiter le solde afrocash central
-      Credit::where('designation','afrocash')->update([
-        'solde' =>  $new_solde_afrocash
-      ]);
-
-      return redirect('/admin/afrocash')->withSuccess("Success!");
+      try {
+        $validation = $request->validate([
+          'motif' =>  'required',
+          'montant' =>  'required|numeric|min:10000',
+          'description' =>  'string'
+        ],[
+          'required'  =>  'Veuillez remplir le champ :attribute',
+          'numeric' =>  'Le champs :attribute doit etre une valeur numerique',
+          'string'  =>  'Le champs :attribute doit etre une chaine de caractere'
+        ]);
+  
+        $new_solde_afrocash = Credit::where('designation','afrocash')->first()->solde - $request->input('montant');
+  
+  
+        $depenses = new TransactionCreditCentral;
+        $depenses->motif  = $request->input('motif');
+        $depenses->description  = $request->input('description');
+        $depenses->montant  = $request->input('montant');
+        $depenses->solde_anterieur = Credit::where('designation','afrocash')->first()->solde;
+        $depenses->nouveau_solde = $new_solde_afrocash;
+        $depenses->expediteur =  'afrocash';
+        $depenses->type   = 'depense';
+        $depenses->save();
+        // debiter le solde afrocash central
+        Credit::where('designation','afrocash')->update([
+          'solde' =>  $new_solde_afrocash
+        ]);
+        
+          return response()
+            ->json('done');
+      } catch(AppException $e) {
+          header("Erreur",true,422);
+          die(json_encode($e->getMessage()));
+      }
     }
 
     // Apercu de transaction sur le tableau de bord

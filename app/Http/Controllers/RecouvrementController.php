@@ -11,6 +11,7 @@ use App\Exceptions\AppException;
 use App\Recouvrement;
 use App\Traits\Similarity;
 use Illuminate\Support\Facades\Auth;
+use App\CommandCredit;
 
 class RecouvrementController extends Controller
 {
@@ -50,6 +51,15 @@ class RecouvrementController extends Controller
           $n->save();
 
           $recouvrement->save();
+
+          $cc = new CommandCredit;
+          
+          $this->sendAutoCommandeAfrocash(
+            $cc,
+            $recouvrement->montant,
+            $recouvrement->vendeurs,
+            $recouvrement->numero_recu
+          );
           // AJOUT DE L'ID DE RECOUVREMENT DANS LA TABLE TRANSACTIONS
           TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where([
             'type'  =>  'semi_grossiste',
@@ -130,5 +140,28 @@ class RecouvrementController extends Controller
         die(json_encode($e->getMessage()));
       }
 
+    }
+
+    #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    public function sendAutoCommandeAfrocash(CommandCredit $cc , $montant , $vendeurs, $numero_recu) {
+      try {
+
+          $cc->montant = $montant;
+          $cc->vendeurs = $vendeurs;
+          $cc->type = 'afro_cash_sg';
+          $cc->numero_recu = $numero_recu;
+          $cc->save();
+
+          $n = $this->sendNotification("Commande Afrocash" , "Vous avez envoyer une command Afrocash Grossiste",$vendeurs);
+          $n->save();
+          $n = $this->sendNotification("Commande Afrocash" , "Vous avez une commande Afrocash en attente de confirmation!",User::where('type','gcga')->first()->username);
+          $n->save();
+          $n = $this->sendNotification("Commande Afrocash" , "Il y a une commande Afrocash en attente de confirmation pour : ".User::where("username",$vendeurs)->first()->localisation,'admin');
+          $n->save();
+          return true;
+      } catch(AppException $e) {
+          header("Erreur",true,422);
+          die(json_encode($e->getMessage()));
+      }
     }
 }

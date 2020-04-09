@@ -41,9 +41,11 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/promo/interrompre','AdminController@interruptionPromo');
 	Route::get('/admin/promo/get-remboursement','AdminController@getRemboursementForUsers'); // vue sur les remboursements lies a la promo
 	// Depenses
-	Route::post('/admin/depenses/add','AdminController@addDepenses');
+	Route::post('/admin/afrocash/depenses','AdminController@addDepenses');
 	//
 	Route::get('/admin/afrocash','AdminController@operationAfrocash');
+	Route::get('/admin/afrocash/historique-apports','AdminController@historiqueApport');
+	Route::get('/admin/afrocash/historique-depenses','AdminController@historiqueDepenses');
 	Route::post('/admin/afrocash/apport','AdminController@apportCapital');
 	Route::get('/admin/afrocash/all-transactions','CreditController@allTransactionAfrocash');
 
@@ -323,6 +325,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	
 	// Infos compense Promo
 	Route::get('/user/promo/infos-compense','VendeurController@getInfosRemboursementPromo')->middleware('vendeur');
+	Route::get('/user/promo/listing-remboursement','VendeurController@getRemboursementListing')->middleware('vendeur');
 
 });
 

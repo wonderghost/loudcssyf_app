@@ -48,11 +48,25 @@
                                     <th>Montant</th>
                                     <th>Paye le </th>
                                     <th>Status</th>
+                                    <th>Promo</th>
+                                    <td>-</td>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    
+                                <tr v-for="r in histoRemboursement">
+                                    <td>{{r.kits}}</td>
+                                    <td>{{r.montant | numFormat}}</td>
+                                    <td>{{r.pay_at}}</td>
+                                    <td>{{r.status}}</td>
+                                    <td>{{r.promo.intitule}}</td>
+                                    <td>
+                                        <template v-if="r.montant < 0">
+                                            <button class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-text-capitalize" v-if="r.pay_at == '-'"> compensez</button>
+                                        </template>
+                                        <template v-else>
+                                            <button class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-text-capitalize" v-if="r.pay_at == '-'"> remboursez</button>
+                                        </template>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -218,6 +232,7 @@ export default {
         }
         if(this.theUser == 'v_da' || this.theUser == 'v_standart') {
             this.getCompensePromoInfos()
+            this.getRemboursementListring()
         }
         this.isLoading = false
     },
@@ -250,7 +265,8 @@ export default {
             confirmRemboursementData : {
                 _token : "",
                 password : "",
-            }
+            },
+            histoRemboursement : []
         }
     },
     methods : {
@@ -382,8 +398,8 @@ export default {
         },
         getRemboursementListring : async function () {
             try {
-                let response = await axios.get('')
-                console.log(response.data)
+                let response = await axios.get('/user/promo/listing-remboursement')
+                this.histoRemboursement = response.data
             }
             catch(error) {
                 alert(error)
