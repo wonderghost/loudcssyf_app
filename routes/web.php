@@ -166,6 +166,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// completer l'enregistrement du materiel
 	// PROFILE UTILISATEURS
 	Route::get('/user/settings','Settings@indexUser');
+	Route::get('/user/get-profile-infos','Settings@profileInfos');
 	Route::post('/user/change-password','Settings@changePasswordUser');
 	// Route::get('/user/profile/','')
 	// ==
