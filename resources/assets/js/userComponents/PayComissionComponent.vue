@@ -3,7 +3,8 @@
     
     <loading :active.sync="isLoading"
         :can-cancel="false"
-        :is-full-page="fullPage"></loading>
+        :is-full-page="fullPage"
+        loader="dots"></loading>
 
     <div id="modal-commission" class="uk-modal-container" uk-modal="esc-close : false ; bg-close : false;">
   	    <div class=" uk-modal-dialog">

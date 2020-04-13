@@ -2,7 +2,8 @@
 <div class="">
   <loading :active.sync="isLoading"
       :can-cancel="false"
-      :is-full-page="fullPage"></loading>
+      :is-full-page="fullPage"
+      loader="dots"></loading>
   <table  class="uk-table uk-table-divider uk-table-striped uk-table-small uk-table-hover uk-table-responsive">
     <thead>
       <tr>

@@ -129,7 +129,7 @@ class ChartController extends Controller
                                 ->where('type','recrutement')
                                 ->sum('commission');
                 $data[$i++] = [
-                    'month' =>  $key,
+                    'date' =>  $key,
                     'quantite'  =>  $qt,
                     'ttc'   =>  $ttc,
                     'commission'    =>  $comission
@@ -162,7 +162,7 @@ class ChartController extends Controller
                                 ->sum('commission');
 
                 $data[$i++] = [
-                    'month' =>  $key,
+                    'date' =>  $key,
                     'ttc'   =>  $ttc,
                     'commission'    =>  $comission
                 ];
@@ -172,6 +172,59 @@ class ChartController extends Controller
                 ->json($data);
         } catch(AppException $e) {
             header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function makeFilter(Request $request , RapportVente $r) {
+        try {
+            $validation = $request->validate([
+                'vendeurs'  =>  'required|exists:users,username',
+                'du'    => 'required|date',
+                'au'    =>  'required|date'
+            ],[
+                'required'  =>  'Champ(s) `:attribute` requis'
+            ]);
+
+            $dataRecrutement = [];
+            $dataReabonnement = [];
+
+            $result = $r->whereDate('date_rapport','>=',$request->input('du'))
+                        ->whereDate("date_rapport","<=",$request->input('au'))
+                        ->where('type','reabonnement')
+                        ->orderBy('date_rapport','asc')
+                        ->where('vendeurs',$request->input('vendeurs'))
+                        ->get();
+
+            $_result = $r->whereDate('date_rapport','>=', $request->input('du'))
+                         ->whereDate('date_rapport','<=',$request->input('au'))
+                         ->where('type','recrutement')
+                         ->orderBy('date_rapport','asc')
+                         ->where('vendeurs',$request->input('vendeurs'))
+                         ->get();
+
+            foreach($result as $key => $value) {
+                $dataReabonnement [$key] = [
+                    'date'  =>  $value->date_rapport,
+                    'ttc'   =>  $value->montant_ttc,
+                    'commission'    =>  $value->commission
+                ];
+            }
+
+            foreach($_result as $key => $value) {
+                $dataRecrutement [$key] = [
+                    'date'  =>  $value->date_rapport,
+                    'ttc'   =>  $value->montant_ttc,
+                    'quantite'  =>  $value->quantite,
+                    'commission'    => $value->commission
+                ];
+            }
+            return response()
+                ->json([
+                    'reabonnement'  =>  $dataReabonnement,
+                    'recrutement'   =>  $dataRecrutement
+                ]);
+        } catch(AppException $e) {
             die(json_encode($e->getMessage()));
         }
     }

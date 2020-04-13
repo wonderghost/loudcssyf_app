@@ -38,6 +38,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	#DATA PERFORMANCE OBJECTIFS ON DASHBOARD
 	Route::get('/admin/perform-obj/recrutement','ChartController@getRecrutementStat');
 	Route::get('/admin/perform-obj/reabonnement','ChartController@getReabonnementStat');
+	Route::post('/admin/perform-obj/filter','ChartController@makeFilter');
 	// Promo
 	Route::post('/admin/promo/add','AdminController@addPromo');
 	Route::get('/admin/promo/list','AdminController@getPromo');

@@ -2,7 +2,8 @@
   <div class="">
     <loading :active.sync="isLoading"
         :can-cancel="false"
-        :is-full-page="fullPage"></loading>
+        :is-full-page="fullPage"
+        loader="dots"></loading>
 
         <ul class="uk-tab" uk-switcher="animation : uk-animation-slide-right">
           <li> <a href="#" @click="filterLivraison('non_confirmer')">en attente de validation</a> </li>

@@ -2,7 +2,8 @@
   <div class="">
     <loading :active.sync="isLoading"
         :can-cancel="false"
-        :is-full-page="fullPage"></loading>
+        :is-full-page="fullPage"
+        loader="dots"></loading>
 
     <div class="uk-grid" uk-grid>
       <form class="uk-width-1-1@m" uk-grid>

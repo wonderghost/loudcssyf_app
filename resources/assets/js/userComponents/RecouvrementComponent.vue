@@ -2,7 +2,8 @@
   <div class="">
     <loading :active.sync="isLoading"
         :can-cancel="false"
-        :is-full-page="fullPage"></loading>
+        :is-full-page="fullPage"
+        loader="dots"></loading>
 
     <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-fade">
       <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Nouveau Recouvrement</a></li>

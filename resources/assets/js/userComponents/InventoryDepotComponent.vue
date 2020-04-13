@@ -2,7 +2,8 @@
   <div class="">
     <loading :active.sync="isLoading"
         :can-cancel="true"
-        :is-full-page="fullPage"></loading>
+        :is-full-page="fullPage"
+        loader="dots"></loading>
       <div class="uk-child-width-1-4@m uk-grid-small" uk-grid>
         <template>
           <!-- INVENTAIRE DES MATERIELS -->

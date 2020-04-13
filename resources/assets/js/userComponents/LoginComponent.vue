@@ -2,7 +2,8 @@
     <div class="">
         <loading :active.sync="isLoading"
         :can-cancel="false"
-        :is-full-page="fullPage"></loading>
+        :is-full-page="fullPage"
+        loader="dots"></loading>
         <div class="uk-inline uk-visible@s">
             <img src="img/background.jpg" class="img-bg" alt="">
             <div class="uk-overlay uk-overlay-default uk-position-top login-page-content uk-border-rounded uk-box-shadow-small">
