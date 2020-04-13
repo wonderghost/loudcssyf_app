@@ -18,20 +18,16 @@
                 </div>
             </div>
             <div class="uk-hidden@m">
-                <nav class="uk-navbar-container uk-box-shadow-small  uk-position-bottom uk-position-fixed uk-position-z-index promo-da-responsive" uk-navbar>
-                    <div class="uk-navbar-right">
-                        <div class="uk-grid-small" uk-grid>
-                            <div class="uk-width-1-3@s">
-                                <label for=""><span uk-icon="icon : settings"></span> Kits Promo</label>
-                                <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.kits}}</span>
-                            </div>
-                            <div class="uk-width-1-3@s">
-                                <label for=""><span uk-icon="icon : credit-card"></span> Remboursement</label>
-                                <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.remboursement | numFormat}}</span>
-                            </div>
-                        </div>                        
+                <div class="uk-grid-small uk-margin-top uk-padding-small" uk-grid>
+                    <div class="uk-width-1-1@s">
+                        <label for=""><span uk-icon="icon : settings"></span> Kits Promo</label>
+                        <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.kits}}</span>
                     </div>
-                </nav>                
+                    <div class="uk-width-1-1@s">
+                        <label for=""><span uk-icon="icon : credit-card"></span> Remboursement</label>
+                        <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.remboursement | numFormat}}</span>
+                    </div>
+                </div>                        
             </div>
 
             <!-- MODAL REMBOURSEMENT FORM -->
@@ -41,7 +37,7 @@
                         <h2 class="uk-modal-title">Remboursement promo</h2>
                     </div>
                     <div class="uk-modal-body">
-                        <table class="uk-table uk-table-small uk-table-hover uk-table-striped uk-table-divider">
+                        <table class="uk-table uk-table-small uk-table-hover uk-table-striped uk-table-divider uk-table-responsive">
                             <thead>
                                 <tr>
                                     <th>Kits Promo</th>

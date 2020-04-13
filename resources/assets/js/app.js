@@ -41,6 +41,7 @@ Vue.component('promo',require('./adminComponents/PromoComponent.vue').default)
 Vue.component('entrepot',require('./adminComponents/EntrepotComponent.vue').default)
 Vue.component('afrocash-central',require('./adminComponents/AfrocashCentral.vue').default)
 Vue.component('setting-view',require('./userComponents/SettingComponent.vue').default)
+Vue.component('perform-objectif',require('./adminComponents/PerformObjectifComponent.vue').default)
 
 import Vue from 'vue'
 import Vuex from 'vuex'

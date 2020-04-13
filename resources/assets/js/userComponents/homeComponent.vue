@@ -45,6 +45,8 @@
     <div class="uk-hidden@m uk-navbar-right">
       <a class="uk-button uk-button-small border-button" href="/" uk-tooltip="Tableau de bord"><i class="material-icons">home</i></a>
       <a class="uk-button uk-button-small border-button" uk-tooltip="Recherche" uk-toggle="target : #modal-search-serial"><i class="material-icons">search</i></a>
+      <a class="uk-button uk-button-small border-button" uk-tooltip="Recherche" uk-toggle="target : #modal-commission"><i class="material-icons">monetization_on</i></a>
+      <a class="uk-button uk-button-small border-button" href="#modal-remboursement" uk-toggle uk-tooltip="Paiement Remboursement"><i class="material-icons">payment</i></a>
       <a class="uk-button uk-button-small border-button" href="#all-notification" uk-toggle uk-tooltip="Notifications"><i class="material-icons">notifications</i><span class="">{{unreadNotifications.length}}</span> </a>
     </div>
   </div>
