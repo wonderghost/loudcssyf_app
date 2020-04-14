@@ -109,35 +109,81 @@ class ChartController extends Controller
     }
 
     // @@@@@@@@@@@@@@@@@@@@@@@@@ PERFOMANCE OBJECTIFS @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    public function getRecrutementStat(RapportVente $r) {
+    public function rapportStat(RapportVente $r , $vendeur = "" , $type = "recrutement") {
         try {
-            
             $data = [];
             $result = [];
             $i = 0;
-            foreach($this->months as $key => $value) {
-                $qt = $r->whereYear('date_rapport',date('Y'))
-                                ->whereMonth('date_rapport',$value)
-                                ->where('type','recrutement')
-                                ->sum('quantite');
-                $ttc = $r->whereYear('date_rapport',date('Y'))
-                            ->whereMonth('date_rapport',$value) 
-                            ->where('type','recrutement')
-                            ->sum('montant_ttc');
-                $comission = $r->whereYear('date_rapport',date('Y'))
-                                ->whereMonth('date_rapport',$value)
-                                ->where('type','recrutement')
-                                ->sum('commission');
-                $data[$i++] = [
-                    'date' =>  $key,
-                    'quantite'  =>  $qt,
-                    'ttc'   =>  $ttc,
-                    'commission'    =>  $comission
-                ];
+            if($vendeur != "") {
+                foreach($this->months as $key => $value) {
+                    // Quantite de recrutment
+                    $qt = $r->whereYear('date_rapport',date('Y'))
+                                    ->whereMonth('date_rapport',$value)
+                                    ->where('type',$type)
+                                    ->where('vendeurs',$vendeur)
+                                    ->sum('quantite');
+                    // Le cumule du montant TTC
+                    $ttc = $r->whereYear('date_rapport',date('Y'))
+                                ->whereMonth('date_rapport',$value) 
+                                ->where('type',$type)
+                                ->where('vendeurs',$vendeur)
+                                ->sum('montant_ttc');
+                    // cumule des commissions
+                    $comission = $r->whereYear('date_rapport',date('Y'))
+                                    ->whereMonth('date_rapport',$value)
+                                    ->where('type',$type)
+                                    ->where('vendeurs',$vendeur)
+                                    ->sum('commission');
+                    $data[$i++] = [
+                        'date' =>  $key,
+                        'quantite'  =>  $qt,
+                        'ttc'   =>  $ttc,
+                        'commission'    =>  $comission
+                    ];
+                }
+            }
+            else {
+                foreach($this->months as $key => $value) {
+                    // Quantite de recrutment
+                    $qt = $r->whereYear('date_rapport',date('Y'))
+                                    ->whereMonth('date_rapport',$value)
+                                    ->where('type',$type)
+                                    ->sum('quantite');
+                    // Le cumule du montant TTC
+                    $ttc = $r->whereYear('date_rapport',date('Y'))
+                                ->whereMonth('date_rapport',$value) 
+                                ->where('type',$type)
+                                ->sum('montant_ttc');
+                    // cumule des commissions
+                    $comission = $r->whereYear('date_rapport',date('Y'))
+                                    ->whereMonth('date_rapport',$value)
+                                    ->where('type',$type)
+                                    ->sum('commission');
+                    $data[$i++] = [
+                        'date' =>  $key,
+                        'quantite'  =>  $qt,
+                        'ttc'   =>  $ttc,
+                        'commission'    =>  $comission
+                    ];
+                }
             }
 
+            return $data;
+            
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+    public function getRecrutementStat(RapportVente $r) {
+        try {
             return response()
-                ->json($data);
+                ->json($this->rapportStat(
+                    $r,
+                    "",
+                    'recrutement'
+                ));
         } catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));
@@ -146,30 +192,12 @@ class ChartController extends Controller
 
     public function getReabonnementStat(RapportVente $r) {
         try {
-
-            $data =[];
-            $result = [];
-            $i = 0;
-            foreach($this->months as $key => $value) {
-                $ttc = $r->whereYear('date_rapport',date('Y'))
-                            ->whereMonth('date_rapport',$value)
-                            ->where('type','reabonnement')
-                            ->sum('montant_ttc');
-                
-                $comission = $r->whereYear('date_rapport',date('Y'))
-                                ->whereMonth('date_rapport',$value)
-                                ->where('type','reabonnement')
-                                ->sum('commission');
-
-                $data[$i++] = [
-                    'date' =>  $key,
-                    'ttc'   =>  $ttc,
-                    'commission'    =>  $comission
-                ];
-            }
-
             return response()
-                ->json($data);
+                ->json($this->rapportStat(
+                    $r,
+                    "",
+                    'reabonnement'
+                ));
         } catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));
@@ -186,21 +214,38 @@ class ChartController extends Controller
                 'required'  =>  'Champ(s) `:attribute` requis'
             ]);
 
+           
+            return response()
+                ->json($this->filterPerformance(
+                    $request->input('vendeurs'),
+                    $request->input('du'),
+                    $request->input('au'),
+                    $r
+                ));
+        } catch(AppException $e) {
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function filterPerformance($vendeur , $du , $au , RapportVente $r) {
+        try {
+            
+            ##
             $dataRecrutement = [];
             $dataReabonnement = [];
 
-            $result = $r->whereDate('date_rapport','>=',$request->input('du'))
-                        ->whereDate("date_rapport","<=",$request->input('au'))
+            $result = $r->whereDate('date_rapport','>=',$du)
+                        ->whereDate("date_rapport","<=",$au)
                         ->where('type','reabonnement')
                         ->orderBy('date_rapport','asc')
-                        ->where('vendeurs',$request->input('vendeurs'))
+                        ->where('vendeurs',$vendeur)
                         ->get();
 
-            $_result = $r->whereDate('date_rapport','>=', $request->input('du'))
-                         ->whereDate('date_rapport','<=',$request->input('au'))
+            $_result = $r->whereDate('date_rapport','>=', $du)
+                         ->whereDate('date_rapport','<=',$au)
                          ->where('type','recrutement')
                          ->orderBy('date_rapport','asc')
-                         ->where('vendeurs',$request->input('vendeurs'))
+                         ->where('vendeurs',$vendeur)
                          ->get();
 
             foreach($result as $key => $value) {
@@ -219,12 +264,48 @@ class ChartController extends Controller
                     'commission'    => $value->commission
                 ];
             }
+            ##
+            return [
+                'reabonnement'  =>  $dataReabonnement,
+                'recrutement'    =>  $dataRecrutement
+            ];
+        } 
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    // #donnees de performances pour les vendeurs
+
+    public function performanceVendeurRecrutement(Request $request , RapportVente $r) {
+        try {
+            
             return response()
-                ->json([
-                    'reabonnement'  =>  $dataReabonnement,
-                    'recrutement'   =>  $dataRecrutement
-                ]);
-        } catch(AppException $e) {
+                ->json($this->rapportStat(
+                    $r,
+                    $request->user()->username,
+                    "recrutement"
+                ));
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function performanceVendeurReabonnement(Request $request , RapportVente $r) {
+        try {
+            
+            return response()
+                ->json($this->rapportStat(
+                    $r,
+                    $request->user()->username,
+                    "reabonnement"
+                ));
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
             die(json_encode($e->getMessage()));
         }
     }

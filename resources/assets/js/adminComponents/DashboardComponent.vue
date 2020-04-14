@@ -59,15 +59,58 @@
         </template>
         <!-- DA / VSTANDART DASHBOARD-->    
         <template v-if="theUser == 'vendeurs'">
+            <form @submit.prevent="makeFilter()" class="uk-grid-small" uk-grid>
+                <div class="uk-width-1-6@m">
+                    <label for=""><span uk-icon="icon : calendar"></span> Du</label>
+                    <input type="date" class="uk-input uk-border-rounded">
+                </div>
+                <div class="uk-width-1-6@m">
+                    <label for=""><span uk-icon="icon : calendar"></span> Au</label>
+                    <input type="date" class="uk-input uk-border-rounded">
+                </div>
+                <div class="uk-width-1-6@m uk-width-1-1@s">
+                <button type="submit" class="uk-width-1-2@m uk-width-1-1@s uk-button uk-border-rounded uk-button-small uk-button-primary" style="margin-top : 28px;">
+                    <!-- <span uk-icon="icon : arrow-right"></span>  -->
+                    Filtrez
+                </button>
+                <button v-if="filterState"
+                        @click="removeFilter()" 
+                        type="button" 
+                        class="uk-button uk-border-rounded uk-button-small uk-button-primary" style="margin-top : 28px;"
+                        uk-tootip="Supprimez le filtre">
+                    <span uk-icon="icon : close"></span> 
+                </button>
+            </div>
+            </form>
             <div class="uk-grid-small" uk-grid>
-                <div class="uk-width-1-4@m uk-card uk-padding-remove uk-margin-remove uk-card-default uk-card-small" style="box-shadow : none;">
+                <div class="uk-width-1-6@m uk-card uk-padding-remove uk-margin-remove uk-card-default uk-card-small" style="box-shadow : none;">
                    <div class="uk-card-header" style="border : none !important">
                         <h5 class="uk-card-title">Inventaire</h5>
-                        <ve-histogram :data="inventoryUser.data" :settings="inventoryUser.chartSettings"></ve-histogram>
                     </div> 
+                    <div class="uk-card-body">
+                        <ve-histogram :data="inventoryUser.data" :settings="inventoryUser.chartSettings"></ve-histogram>
+                    </div>
+                </div>
+                <div class="uk-width-1-3@m uk-card uk-padding-remove uk-margin-remove uk-card-default uk-card-small" style="box-shadow : none;">
+                   <div class="uk-card-header" style="border : none !important">
+                        <h5 class="uk-card-title">Recrutement</h5>
+                    </div> 
+                    <div class="uk-card-body">
+                        <ve-histogram :data="recrutement" :settings="chartSettings"></ve-histogram>
+                    </div>
+                </div>
+                <div class="uk-width-1-3@m uk-card uk-padding-remove uk-margin-remove uk-card-default uk-card-small" style="box-shadow : none;">
+                   <div class="uk-card-header" style="border : none !important">
+                        <h5 class="uk-card-title">Reabonnement</h5>
+                    </div> 
+                    <div class="uk-card-body">
+                        <ve-histogram :data="reabonnement" :settings="chartSettings"></ve-histogram>
+                    </div>
                 </div>
             </div>
+
         </template>
+        <!-- // -->
     </div>
 </template>
 <script>
@@ -128,10 +171,30 @@ export default {
                     columns : ['article','quantite'],
                     rows : []
                 }
-            }   
+            },
+            recrutement: {
+                columns: ['date','ttc','commission','quantite'],
+                rows: []
+            },
+            reabonnement : {
+                columns : ['date','ttc','commission'],
+                rows : []
+            },
+            chartSettings : {
+                showLine : ['ttc','commission']
+            },
+            filterData : {
+                _token : "",
+                du : "",
+                au : ""
+            },
+            filterState : false
         }
     },
     methods : {
+        makeFilter : async function () {
+            
+        },
         buildChart : async function () {
             try {
                 if(this.theUser == 'admin') {
@@ -152,15 +215,23 @@ export default {
                 } else if(this.theUser == 'vendeurs') {
                     let response = await axios.get('/user/inventory/all-vendeur-material')
                     this.inventoryUser.data.rows = response.data
+                    // on recuperation les donnees grapphiques pour les porfermances et les objectifs
+                    response = await axios.get('/user/chart/performances/recrutement')
+                    this.recrutement.rows = response.data
+                    // 
+                    response = await axios.get('/user/chart/performances/reabonnement')
+                    this.reabonnement.rows = response.data
                 }
                 this.isLoading = false
             } catch (error) {
-                alert(e)
+                alert(error)
             }
         }
     },
     computed : {
-
+        myToken() {
+            return this.$store.state.myToken
+        }
     }
 }
 </script>

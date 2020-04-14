@@ -2,16 +2,14 @@
 <html lang="fr" dir="ltr">
   <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-130660555-4"></script>
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-130660555-4"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
       gtag('config', 'UA-130660555-4');
-    </script>
-    
-    <meta http-equiv="Cache-Control" content="no-cache">
+    </script> -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{csrf_token()}}">
@@ -30,8 +28,8 @@
   </script>
   <title>Loudcssyf</title>
   </head>
-  <body onselectstart="return true" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;">
-  <!-- <body> -->
+  <!-- <body onselectstart="return true" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;"> -->
+  <body>
     <input type="hidden" id="user-type" value="{{Auth::user()->type}}">
     <input type="hidden" id="user-localisation" value="{{Auth::user()->localisation}}">
     <input type="hidden" id="username" value="{{Auth::user()->username}}">
@@ -55,7 +53,7 @@
 
     <script type="application/javascript" src="{{ mix('js/echo.js') }}" ></script>
     <script type="application/javascript" src="{{ mix('js/store.js') }}" ></script>
-    <script type="application/javascript" src="{{mix('js/app.js')}}" ></script>
+    <script type="application/javascript" src="{{mix('js/app.js')}}?<?php echo filemtime('js/app.js') ?>" ></script>
     @yield('script')
   </body>
 </html>

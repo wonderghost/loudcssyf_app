@@ -3,16 +3,16 @@
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loading="dots"></loading>
+        loader="dots"></loading>
 
-        <form @submit.prevent="makeFilter()" class="uk-grid-small" uk-grid>
+        <form @submit.prevent="makeFilter()" id="form-filter" class="uk-grid-small" uk-grid>
             <div class="uk-width-1-1@m uk-grid-small" uk-grid>
-                <template v-if="errors.length" v-for="error in errors">
+                <!-- <template v-if="errors.length" v-for="error in errors">
                     <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-1@m" uk-alert>
                     <a href="#" class="uk-alert-close" uk-close></a>
                     <p>{{error}}</p>
                     </div>
-                </template>
+                </template> -->
             </div>
             <div class="uk-width-1-5@m uk-wdith-1-1@s">
                 <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
@@ -34,6 +34,13 @@
                     <!-- <span uk-icon="icon : arrow-right"></span>  -->
                     Filtrez
                 </button>
+                <button v-if="filterState"
+                        @click="removeFilter()" 
+                        type="button" 
+                        class="uk-button uk-border-rounded uk-button-small uk-button-primary" style="margin-top : 28px;"
+                        uk-tootip="Supprimez le filtre">
+                    <span uk-icon="icon : close"></span> 
+                </button>
             </div>
         </form>
         <div class="uk-grid-small" uk-grid>
@@ -49,7 +56,7 @@
                 <div class="uk-card uk-card-default uk-card-small" style="box-shadow : none">
                     <div class="uk-card-header" style="border : none !important">
                         <h4 class="uk-card-title">Reabonnement</h4>
-                        <ve-histogram :data="reabonnement"></ve-histogram>
+                        <ve-histogram :data="reabonnement" :settings="chartSettings"></ve-histogram>
                     </div>
                 </div>
             </div>
@@ -70,17 +77,25 @@ import VeHistogram from 'v-charts/lib/histogram.common'
             this.isLoading = true
         },
         mounted() {
-            this.getRecrutementStat()
+            if(!this.filterState) {
+                this.getRecrutementStat()
+            }
         },
         data() {
             return {
                 recrutement: {
-                    columns: ['date','quantite','ttc','commission'],
+                    columns: ['date','ttc','commission','quantite'],
                     rows: []
                 },
                 reabonnement : {
                     columns : ['date','ttc','commission'],
                     rows : []
+                },
+                chartSettings : {
+                    // showLine : ['ttc','commission'],
+                    // yAxisType : "KM",
+                    // yAxisName : ['Valeur'],
+                    // xAxisType : 'value'
                 },
                 isLoading : false,
                 fullPage : true,
@@ -91,10 +106,18 @@ import VeHistogram from 'v-charts/lib/histogram.common'
                     du : "",
                     au : ""
                 },
+                filterState : false,
                 errors : []
             }
         },
         methods : {
+            removeFilter : function() {
+                this.filterState = false 
+                this.filterFormData.vendeurs = ""
+                this.filterFormData.du = ""
+                this.filterFormData.au = ""
+                this.getRecrutementStat()
+            },
             getRecrutementStat : async function () {
                 this.isLoading = true
                 try {
@@ -115,20 +138,24 @@ import VeHistogram from 'v-charts/lib/histogram.common'
             },
             makeFilter : async function() {
                 try {
+                    this.isLoading = true
                     this.filterFormData._token = this.myToken
                     let response = await axios.post('/admin/perform-obj/filter',this.filterFormData)
                     this.recrutement.rows = response.data.recrutement
                     this.reabonnement.rows = response.data.reabonnement
+                    this.isLoading = false
+                    this.filterState = true
                 } catch(error) {
+                    this.isLoading = false
                     if(error.response.data.errors) {
                         let errorTab = error.response.data.errors
                         for (var prop in errorTab) {
-                        this.errors.push(errorTab[prop][0])
-                            // alert(errorTab[prop][0])
+                        // this.errors.push(errorTab[prop][0])
+                            alert(errorTab[prop][0])
                         }
                     } else {
                         this.errors.push(error.response.data)
-                        // alert(error.response.data)
+                        alert(error.response.data)
                     }
                 }
             }
