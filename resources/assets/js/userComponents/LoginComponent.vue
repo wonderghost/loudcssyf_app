@@ -53,7 +53,7 @@
         </div>
         <!-- mobile view -->
         <div class="uk-hidden@s">
-            <div class="uk-background-top-right uk-background-cover uk-padding uk-height-large uk-panel uk-flex uk-flex-middle uk-flex-center" style="background-image: url(img/background.jpg);height:600px">
+            <div class="uk-background-top-right uk-background-cover uk-padding uk-height-large uk-panel uk-flex uk-flex-middle uk-flex-center" style="background-image: url(img/background.jpg);background-size : 100% 100% !important;">
                 <div class="uk-width-1-1@s">
                         <div class="uk-card uk-card-default uk-border-rounded uk-box-shadow-small">
                             <div class="uk-card-header">
