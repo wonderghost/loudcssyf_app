@@ -17,6 +17,7 @@ class SearchController extends Controller
             }
             $all = [
                 'serial'    =>  $result->serial_number,
+                'etat'  =>  $result->deficientMaterial() ? 'defectueux' : '-',
                 'status'    =>  $result->status,
                 'vendeurs'  =>  $result->vendeurs() ? $result->vendeurs()->localisation : 'non attibue',
                 'origine'   =>  $result->depot()->depot

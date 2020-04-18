@@ -36,6 +36,7 @@ use App\CommandProduit;
 use App\Livraison;
 use App\Afrocash;
 use App\CompenseMaterial;
+use App\DeficientMaterial;
 //
 use App\Traits\Similarity;
 use App\Traits\Livraisons;
@@ -836,7 +837,7 @@ class LogistiqueController extends Controller
     }
   }
 // RECUPERATION DES SERIALS NUMBER NON ATTRIBUE AUX VENDEURS
-  public function getSerialNumberForDepot(Exemplaire $sn , Stock $s) {
+  public function getSerialNumberForDepot(Exemplaire $sn , Stock $s , DeficientMaterial $df) {
     try {
       $non_attribuer = $sn->select('serial_number')
         ->whereNull('vendeurs')
@@ -845,10 +846,12 @@ class LogistiqueController extends Controller
 
         $all = [];
         foreach($stock as $key => $value) {
+          $deficient = $df->where('serial_to_replace',$value->exemplaire)->first();
           $all [$key] =[
             'numero_materiel'  =>   $value->exemplaire,
             'depot' =>  $value->depot,
             'article' =>  "Terminal",
+            'etat'  =>  $deficient ? 'defectueux' : '-',
             'origine' =>  $value->origine
           ];
         }

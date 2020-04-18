@@ -62,15 +62,14 @@
             <form @submit.prevent="makeFilter()" class="uk-grid-small" uk-grid>
                 <div class="uk-width-1-6@m">
                     <label for=""><span uk-icon="icon : calendar"></span> Du</label>
-                    <input type="date" class="uk-input uk-border-rounded">
+                    <input v-model="filterData.du" type="date" class="uk-input uk-border-rounded">
                 </div>
                 <div class="uk-width-1-6@m">
                     <label for=""><span uk-icon="icon : calendar"></span> Au</label>
-                    <input type="date" class="uk-input uk-border-rounded">
+                    <input v-model="filterData.au" type="date" class="uk-input uk-border-rounded">
                 </div>
                 <div class="uk-width-1-6@m uk-width-1-1@s">
                 <button type="submit" class="uk-width-1-2@m uk-width-1-1@s uk-button uk-border-rounded uk-button-small uk-button-primary" style="margin-top : 28px;">
-                    <!-- <span uk-icon="icon : arrow-right"></span>  -->
                     Filtrez
                 </button>
                 <button v-if="filterState"
@@ -186,17 +185,43 @@ export default {
             filterData : {
                 _token : "",
                 du : "",
-                au : ""
+                au : "",
+                vendeurs : ""
             },
             filterState : false
         }
     },
     methods : {
+        removeFilter : function () {
+            this.buildChart()
+            this.filterState = false
+        },
         makeFilter : async function () {
-            
+            try {
+                this.isLoading = true
+                this.filterData._token = this.myToken
+                this.filterData.vendeurs = this.userName
+                let response = await axios.post('/user/chart/performances/filter-by-date',this.filterData)
+                this.recrutement.rows = response.data.recrutement
+                this.reabonnement.rows = response.data.reabonnement
+                this.isLoading = false
+                this.filterState = true
+            } catch(error) {
+                this.isLoading = false
+                if(error.response.data.errors) {
+                    let errorTab = error.response.data.errors
+                    for (var prop in errorTab) {
+                        alert(errorTab[prop][0])
+                    }
+                } else {
+                    this.errors.push(error.response.data)
+                    alert(error.response.data)
+                }
+            }
         },
         buildChart : async function () {
             try {
+                this.isLoading = true
                 if(this.theUser == 'admin') {
                     let response = await axios.get('/admin/chart/user-stat')
                     this.userData.rows = response.data
@@ -231,6 +256,9 @@ export default {
     computed : {
         myToken() {
             return this.$store.state.myToken
+        },
+        userName() {
+            return this.$store.state.userName
         }
     }
 }

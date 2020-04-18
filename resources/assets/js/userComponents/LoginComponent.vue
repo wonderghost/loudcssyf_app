@@ -4,11 +4,11 @@
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
-        <div class="uk-inline uk-visible@s">
+        <div class="uk-visible@s">
             <img src="img/background.jpg" class="img-bg" alt="">
-            <div class="uk-overlay uk-overlay-default uk-position-top login-page-content uk-border-rounded uk-box-shadow-small">
-                <div class="uk-grid" uk-grid>
-                    <div class="uk-width-1-3@m uk-width-1-1@s uk-margin-large-left">
+            <div class="uk-position-top login-page-content uk-border-rounded">
+                <div class="uk-grid-small uk-padding-small" uk-grid>
+                    <div class="uk-width-1-2@m uk-width-1-3@l">
                         <div class="uk-card uk-card-default uk-border-rounded uk-box-shadow-small">
                             <div class="uk-card-header">
                                 <h4 class="uk-card-title"><span uk-icon="icon : unlock"></span> Se Connecter</h4>
@@ -34,10 +34,8 @@
                                 </form>
                             </div>
                             <div class="uk-card-footer">
-                                <div class="uk-child-width-1-2@m uk-grid-small" uk-grid>
-                                    <div><a class="uk-text-xsmall uk-text-meta" href="">Mot de passe oubli&eacute;?</a></div>
-                                    <div><a class="uk-text-xsmall uk-text-meta" href="">Besoin d'aide?</a></div>
-                                </div>
+                                <a href="#" class="uk-text-xsmall uk-text-meta">Mot de passe oubli&eacute;</a> |
+                                <a href="#" class="uk-text-xsmall uk-text-meta">Besoin d'aide</a>
                             </div>
                         </div>
                         <div class="">
@@ -47,7 +45,24 @@
                             </p>
                         </div>
                     </div>
-                    <div class="uk-width-1-2@m uk-margin-large-right"></div>
+                    <div class="uk-width-1-2@m uk-width-1-2@l">
+                        <div class="uk-card uk-card-default uk-border-rounded">
+                            <div class="uk-card-body">
+                                <div class="uk-grid-small" uk-grid>
+                                    <div class="uk-width-2-3@m">
+                                        <h4>Pour utiliser la plateforme sur votre telephone</h4>
+                                        <ol>
+                                            <li>Ouvrez votre appareil photo sur le telephone</li>
+                                            <li>Positionnez votre telelphone face a cet ecran pour scanner le code</li>
+                                        </ol>
+                                    </div>
+                                    <div class="uk-width-1-3@m">
+                                        <img src="img/qr-code.png" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

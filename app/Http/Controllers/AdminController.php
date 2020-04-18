@@ -43,6 +43,7 @@ use App\Events\AfrocashNotification;
 use App\Notifications;
 use App\TransfertMateriel;
 use App\TransfertSerial;
+use App\DeficientMaterial;
 
 class AdminController extends Controller
 {
@@ -809,6 +810,62 @@ class AdminController extends Controller
             }
         } else {
             throw new AppException("Mot de passe Invalide ! Veuillez ressayez...");
+        }
+    } catch(AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
+    }
+  }
+
+  ## REMPLACER UN MATERIEL DEFECTUEUX CHEZ LE VENDEUR
+  public function replaceMaterialDefectuous(Request $request , Exemplaire $e , DeficientMaterial $df) {
+    try {
+        $validation = $request->validate([
+          'vendeur' =>  'required|exists:users,username',
+          'defectuous'  =>  'required|exists:exemplaire,serial_number',
+          'replacement' =>  'required|exists:exemplaire,serial_number',
+          'password'  =>  'required'
+        ]);
+        // VERIFIER LA VALIDITE DU MOT DE PASSE
+        if(Hash::check($request->input('password'),$request->user()->password)) {
+            // verifier si le numero existe pour ce vendeurs
+            $deficientSerial = $e->find($request->input('defectuous'));
+            if($deficientSerial->vendeurs == $request->input('vendeur')) {
+                // verifier si le materiel est inactif
+                if($deficientSerial->status == 'inactif') {
+                    // verifier si le numero n'est pas attribuer
+                    $replacementSerial = $e->find($request->input("replacement"));
+                    if(is_null($replacementSerial->vendeurs)) {
+                      // verifier que le numero existe dans le meme depot d'origine
+                      if($replacementSerial->depot()->depot == $deficientSerial->depot()->depot) {
+
+                          $df->serial_to_replace = $deficientSerial->serial_number;
+                          $df->serial_replacement = $replacementSerial->serial_number;
+                          $df->vendeurs = $request->input('vendeur');
+                          $df->motif = $request->input('motif');
+                          $df->save();
+
+                          $deficientSerial->vendeurs = NULL;
+                          $deficientSerial->save();
+
+                          $replacementSerial->vendeurs = $request->input('vendeur');
+                          $replacementSerial->save();
+
+                          return response()->json('done');
+                      } else {
+                          throw new AppException("Veuillez choisir le meme depot d'origine!");
+                      }
+                    } else {
+                        throw new AppException("Le materiel de remplacement est deja attribue ,Veuillez choisir un numero non attribue !");
+                    }
+                } else {
+                    throw new AppException("Materiel deja actif!");
+                }
+            } else {
+                throw new AppException("Ce Materiel n'existe pas pour ce vendeur");
+            }
+        } else {
+            throw new AppException("Mot de passe invalide !");
         }
     } catch(AppException $e) {
         header("Erreur",true,422);

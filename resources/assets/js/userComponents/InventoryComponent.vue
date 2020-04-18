@@ -106,6 +106,49 @@
               </div>
             </div>
           </li>
+          <li>
+            <a class="uk-accordion-title uk-text-capitalize uk-border-rounded uk-button-default uk-box-shadow-small uk-button uk-button-small uk-width-1-6@m" href="#">Materiel defectueux</a>
+            <div class="uk-accordion-content">
+              <div class="uk-card uk-card-default uk-border-rounded">
+                <div class="uk-card-body">
+                  <template v-if="errors.length" v-for="error in errors">
+                      <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert>
+                        <a href="#" class="uk-alert-close" uk-close></a>
+                        <p>{{error}}</p>
+                      </div>
+                    </template>
+                  <form @submit.prevent="makeMaterialDefuctueux()" class="uk-grid-small uk-width-1-2@m" uk-grid>
+                    <div class="uk-width-1-2@m">
+                      <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
+                      <select v-model="replaceMaterial.vendeur" class="uk-select uk-border-rounded">
+                        <option value="">-- Selectionnez un vendeur --</option>
+                        <option :value="u.username" v-for="u in users">{{u.localisation}}</option>
+                      </select>
+                    </div>
+                    <div class="uk-width-1-2@m">
+                      <label for=""><span uk-icon="icon : info"></span> Materiel Defectueux</label>
+                      <input v-model="replaceMaterial.defectuous" type="text" class="uk-input uk-border-rounded">
+                    </div>
+                    <div class="uk-width-1-2@m">
+                      <label for=""><span uk-icon="icon : info"></span> Materiel remplacant</label>
+                      <input type="text" v-model="replaceMaterial.replacement" class="uk-input uk-border-rounded">
+                    </div>
+                    <div class="uk-width-1-2@m">
+                      <label for=""><span uk-icon="icon : lock"></span> Confirmez le mot de passe</label>
+                      <input type="password" v-model="replaceMaterial.password" class="uk-input uk-border-rounded">
+                    </div>
+                    <div class="uk-width-1-1@m">
+                      <label for=""><span uk-icon="icon : pencil"></span> Motif</label>
+                      <textarea v-model="replaceMaterial.motif" class="uk-textarea uk-border-rounded" cols="30" rows="10"></textarea>
+                    </div>
+                    <div>
+                      <button class="uk-button uk-button-small uk-border-rounded uk-button-primary">Envoyez</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </li>
         </ul>
       </div>
       </template>
@@ -192,10 +235,42 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               password : "",
               serialsNumber : []
             },
+            replaceMaterial : {
+              _token : "",
+              vendeur : "",
+              defectuous : "",
+              replacement : "",
+              password : "",
+              motif : ""
+            },
             errors : []
           }
         },
         methods : {
+          makeMaterialDefuctueux : async function() {
+            try {
+                this.isLoading = true
+                this.replaceMaterial._token = this.myToken
+                let response = await axios.post('/admin/inventory/replace-material-defectuous',this.replaceMaterial)
+                if(response.data == 'done') {
+                  this.isLoading = false
+                  UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Operation effectuee avec success !</div>")
+                    .then(function() {
+                      location.reload()
+                    })
+                }
+            } catch(error) {
+                this.isLoading = false
+                if(error.response.data.errors) {
+                  let errorTab = error.response.data.errors
+                  for (var prop in errorTab) {
+                    this.errors.push(errorTab[prop][0])
+                  }
+                } else {
+                    this.errors.push(error.response.data)
+                }
+            }
+          },
           transfertMaterialToOtherUser : async function() { // envoi de la requete de transfert de materiel d'un vendeur a l'autre
             try {
               this.isLoading = true

@@ -119,6 +119,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/inventory/all-material','LogistiqueController@getAllMaterialForVendeurs');
 	# transfert de materiel d'un vendeur a un autre
 	Route::post('/admin/inventory/transfert-material','AdminController@transfertMaterialToOtherUser');
+	Route::post('/admin/inventory/replace-material-defectuous','AdminController@replaceMaterialDefectuous');
 	// ##INVENTAIRE DANS LES DEPOTS /user/inventory/depot
 	Route::get('/admin/inventory/depot','LogistiqueController@depotList');
 	Route::get('/admin/inventory/depot/serialNumber','LogistiqueController@getSerialNumberForDepot');
@@ -330,6 +331,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// ON RECUPERE LES DONNEES POUR LES GRAPHIQUES DE PERFORMANCES ET DES OBJECTIFS
 	Route::get('/user/chart/performances/recrutement','ChartController@performanceVendeurRecrutement')->middleware('vendeur');
 	Route::get('/user/chart/performances/reabonnement','ChartController@performanceVendeurReabonnement')->middleware('vendeur');
+	Route::post('/user/chart/performances/filter-by-date','ChartController@makeFilter')->middleware('vendeur');
 
 });
 

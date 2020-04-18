@@ -31,7 +31,7 @@
                 <!-- Infos Materiel -->
                 <h4>Infos Materiel</h4>
                 <ul class="uk-list uk-list-divider">
-                  <li><span>Numero Materiel</span> : <span>{{serialNumber.serial}}</span></li>
+                  <li><span>Numero Materiel</span> : <span>{{serialNumber.serial}} <sup v-if="serialNumber.etat && serialNumber.etat != '-'" class="uk-badge">{{serialNumber.etat}}</sup> </span></li>
                   <li>
                     <span>Status</span> : 
                     <span v-if="serialNumber.status == 'inactif'" class="uk-alert-danger">{{serialNumber.status}}</span>

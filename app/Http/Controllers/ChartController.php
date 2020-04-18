@@ -204,6 +204,7 @@ class ChartController extends Controller
         }
     }
 
+
     public function makeFilter(Request $request , RapportVente $r) {
         try {
             $validation = $request->validate([
@@ -309,4 +310,5 @@ class ChartController extends Controller
             die(json_encode($e->getMessage()));
         }
     }
+  
 }

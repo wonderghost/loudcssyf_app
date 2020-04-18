@@ -24,15 +24,26 @@
           </div>
         </template>
       </div>
-      <template id="" v-if="typeUser == 'admin' || typeUser == 'logistique'">
+      <template id="">
         <div class="uk-grid-small" uk-grid>
-          <div class="uk-width-3-4@m">
+          <div class="uk-width-1-4@m">
 
           </div>
           <div class="uk-width-1-4@m">
+
+          </div>
+          <div class="uk-width-1-4@m">
+            <label for="">Etat</label>
+            <select v-model="filterEtat" class="uk-select uk-border-rounded">
+              <option value="-">Non Defectueux</option>
+              <option value="defectueux">Defectueux</option>
+            </select>
+          </div>
+          <div v-if="typeUser == 'admin' || typeUser == 'logistique'" class="uk-width-1-4@m">
+            <label for="">Depots</label>
             <select v-model="filterState" class="uk-select uk-border-rounded">
               <option value="">Tous</option>
-              <option :value="d.localisation" v-for="d in materials"> {{d.localisation}} </option>
+              <option :value="d.localisation" v-for="d in materials" :key="d.localisation"> {{d.localisation}} </option>
             </select>
           </div>
         </div>
@@ -45,8 +56,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="s in filterListSerials.slice(start,end)">
-              <td>{{s.numero_materiel}}</td>
+            <tr v-for="s in filterListEtat.slice(start,end)">
+              <td>{{s.numero_materiel}} <sup v-if="s.etat !== '-'" class="uk-badge">{{s.etat}}</sup>   </td>
               <td>{{s.depot}}</td>
               <td>{{s.article}}</td>
               <td>{{s.origine}}</td>
@@ -93,6 +104,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           tableHead : ['Numero Materiel','depot','article','origine'],
           serials : [],
           filterState : "",
+          filterEtat : "-",
           start : 0,
           end : 15,
           currentPage : 1,
@@ -126,7 +138,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           }
         },
         nextPage : function () {
-          if(this.filterListSerials.length > this.end) {
+          if(this.filterListEtat.length > this.end) {
             let ecart = this.end - this.start
             this.start = this.end
             this.end += ecart
@@ -146,6 +158,11 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         filterListSerials () {
           return this.serials.filter((s) => {
             return s.depot.match(this.filterState)
+          })
+        },
+        filterListEtat() {
+          return this.filterListSerials.filter ( (s) => {
+            return s.etat.match(this.filterEtat)   
           })
         },
         typeUser () {

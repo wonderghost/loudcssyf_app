@@ -103,7 +103,8 @@ div.vue-radial-menu-wrapper .vue-radial-menu-item {
   height : 60% !important;
   margin-left : 2.5% !important;
   z-index : 1;
-  background : rgba(0,0,0,0.4) !important;
+  background : rgba(0,0,0,0.3) !important;
+  /* background : #fff; */
 }
 
 .promo-da {

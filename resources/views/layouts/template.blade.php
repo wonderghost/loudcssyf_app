@@ -29,7 +29,6 @@
   <title>Loudcssyf</title>
   </head>
   <body onselectstart="return true" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;">
-  <!-- <body> -->
     <input type="hidden" id="user-type" value="{{Auth::user()->type}}">
     <input type="hidden" id="user-localisation" value="{{Auth::user()->localisation}}">
     <input type="hidden" id="username" value="{{Auth::user()->username}}">

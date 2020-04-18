@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use App\Http\Requests\LoginRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use \App\Exceptions\AppException;
@@ -40,8 +41,8 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    public function connexion(LoginRequest $request) {
-        // dd($request);
+    public function connexion(Request $request) {
+        
         $validator = $request->validate([
             'username'  =>  'required',
             'password'  =>  'required'

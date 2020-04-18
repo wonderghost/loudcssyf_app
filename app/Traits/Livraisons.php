@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Arr;
 use App\Exceptions\AppException;
 use App\User;
+use App\DeficientMaterial;
 
 trait Livraisons {
 
@@ -115,7 +116,7 @@ public function inventaireLivraison() {
     return response()->json($all);
   }
 
-  public function confirmLivraison( Request $request) {
+  public function confirmLivraison( Request $request , DeficientMaterial $df) {
     $validation = $request->validate([
       'livraison' =>  'required|exists:livraisons,id',
       'with_serial' =>  'required|exists:produits,with_serial',
@@ -127,6 +128,15 @@ public function inventaireLivraison() {
     'exists'  =>  ':attribute est Inexistant :-('
   ]);
     try {
+
+      // verifier si le materiel est defectueux ou pas!
+
+      foreach($request->input('serial_number') as $value) {
+        $mat = $df->where('serial_to_replace',$value)->first();
+        if($mat) {
+          throw new AppException("le materiel est defectueux :".$value);
+        }
+      }
 
       // verifier si le status est non Livrer
       if($this->livraisonStatus($request->input('livraison')) == 'unlivred') {
