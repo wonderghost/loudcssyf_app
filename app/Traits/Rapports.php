@@ -387,39 +387,103 @@ public function abortRapport(Request $request , RapportVente $r) {
 		if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
 			throw new AppException("Mot de passe Invalide!");
 		}
-
-		#BLOQUER L'ACCESS A L'ANNULATION DU RAPPORT
-		throw new AppException("Action non disponible pour le moment");
-		
 		$rapport = RapportVente::find($request->input('id_rapport'));
+		$vendeurs = $rapport->vendeurs();
+
+		// CATEGORISER PAR TYPE DE RAPPORT 
 		// verifier si le rapport est deja annuler
 		if($rapport->state == 'aborted') {
 			throw new AppException("Ce rapport n'est plus valide!");
 		}
-		// recuperation du compte cga
-		$vendeurs = $rapport->vendeurs();
-		if($rapport->credit_utilise == 'cga') {
-			// CGA
-			$cga = $vendeurs->cgaAccount();
-			$cga->solde += $rapport->montant_ttc;
-			$rapport->state = 'aborted';
 
-			// enregistrement de la notification
-			$this->sendNotification("Annulation de Rapport","Le rapport du ".$rapport->date_rapport." a ete annule",$vendeurs->username);
-			$this->sendNotification("Annulation de Rapport","Vous avez annule le rapport du ".$rapport->date_rapport." pour : ".$vendeurs->localisation,Auth::user()->username);
-			$cga->save();
-			$rapport->save();
+		switch ($rapport->type) {
+			case 'recrutement':
+				// verifier si la comission a ete paye 
+
+				if($rapport->statut_paiement_commission == 'paye') {
+					throw new AppException("Annulation impossible , la comission a deja ete paye!");
+				}
+
+				if($rapport->credit_utilise == 'cga') {
+					// CGA
+					// retour du solde dans le compte cga
+					$cga = $vendeurs->cgaAccount();
+					$cga->solde += $rapport->montant_ttc;
+					$rapport->state = 'aborted';
+
+					// renvoi des numeros de series a l'etat inactif
+					$serialsNumbers = $rapport->exemplaire();
+
+					foreach($serialsNumbers as $serial) {
+						$serial->rapports = NULL;
+						$serial->status = 'inactif';
+						$serial->save();
+					}
+					
+					// enregistrement de la notification
+					$n = $this->sendNotification("Annulation de Rapport","Le rapport du ".$rapport->date_rapport." a ete annule",$vendeurs->username);
+					$n->save();
+
+					$n = $this->sendNotification("Annulation de Rapport","Vous avez annule le rapport du ".$rapport->date_rapport." pour : ".$vendeurs->localisation,'root');
+					$n->save();
+					
+					$n = $this->sendNotification("Annulation de Rapport","Vous avez annule le rapport du ".$rapport->date_rapport." pour : ".$vendeurs->localisation,'admin');
+					$n->save();
+
+					$cga->save();
+					$rapport->save();
+					
+				}
+				else {
+					// REX
+				}
+			break;
+			case 'reabonnement':
+				// recuperation du compte cga
+				// verifier si la comission a ete paye 
+
+				if($rapport->statut_paiement_commission == 'paye') {
+					throw new AppException("Annulation impossible , la comission a deja ete paye!");
+				}
+
+				if($rapport->credit_utilise == 'cga') {
+					// CGA
+					$cga = $vendeurs->cgaAccount();
+					$cga->solde += $rapport->montant_ttc;
+					$rapport->state = 'aborted';
+
+					// enregistrement de la notification
+					$n = $this->sendNotification("Annulation de Rapport","Le rapport du ".$rapport->date_rapport." a ete annule",$vendeurs->username);
+					$n->save();
+
+					$n = $this->sendNotification("Annulation de Rapport","Vous avez annule le rapport du ".$rapport->date_rapport." pour : ".$vendeurs->localisation,'root');
+					$n->save();
+
+					$n = $this->sendNotification("Annulation de Rapport","Vous avez annule le rapport du ".$rapport->date_rapport." pour : ".$vendeurs->localisation,'admin');
+					$n->save();
+
+					$cga->save();
+					$rapport->save();
+					
+				}
+				else {
+					// REX
+				}
+			break;
+
+			case 'migration':
+				throw new AppException('En cous de parametrage , Ressayez plus tard');
+			break;
 			
-		}
-		else {
-			// REX
+			default:
+				throw new AppException("Erreur , Veuillez ressayer!");
+			break;
 		}
 		return response()->json('done');
 	} catch (AppException $e) {
 		header("Unprocessable entity",true , 422);
 		die(json_encode($e->getMessage()));
 	}
-
 }
 
 }

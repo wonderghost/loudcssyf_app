@@ -55,4 +55,7 @@ class RapportVente extends Model
       $this->statut_paiement_commission = 'paye';
     }
 
+    public function exemplaire() {
+      return $this->hasMany('App\Exemplaire','rapports','id_rapport')->get();
+    }
 }

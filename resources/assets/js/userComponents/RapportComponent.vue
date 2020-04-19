@@ -131,7 +131,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="rap in rappWithDate.slice(start,end)">
+            <tr v-for="rap in rappWithDate.slice(start,end)" :key="rap.id_rapport">
               <td>{{rap.date}}</td>
               <td>{{rap.vendeurs}}</td>
               <td>{{rap.type}}</td>
@@ -142,8 +142,11 @@
               <td>{{rap.promo}}</td>
               <td>{{rap.paiement_commission}}</td>
               <td>
-                <template v-if="typeUser == 'admin' && rap.paiement_commission == 'non_paye'" id="">
+                <template v-if="typeUser == 'admin' && rap.paiement_commission == 'non_paye' && rap.state == 'unaborted'" id="">
                   <button @click="activRapport = rap" uk-toggle="target : #modal-abort-rapport" type="button" class="uk-button uk-button-small uk-border-rounded uk-button-danger uk-text-capitalize">Annuler</button>
+                </template>
+                <template v-else>
+                  <span class="uk-alert-danger">invalide</span>
                 </template>
               </td>
             </tr>
