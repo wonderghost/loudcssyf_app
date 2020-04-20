@@ -92,7 +92,7 @@
                 </div>
                 <div class="uk-width-1-3@m uk-card uk-padding-remove uk-margin-remove uk-card-default uk-card-small" style="box-shadow : none;">
                    <div class="uk-card-header" style="border : none !important">
-                        <h5 class="uk-card-title">Recrutement</h5>
+                        <h5 class="uk-card-title">Performance Recrutement</h5>
                     </div> 
                     <div class="uk-card-body">
                         <ve-histogram :data="recrutement" :settings="chartSettings"></ve-histogram>
@@ -100,7 +100,7 @@
                 </div>
                 <div class="uk-width-1-3@m uk-card uk-padding-remove uk-margin-remove uk-card-default uk-card-small" style="box-shadow : none;">
                    <div class="uk-card-header" style="border : none !important">
-                        <h5 class="uk-card-title">Reabonnement</h5>
+                        <h5 class="uk-card-title">Performance Reabonnement</h5>
                     </div> 
                     <div class="uk-card-body">
                         <ve-histogram :data="reabonnement" :settings="chartSettings"></ve-histogram>

@@ -30,7 +30,7 @@
                             <div class="uk-alert-info uk-width-1-1@m uk-border-rounded" uk-alert>
                                 <p class="uk-text-center"><span uk-icon="icon : info"></span> Envoyez une demande de deblocage de compte Cga</p>
                             </div>
-                            <template v-if="theUser == 'v_da' || theUser == 'v_standart'">
+                            <template v-if="theUser == 'v_da' || theUser == 'v_standart' || theUser == 'admin'">
                                 <form class="uk-grid-small" @submit.prevent="sendDeblocageForm()" uk-grid>   
                                     <div class="uk-width-1-2@m">
                                         <label for=""><span uk-icon="icon : check"></span> Numero Distributeur</label>
@@ -65,12 +65,12 @@
                             <div class="uk-alert-info uk-width-1-1@m" uk-alert>
                                 <p class="uk-text-center"><span uk-icon="icon : info"></span> Envoyez une demande d'annulation de Saisie</p>
                             </div>
-                            <template v-if="theUser == 'v_da'">
+                            <template v-if="theUser == 'v_da' || theUser == 'v_standart' || theUser == 'admin'">
                                 <form @submit.prevent="sendAnnuleSaisi()" class="uk-grid-small" uk-grid>
                                     <div class="uk-width-1-2@m">
                                         <label for=""><span uk-icon="icon : check"></span> Numero Distributeur</label>
                                         <span v-if="theUser == 'v_da'" class="uk-input uk-border-rounded uk-text-bold uk-text-center">{{annuleSaisiForm.num_dist}}</span>
-                                        <input type="text" class="uk-input uk-border" v-else v-model="annuleSaisiForm.num_dist">
+                                        <input type="text" class="uk-input uk-border-rounded" v-else v-model="annuleSaisiForm.num_dist">
                                     </div>
                                     <div class="uk-width-1-2@m">
                                         <label for=""><span uk-icon="icon : user"></span> Numero Abonn&eacute;</label>
@@ -206,18 +206,21 @@ export default {
             }
         },
         sendAnnuleSaisi : async function() {
+            this.isLoading = true
+            UIkit.modal($("#modal-plus")).hide()
             try {
-                this.isLoading = true
                 this.annuleSaisiForm._token = this.myToken
                 let response = await axios.post('/user/tools/annulation-saisie',this.annuleSaisiForm)
                 if(response.data == 'done') {
-                    UIkit.modal.alert("<div class='uk-alert-success' uk-alert></div>")
+                    UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Demande Envoyee !</div>")
                         .then(function() {
                             location.reload()
                         })
                 }
             } catch(error) {
+
                 this.isLoading = false
+
                 UIkit.modal($("#modal-plus")).show()
                 if(error.response.data.errors) {
                     let errorTab = error.response.data.errors

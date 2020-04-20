@@ -91,7 +91,6 @@ class ToolsController extends Controller
                 'num_abonne'    =>  'required|string',
                 'date_saisie'   =>  'required|date',
                 'password'  =>  'required',
-                'saisie_correcte'   =>  'required|string',
                 'saisie_errone' =>  'required|string'
             ],[
                 'required'  =>  'Champ(s) :attribute requis!',
