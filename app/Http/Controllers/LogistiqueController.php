@@ -37,6 +37,7 @@ use App\Livraison;
 use App\Afrocash;
 use App\CompenseMaterial;
 use App\DeficientMaterial;
+
 //
 use App\Traits\Similarity;
 use App\Traits\Livraisons;
@@ -882,6 +883,39 @@ class LogistiqueController extends Controller
     catch (AppException $e) {
       header("Erreur",true,422);
       die(json_encode($e->getMessage()));
+    }
+  }
+
+  // @historique de ravitaillment des depots
+
+  public function historiqueRavitaillementDepot(Request $request , RavitaillementDepot $rd) {
+    try {
+        $_result = $rd->select()->orderBy('created_at','desc')->get();
+        $data = [];
+        foreach($_result as $key => $value) {
+          $date = new Carbon($value->created_at);
+          $data[$key] = [
+            'date'  =>  $date->toDateString(),
+            'article' =>  $value->produit()->libelle,
+            'quantite'  =>  $value->quantite,
+            'depot' =>  $value->depot,
+            'origine' =>  $value->origine
+          ];
+        }
+        return response()
+          ->json($data);
+    } catch(AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
+    }
+  }
+  // @ list des produits 
+  public function allProduits(Produits $pr) {
+    try {
+        return response()->json($pr->all());
+    } catch(AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
     }
   }
 }

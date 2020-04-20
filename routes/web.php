@@ -128,13 +128,15 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/edit-material/{reference}','LogistiqueController@editMaterial');
 	Route::post('/admin/edit-material/{reference}','LogistiqueController@makeEditMaterial');
 	//
-
+	#historique de ravitaillement des depots
+	Route::get('/admin/depot/historique-depot','LogistiqueController@historiqueRavitaillementDepot');
 });
 
 Auth::routes();
 
 Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/{slug}/all-vendeurs','LogistiqueController@allVendeurs');
+	Route::get('/{slug}/all-produits','LogistiqueController@allProduits');
 	// CONSTRUCTION DU TABLEAU DE BORD
 	// rapport pour controleur
 	Route::get('user/add-rapport','RapportControlleur@addRapport')->middleware('controleur');
@@ -153,6 +155,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// ravitailler un depot
 	Route::get('/user/ravitailler-depot','LogistiqueController@ravitaillerDepot')->middleware('logistique');
+	Route::get('/user/depot/historique-depot','LogistiqueController@historiqueRavitaillementDepot')->middleware('logistique');
 	// Route::get('')
 	Route::get('{slug}/logistique/get-materiel','LogistiqueController@getMateriel');
 	Route::post('/user/ravitailler-depot','LogistiqueController@sendRavitaillementDepot')->middleware('logistique');

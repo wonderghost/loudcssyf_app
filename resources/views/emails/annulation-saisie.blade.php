@@ -33,6 +33,10 @@
         }
         .table {
             border : solid 1px #ddd;
+            margin-left : 18%;
+        }
+        .table-header{
+            margin-left : 40%;
         }
     </style>
 </head>
@@ -46,8 +50,11 @@
             </nav>
             <!-- BODY -->
             <!-- CORPS DU MESSAGE -->
-            
+            <p>
+                {!!$data['comment']!!}
+            </p>
             <!-- // -->
+            <h4 class="table-header">Erreur de Saisies</h4>
             <table class="table" border="1">
                 <thead>
                     <tr style="background : blue ; color : #fff">
@@ -62,13 +69,13 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>-</td>
-                        <td style="text-align : center">-</td>
-                        <td style="text-align : center">-</td>
-                        <td style="text-align : center">-</td>
-                        <td style="text-align : center">-</td>
-                        <td style="text-align : center">-</td>
-                        <td style="color : red">-</td>
+                        <td style="text-align : center">{{$data['num_dist']}}</td>
+                        <td style="text-align : center">{{$data['num_abonne']}} </td>
+                        <td style="text-align : center">{{$data['saisie_errone']}}</td>
+                        <td style="text-align : center">{{$data['saisie_correcte']}}</td>
+                        <td style="text-align : center">{{$data['date_saisie']}}</td>
+                        <td style="text-align : center">NON</td>
+                        <td style="text-align : center">OUI</td>
                     </tr>
                 </tbody>
             </table>

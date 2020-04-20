@@ -55,7 +55,7 @@
                 <tbody>
                     <tr>
                         <td>GUINEE CONAKRY</td>
-                        <td style="text-align : center">{{$user->agence()->num_dist}}</td>
+                        <td style="text-align : center">{{$data['num_dist']}}</td>
                         <td style="text-align : center">{{$data['compte_user']}}</td>
                         <td style="text-align : center">{{$data['nom_prenom']}} </td>
                         <td style="text-align : center">OUI</td>

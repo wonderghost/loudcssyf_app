@@ -30,11 +30,12 @@
                             <div class="uk-alert-info uk-width-1-1@m uk-border-rounded" uk-alert>
                                 <p class="uk-text-center"><span uk-icon="icon : info"></span> Envoyez une demande de deblocage de compte Cga</p>
                             </div>
-                            <template v-if="theUser == 'v_da'">
+                            <template v-if="theUser == 'v_da' || theUser == 'v_standart'">
                                 <form class="uk-grid-small" @submit.prevent="sendDeblocageForm()" uk-grid>   
                                     <div class="uk-width-1-2@m">
                                         <label for=""><span uk-icon="icon : check"></span> Numero Distributeur</label>
-                                        <span class="uk-input uk-border-rounded uk-text-bold uk-text-center">{{deblocageForm.num_dist}}</span>
+                                        <span class="uk-input uk-border-rounded uk-text-bold uk-text-center" v-if="theUser == 'v_da'">{{deblocageForm.num_dist}}</span>
+                                        <input type="text" class="uk-input uk-border-rounded" v-model="deblocageForm.num_dist" v-else>
                                     </div>
                                     <div class="uk-width-1-2@m">
                                         <label for=""><span uk-icon="icon : user"></span>Compte Utilisateur</label>
@@ -51,7 +52,7 @@
                                     <div class="uk-width-1-1@m">
                                         <label for=""><span uk-icon="icon : comment"></span> Commentaire</label>
                                         <!-- <textarea rows="5" class="uk-textarea uk-border-rounded" v-model="deblocageForm.comment"></textarea> -->
-                                        <VueTrix v-model="deblocageForm.comment" placeholder="Contenut"/>
+                                        <VueTrix v-model="deblocageForm.comment" placeholder="Contenu"/>
                                     </div>
                                     <div class="">
                                         <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
@@ -68,7 +69,8 @@
                                 <form @submit.prevent="sendAnnuleSaisi()" class="uk-grid-small" uk-grid>
                                     <div class="uk-width-1-2@m">
                                         <label for=""><span uk-icon="icon : check"></span> Numero Distributeur</label>
-                                        <span class="uk-input uk-border-rounded uk-text-bold uk-text-center">{{annuleSaisiForm.num_dist}}</span>
+                                        <span v-if="theUser == 'v_da'" class="uk-input uk-border-rounded uk-text-bold uk-text-center">{{annuleSaisiForm.num_dist}}</span>
+                                        <input type="text" class="uk-input uk-border" v-else v-model="annuleSaisiForm.num_dist">
                                     </div>
                                     <div class="uk-width-1-2@m">
                                         <label for=""><span uk-icon="icon : user"></span> Numero Abonn&eacute;</label>
@@ -92,7 +94,7 @@
                                     </div>
                                     <div class="uk-width-1-1@m">
                                         <label for=""><span uk-icon="icon : comment"></span> Commentaire</label>
-                                        <VueTrix v-model="annuleSaisiForm.comment" placeholder="Contenut"/>
+                                        <VueTrix v-model="annuleSaisiForm.comment" placeholder="Contenu"/>
                                     </div>
                                     <div>
                                         <button class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
@@ -205,11 +207,26 @@ export default {
         },
         sendAnnuleSaisi : async function() {
             try {
+                this.isLoading = true
                 this.annuleSaisiForm._token = this.myToken
                 let response = await axios.post('/user/tools/annulation-saisie',this.annuleSaisiForm)
-                console.log(response.data)
+                if(response.data == 'done') {
+                    UIkit.modal.alert("<div class='uk-alert-success' uk-alert></div>")
+                        .then(function() {
+                            location.reload()
+                        })
+                }
             } catch(error) {
-                alert(error)
+                this.isLoading = false
+                UIkit.modal($("#modal-plus")).show()
+                if(error.response.data.errors) {
+                    let errorTab = error.response.data.errors
+                    for (var prop in errorTab) {
+                        this.errors.push(errorTab[prop][0])
+                    }
+                } else {
+                    this.errors.push(error.response.data)
+                }
             }
         },
         getInfosForm : async function() {
