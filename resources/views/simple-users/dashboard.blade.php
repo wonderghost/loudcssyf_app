@@ -4,7 +4,7 @@
   <div class="uk-container uk-container-large">
     <h3>Tableau de bord</h3>
     <hr class="uk-divider-small">
-    <dashboard the-user='vendeurs'></dashboard>
+    <dashboard the-user="{{Auth::user()->type}}"></dashboard>
 </div>
 </div>
 @endsection('content')

@@ -28,4 +28,8 @@ class Exemplaire extends Model
     public function deficientMaterial() {
       return $this->hasMany('App\DeficientMaterial','serial_to_replace','serial_number')->first();
     }
+
+    public function rapport() {
+      return $this->belongsTo('App\RapportVente','rapports','id_rapport')->first();
+    }
 }

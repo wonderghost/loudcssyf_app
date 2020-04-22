@@ -2,7 +2,8 @@
   <div class="">
     <loading :active.sync="isLoading"
         :can-cancel="false"
-        :is-full-page="fullPage"></loading>
+        :is-full-page="fullPage"
+        loader="dots"></loading>
 
         <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
           <template id="" v-if="typeUser == 'v_standart'">

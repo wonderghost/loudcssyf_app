@@ -5,16 +5,30 @@
         :is-full-page="fullPage"
         loader="dots"></loading>
 
-        <template v-if="theUser == 'v_da'">
-            <div class="promo-da uk-visible@m">
+        <template v-if="theUser == 'v_da' || theUser == 'v_standart'">
+            <div class="uk-visible@m uk-margin-top" style="margin-left : 10% !important">
                 <div class="uk-grid-small" uk-grid>
-                    <div class="uk-width-1-3@m">
-                        <label for=""><span uk-icon="icon : settings"></span> Kits Promo</label>
-                        <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.kits}}</span>
+                    <template v-if="theUser == 'v_da'">
+                        <div class="uk-width-1-6@m">
+                            <label for=""><span uk-icon="icon : settings"></span> Kits Promo</label>
+                            <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.kits}}</span>
+                        </div>
+                        <div class="uk-width-1-6@m">
+                            <label for=""><span uk-icon="icon : credit-card"></span> Remboursement</label>
+                            <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.remboursement | numFormat}}</span>
+                        </div>
+                    </template>
+                    <div class="uk-width-1-4@m">
+                        <label for="">Promo en cours</label>
+                        <span class="uk-input uk-border-rounded">{{activePromo.intitule}}</span>
                     </div>
-                    <div class="uk-width-1-3@m">
-                        <label for=""><span uk-icon="icon : credit-card"></span> Remboursement</label>
-                        <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.remboursement | numFormat}}</span>
+                    <div class="uk-width-1-6@m">
+                        <label for="">Debut</label>
+                        <span class="uk-input uk-text-center uk-border-rounded">{{activePromo.debut}}</span>
+                    </div>
+                    <div class="uk-width-1-6@m">
+                        <label for="">Fin</label>
+                        <span class="uk-input uk-text-center uk-border-rounded">{{activePromo.fin}}</span>
                     </div>
                 </div>
             </div>
@@ -27,6 +41,18 @@
                     <div class="uk-width-1-1@s">
                         <label for=""><span uk-icon="icon : credit-card"></span> Remboursement</label>
                         <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.remboursement | numFormat}}</span>
+                    </div>
+                    <div class="uk-width-1-1@s">
+                        <label for="">Promo en cours</label>
+                        <span class="uk-input uk-border-rounded">{{activePromo.intitule}}</span>
+                    </div>
+                    <div class="uk-width-1-1@s">
+                        <label for="">Debut</label>
+                        <span class="uk-input uk-text-center uk-border-rounded">{{activePromo.debut}}</span>
+                    </div>
+                    <div class="uk-width-1-1@s">
+                        <label for="">Fin</label>
+                        <span class="uk-input uk-text-center uk-border-rounded">{{activePromo.fin}}</span>
                     </div>
                 </div>                        
             </div>
@@ -223,8 +249,8 @@ export default {
         theUser : String
     },  
     mounted() {
+        this.getInfosPromo()
         if(this.theUser == 'admin') {
-            this.getInfosPromo()
             this.getRemboursementForUsers()
         }
         if(this.theUser == 'v_da' || this.theUser == 'v_standart') {
@@ -347,7 +373,11 @@ export default {
         },
         getInfosPromo : async function() {
             try {
-                let response = await axios.get('/admin/promo/list')
+                if(this.theUser == 'admin') {
+                    var response = await axios.get('/admin/promo/list')
+                } else {
+                    var response = await axios.get('/user/promo/list')
+                }
                 if(response.data == 'fail') {
                     // la promo n'existe pas
                     this.promoStatus = false

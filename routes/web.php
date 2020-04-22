@@ -152,6 +152,9 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/rapport-ventes/all','RapportControlleur@getAllRapportForVendeur')->middleware('vendeur');
 
 	Route::get("/user/rapport/total-commission",'RapportControlleur@totalCommissionVendeur')->middleware('vendeur');
+
+	// voir les details d'un rapport
+	Route::post('/user/rapport-ventes/get-details','RapportControlleur@getDetailsForRapport');
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// ravitailler un depot
 	Route::get('/user/ravitailler-depot','LogistiqueController@ravitaillerDepot')->middleware('logistique');
@@ -335,6 +338,10 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/chart/performances/recrutement','ChartController@performanceVendeurRecrutement')->middleware('vendeur');
 	Route::get('/user/chart/performances/reabonnement','ChartController@performanceVendeurReabonnement')->middleware('vendeur');
 	Route::post('/user/chart/performances/filter-by-date','ChartController@makeFilter')->middleware('vendeur');
+	
+	Route::get('/user/chart/command-stat','ChartController@commandStat')->middleware('cga');
+	Route::get('/user/chart/command-material-stat','ChartController@commandMaterialStat')->middleware('logistique');
+	Route::get('/user/chart/livraison-stat','ChartController@livraisonMaterialStat')->middleware('logistique');
 
 });
 

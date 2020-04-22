@@ -13,10 +13,10 @@
                 <div class="uk-modal-body" uk-overflow>
                     <!-- Erreor block -->
                       <template v-if="errors.length" v-for="error in errors">
-                      <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
-                        <a href="#" class="uk-alert-close" uk-close></a>
-                        <p>{{error}}</p>
-                      </div>
+                        <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+                            <a href="#" class="uk-alert-close" uk-close></a>
+                            <p>{{error}}</p>
+                        </div>
                     </template>
 
                     <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation : uk-animation-slide-bottom">
@@ -30,7 +30,7 @@
                             <div class="uk-alert-info uk-width-1-1@m uk-border-rounded" uk-alert>
                                 <p class="uk-text-center"><span uk-icon="icon : info"></span> Envoyez une demande de deblocage de compte Cga</p>
                             </div>
-                            <template v-if="theUser == 'v_da' || theUser == 'v_standart' || theUser == 'admin'">
+                            <template v-if="theUser == 'v_da' || theUser == 'v_standart' || theUser == 'admin' || theUser == 'logistique'">
                                 <form class="uk-grid-small" @submit.prevent="sendDeblocageForm()" uk-grid>   
                                     <div class="uk-width-1-2@m">
                                         <label for=""><span uk-icon="icon : check"></span> Numero Distributeur</label>

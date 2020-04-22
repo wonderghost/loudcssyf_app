@@ -179,7 +179,8 @@ public function PayCommissionListForVendeurs(Request $request) {
           'au'=> $value->rapports()->get()->last()->date_rapport,
           'total' =>  number_format($value->montant),
           'status'  =>  $value->status,
-          'vendeurs'  => $value->rapports()->first()->vendeurs()->localisation
+          'vendeurs'  => $value->rapports()->first()->vendeurs()->localisation,
+          'pay_at'  =>  $value->pay_at
         ];
       }
 
@@ -272,6 +273,18 @@ public function validatePayComission(Request $request) {
     die(json_encode($e->getMessage()));
   }
 
+}
+
+// voire les details d'un rapport de vente [recrutement | migration]
+
+public function getDetailsForRapport(Request $request , RapportVente $r) {
+  try {
+      $details = $r->find($request->input('rapId'));
+      return response()->json($details->exemplaire());
+  } catch(AppException $e) {
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
+  }
 }
 
 }

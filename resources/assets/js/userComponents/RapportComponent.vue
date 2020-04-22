@@ -5,6 +5,28 @@
         :is-full-page="fullPage"
         loader="dots"></loading>
 
+
+    <!-- modal details rapports -->
+    <template>
+      <div id="modal-detail-rapport" uk-modal="esc-close : false ; bg-close : true;">
+        <div class="uk-modal-dialog">
+          <div class="uk-modal-header">
+            <div class="uk-alert-info" uk-alert>
+              Materiels activ&eacute;  dans le rapport du : <span id="date-rap" class="uk-text-bold"></span>
+            </div>
+          </div>
+          <div class="uk-modal-body">
+            <div class="uk-grid-small" uk-grid>
+              <div v-for="s in detailSerials" class="uk-width-1-2@m">
+                <span class="uk-input uk-border-rounded">{{s.serial_number}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+    <!-- // -->
+
     <template id="">
     <div class="uk-grid-small" uk-grid>
       <div class="uk-width-1-6@m">
@@ -108,7 +130,7 @@
             <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
             <select class="uk-select uk-border-rounded" v-model="filterUser">
               <option value="">Tous les vendeurs</option>
-              <option v-for="u in users" :value="u.localisation"> {{u.localisation}} </option>
+              <option v-for="u in users" :key="u.username" :value="u.localisation"> {{u.localisation}} </option>
             </select>
           </div>
         </div>
@@ -145,8 +167,12 @@
                 <template v-if="typeUser == 'admin' && rap.paiement_commission == 'non_paye' && rap.state == 'unaborted'" id="">
                   <button @click="activRapport = rap" uk-toggle="target : #modal-abort-rapport" type="button" class="uk-button uk-button-small uk-border-rounded uk-button-danger uk-text-capitalize">Annuler</button>
                 </template>
-                <template v-else>
+                <template v-if="rap.state == 'aborted'">
                   <span class="uk-alert-danger">invalide</span>
+                </template>
+
+                <template v-if="rap.state == 'unaborted' && (rap.type == 'recrutement' || rap.type == 'migration')">
+                  <button @click="getDetailsRapport(rap)" class="uk-button uk-button-small uk-border-rounded uk-button-default uk-text-capitalize">Details</button>
                 </template>
               </td>
             </tr>
@@ -273,10 +299,28 @@ import datepicker from 'vue-date-picker'
               debut : "",
               fin : ""
             },
-            payFilter : ""
+            payFilter : "",
+            rapDetailsData : {
+              _token : "",
+              rapId : ""
+            },
+            detailSerials : []
           }
         },
         methods : {
+          getDetailsRapport : async function (rap) {
+            try {
+                this.rapDetailsData._token = this.myToken
+                this.rapDetailsData.rapId = rap.id
+                $("#date-rap")[0].innerText = rap.date
+
+                let response = await axios.post('/user/rapport-ventes/get-details',this.rapDetailsData)
+                this.detailSerials = response.data
+                UIkit.modal("#modal-detail-rapport").show()
+            } catch(error) {
+                alert(error)
+            }
+          },
           allUsers : async function () {
             try {
               let response = await axios.get('/admin/all-vendeurs')

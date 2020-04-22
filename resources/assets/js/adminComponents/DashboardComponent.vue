@@ -5,60 +5,73 @@
         :is-full-page="fullPage"
         loader="dots"></loading>
         
-        <template v-if="theUser == 'admin'">
+        <template v-if="theUser == 'admin' || theUser == 'logistique' || theUser == 'gcga'">
             <div class="uk-grid-small" uk-grid>
-            <div class="uk-width-1-4@m uk-card uk-padding-remove uk-margin-remove uk-card-default uk-card-small" style="box-shadow : none;">
-                <div class="uk-card-header" style="border: none !important;">
-                    <h5 class="uk-card-title">Utilisateurs</h5>
+
+                <template  v-if="theUser == 'admin'">
+                    <div class="uk-width-1-4@m uk-card uk-padding-remove uk-margin-remove uk-card-default uk-card-small" style="box-shadow : none;">
+                        <div class="uk-card-header" style="border: none !important;">
+                            <h5 class="uk-card-title">Utilisateurs</h5>
+                        </div>
+                        <div class="uk-card-body uk-padding-remove">
+                            <ve-pie class="uk-padding-remove" :data="userData"></ve-pie>
+                        </div>
+                    </div>
+
+                </template>
+
+                <template v-if="theUser == 'gcga' || theUser == 'admin'">
+                    <div class="uk-width-1-4@m uk-card uk-card-default uk-margin-remove uk-padding-remove uk-card-small" style="box-shadow : none;">
+                        <div class="uk-card-header" style="border:none !important;">
+                            <h5 class="uk-card-title">Commande Credit</h5>
+                        </div>
+                        <div class="uk-card-body uk-padding-remove">
+                            <ve-pie :data="commandData"></ve-pie>
+                        </div>
+                    </div>
+                </template>
+
+                <template v-if="theUser == 'logistique' || theUser == 'admin'">
+                    <div class="uk-width-1-4@m uk-card uk-card-default uk-margin-remove uk-padding-remove uk-card-small" style="box-shadow : none;">
+                        <div class="uk-card-header" style="border : none;">
+                            <h5 class="uk-card-title">Commande Materiel</h5>
+                        </div>
+                        <div class="uk-card-body uk-padding-remove">
+                            <ve-pie :data="commandMaterial"></ve-pie>
+                        </div>
+                    </div>
+                    <div class="uk-width-1-4@m uk-card uk-card-default uk-margin-remove uk-padding-remove uk-card-small" style="box-shadow : none;">
+                        <div class="uk-card-header" style="border:none !important;">
+                            <h5 class="uk-card-title">Livraison</h5>
+                        </div>
+                        <div class="uk-card-body uk-padding-remove">
+                            <ve-pie :data="livraison"></ve-pie>
+                        </div>
+                    </div>
+                    <div class="uk-width-1-2@m uk-card uk-padding-remove uk-margin-remove uk-card-default uk-card-small" style="box-shadow : none;">
+                        <div class="uk-card-header" style="border :none !important;">
+                            <h5 class="uk-card-title">Depots</h5>
+                        </div>
+                        <div class="uk-card-body uk-padding-remove">
+                            <ve-histogram :data="depotData"></ve-histogram>
+                        </div>
+                    </div>
+                </template>
+
+            <template v-if="theUser == 'admin' || theUser == 'gcga'">
+                <div class="uk-width-1-2@m uk-card uk-card-default uk-margin-remove uk-padding-remove uk-card-small" style="box-shadow : none;">
+                    <div class="uk-card-header" style="border :none !important">
+                        <h5 class="uk-card-title">Transactions</h5>
+                    </div>
+                    <div class="uk-card-body">
+                        
+                    </div>
                 </div>
-                <div class="uk-card-body uk-padding-remove">
-                    <ve-pie class="uk-padding-remove" :data="userData"></ve-pie>
-                </div>
-            </div>
-            <div class="uk-width-1-4@m uk-card uk-card-default uk-margin-remove uk-padding-remove uk-card-small" style="box-shadow : none;">
-                <div class="uk-card-header" style="border:none !important;">
-                    <h5 class="uk-card-title">Commande Credit</h5>
-                </div>
-                <div class="uk-card-body uk-padding-remove">
-                    <ve-pie :data="commandData"></ve-pie>
-                </div>
-            </div>
-            <div class="uk-width-1-4@m uk-card uk-card-default uk-margin-remove uk-padding-remove uk-card-small" style="box-shadow : none;">
-                <div class="uk-card-header" style="border : none;">
-                    <h5 class="uk-card-title">Commande Materiel</h5>
-                </div>
-                <div class="uk-card-body uk-padding-remove">
-                    <ve-pie :data="commandMaterial"></ve-pie>
-                </div>
-            </div>
-            <div class="uk-width-1-4@m uk-card uk-card-default uk-margin-remove uk-padding-remove uk-card-small" style="box-shadow : none;">
-                <div class="uk-card-header" style="border:none !important;">
-                    <h5 class="uk-card-title">Livraison</h5>
-                </div>
-                <div class="uk-card-body uk-padding-remove">
-                    <ve-pie :data="livraison"></ve-pie>
-                </div>
-            </div>
-            <div class="uk-width-1-2@m uk-card uk-padding-remove uk-margin-remove uk-card-default uk-card-small" style="box-shadow : none;">
-                <div class="uk-card-header" style="border :none !important;">
-                    <h5 class="uk-card-title">Depots</h5>
-                </div>
-                <div class="uk-card-body uk-padding-remove">
-                    <ve-histogram :data="depotData"></ve-histogram>
-                </div>
-            </div>
-            <div class="uk-width-1-2@m uk-card uk-card-default uk-margin-remove uk-padding-remove uk-card-small" style="box-shadow : none;">
-                <div class="uk-card-header" style="border :none !important">
-                    <h5 class="uk-card-title">Transactions</h5>
-                </div>
-                <div class="uk-card-body">
-                    
-                </div>
-            </div>
+            </template>
         </div>
         </template>
         <!-- DA / VSTANDART DASHBOARD-->    
-        <template v-if="theUser == 'vendeurs'">
+        <template v-if="theUser == 'v_da' || theUser == 'v_standart'">
             <form @submit.prevent="makeFilter()" class="uk-grid-small" uk-grid>
                 <div class="uk-width-1-6@m">
                     <label for=""><span uk-icon="icon : calendar"></span> Du</label>
@@ -110,6 +123,7 @@
 
         </template>
         <!-- // -->
+       
     </div>
 </template>
 <script>
@@ -198,14 +212,18 @@ export default {
         },
         makeFilter : async function () {
             try {
+
                 this.isLoading = true
                 this.filterData._token = this.myToken
                 this.filterData.vendeurs = this.userName
+
                 let response = await axios.post('/user/chart/performances/filter-by-date',this.filterData)
+
                 this.recrutement.rows = response.data.recrutement
                 this.reabonnement.rows = response.data.reabonnement
                 this.isLoading = false
                 this.filterState = true
+
             } catch(error) {
                 this.isLoading = false
                 if(error.response.data.errors) {
@@ -237,7 +255,7 @@ export default {
 
                     response = await axios.get('/admin/chart/livraison-stat')
                     this.livraison.rows = response.data
-                } else if(this.theUser == 'vendeurs') {
+                } else if(this.theUser == 'v_da' || this.theUser == 'v_standart') {
                     let response = await axios.get('/user/inventory/all-vendeur-material')
                     this.inventoryUser.data.rows = response.data
                     // on recuperation les donnees grapphiques pour les porfermances et les objectifs
@@ -246,7 +264,20 @@ export default {
                     // 
                     response = await axios.get('/user/chart/performances/reabonnement')
                     this.reabonnement.rows = response.data
+                } else if(this.theUser == 'logistique') {
+                    let response = await axios.get('/user/inventory/depot')
+                    this.depotData.rows = response.data
+
+                    response = await axios.get('/user/chart/command-material-stat')
+                    this.commandMaterial.rows = response.data
+
+                    response = await axios.get('/user/chart/livraison-stat')
+                    this.livraison.rows = response.data
+                } else if(this.theUser == 'gcga') {
+                    let response = await axios.get('/user/chart/command-stat')
+                    this.commandData.rows = response.data
                 }
+
                 this.isLoading = false
             } catch (error) {
                 alert(error)

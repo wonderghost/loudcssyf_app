@@ -27,7 +27,7 @@
           </div>
           <div class="uk-modal-body">
             <div class="uk-grid uk-grid-divider" uk-grid>
-              <div class="uk-width-1-2@m">
+              <div class="uk-width-1-3@m">
                 <!-- Infos Materiel -->
                 <h4>Infos Materiel</h4>
                 <ul class="uk-list uk-list-divider">
@@ -42,10 +42,27 @@
                 </ul>
                 <!-- // -->
               </div>
-              <div class="uk-width-1-2@m">
+              <div class="uk-width-1-3@m">
                 <!-- Infos Abonnement -->
-                <h4>Infos Abonnement</h4>
+                <h4>Infos Activation</h4>
                 <!-- // -->
+                <ul v-if="serialNumber.rapport_vente" class="uk-list uk-list-divider">
+                  <li>
+                    <span>Active en : </span>
+                    <span class="uk-text-bold">{{serialNumber.rapport_vente.type}}</span>
+                  </li>
+                  <li>
+                    <span>Date d'activation : </span>
+                    <span class="uk-text-bold">{{serialNumber.rapport_vente.date_rapport}}</span>
+                  </li>
+                  <li>
+                    <span>Rapport enregistre le :</span>
+                    <span class="uk-text-bold">{{serialNumber.rapport_vente.created_at}}</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="uk-width-1-3@m">
+                <h4>Infos Abonnement</h4>
               </div>
             </div>
           </div>

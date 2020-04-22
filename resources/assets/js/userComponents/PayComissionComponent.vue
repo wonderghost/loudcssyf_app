@@ -10,8 +10,15 @@
   	    <div class=" uk-modal-dialog">
   	        <div class="uk-modal-header">
   	            <h3 class="uk-modal-title"> <i class="material-icons">monetization_on</i> Paiement Commission</h3>
+                <div class="uk-align-right uk-width-1-3@m">
+                  <label for="">Vendeurs</label>
+                  <select v-model="filterByUser" class="uk-select uk-border-rounded">
+                    <option value="">Tous</option>
+                    <option :value="u.localisation" v-for="u in users" :key="u.username">{{u.localisation}}</option>
+                  </select>
+                </div>
   	        </div>
-  	        <div class="uk-modal-body uk-overflow-auto uk-height-medium">
+  	        <div class="uk-modal-body uk-overflow-auto uk-height-large">
   						<table class="uk-table uk-table-small uk-table-hover uk-table-striped uk-table-divider uk-table-responsive">
   							<thead>
   								<tr>
@@ -19,17 +26,19 @@
   									<th>Au</th>
   									<th>Total</th>
   									<th>Status</th>
+                    <th>Paye le</th>
   									<th>Vendeurs</th>
                     <th>-</th>
   								</tr>
   							</thead>
   							<tbody>
-                  <tr v-for="pay in payComissionList" :key="pay.id">
+                  <tr v-for="pay in listFilterByUser.slice(start,end)" :key="pay.id">
                     <td>{{pay.du}}</td>
                     <td>{{pay.au}}</td>
                     <td>{{pay.total}}</td>
                     <td v-if="pay.status == 'unvalidated'" class="uk-text-danger">{{pay.status}}</td>
                     <td v-else class="uk-text-success">{{pay.status}}</td>
+                    <td>{{pay.pay_at}}</td>
                     <td>{{pay.vendeurs}}</td>
                     <td>
                     <template id="" v-if="pay.status == 'unvalidated' && typeUser == 'gcga'">
@@ -41,8 +50,17 @@
                 </tbody>
   						</table>
   	        </div>
-  	        <div class="uk-modal-footer uk-text-right">
+  	        <div class="uk-modal-footer">
+              <div class="uk-align-left">
+                <ul class="uk-pagination uk-flex uk-flex-center" uk-margin>
+                  <li> <span> Page active : {{currentPage}} </span> </li>
+                  <li> <button @click="previousPage()" type="button" class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small" name="button"> <span uk-pagination-previous></span> Precedent </button> </li>
+                  <li> <button @click="nextPage()" type="button" class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small" name="button"> Suivant <span uk-pagination-next></span>  </button> </li>
+                </ul>
+              </div>
+              <div class="uk-align-right">
   	            <button class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-danger uk-modal-close" type="button">Fermer</button>
+              </div>
   	        </div>
   	    </div>
   	</div>
@@ -99,10 +117,31 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           fullPage : true,
           userActiveValidate : {},
           passwordConfirm : "",
-          errors : []
+          errors : [],
+          users : [],
+          filterByUser : "",
+          start : 0,
+          end : 8,
+          currentPage : 1
         }
       },
       methods : {
+        nextPage : function () {
+            if(this.listFilterByUser.length > this.end) {
+              let ecart = this.end - this.start
+              this.start = this.end
+              this.end += ecart
+              this.currentPage++
+            }
+          },
+          previousPage : function () {
+            if(this.start > 0) {
+              let ecart = this.end - this.start
+              this.start -= ecart
+              this.end -= ecart
+              this.currentPage--
+            }
+          },
         getPayComissionList : async function () {
           try {
             if(this.typeUser == 'admin') {
@@ -112,8 +151,10 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             } else {
               return 0
             }
-            if(response.data) {
+            var userListResponse = await axios.get('/user/all-vendeurs')
+            if(response.data && userListResponse.data) {
               this.$store.commit('setPayComissionList',response.data)
+              this.users = userListResponse.data
             }
           } catch (e) {
               console.log(e)
@@ -150,6 +191,11 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         }
       },
       computed : {
+        listFilterByUser() {
+          return this.payComissionList.filter((p) => {
+            return p.vendeurs.match(this.filterByUser)
+          })
+        },
         payComissionList () {
           return this.$store.state.payComissionList
         },

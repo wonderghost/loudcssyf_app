@@ -20,7 +20,8 @@ class SearchController extends Controller
                 'etat'  =>  $result->deficientMaterial() ? 'defectueux' : '-',
                 'status'    =>  $result->status,
                 'vendeurs'  =>  $result->vendeurs() ? $result->vendeurs()->localisation : 'non attibue',
-                'origine'   =>  $result->depot()->depot
+                'origine'   =>  $result->depot()->depot,
+                'rapport_vente' =>  $result->rapport()
             ];
             
             return response()

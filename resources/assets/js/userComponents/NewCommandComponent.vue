@@ -20,12 +20,6 @@
               <p>{{error}}</p>
             </div>
           </template>
-          <template id="" v-if="success">
-            <div class="uk-alert-success uk-border-rounded uk-box-shadow-hover-small" uk-alert>
-              <a href="#" class="uk-alert-close" uk-close></a>
-              <p>{{success}}</p>
-            </div>
-          </template>
       <ul class="uk-switcher uk -margin">
           <!-- ENVOI DE COMMANDE MATERIEL -->
           <li>
@@ -280,8 +274,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               this.formData.reference_material = this.material.reference
               let response = await axios.post('/user/new-command/material',this.formData)
               if(response.data == 'done') {
-                this.success = "Votre commande a ete envoye :-)"
+                
                 this.isLoading = false
+                UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Votre commande a ete envoye :-)</div>")
+                  .then(function () {
+                    location.reload()
+                  })
               }
             } catch (error) {
               this.isLoading = false
