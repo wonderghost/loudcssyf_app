@@ -74,7 +74,7 @@
                             </div>
                             <div class="uk-width-1-3@m">
                                 <label for=""><span uk-icon="icon : location"></span> Agence</label>
-                                <span class="uk-input uk-border-rounded">{{profile.agence.societe}}</span>
+                                <span class="uk-input uk-border-rounded">{{profile.user.localisation}}</span>
                             </div>
                             <div class="uk-width-1-3@m">
                                 <label for=""><span uk-icon="icon : world"></span> Ville</label>
