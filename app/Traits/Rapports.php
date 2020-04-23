@@ -56,7 +56,7 @@ Trait Rapports {
 	}
 
 	// ENREGISTREMENT D'UN RAPPORT
-	public function sendRapport(Request $request,$slug , Exemplaire $e ,RapportPromo $rp , Promo $p) {
+	public function sendRapport(Request $request,$slug , Exemplaire $e ,RapportPromo $rp , Promo $p , StockVendeur $sv) {
 		try {
 		if($slug) {
 
@@ -378,7 +378,7 @@ public function totalCommission(RapportVente $r) {
 }
 #@@@@@@@@@@@@@ ANNULATION DE RAPPORT DE VENTE @@@@@@@@@@@@@@@@@@@
 // SUPPRIMER UN RAPPORT
-public function abortRapport(Request $request , RapportVente $r) {
+public function abortRapport(Request $request , RapportVente $r , StockVendeur $sv ,Produits $p) {
 	$validation = $request->validate([
 		'id_rapport' => 'required|exists:rapport_vente,id_rapport'
 	]);
@@ -411,6 +411,31 @@ public function abortRapport(Request $request , RapportVente $r) {
 					$cga->solde += $rapport->montant_ttc;
 					$rapport->state = 'aborted';
 
+					// retour de la quantite dans le stock du vendeur
+
+					#recuperation du stock vendeur
+					$stock_vendeur_terminal = $sv->where('vendeurs',$vendeurs->username)
+						->where('produit',$p->where('with_serial',1)->first()->reference)->first();
+					
+					$stock_vendeur_parabole = $sv->where('vendeurs',$vendeurs->username)
+						->where('produit',$p->where('with_serial',0)->first()->reference)->first();
+
+					// update de la quantite des materiels
+					$new_qt_terminal = $stock_vendeur_terminal->quantite + $rapport->quantite;
+					$new_qt_parabole = $stock_vendeur_parabole->quantite + $rapport->quantite;
+
+					StockVendeur::where('vendeurs',$vendeurs->username)
+						->where('produit',$p->where('with_serial',1)->first()->reference)
+						->update([
+							'quantite'	=>	$new_qt_terminal
+						]);
+
+					StockVendeur::where('vendeurs',$vendeurs->username)
+					->where('produit',$p->where('with_serial',0)->first()->reference)
+					->update([
+						'quantite'	=>	$new_qt_parabole
+					]);
+						##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 					// renvoi des numeros de series a l'etat inactif
 					$serialsNumbers = $rapport->exemplaire();
 

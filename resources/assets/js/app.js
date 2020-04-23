@@ -43,7 +43,7 @@ Vue.component('afrocash-central',require('./adminComponents/AfrocashCentral.vue'
 Vue.component('setting-view',require('./userComponents/SettingComponent.vue').default)
 Vue.component('perform-objectif',require('./adminComponents/PerformObjectifComponent.vue').default)
 Vue.component('historique-ravitaillement-depot',require('./adminComponents/HistoriqueRavitaillementDepot.vue').default)
-
+Vue.component('objectif-component',require('./adminComponents/ObjectifComponent.vue').default)
 
 
 import Vue from 'vue'

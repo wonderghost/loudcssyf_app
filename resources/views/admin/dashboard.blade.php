@@ -31,7 +31,27 @@
           <!-- // -->
         </div>
         <div id="obj" class="content-all">
-          <h1>les Objectifs</h1>
+          <h2>Objectifs</h2>
+          <ul uk-tab>
+              <li><a href="#">Apercue</a></li>
+              <li><a href="#">Nouvel Objectif</a></li>
+              <li><a href="#">Tous les objectifs</a></li>
+          </ul>
+
+          <ul class="uk-switcher uk-margin">
+              <li></li>
+              <li>
+              <!-- NEW OBJECTIF -->
+               <!-- <div class="uk-alert-info uk-width-1-3@m" uk-alert>
+                <p><span uk-icon="icon : info"></span> Ajoutez un nouvel objectif !</p>
+               </div> -->
+              <!-- // -->
+              <div class="uk-container">
+                <objectif-component></objectif-component>
+              </div>
+              </li>
+              <li></li>
+          </ul>          
         </div>
     </div>
   </div>
@@ -45,7 +65,6 @@ $(document).ready(function () {
   let btns = $("ul.dash-li > li")
   // console.log(btns)
   btns.on('click',function(e) {
-    console.log(this)
     $('.content-all').hide(300)
     if(this.id == 'btn-dash') {
       $('#dash').show(300)
