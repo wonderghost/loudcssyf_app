@@ -63,11 +63,11 @@ class ObjectifController extends Controller
         try {
 
             $validation = $request->validate([
-                'objectif_name' =>  'required|string',
-                'debut' =>  'required|date',
-                'fin'   =>  'required|date',
+                // 'objectif_name' =>  'required|string',
+                // 'debut' =>  'required|date',
+                // 'fin'   =>  'required|date',
                 'evaluation'    =>  'required|numeric',
-                'marge_arriere' =>  'required|numeric'
+                // 'marge_arriere' =>  'required|numeric'
             ],[
                 'required'  =>  'Champ(s) :attribute requis',
                 'numeric'   =>  'Champ(s) :attribute doit un nombre',
