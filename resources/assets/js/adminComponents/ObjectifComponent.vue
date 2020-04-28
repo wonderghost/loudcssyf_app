@@ -17,12 +17,12 @@
                 </div>
             </template>
 
-            <form @submit.prevent="firstStepFormSubmit()" uk-grid class="uk-grid-small">
-                <div class="uk-width-1-5@m">
+            <form @submit.prevent="" uk-grid class="uk-grid-small">
+                <div class="uk-width-1-2@m">
                     <label for="">Nom Objectif</label>
                     <input v-model="firstStepForm.objectif_name" type="text" class="uk-input uk-border-rounded">
                 </div>
-                <div class="uk-width-2-5@m uk-grid-small" uk-grid>
+                <div class="uk-width-1-2@m uk-grid-small" uk-grid>
                     <div class="uk-width-1-2@m">
                         <label for=""><span uk-icon="icon : calendar"></span> Du</label>
                         <input type="date" class="uk-input uk-border-rounded" v-model="firstStepForm.debut">
@@ -32,31 +32,36 @@
                         <input type="date" class="uk-input uk-border-rounded" v-model="firstStepForm.fin">
                     </div>
                 </div>
-                <div class="uk-width-2-5@m">
+                <div class="uk-width-1-6@m">
+                    <label for="">Marge arriere</label>
+                    <input type="text" v-model="firstStepForm.marge_arriere" class="uk-input uk-border-rounded">
+                </div>
+                <div class="uk-width-1-4@m">
                     <label for=""><span uk-icon=""></span>Evaluation</label>
                     <select v-model="firstStepForm.evaluation" class="uk-select uk-border-rounded">
                         <option value="">-- Periode d'Evaluation --</option>
                         <option :value="e" :key="e" v-for="e in evaluations">{{e}} Mois</option>
                     </select>
                 </div>
-                <div class="">
-                    <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">ok</button>
-                </div>
+                    
             </form>
-            <div v-if="nextStatus" class="uk-align-right">
-                <button @click="$refs.stepper.next()" class="uk-button uk-button-small uk-box-shadow-hover uk-border-rounded">Suivant <span uk-icon="icon : arrow-right"></span></button>
+            <div class="uk-align-right">
+                <button @click="ClassificationVendeur()" class="uk-button uk-button-small uk-box-shadow-hover uk-border-rounded">Suivant <span uk-icon="icon : arrow-right"></span></button>
             </div>
         </template>
         <template v-if="step == 2">
             <h4>Etape 2</h4>
-            <div v-if="nextStatus" class="uk-align-right">
+            <div>
+                <button @click="$refs.stepper.previous()" class="uk-button uk-button-small uk-border-rounded"><span uk-icon="icon : arrow-left"></span> Precedent</button>
+            </div>
+            <div class="uk-align-right">
                 <button @click="$refs.stepper.next()" class="uk-button uk-button-small uk-box-shadow-hover uk-border-rounded">Suivant <span uk-icon="icon : arrow-right"></span></button>
             </div>
         </template>
         <template v-if="step == 3">
             <h4>Etape 3</h4>
-            <div v-if="nextStatus" class="uk-align-right">
-                <button @click="$refs.stepper.next()" class="uk-button uk-button-small uk-box-shadow-hover uk-border-rounded">Suivant <span uk-icon="icon : arrow-right"></span></button>
+            <div class="">
+                <button @click="$refs.stepper.previous()" class="uk-button uk-button-small uk-box-shadow-hover uk-border-rounded"><span uk-icon="icon : arrow-left"> Suivant</span></button>
             </div>
         </template>
     </div>
@@ -82,21 +87,26 @@ import { VStepper } from 'vue-stepper-component'
                 evaluations : [3,6,9,12],
                 firstStepForm : {
                     _token : "",
+                    objectif_id : "",
                     objectif_name : "",
                     debut : "",
                     fin : "",
-                    evaluation : ""
+                    evaluation : "",
+                    marge_arriere : "",
+                    mode : "ajout"
                 },
-                nextStatus : false,
                 errors : []
             }
         },
         methods : {
-            firstStepFormSubmit : async function () {
+            ClassificationVendeur : async function () {
                 try {
-                    this.firstStepForm._token = this.myToken
-                    let response = await axios.post('/admin/objectifs/fisrt-step-validation',this.firstStepForm)
+                    let response = await axios.post('/admin/objectifs/make-classify',{
+                        _token : this.myToken,
+                        evaluation : this.firstStepForm.evaluation
+                    })
                     console.log(response.data)
+                    
                 } catch(error) {
                     if(error.response.data.errors) {
                         let errorTab = error.response.data.errors

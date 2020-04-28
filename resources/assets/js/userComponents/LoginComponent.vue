@@ -4,6 +4,7 @@
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+
         <div class="uk-visible@s">
             <img src="img/background.jpg" class="img-bg" alt="">
             <div class="uk-position-top login-page-content uk-border-rounded">
@@ -57,7 +58,7 @@
                                         </ol>
                                     </div>
                                     <div class="uk-width-1-3@m">
-                                        <img src="img/qr-code.png" alt="">
+                                        <img src="img/qr-code-2.png" alt="">
                                     </div>
                                 </div>
                             </div>

@@ -506,7 +506,7 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 		}
 		return response()->json('done');
 	} catch (AppException $e) {
-		header("Unprocessable entity",true , 422);
+		header("Erreur !",true , 422);
 		die(json_encode($e->getMessage()));
 	}
 }

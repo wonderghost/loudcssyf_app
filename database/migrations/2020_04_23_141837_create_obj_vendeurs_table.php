@@ -20,7 +20,9 @@ class CreateObjVendeursTable extends Migration
 
             $table->float('plafond_reabonnement',8,0);
 
-            $table->enum('classe_vendeur',['A','B','C']);
+            $table->enum('classe_recrutement',['A','B','C']);
+            
+            $table->enum('classe_reabonnement',['A','B','C']);
 
             $table->string('vendeurs');
             

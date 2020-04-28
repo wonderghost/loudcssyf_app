@@ -4,7 +4,10 @@
   <div class="uk-navbar-container uk-box-shadow-small" id="entete" uk-sticky uk-navbar>
     <div class="uk-navbar-left">
         <button class="uk-navbar-item uk-button" uk-toggle="target:#side-nav" uk-icon="icon:menu"></button>
-        <a href="" class="uk-navbar-item uk-logo uk-visible@m">LAYE DISTRIBUTION</a>
+        <!-- <a href="" class="uk-navbar-item uk-logo uk-visible@m">LAYE DISTRIBUTION</a> -->
+        <a href="" class="uk-navbar-item uk-logo uk-visible@m">
+          <img src="/img/layedist.png" width="100" alt="">
+        </a>
     </div>
     <div class="uk-navbar-center uk-visible@m">
       <a class="uk-button uk-button-small border-button" href="/" uk-tooltip="Tableau de bord"><i class="material-icons">home</i></a>
