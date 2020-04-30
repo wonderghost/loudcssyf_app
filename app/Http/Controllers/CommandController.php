@@ -85,9 +85,11 @@ class CommandController extends Controller
 	public function addCommand() {
 		return view('command.new-command');
 	}
-
+// ENVOI D'UNE COMMANDE MATERIEL
 	public function sendCommand(CommandRequest $request) {
 		try {
+			// VERIFIER SI LE REMBOURSEMENT EST EFFECTIF APRES LA PROMO
+			
 			// VERIFIER LA DISPONIBILITE DE L'AFROCASH
 			// verifier la disponibilite du montant dans le compte afrocash
 			$afrocash_account = $this->getAfrocashAccountByUsername($request->user()->username);

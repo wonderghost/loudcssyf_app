@@ -16,7 +16,11 @@ use App\Repertoire;
 use App\Exemplaire;
 use App\RapportVente;
 use App\Promo;
-
+use App\RemboursementPromo;
+use App\Afrocash;
+use App\User;
+use Carbon\Carbon;
+use App\TransactionAfrocash;
 
 
 class VendeurController extends Controller
@@ -104,6 +108,85 @@ class VendeurController extends Controller
         ];
       }
       return response()->json($all);
+    }
+
+    // infos remboursement apres la promo
+
+    public function infosRemboursement(Request $request , Promo $p  , RemboursementPromo $rp) {
+        try {
+            $lastPromo = $p->select()->orderBy('created_at','desc')->first();
+            $remboursementForUser = $rp->where('vendeurs',$request->user()->username)
+                ->where('promo_id',$lastPromo->id)
+                ->first();
+
+            return response()
+                ->json($remboursementForUser);
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    // envoi de la compense promo 
+    public function sendCompensePromo(Request $request , Promo $p , RemboursementPromo $rp , Afrocash $a , User $u , TransactionAfrocash $ta) {
+        try {
+            $validation = $request->validate([
+                'id_promo'  =>  'required'
+            ]);
+
+            $_promo = $p->find($request->input('id_promo'));
+            // recuperation des info de la compense
+            $remboursementPromo = $rp->where('vendeurs',$request->user()->username)
+                ->where('promo_id',$request->input('id_promo'))
+                ->first();
+
+            $afrocash_account = $request->user()
+                ->afroCash()
+                ->first();
+
+            $logistique = $u->where('type','logistique')
+                ->first();
+
+            $logistique_afrocash_account = $a->where('type','courant')
+                ->where('vendeurs',$logistique->username)
+                ->first();
+
+            if($remboursementPromo->montant > 0) {
+                // remboursement
+                $afrocash_account->solde -= $remboursementPromo->montant;
+                $logistique_afrocash_account->solde += $remboursementPromo->montant;
+
+                $ta->compte_debite = $afrocash_account->numero_compte;
+                $ta->compte_credite = $logistique_afrocash_account->numero_compte;
+                $ta->montant = $remboursementPromo->montant;
+                $ta->motif = "Remboursement Promo";
+                $ta->save();
+
+            } else {
+                // compense
+                $afrocash_account->solde -= $remboursementPromo->montant;
+                $logistique_afrocash_account->solde += $remboursementPromo->montant;
+                
+                $ta->compte_debite = $logistique_afrocash_account->numero_compte;
+                $ta->compte_credite = $afrocash_account->numero_compte;
+                $ta->montant = $remboursementPromo->montant;
+                $ta->motif = "Compense Promo";
+                $ta->save();
+            }
+
+            $remboursementPromo->pay_at = Carbon::now();
+
+            
+
+            $afrocash_account->save();
+            $logistique_afrocash_account->save();
+            $remboursementPromo->save();
+
+            return response()->json('done');
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
     }
 
 }

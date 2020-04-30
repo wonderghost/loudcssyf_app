@@ -48,6 +48,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/promo/edit','AdminController@editPromo');
 	Route::post('/admin/promo/interrompre','AdminController@interruptionPromo');
 	Route::get('/admin/promo/get-remboursement','AdminController@getRemboursementForUsers'); // vue sur les remboursements lies a la promo
+	Route::get('/admin/promo/listing','AdminController@getListingPromo'); // Listing de toutes les promos
 	// Depenses
 	Route::post('/admin/afrocash/depenses','AdminController@addDepenses');
 	//
@@ -337,6 +338,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// Infos compense Promo
 	Route::get('/user/promo/infos-compense','VendeurController@getInfosRemboursementPromo')->middleware('vendeur');
 	Route::get('/user/promo/listing-remboursement','VendeurController@getRemboursementListing')->middleware('vendeur');
+	Route::get('/user/promo/infos-remboursement','VendeurController@infosRemboursement')->middleware('vendeur');
+	Route::post('/user/promo/send-compense-promo','VendeurController@sendCompensePromo')->middleware('vendeur');
 	// ON RECUPERE LES DONNEES POUR LES GRAPHIQUES DE PERFORMANCES ET DES OBJECTIFS
 	Route::get('/user/chart/performances/recrutement','ChartController@performanceVendeurRecrutement')->middleware('vendeur');
 	Route::get('/user/chart/performances/reabonnement','ChartController@performanceVendeurReabonnement')->middleware('vendeur');

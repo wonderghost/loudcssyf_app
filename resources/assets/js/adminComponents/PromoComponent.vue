@@ -8,28 +8,32 @@
         <template v-if="theUser == 'v_da' || theUser == 'v_standart'">
             <div class="uk-visible@m uk-margin-top" style="margin-left : 10% !important">
                 <div class="uk-grid-small" uk-grid>
-                    <template v-if="theUser == 'v_da'">
-                        <div class="uk-width-1-6@m">
-                            <label for=""><span uk-icon="icon : settings"></span> Kits Promo</label>
-                            <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.kits}}</span>
+                    <template v-if="theUser == 'v_da' && compensePromo.remboursement !== 0">
+                        <template v-if="compensePromo.promo_status">
+                            <div class="uk-width-1-6@m">
+                                <label for=""><span uk-icon="icon : settings"></span> Kits Promo</label>
+                                <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.kits}}</span>
+                            </div>
+                            <div class="uk-width-1-6@m">
+                                <label for=""><span uk-icon="icon : credit-card"></span> Remboursement</label>
+                                <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.remboursement | numFormat}}</span>
+                            </div>
+                        </template>
+                    </template>
+                    <template v-if="promoStatus">
+                        <div class="uk-width-1-4@m">
+                            <label for="">Promo en cours</label>
+                            <span class="uk-input uk-border-rounded">{{activePromo.intitule}}</span>
                         </div>
                         <div class="uk-width-1-6@m">
-                            <label for=""><span uk-icon="icon : credit-card"></span> Remboursement</label>
-                            <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.remboursement | numFormat}}</span>
+                            <label for="">Debut</label>
+                            <span class="uk-input uk-text-center uk-border-rounded">{{activePromo.debut}}</span>
+                        </div>
+                        <div class="uk-width-1-6@m">
+                            <label for="">Fin</label>
+                            <span class="uk-input uk-text-center uk-border-rounded">{{activePromo.fin}}</span>
                         </div>
                     </template>
-                    <div class="uk-width-1-4@m">
-                        <label for="">Promo en cours</label>
-                        <span class="uk-input uk-border-rounded">{{activePromo.intitule}}</span>
-                    </div>
-                    <div class="uk-width-1-6@m">
-                        <label for="">Debut</label>
-                        <span class="uk-input uk-text-center uk-border-rounded">{{activePromo.debut}}</span>
-                    </div>
-                    <div class="uk-width-1-6@m">
-                        <label for="">Fin</label>
-                        <span class="uk-input uk-text-center uk-border-rounded">{{activePromo.fin}}</span>
-                    </div>
                 </div>
             </div>
             <div class="uk-hidden@m">
@@ -42,18 +46,20 @@
                         <label for=""><span uk-icon="icon : credit-card"></span> Remboursement</label>
                         <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.remboursement | numFormat}}</span>
                     </div>
-                    <div class="uk-width-1-1@s">
-                        <label for="">Promo en cours</label>
-                        <span class="uk-input uk-border-rounded">{{activePromo.intitule}}</span>
-                    </div>
-                    <div class="uk-width-1-1@s">
-                        <label for="">Debut</label>
-                        <span class="uk-input uk-text-center uk-border-rounded">{{activePromo.debut}}</span>
-                    </div>
-                    <div class="uk-width-1-1@s">
-                        <label for="">Fin</label>
-                        <span class="uk-input uk-text-center uk-border-rounded">{{activePromo.fin}}</span>
-                    </div>
+                    <template v-if="promoStatus">
+                        <div class="uk-width-1-1@s">
+                            <label for="">Promo en cours</label>
+                            <span class="uk-input uk-border-rounded">{{activePromo.intitule}}</span>
+                        </div>
+                        <div class="uk-width-1-1@s">
+                            <label for="">Debut</label>
+                            <span class="uk-input uk-text-center uk-border-rounded">{{activePromo.debut}}</span>
+                        </div>
+                        <div class="uk-width-1-1@s">
+                            <label for="">Fin</label>
+                            <span class="uk-input uk-text-center uk-border-rounded">{{activePromo.fin}}</span>
+                        </div>
+                    </template>
                 </div>                        
             </div>
 
@@ -84,10 +90,10 @@
                                     <td>{{r.promo.intitule}}</td>
                                     <td>
                                         <template v-if="r.montant < 0">
-                                            <button class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-text-capitalize" v-if="r.pay_at == '-'"> compensez</button>
+                                            <button uk-toggle="target : #modal-confirm-password" class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-text-capitalize" v-if="r.pay_at == '-'"> compensez</button>
                                         </template>
                                         <template v-else>
-                                            <button class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-text-capitalize" v-if="r.pay_at == '-'"> remboursez</button>
+                                            <button uk-toggle="target : #modal-confirm-password" class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-text-capitalize" v-if="r.pay_at == '-'"> remboursez</button>
                                         </template>
                                     </td>
                                 </tr>
@@ -192,10 +198,30 @@
                                 <h4>Toutes les promos</h4>
                                 <hr class="uk-divider-small">
                                 <!-- // -->
+                                <table class="uk-table uk-table-small uk-table-striped uk-table-hover uk-table-divider">
+                                    <thead>
+                                        <tr>
+                                            <th>Libelle</th>
+                                            <th>Debut</th>
+                                            <th>Fin</th>
+                                            <th>Subvention</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="lp in listingPromo" :key="lp.id">
+                                            <td>{{lp.intitule}}</td>
+                                            <td>{{lp.debut}}</td>
+                                            <td>{{lp.fin}}</td>
+                                            <td>{{lp.subvention}}</td>
+                                            <td>{{lp.status_promo}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </li>
                             <li>
                                 <!-- REMBOURSEMENT -->                                
-                                <h4>Remboursement ({{activePromo.intitule}} , fini le {{activePromo.fin}})</h4>
+                                <h4>Remboursement  ({{activePromo.intitule}} , fini le {{activePromo.fin}})</h4>
                                 <hr class="uk-divider-small">
                                 <!-- // -->
                                 <div class="uk-grid-small" uk-grid>
@@ -232,6 +258,20 @@
             </div>
         </template>
 	<!-- // -->
+    <!-- modal confirm password compense -->
+    <div id="modal-confirm-password" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body">
+            <h4 class="">Regularisation Promo</h4>
+            <form @submit.prevent="sendCompensePromo()">
+                <div class="uk-margin-small">
+                    <label for="">Confirmez votre mot de passe</label>
+                    <input type="password" class="uk-input uk-border-rounded" placeholder="Mot de passe ">
+                </div>
+                <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">ok</button>
+            </form>
+        </div>
+    </div>
+    <!-- // -->
     </div>
 </template>
 <script>
@@ -289,14 +329,31 @@ export default {
                 _token : "",
                 password : "",
             },
-            histoRemboursement : []
+            histoRemboursement : [],
+            listingPromo : []
         }
     },
     methods : {
-        confirmSendRemboursement : async function () {
+        getAllPromo : async function () {
             try {
-                let response = await axios.post('')
-                console.log(response)
+                let response = await axios.get('/admin/promo/listing')
+                this.listingPromo = response.data
+            } catch(error) {
+                alert(error)
+            }
+        },
+        sendCompensePromo : async function () {
+            try {
+                let response = await axios.post('/user/promo/send-compense-promo',{
+                    _token : this.myToken,
+                    id_promo : this.compensePromo.promo_id
+                })
+                if(response.data == 'done') {
+                    UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Operation effectuee avec success !</div>")
+                        .then(function () {
+                            location.reload()
+                        })
+                }
             } catch(error) {
                 alert(error)
             }
@@ -388,6 +445,7 @@ export default {
                     this.activePromo = response.data
                     this.formState = 'edit'
                 }
+                this.getAllPromo()
             } catch(error) {
                 alert(error)
             }

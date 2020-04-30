@@ -60,14 +60,6 @@ class AdminController extends Controller
 
     // TABLEAU DE BORD
     public function dashboard(Request $request) {
-      // $n = new Notifications;
-      // $n->makeId();
-      // $n->titre = "Notification de Connection";
-      // $n->description = "Bonjour ".$request->user()->localisation;
-      // $n->vendeurs = $request->user()->username;
-      // $n->save();
-      // broadcast(new AfrocashNotification($n ,$request->user()));
-      // event(new AfrocashNotification("bonjour"));
       return view('admin.dashboard');
     }
     // RECOUVREMENT 
@@ -867,6 +859,21 @@ class AdminController extends Controller
         } else {
             throw new AppException("Mot de passe invalide !");
         }
+    } catch(AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
+    }
+  }
+
+  public function getListingPromo(Request $request , Promo $p) {
+    try {
+
+        return response()
+          ->json(
+            $p->select()
+              ->orderBy('created_at','desc')
+              ->get()
+            );
     } catch(AppException $e) {
         header("Erreur",true,422);
         die(json_encode($e->getMessage()));

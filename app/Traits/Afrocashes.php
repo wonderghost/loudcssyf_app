@@ -675,10 +675,13 @@ public function getInfosRemboursementPromo(Request $request,
 		
 			#command material promo 
 			$promo = $this->isExistPromo();
+			$promoState = true;
 			if(!$promo) {
 				// throw new AppException("Aucune promo en cours !");
 				$promo = $p->all()->first();
+				$promoState = false;
 			}
+			
 			$terminal = $produit->where('with_serial',1)->first();
 
 			$command_promo = $cm->select('id_commande')
@@ -698,7 +701,8 @@ public function getInfosRemboursementPromo(Request $request,
 			return [
 					'kits'	=>	$commandPromoQuantite - $rapportPromo,
 					'remboursement'	=>	($commandPromoQuantite - $rapportPromo) * $promo->subvention,
-					'promo_id'	=>	$promo->id
+					'promo_id'	=>	$promo->id,
+					'promo_state'	=>	$promoState
 				];
 	}
 	#LISTING DES REMBOURSEMENT LIEES A LA PROMO
@@ -707,33 +711,40 @@ public function getInfosRemboursementPromo(Request $request,
 		User $u,
 		Produits $produit,
 		Livraison $l ,
-		Promo $p , 
+		Promo $p ,
 		commandMaterial $cm , 
 		Exemplaire $e , 
 		RavitaillementVendeur $rv,
 		LivraisonSerialFile $lf,
-		CommandProduit $cp
+		CommandProduit $cp,
+		RemboursementPromo $rp
 		) {
 		try {
 			$vendeurs = $u->whereIn('type',['v_da','v_user'])
 				->get();
 			$data = [];
 			foreach($vendeurs as $key => $value) {
+				
+				$remboursement = $this->getInfosRemboursementByUsers(
+					$value->username,
+					$produit,
+					$l,
+					$p,
+					$cm,
+					$e,
+					$rv,
+					$lf,
+					$cp
+				);
+				$_data = $rp->where('vendeurs',$value->username)
+					->where('promo_id',$remboursement['promo_id'])
+					->first();
+
 				$data[$key] = [
 					'vendeur'	=>	$value->localisation,
-					'remboursement'	=>	$this->getInfosRemboursementByUsers(
-						$value->username,
-						$produit,
-						$l,
-						$p,
-						$cm,
-						$e,
-						$rv,
-						$lf,
-						$cp
-					),
-					'pay_at'	=>	'-',
-					'status'	=>	'-'
+					'remboursement'	=>	$remboursement,
+					'pay_at'	=> $_data->pay_at ? $_data->pay_at : '-',
+					'status'	=>	$_data->pay_at ? 'regler' : '-'
 				];
 				// MISE A JOUR DE LA TABLE DE REMBOURSEMENT
 				$this->updateRemboursementTable($data[$key] , $value->username);
@@ -749,6 +760,7 @@ public function getInfosRemboursementPromo(Request $request,
 	// MISE A JOUR DANS LA TABLE DE REMBOURSEMENT
 
 	public function updateRemboursementTable($remboursementData , $vendeur) {
+
 		$_rm = RemboursementPromo::where('vendeurs',$vendeur)
 			->where('promo_id',$remboursementData['remboursement']['promo_id'])
 			->first();
@@ -764,7 +776,9 @@ public function getInfosRemboursementPromo(Request $request,
 			$_rm->montant = $remboursementData['remboursement']['remboursement'];
 			$_rm->save();
 		}
+
 	}
+
 	// LISTING TABLE REMBOURSEMENT PROMO
 	public function getRemboursementListing(Request $request , RemboursementPromo $rp) {
 		try {
@@ -775,7 +789,7 @@ public function getInfosRemboursementPromo(Request $request,
 					'kits'	=>	$value->kits,
 					'montant'	=>	$value->montant,
 					'pay_at'	=>	$value->pay_at ? $value->pay_at : '-',
-					'status'	=>	'-',
+					'status'	=>	$value->pay_at ? 'regler' : '-',
 					'promo'	=>	$value->promos()
 				];
 			}
