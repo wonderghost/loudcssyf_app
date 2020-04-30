@@ -90,10 +90,10 @@
                                     <td>{{r.promo.intitule}}</td>
                                     <td>
                                         <template v-if="r.montant < 0">
-                                            <button uk-toggle="target : #modal-confirm-password" class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-text-capitalize" v-if="r.pay_at == '-'"> compensez</button>
+                                            <button @click="promoIdToCompense = r.promo.id" uk-toggle="target : #modal-confirm-password" class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-text-capitalize" v-if="r.pay_at == '-'"> compensez</button>
                                         </template>
                                         <template v-else>
-                                            <button uk-toggle="target : #modal-confirm-password" class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-text-capitalize" v-if="r.pay_at == '-'"> remboursez</button>
+                                            <button @click="promoIdToCompense = r.promo.id" uk-toggle="target : #modal-confirm-password" class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-text-capitalize" v-if="r.pay_at == '-'"> remboursez</button>
                                         </template>
                                     </td>
                                 </tr>
@@ -241,7 +241,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="r in remboursementPromo">
+                                        <tr v-for="r in remboursementPromo" :key="r.id">
                                             <td>{{r.vendeur}}</td>
                                             <td>{{r.remboursement.kits}}</td>
                                             <td>{{r.remboursement.remboursement | numFormat}}</td>
@@ -265,7 +265,7 @@
             <form @submit.prevent="sendCompensePromo()">
                 <div class="uk-margin-small">
                     <label for="">Confirmez votre mot de passe</label>
-                    <input type="password" class="uk-input uk-border-rounded" placeholder="Mot de passe ">
+                    <input type="password" v-model="passwordConfirmation" class="uk-input uk-border-rounded" placeholder="Mot de passe ">
                 </div>
                 <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">ok</button>
             </form>
@@ -330,7 +330,9 @@ export default {
                 password : "",
             },
             histoRemboursement : [],
-            listingPromo : []
+            listingPromo : [],
+            passwordConfirmation : "",
+            promoIdToCompense : ""
         }
     },
     methods : {
@@ -345,9 +347,13 @@ export default {
         },
         sendCompensePromo : async function () {
             try {
+                this.isLoading = true
+                UIkit.modal($("#modal-confirm-password")).hide()
+
                 let response = await axios.post('/user/promo/send-compense-promo',{
                     _token : this.myToken,
-                    id_promo : this.compensePromo.promo_id
+                    id_promo : this.promoIdToCompense,
+                    password : this.passwordConfirmation
                 })
                 if(response.data == 'done') {
                     UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Operation effectuee avec success !</div>")
@@ -356,7 +362,19 @@ export default {
                         })
                 }
             } catch(error) {
-                alert(error)
+                this.isLoading = false
+                UIkit.modal($("#modal-confirm-password")).show()
+                if(error.response.data.errors) {
+                    let errorTab = error.response.data.errors
+                    for (var prop in errorTab) {
+                    // this.errors.push(errorTab[prop][0])
+                        alert(errorTab[prop][0])
+                    }
+                } else {
+                    // this.errors.push(error.response.data)
+                    // UIkit.modal.alert(error.response.data)
+                    alert(error.response.data)
+                }
             }
         },
         abortPromo : async function () {

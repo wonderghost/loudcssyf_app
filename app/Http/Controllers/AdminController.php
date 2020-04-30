@@ -59,7 +59,32 @@ class AdminController extends Controller
     }
 
     // TABLEAU DE BORD
-    public function dashboard(Request $request) {
+    public function dashboard(Request $request , Promo $p) {
+      // VERIFICATION ET DESACTIVATION DE LA PROMO
+      # recuperation de la promo active
+      $promoActive = $p->where('status_promo','actif')->first();
+      if($promoActive) {
+        #verifier la date de fin de la promo
+        
+        $today = Carbon::now();
+
+        $promo_debut_to_carbon_date = new Carbon($promoActive->debut);
+
+        $promo_fin_to_carbon_date = new Carbon($promoActive->fin);
+
+        if($promo_fin_to_carbon_date >= $today && $today >= $promo_debut_to_carbon_date) {
+          // la promo n'est pas encore fini
+        } else {
+            // fin de la promo
+            $promoActive->status_promo = 'inactif';
+            $promoActive->save();
+            return redirect('/admin')->withMessage("La promo prends fin maintenant !");
+        }
+      }
+      
+      // dump($today);
+      // dd($promoActive);
+      // 
       return view('admin.dashboard');
     }
     // RECOUVREMENT 

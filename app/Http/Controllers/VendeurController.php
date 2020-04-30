@@ -21,7 +21,8 @@ use App\Afrocash;
 use App\User;
 use Carbon\Carbon;
 use App\TransactionAfrocash;
-
+use Illuminate\Support\Facades\Hash;
+use App\Exceptions\AppException;
 
 class VendeurController extends Controller
 {
@@ -131,8 +132,17 @@ class VendeurController extends Controller
     public function sendCompensePromo(Request $request , Promo $p , RemboursementPromo $rp , Afrocash $a , User $u , TransactionAfrocash $ta) {
         try {
             $validation = $request->validate([
-                'id_promo'  =>  'required'
+                'id_promo'  =>  'required',
+                'password'  =>  'required'
+            ],[
+                'required'  =>  'le champ :attribute requis!'
             ]);
+            
+            // validation du mot de passe 
+            if(!Hash::check($request->input('password'),$request->user()->password)) {
+                throw new AppException("Mot de passe Invalide!");
+            }
+
 
             $_promo = $p->find($request->input('id_promo'));
             // recuperation des info de la compense

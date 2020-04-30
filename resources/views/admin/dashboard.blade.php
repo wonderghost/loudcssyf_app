@@ -3,6 +3,12 @@
 @section('content')
 <div class="uk-section uk-section-default uk-padding-small uk-margin-remove">
   <div class="uk-container uk-container-large">
+  @if(session('message'))
+  <div class="uk-alert-info uk-border-rounded uk-box-shadow-small-hover" uk-alert>
+    <a href="" class="uk-alert-close" uk-close></a>
+    <p>{{session("message")}}</p>
+  </div>
+  @endif
     <ul class="dash-li">
       <li class="uk-button uk-button-small uk-border-rounded uk-button-default" id="btn-dash">
         <a>

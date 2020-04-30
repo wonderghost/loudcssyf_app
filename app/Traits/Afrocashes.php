@@ -739,18 +739,20 @@ public function getInfosRemboursementPromo(Request $request,
 				$_data = $rp->where('vendeurs',$value->username)
 					->where('promo_id',$remboursement['promo_id'])
 					->first();
-
-				$data[$key] = [
-					'vendeur'	=>	$value->localisation,
-					'remboursement'	=>	$remboursement,
-					'pay_at'	=> $_data->pay_at ? $_data->pay_at : '-',
-					'status'	=>	$_data->pay_at ? 'regler' : '-'
-				];
+				if($_data) {
+					$data[$key] = [
+						'vendeur'	=>	$value->localisation,
+						'remboursement'	=>	$remboursement,
+						'pay_at'	=> $_data->pay_at ? $_data->pay_at : '-',
+						'status'	=>	$_data->pay_at ? 'regler' : '-'
+					];
+				}
 				// MISE A JOUR DE LA TABLE DE REMBOURSEMENT
 				$this->updateRemboursementTable($data[$key] , $value->username);
 			}
 			return response()
 				->json($data);
+				// ->json($_data);
 		} catch(AppException $e) {
 			header("Erreur",true,422);
 			die(json_encode($e->getMessage()));

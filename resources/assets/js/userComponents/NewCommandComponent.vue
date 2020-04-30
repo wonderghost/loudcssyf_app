@@ -236,6 +236,10 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 } else {
                     this.remboursementPromoState = false
                 }
+
+                if(this.typeUser == 'v_standart') {
+                  this.remboursementPromoState = false
+                }
             } catch(error) {
                 alert(error)
             }

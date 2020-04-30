@@ -111,7 +111,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/block-user','AdminController@blockUser');
 	Route::post('/admin/unblock-user','AdminController@unblockUser');
 	Route::get('/admin/history-depot','LogistiqueController@historyDepot');
-	// Route::post('/admin/history-depot','LogistiqueController@getHistoryDepot');
+	
 	// Reinitialiser un utilisateur
 	Route::post('/admin/reset-user','AdminController@resetUser');
 	// liste des depots
@@ -127,7 +127,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	// ##INVENTAIRE DANS LES DEPOTS /user/inventory/depot
 	Route::get('/admin/inventory/depot','LogistiqueController@depotList');
 	Route::get('/admin/inventory/depot/serialNumber','LogistiqueController@getSerialNumberForDepot');
-	// Route::get('/admin/inventory/all-credit-vendeurs','CreditController@')
+	
 	// Editer les infos materiels
 	Route::get('/admin/edit-material/{reference}','LogistiqueController@editMaterial');
 	Route::post('/admin/edit-material/{reference}','LogistiqueController@makeEditMaterial');
