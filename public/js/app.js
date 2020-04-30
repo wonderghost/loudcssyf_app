@@ -2367,6 +2367,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2390,6 +2401,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         vendeurs: "",
         date: "",
         montant_ttc: 0,
+        promo_id: "",
         serial_number: [],
         type_credit: "cga"
       },
@@ -2445,36 +2457,36 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                this.isLoading = true;
+                // this.isLoading = true
                 this.formData._token = this.myToken;
-                _context2.prev = 2;
+                _context2.prev = 1;
 
                 if (!(type == 'recrutement')) {
-                  _context2.next = 16;
+                  _context2.next = 15;
                   break;
                 }
 
                 if (!(this.typeUser == 'admin')) {
-                  _context2.next = 10;
+                  _context2.next = 9;
                   break;
                 }
 
-                _context2.next = 7;
+                _context2.next = 6;
                 return axios.post('/admin/send-rapport/recrutement', this.formData);
 
-              case 7:
+              case 6:
                 response = _context2.sent;
-                _context2.next = 13;
+                _context2.next = 12;
                 break;
 
-              case 10:
-                _context2.next = 12;
+              case 9:
+                _context2.next = 11;
                 return axios.post('/user/send-rapport/recrutement', this.formData);
 
+              case 11:
+                response = _context2.sent;
+
               case 12:
-                response = _context2.sent;
-
-              case 13:
                 if (response.data == 'done') {
                   this.isLoading = false;
                   UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Rapport ajoute :)</div>").then(function () {
@@ -2482,81 +2494,81 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   });
                 }
 
-                _context2.next = 39;
-                break;
-
-              case 16:
-                if (!(type == 'reabonnement')) {
-                  _context2.next = 29;
-                  break;
-                }
-
-                if (!(this.typeUser == 'admin')) {
-                  _context2.next = 23;
-                  break;
-                }
-
-                _context2.next = 20;
-                return axios.post('/admin/send-rapport/reabonnement', this.formData);
-
-              case 20:
-                response = _context2.sent;
-                _context2.next = 26;
-                break;
-
-              case 23:
-                _context2.next = 25;
-                return axios.post('/user/send-rapport/reabonnement', this.formData);
-
-              case 25:
-                response = _context2.sent;
-
-              case 26:
-                if (response.data == 'done') {
-                  this.isLoading = false;
-                  UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Rapport ajoute :)</div>").then(function () {
-                    location.reload();
-                  });
-                }
-
-                _context2.next = 39;
-                break;
-
-              case 29:
-                if (!(this.typeUser == 'admin')) {
-                  _context2.next = 35;
-                  break;
-                }
-
-                _context2.next = 32;
-                return axios.post('/admin/send-rapport/migration', this.formData);
-
-              case 32:
-                response = _context2.sent;
                 _context2.next = 38;
                 break;
 
-              case 35:
-                _context2.next = 37;
-                return axios.post('/user/send-rapport/migration', this.formData);
+              case 15:
+                if (!(type == 'reabonnement')) {
+                  _context2.next = 28;
+                  break;
+                }
 
-              case 37:
+                if (!(this.typeUser == 'admin')) {
+                  _context2.next = 22;
+                  break;
+                }
+
+                _context2.next = 19;
+                return axios.post('/admin/send-rapport/reabonnement', this.formData);
+
+              case 19:
+                response = _context2.sent;
+                _context2.next = 25;
+                break;
+
+              case 22:
+                _context2.next = 24;
+                return axios.post('/user/send-rapport/reabonnement', this.formData);
+
+              case 24:
                 response = _context2.sent;
 
-              case 38:
+              case 25:
+                if (response.data == 'done') {
+                  this.isLoading = false;
+                  UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Rapport ajoute :)</div>").then(function () {
+                    location.reload();
+                  });
+                }
+
+                _context2.next = 38;
+                break;
+
+              case 28:
+                if (!(this.typeUser == 'admin')) {
+                  _context2.next = 34;
+                  break;
+                }
+
+                _context2.next = 31;
+                return axios.post('/admin/send-rapport/migration', this.formData);
+
+              case 31:
+                response = _context2.sent;
+                _context2.next = 37;
+                break;
+
+              case 34:
+                _context2.next = 36;
+                return axios.post('/user/send-rapport/migration', this.formData);
+
+              case 36:
+                response = _context2.sent;
+
+              case 37:
                 if (response.data == 'done') {
                   UIkit.modal.alert("<div class='uk-alert-success uk-border-rounded' uk-alert>Rapport ajoute :)</div>").then(function () {
                     location.reload();
                   });
                 }
 
-              case 39:
-                _context2.next = 45;
+              case 38:
+                _context2.next = 44;
                 break;
 
-              case 41:
-                _context2.prev = 41;
-                _context2.t0 = _context2["catch"](2);
+              case 40:
+                _context2.prev = 40;
+                _context2.t0 = _context2["catch"](1);
                 this.isLoading = false;
 
                 if (_context2.t0.response.data.errors) {
@@ -2569,12 +2581,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   this.errors.push(_context2.t0.response.data);
                 }
 
-              case 45:
+              case 44:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[2, 41]]);
+        }, _callee2, this, [[1, 40]]);
       }));
 
       function sendRapport(_x) {
@@ -2590,6 +2602,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     typeUser: function typeUser() {
       return this.$store.state.typeUser;
+    },
+    listingPromo: function listingPromo() {
+      return this.$store.state.listingPromo;
     }
   }
 });
@@ -5832,21 +5847,22 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 3:
                 response = _context.sent;
+                this.$store.commit('setListingPromo', response.data);
                 this.listingPromo = response.data;
-                _context.next = 10;
+                _context.next = 11;
                 break;
 
-              case 7:
-                _context.prev = 7;
+              case 8:
+                _context.prev = 8;
                 _context.t0 = _context["catch"](0);
                 alert(_context.t0);
 
-              case 10:
+              case 11:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this, [[0, 7]]);
+        }, _callee, this, [[0, 8]]);
       }));
 
       function getAllPromo() {
@@ -55980,9 +55996,61 @@ var render = function() {
                 ]),
                 _vm._v(" "),
                 _vm._l(_vm.users, function(u) {
-                  return _c("option", { domProps: { value: u.username } }, [
-                    _vm._v(_vm._s(u.localisation))
-                  ])
+                  return _c(
+                    "option",
+                    { key: u.username, domProps: { value: u.username } },
+                    [_vm._v(_vm._s(u.localisation))]
+                  )
+                })
+              ],
+              2
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "uk-margin-small" }, [
+            _vm._m(2),
+            _vm._v(" "),
+            _c(
+              "select",
+              {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.formData.promo_id,
+                    expression: "formData.promo_id"
+                  }
+                ],
+                staticClass: "uk-select uk-border-rounded",
+                on: {
+                  change: function($event) {
+                    var $$selectedVal = Array.prototype.filter
+                      .call($event.target.options, function(o) {
+                        return o.selected
+                      })
+                      .map(function(o) {
+                        var val = "_value" in o ? o._value : o.value
+                        return val
+                      })
+                    _vm.$set(
+                      _vm.formData,
+                      "promo_id",
+                      $event.target.multiple ? $$selectedVal : $$selectedVal[0]
+                    )
+                  }
+                }
+              },
+              [
+                _c("option", { attrs: { value: "" } }, [
+                  _vm._v(" -- Promo --")
+                ]),
+                _vm._v(" "),
+                _vm._l(_vm.listingPromo, function(lp) {
+                  return _c(
+                    "option",
+                    { key: lp.id, domProps: { value: lp.id } },
+                    [_vm._v(_vm._s(lp.intitule))]
+                  )
                 })
               ],
               2
@@ -56136,7 +56204,7 @@ var render = function() {
               }),
               _vm._v(" "),
               _c("div", { staticClass: "uk-margin-small" }, [
-                _vm._m(2),
+                _vm._m(3),
                 _vm._v(" "),
                 _c("input", {
                   directives: [
@@ -56189,7 +56257,7 @@ var render = function() {
             },
             [
               _c("div", { staticClass: "uk-margin-small" }, [
-                _vm._m(3),
+                _vm._m(4),
                 _vm._v(" "),
                 _c("input", {
                   directives: [
@@ -56214,7 +56282,7 @@ var render = function() {
                 })
               ]),
               _vm._v(" "),
-              _vm._m(4),
+              _vm._m(5),
               _vm._v(" "),
               _c(
                 "button",
@@ -56348,6 +56416,26 @@ var staticRenderFns = [
       _c("span", { attrs: { "uk-icon": "icon : users" } }),
       _vm._v(" Vendeurs")
     ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass: "uk-alert-info uk-border-rounded",
+        attrs: { "uk-alert": "" }
+      },
+      [
+        _c("p", [
+          _c("span", { attrs: { "uk-icon": "icon : info" } }),
+          _vm._v(
+            " Ce champs n'est pas obligatoire . activez le en cas de rapport promo !\n              "
+          )
+        ])
+      ]
+    )
   },
   function() {
     var _vm = this
@@ -60504,7 +60592,7 @@ var render = function() {
                     _vm.theUser == "v_da" &&
                     _vm.compensePromo.remboursement !== 0
                       ? [
-                          _vm.compensePromo.promo_status
+                          _vm.promoStatus
                             ? [
                                 _c("div", { staticClass: "uk-width-1-6@m" }, [
                                   _vm._m(0),
@@ -116600,9 +116688,13 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     userName: document.querySelector("input[id=username]") ? document.querySelector("input[id=username]").value : '',
     rapportVentes: [],
     payComissionList: [],
-    serialNumberList: []
+    serialNumberList: [],
+    listingPromo: []
   },
   mutations: {
+    setListingPromo: function setListingPromo(state, list) {
+      state.listingPromo = list;
+    },
     searchText: function searchText(state, word) {
       state.searchState = true;
       state.searchText = word;

@@ -13676,9 +13676,13 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     userName: document.querySelector("input[id=username]") ? document.querySelector("input[id=username]").value : '',
     rapportVentes: [],
     payComissionList: [],
-    serialNumberList: []
+    serialNumberList: [],
+    listingPromo: []
   },
   mutations: {
+    setListingPromo: function setListingPromo(state, list) {
+      state.listingPromo = list;
+    },
     searchText: function searchText(state, word) {
       state.searchState = true;
       state.searchText = word;

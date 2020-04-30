@@ -58,6 +58,7 @@ Trait Rapports {
 	// ENREGISTREMENT D'UN RAPPORT
 	public function sendRapport(Request $request,$slug , Exemplaire $e ,RapportPromo $rp , Promo $p , StockVendeur $sv) {
 		try {
+				
 		if($slug) {
 
 				switch ($slug) {
@@ -127,6 +128,7 @@ Trait Rapports {
 							$tmp_promo = $this->isExistPromo();
 							
 							if($tmp_promo) {
+								// la promo est active
 								$promo_fin_to_carbon_date = new Carbon($tmp_promo->fin);
 								$promo_debut_to_carbon_date = new Carbon($tmp_promo->debut);
 								$rapport_date_to_carbon_date = new Carbon($request->input('date'));
@@ -144,7 +146,40 @@ Trait Rapports {
 									$rapport->promo = $tmp_promo->id;
 									$rp->save();
 								}
+							} else {
+								// la promo n'est pas active
+								if($request->input('promo_id')) {
+									// le rapport appartien a une promo
+									$thePromo = $p->find($request->input('promo_id'));
+
+									$promo_fin_to_carbon_date = new Carbon($thePromo->fin);
+
+									$promo_debut_to_carbon_date = new Carbon($thePromo->debut);
+
+									$rapport_date_to_carbon_date = new Carbon($request->input('date'));
+
+									if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
+										// le rapport est en mode promo
+										// AJOUT DU RAPPORT PROMO
+										do {
+											$rp->id =  Str::random(10).'_'.time();
+										} while ($rp->isExistId());
+	
+										$rp->quantite_a_compenser = $request->input('quantite_materiel');
+										$rp->compense_espece = $request->input('quantite_materiel') * $thePromo->subvention;
+										$rp->promo = $thePromo->id;
+										$rapport->id_rapport_promo = $rp->id;
+
+										$rapport->promo = $thePromo->id;
+
+										$rp->save();
+									} else {
+										throw new AppException("La date choisi n'est pas inclut dans la periode de promo !");
+									}
+
+								}
 							}
+
 							$rapport->save();
 
 							// CHANGEMENT DE STATUS DES MATERIELS

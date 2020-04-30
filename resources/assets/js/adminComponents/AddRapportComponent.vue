@@ -23,7 +23,18 @@
               <label for=""> <span uk-icon="icon : users"></span> Vendeurs</label>
               <select class="uk-select uk-border-rounded" v-model="formData.vendeurs">
                 <option value="">--Choisir un Vendeurs--</option>
-                <option v-for="u in users" :value="u.username">{{u.localisation}}</option>
+                <option v-for="u in users" :key="u.username" :value="u.username">{{u.localisation}}</option>
+              </select>
+            </div>
+            <div class="uk-margin-small">
+              <div class="uk-alert-info uk-border-rounded" uk-alert>
+                <p>
+                  <span uk-icon="icon : info"></span> Ce champs n'est pas obligatoire . activez le en cas de rapport promo !
+                </p>
+              </div>
+              <select v-model="formData.promo_id" class="uk-select uk-border-rounded">
+                <option value=""> -- Promo --</option>
+                <option :value="lp.id" v-for="lp in listingPromo" :key="lp.id">{{lp.intitule}}</option>
               </select>
             </div>
           </div>
@@ -118,10 +129,11 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           vendeurs : "",
           date : "",
           montant_ttc : 0,
+          promo_id : "",
           serial_number : [],
           type_credit : "cga"
         },
-        errors : []
+        errors : [],
       }
     },
     methods : {
@@ -135,7 +147,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         }
       },
       sendRapport : async function (type) {
-        this.isLoading = true
+        // this.isLoading = true
 
         this.formData._token = this.myToken
         try {
@@ -202,6 +214,9 @@ import 'vue-loading-overlay/dist/vue-loading.css';
       },
       typeUser () {
         return this.$store.state.typeUser
+      },
+      listingPromo () {
+        return this.$store.state.listingPromo
       }
     }
   }

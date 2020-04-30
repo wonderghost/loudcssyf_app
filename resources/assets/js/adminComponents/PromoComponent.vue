@@ -9,7 +9,7 @@
             <div class="uk-visible@m uk-margin-top" style="margin-left : 10% !important">
                 <div class="uk-grid-small" uk-grid>
                     <template v-if="theUser == 'v_da' && compensePromo.remboursement !== 0">
-                        <template v-if="compensePromo.promo_status">
+                        <template v-if="promoStatus">
                             <div class="uk-width-1-6@m">
                                 <label for=""><span uk-icon="icon : settings"></span> Kits Promo</label>
                                 <span class="uk-text-center uk-input uk-border-rounded">{{compensePromo.kits}}</span>
@@ -337,6 +337,7 @@ export default {
         getAllPromo : async function () {
             try {
                 let response = await axios.get('/admin/promo/listing')
+                this.$store.commit('setListingPromo',response.data)
                 this.listingPromo = response.data
             } catch(error) {
                 alert(error)

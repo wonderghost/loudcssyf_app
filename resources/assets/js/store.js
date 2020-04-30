@@ -24,8 +24,12 @@ const store = new Vuex.Store({
     rapportVentes : [],
     payComissionList : [],
     serialNumberList : [],
+    listingPromo : []
   },
   mutations : {
+    setListingPromo (state, list) {
+      state.listingPromo = list
+    },
     searchText (state , word) {
       state.searchState = true
       state.searchText = word
