@@ -28,6 +28,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Crypt;
 use App\StockVendeur;
+use App\Stock;
 use App\StockPrime;
 use App\Exemplaire;
 use App\Credit;
@@ -899,6 +900,66 @@ class AdminController extends Controller
               ->orderBy('created_at','desc')
               ->get()
             );
+    } catch(AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
+    }
+  }
+  // ############################# TRANSFERT MATERIEL D'UN DEPOT A UN AUTRE ##################################################################
+  
+  public function transfertMaterialToOtherDepot(Request $request,Produits $p , Exemplaire $e , StockPrime $sd , Stock $s) {
+    try {
+        $validation = $request->validate([
+          'origine' =>  'required|exists:depots,localisation',
+          'destination' =>  'required|exists:depots,localisation',
+          'quantite'  =>  'required|min:1|max:10',
+          'serials.*' =>  'required|exists:exemplaire,serial_number'
+        ],[
+          'required' =>  'Champ :attribute requis',
+          'exists'  =>  ':attribute n\'existe pas dans le system'
+        ]);
+
+        if($request->input("destination") == $request->input('origine')) {
+          throw new AppException("Operation indisponible !");
+        }
+
+        // verification du status des materiels 
+        foreach($request->input('serials') as $serial) {
+          $_serial = $e->find($serial);
+          if(!is_null($_serial->vendeurs)) {
+            throw new AppException("materiel `".$serial."` deja attribue!");
+          }
+
+          // verifier si le materiel appartien au depot choisi
+          $stockDepot = $s->where('exemplaire',$serial)
+            ->where('depot',$request->input('origine'))
+            ->first();
+          
+            if(!$stockDepot) {
+              throw new AppException("materiel `".$serial."` inexistant dans le depot choisi!");
+            }
+        }
+
+        #traitement
+        // recuperation du stock du depot origine pour  agir sur la quantite
+
+        $originStock = $sd->where('depot',$request->input('origine'))
+          ->where('produit',$p->where('with_serial',1)->first()->reference)
+          ->first();
+
+        // recuperation du stock du depot de destination pour
+
+        $destinationStock = $sd->where('depot',$request->input('destination'))
+          ->where('produit',$p->where("with_serial",1)->first()->reference)
+          ->first();
+        
+        
+
+
+
+
+        return response()
+          ->json([$originStock,$destinationStock]);
     } catch(AppException $e) {
         header("Erreur",true,422);
         die(json_encode($e->getMessage()));

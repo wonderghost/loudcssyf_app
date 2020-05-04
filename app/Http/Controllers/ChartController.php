@@ -121,18 +121,21 @@ class ChartController extends Controller
                                     ->whereMonth('date_rapport',$value)
                                     ->where('type',$type)
                                     ->where('vendeurs',$vendeur)
+                                    ->where('state','unaborted')
                                     ->sum('quantite');
                     // Le cumule du montant TTC
                     $ttc = $r->whereYear('date_rapport',date('Y'))
                                 ->whereMonth('date_rapport',$value) 
                                 ->where('type',$type)
                                 ->where('vendeurs',$vendeur)
+                                ->where('state','unaborted')
                                 ->sum('montant_ttc');
                     // cumule des commissions
                     $comission = $r->whereYear('date_rapport',date('Y'))
                                     ->whereMonth('date_rapport',$value)
                                     ->where('type',$type)
                                     ->where('vendeurs',$vendeur)
+                                    ->where('state','unaborted')
                                     ->sum('commission');
                     $data[$i++] = [
                         'date' =>  $key,
@@ -148,16 +151,19 @@ class ChartController extends Controller
                     $qt = $r->whereYear('date_rapport',date('Y'))
                                     ->whereMonth('date_rapport',$value)
                                     ->where('type',$type)
+                                    ->where('state','unaborted')
                                     ->sum('quantite');
                     // Le cumule du montant TTC
                     $ttc = $r->whereYear('date_rapport',date('Y'))
                                 ->whereMonth('date_rapport',$value) 
                                 ->where('type',$type)
+                                ->where('state','unaborted')
                                 ->sum('montant_ttc');
                     // cumule des commissions
                     $comission = $r->whereYear('date_rapport',date('Y'))
                                     ->whereMonth('date_rapport',$value)
                                     ->where('type',$type)
+                                    ->where('state','unaborted')
                                     ->sum('commission');
                     $data[$i++] = [
                         'date' =>  $key,

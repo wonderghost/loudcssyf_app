@@ -124,6 +124,8 @@ Route::middleware(['auth','admin'])->group(function () {
 	# transfert de materiel d'un vendeur a un autre
 	Route::post('/admin/inventory/transfert-material','AdminController@transfertMaterialToOtherUser');
 	Route::post('/admin/inventory/replace-material-defectuous','AdminController@replaceMaterialDefectuous');
+	#transfert materiel d'un depot a un autre
+	Route::post('/admin/inventory-depot/transfert-material','AdminController@transfertMaterialToOtherDepot');
 	// ##INVENTAIRE DANS LES DEPOTS /user/inventory/depot
 	Route::get('/admin/inventory/depot','LogistiqueController@depotList');
 	Route::get('/admin/inventory/depot/serialNumber','LogistiqueController@getSerialNumberForDepot');

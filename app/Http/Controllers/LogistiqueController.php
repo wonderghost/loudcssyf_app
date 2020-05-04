@@ -155,8 +155,6 @@ class LogistiqueController extends Controller
 
             return response()->json('done');
 
-
-
             #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
           } else {

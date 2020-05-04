@@ -32,4 +32,5 @@ class Exemplaire extends Model
     public function rapport() {
       return $this->belongsTo('App\RapportVente','rapports','id_rapport')->first();
     }
+
 }

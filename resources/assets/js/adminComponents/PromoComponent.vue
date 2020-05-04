@@ -89,11 +89,13 @@
                                     <td>{{r.status}}</td>
                                     <td>{{r.promo.intitule}}</td>
                                     <td>
-                                        <template v-if="r.montant < 0">
-                                            <button @click="promoIdToCompense = r.promo.id" uk-toggle="target : #modal-confirm-password" class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-text-capitalize" v-if="r.pay_at == '-'"> compensez</button>
-                                        </template>
-                                        <template v-else>
-                                            <button @click="promoIdToCompense = r.promo.id" uk-toggle="target : #modal-confirm-password" class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-text-capitalize" v-if="r.pay_at == '-'"> remboursez</button>
+                                        <template v-if="r.kits != 0">
+                                            <template v-if="r.montant < 0">
+                                                <button @click="promoIdToCompense = r.promo.id" uk-toggle="target : #modal-confirm-password" class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-text-capitalize" v-if="r.pay_at == '-'"> compensez</button>
+                                            </template>
+                                            <template v-else>
+                                                <button @click="promoIdToCompense = r.promo.id" uk-toggle="target : #modal-confirm-password" class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-text-capitalize" v-if="r.pay_at == '-'"> remboursez</button>
+                                            </template>
                                         </template>
                                     </td>
                                 </tr>

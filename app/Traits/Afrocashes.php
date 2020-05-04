@@ -686,6 +686,7 @@ public function getInfosRemboursementPromo(Request $request,
 
 			$command_promo = $cm->select('id_commande')
 				->where('vendeurs',$vendeur)
+				->whereIn('status',['confirmed','unconfirmed'])
 				->where('promos_id',$promo->id)->get();
 
 			$commandPromoQuantite = $cp->whereIn('commande',$command_promo)
@@ -736,9 +737,12 @@ public function getInfosRemboursementPromo(Request $request,
 					$lf,
 					$cp
 				);
+				
 				$_data = $rp->where('vendeurs',$value->username)
 					->where('promo_id',$remboursement['promo_id'])
 					->first();
+
+				
 				if($_data) {
 					$data[$key] = [
 						'vendeur'	=>	$value->localisation,
@@ -746,9 +750,18 @@ public function getInfosRemboursementPromo(Request $request,
 						'pay_at'	=> $_data->pay_at ? $_data->pay_at : '-',
 						'status'	=>	$_data->pay_at ? 'regler' : '-'
 					];
+				} else {
+					$data[$key] = [
+						'vendeur'	=>	$value->localisation,
+						'remboursement'	=>	$remboursement,
+						'pay_at'	=>	'',
+						'status'	=>	''
+					];
 				}
 				// MISE A JOUR DE LA TABLE DE REMBOURSEMENT
-				$this->updateRemboursementTable($data[$key] , $value->username);
+				if($data) {
+					$this->updateRemboursementTable($data[$key] , $value->username);
+				}
 			}
 			return response()
 				->json($data);
@@ -762,7 +775,7 @@ public function getInfosRemboursementPromo(Request $request,
 	// MISE A JOUR DANS LA TABLE DE REMBOURSEMENT
 
 	public function updateRemboursementTable($remboursementData , $vendeur) {
-
+		
 		$_rm = RemboursementPromo::where('vendeurs',$vendeur)
 			->where('promo_id',$remboursementData['remboursement']['promo_id'])
 			->first();

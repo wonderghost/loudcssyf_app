@@ -120,6 +120,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               var response = await axios.get('/user/inventory/depot')
             }
             this.materials = response.data
+            this.$store.commit('setMaterials',response.data)
           } catch (e) {
               alert(e)
           }
