@@ -19,8 +19,9 @@ class CreateObjectifsTable extends Migration
             $table->string('name');
             $table->date('debut');
             $table->date('fin');
-            $table->enum('evaluation',[3,6,9,12])->default(3);
-            $table->float('marge_arriere',8,0)->default(0.02);
+            // $table->enum('evaluation',['3','6','9','12'])->default('3');
+            $table->unsignedBigInteger('evaluation')->default(3);
+            $table->float('marge_arriere',8,0)->default(0.01);
             $table->timestamps();
         });
     }

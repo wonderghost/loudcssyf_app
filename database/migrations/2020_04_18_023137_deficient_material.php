@@ -47,6 +47,6 @@ class DeficientMaterial extends Migration
     public function down()
     {
         //
-        Schema::dropIfExists('deficiant_material');
+        Schema::dropIfExists('deficient_material');
     }
 }

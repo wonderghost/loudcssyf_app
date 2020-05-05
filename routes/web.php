@@ -15,7 +15,11 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('tmp','AdminController@emailTest');
 	// @@@ Objectifs router@@@
 	Route::post('/admin/objectifs/make-classify','ObjectifController@classificationVendeurByCA');
-	Route::post('/admin/objectifs/first-step-validation','ObjectifController@firstStepValidation');
+	Route::post('/admin/objectifs/finalise-make-objectif','ObjectifController@finaliseMakeObjectif');
+	#listing de tous les objectifs sauvegarde
+	Route::get('/admin/objectifs/list-all','ObjectifController@AllObjectifs');
+
+	// Route::post('/admin/objectifs/first-step-validation','ObjectifController@firstStepValidation');
 	// recouvrement coursier
 	Route::get('/admin/recouvrement/operations','RecouvrementController@operations');
 	Route::get('/admin/recouvrement/all-transactions','RecouvrementController@allTransactions');

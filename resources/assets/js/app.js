@@ -45,6 +45,8 @@ Vue.component('perform-objectif',require('./adminComponents/PerformObjectifCompo
 Vue.component('historique-ravitaillement-depot',require('./adminComponents/HistoriqueRavitaillementDepot.vue').default)
 Vue.component('objectif-component',require('./adminComponents/ObjectifComponent.vue').default)
 Vue.component('transfert-material-depot',require('./adminComponents/TransfertMaterielDepot.vue').default)
+Vue.component('all-objectif',require('./adminComponents/AllObjectifComponents.vue').default)
+Vue.component('visual-objectif',require('./adminComponents/VisualObjectifComponent.vue').default)
 
 
 import Vue from 'vue'

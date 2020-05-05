@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Exceptions\AppException;
 use App\Objectif;
+use App\ObjVendeur;
 use App\RapportVente;
 use App\User;
 
@@ -48,11 +49,140 @@ class ObjectifController extends Controller
             'max'   =>  15000000
         ]
     ];
-    
-    public function firstStepValidation(Request $request , Objectif $obj) {
-        try {
-            
 
+    #LISTING ALL OBJECTIFS
+    public function AllObjectifs(Objectif $obj , ObjVendeur $obv) {
+        try {   
+            $data = $obj->all();
+            $_data = [];
+            foreach($data as $key => $value) {
+
+                $recrutement = [
+                    'a' =>  $obv->where('id_objectif',$value->id)
+                        ->where('classe_recrutement','A')
+                        ->count(),
+                    'b' =>  $obv->where('id_objectif',$value->id)
+                        ->where('classe_recrutement','B')
+                        ->count(),
+                    'c' =>  $obv->where('id_objectif',$value->id)
+                        ->where('classe_recrutement','C')
+                        ->count()
+                ];
+                
+                $reabonnement = [
+                    'a' =>  $obv->where('id_objectif',$value->id)
+                        ->where('classe_reabonnement','A')
+                        ->count(),
+                    'b' =>  $obv->where('id_objectif',$value->id)
+                        ->where('classe_reabonnement','B')
+                        ->count(),
+                    'c' =>  $obv->where('id_objectif',$value->id)
+                        ->where('classe_reabonnement','C')
+                        ->count()
+                ];
+
+                $_data[$key] = [
+                    'id'    =>  $value->id,
+                    'name'  =>  $value->name,
+                    'debut' =>  $value->debut,
+                    'fin'   =>  $value->fin,
+                    'evaluation'    =>  $value->evaluation,
+                    'marge_arriere' =>  $value->marge_arriere,
+                    'recrutement'   =>  $recrutement,
+                    'reabonnement'  =>  $reabonnement
+                ];
+            }
+            return response()
+                ->json($_data);
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+    #@@@@@@@
+
+    public function finaliseMakeObjectif(Request $request) {
+        try {
+
+            $validation = $request->validate([
+                'objectif_name' =>  'required|string',
+                'debut' =>  'required|date|before:fin',
+                'fin'   =>  'required|date',
+                'evaluation'    =>  'required|numeric|min:3|max:12',
+                'marge_arriere' =>  'required',
+                'plafond_recrutement.*'   =>  'required',
+                'plafond_reabonnement.*'    =>  'required'
+            ],[
+                'required'  =>  '`:attribute` requis',
+                'numeric'   =>  '`:attribute` doit etre un nombre',
+                'min'   =>  'la valeur minimal de `:attribute` est de 3'
+            ]);
+            
+            $obj = new Objectif;
+            $obj->makeId();
+            $obj->name = $request->input('objectif_name');
+            $obj->debut = $request->input('debut');
+            $obj->fin = $request->input('fin');
+            $obj->evaluation = $request->input('evaluation');
+            $obj->marge_arriere = $request->input('marge_arriere');
+            
+            $objectif_identification = $obj->id;
+            $obj->save();
+            
+            
+            # Enregistrement de l'objectif
+            
+            $data = [];
+            foreach($request->input('users') as $key => $value) {
+                $objV = new ObjVendeur;
+                $objV->id_objectif = $objectif_identification;
+                $objV->vendeurs = $value['username'];
+                $objV->classe_recrutement = $value['class_recrutement'];
+                $objV->classe_reabonnement = $value['class_reabonnement'];
+
+                // RECRUTEMENT 
+                switch ($value['class_recrutement']) {
+                    case 'A':
+                        $objV->plafond_recrutement = $request->input('plafond_recrutement')['class_a'];
+
+                    break;
+                    case 'B' :
+                        $objV->plafond_recrutement = $request->input('plafond_recrutement')['class_b'];
+                    break;
+
+                    case 'C' : 
+                        $objV->plafond_recrutement = $request->input('plafond_recrutement')['class_c'];
+                    break;
+                    default:
+                        throw new AppException("Erreur ! Veuillez ressayez ulterieurement ...");
+                    break;
+                }
+
+                // REABONNEMENT
+                
+                switch ($value['class_reabonnement']) {
+                    case 'A':
+                        $objV->plafond_reabonnement = $request->input('plafond_reabonnement')['class_a'];
+                    break;
+                    case 'B':
+                        $objV->plafond_reabonnement = $request->input('plafond_reabonnement')['class_b'];
+                    break;
+                    case 'C':
+                        $objV->plafond_reabonnement = $request->input('plafond_reabonnement')['class_c'];
+                    break;
+                    
+                    default:
+                        throw new AppException("Erreur ! Veuillez ressayer ulterieurement ...");
+                    break;
+                }
+
+                $objV->save();
+                
+            }
+
+            return response()
+                ->json('done');
+                
         } catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));
@@ -63,15 +193,10 @@ class ObjectifController extends Controller
         try {
 
             $validation = $request->validate([
-                // 'objectif_name' =>  'required|string',
-                // 'debut' =>  'required|date',
-                // 'fin'   =>  'required|date',
                 'evaluation'    =>  'required|numeric',
-                // 'marge_arriere' =>  'required|numeric'
             ],[
                 'required'  =>  'Champ(s) :attribute requis',
                 'numeric'   =>  'Champ(s) :attribute doit un nombre',
-                'date'  =>  'Champ(s) :attribute doit etre une date'
             ]);
 
             $users = $u->whereIn('type',['v_da','v_standart'])->get();
@@ -106,8 +231,7 @@ class ObjectifController extends Controller
                 }
 
                 $userRapport [$key] = [
-                    // 'recrutement'   =>  $objRapportRecrutement,
-                    // 'reabonnement'  =>  $objRapportReabonnement,
+                    'username'  =>  $value->username,
                     'user'  =>  $value->localisation,
                     'moyenne_recrutement'   =>  round($moyRecrutement/$request->input('evaluation')),
                     'moyenne_reabonnement'  =>  round($moyReabonnement/$request->input('evaluation')),
@@ -116,9 +240,7 @@ class ObjectifController extends Controller
                 ];
 
             }
-
             // CLASSIFICATION DES VENDEURS
-
             #EN FONCTION DE LA MOYENNE DE RECRUTEMENT
             $date_result = [];
             foreach($userRapport as $key => $value) {

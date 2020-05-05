@@ -45,18 +45,18 @@
           </ul>
 
           <ul class="uk-switcher uk-margin">
-              <li></li>
+              <li>
+                <visual-objectif></visual-objectif>
+              </li>
               <li>
               <!-- NEW OBJECTIF -->
-               <!-- <div class="uk-alert-info uk-width-1-3@m" uk-alert>
-                <p><span uk-icon="icon : info"></span> Ajoutez un nouvel objectif !</p>
-               </div> -->
-              <!-- // -->
               <div class="uk-container">
                 <objectif-component></objectif-component>
               </div>
               </li>
-              <li></li>
+              <li>
+                <all-objectif></all-objectif>
+              </li>
           </ul>          
         </div>
     </div>
