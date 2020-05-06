@@ -522,7 +522,7 @@ class LogistiqueController extends Controller
             'vendeurs'  => $value->vendeurs() ? $value->vendeurs()->localisation : 'undefined',
             'article' =>  $value->produit()->libelle,
             'status'  =>  $value->status,
-            'origine' =>  $value->depot()->depot ? $value->depot()->depot : ""
+            'origine' =>  $value->depot() ? $value->depot()->depot : ""
           ];
         }
         return response()
