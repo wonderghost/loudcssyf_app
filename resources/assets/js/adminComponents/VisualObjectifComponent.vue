@@ -38,7 +38,7 @@
                 <div class="uk-card uk-card-default uk-card-small" style="box-shadow : none">
                     <div class="uk-card-header" style="border : none !important">
                         <h4 class="uk-card-title">Recrutement</h4>
-                        
+                        <ve-histogram :data="recrutementData" :settings="chartSetting"></ve-histogram>
                     </div>
                 </div>
             </div>
@@ -46,6 +46,7 @@
                 <div class="uk-card uk-card-default uk-card-small" style="box-shadow : none">
                     <div class="uk-card-header" style="border : none !important">
                         <h4 class="uk-card-title">Reabonnement</h4>
+                        
                     </div>
                 </div>
             </div>
@@ -63,17 +64,36 @@ import VeHistogram from 'v-charts/lib/histogram.common'
             VeHistogram
         },
         mounted() {
-            
+            this.getRecrutementStat()
         },
         data() {
             return {
                 isLoading : false,
                 fullPage : true,
-                 
+                chartSetting : {
+                    axisSite: { right: ['pourcent'] },
+                    yAxisType: ['M', 'percent'],
+                    yAxisName: ['Qte', '%']
+                },
+                chartSettingTest : {
+
+                },
+                 recrutementData : {
+                     columns : ['class','plafond','realise','pourcent'],
+                     rows : []
+                 }
             }
         },
         methods : {
-
+            getRecrutementStat : async function () {
+                try {
+                    let response = await axios.get('/admin/objectif/recrutement')
+                    // console.log(response.data)
+                    this.recrutementData.rows = response.data
+                } catch(error) {
+                    alert(error)
+                }
+            }
         },
         computed : {
 

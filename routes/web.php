@@ -42,10 +42,14 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/chart/command-material-stat','ChartController@commandMaterialStat');
 	Route::get('/admin/chart/livraison-stat','ChartController@livraisonMaterialStat');
 	#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	#DATA PERFORMANCE OBJECTIFS ON DASHBOARD
+	#DATA PERFORMANCE  ON DASHBOARD
 	Route::get('/admin/perform-obj/recrutement','ChartController@getRecrutementStat');
 	Route::get('/admin/perform-obj/reabonnement','ChartController@getReabonnementStat');
 	Route::post('/admin/perform-obj/filter','ChartController@makeFilter');
+	// 
+	# DATA OBJECTIFS ON DASHBOARD
+	Route::get('/admin/objectif/recrutement','ObjectifController@getObjectifRecrutementStat');
+	#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// Promo
 	Route::post('/admin/promo/add','AdminController@addPromo');
 	Route::get('/admin/promo/list','AdminController@getPromo');

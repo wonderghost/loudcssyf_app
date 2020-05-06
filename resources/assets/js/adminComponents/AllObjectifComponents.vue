@@ -63,7 +63,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             getAllObjectifs : async function () {
                 try {
                     let response = await axios.get('/admin/objectifs/list-all')
-                    console.log(response.data)
                     this.objectifs = response.data
                 } catch(error) {
                     alert(error)
