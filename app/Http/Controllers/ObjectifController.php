@@ -63,46 +63,50 @@ class ObjectifController extends Controller
                 ->whereYear('fin',2020)
                 ->whereMonth('fin',$month)
                 ->first();
+            if($objectif) {
 
-            $userObjectifClassify = [
-                'class_a'   =>  $obv->where('id_objectif',$objectif->id)->where('classe_recrutement','A')->get(),
-                'class_b'   =>  $obv->where('id_objectif',$objectif->id)->where('classe_recrutement','B')->get(),
-                'class_c'   =>  $obv->where('id_objectif',$objectif->id)->where('classe_recrutement','C')->get()
-            ];
-            // Calcul de la moyenne
-            $dataObjectif = [];
-            $i = 0;
-            foreach($userObjectifClassify as $key   =>  $value) {
-                $som = 0;
-                $atteint = 0;
-                foreach($value as $_value) {
-                    $som += $_value->plafond_recrutement;
-                    $rapp = $rp->whereYear('date_rapport',2020)
-                        ->whereMonth('date_rapport',$month)
-                        ->where('vendeurs',$_value->vendeurs)
-                        ->where('type','recrutement')
-                        ->sum('quantite');
-                        
-                    $atteint += $rapp;
-                    $dataObjectif[$i] = [  
-                        'plafond'   =>  $som,
-                        'realise'   =>  $atteint,
-                        'pourcent'  =>  $atteint/$som,
-                        'class' =>  $_value->classe_recrutement
-                    ];
+                $userObjectifClassify = [
+                    'class_a'   =>  $obv->where('id_objectif',$objectif->id)->where('classe_recrutement','A')->get(),
+                    'class_b'   =>  $obv->where('id_objectif',$objectif->id)->where('classe_recrutement','B')->get(),
+                    'class_c'   =>  $obv->where('id_objectif',$objectif->id)->where('classe_recrutement','C')->get()
+                ];
+                // Calcul de la moyenne
+                $dataObjectif = [];
+                $i = 0;
+                foreach($userObjectifClassify as $key   =>  $value) {
+                    $som = 0;
+                    $atteint = 0;
+                    foreach($value as $_value) {
+                        $som += $_value->plafond_recrutement;
+                        $rapp = $rp->whereYear('date_rapport',2020)
+                            ->whereMonth('date_rapport',$month)
+                            ->where('vendeurs',$_value->vendeurs)
+                            ->where('type','recrutement')
+                            ->sum('quantite');
+                            
+                        $atteint += $rapp;
+                        $dataObjectif[$i] = [  
+                            'plafond'   =>  $som,
+                            'realise'   =>  $atteint,
+                            'pourcent'  =>  $atteint/$som,
+                            'class' =>  $_value->classe_recrutement
+                        ];
+                    }
+                    $i++;
                 }
-                $i++;
+    
+                
+    
+                $dataClassA = [];
+                $dataClassB = [];
+                $dataClassC = [];
+                
+    
+                return response()
+                    ->json($dataObjectif);
             }
 
-            
-
-            $dataClassA = [];
-            $dataClassB = [];
-            $dataClassC = [];
-            
-
-            return response()
-                ->json($dataObjectif);
+            throw new AppException("Aucune Donnee pour le mois en cours!");
 
         } catch(AppException $e) {
             header("Erreur",true,422);
