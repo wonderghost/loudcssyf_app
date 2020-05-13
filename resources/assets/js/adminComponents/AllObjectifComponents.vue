@@ -5,6 +5,24 @@
         :is-full-page="fullPage"
         loader="dots"></loading>
 
+        <!-- modal details objectif -->
+        <div id="modal-detailObjectifs" class="uk-modal-container" uk-modal="esc-close : false;bg-close : false">
+            <div class="uk-modal-dialog">
+                <button class="uk-modal-close-default" type="button" uk-close></button>
+                <div class="uk-modal-header">
+                    <h2 class="uk-modal-title">Details Objectif</h2>
+                </div>
+                <div class="uk-modal-body">
+                    
+                </div>
+                <div class="uk-modal-footer uk-text-right">
+                    <!-- <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button> -->
+                    <button class="uk-button uk-button-danger uk-border-rounded uk-button-small uk-text-capitalize uk-modal-close" type="button">Fermer</button>
+                </div>
+            </div>
+        </div>
+        <!-- // -->
+
         <table class="uk-table uk-table-small uk-table-striped uk-table-hover uk-table-divider">
             <thead>
                 <tr>
@@ -34,7 +52,7 @@
                     <td>{{o.reabonnement.b}}</td>
                     <td>{{o.reabonnement.c}}</td>
                     <td>
-                        <button uk-tooltip="Cliquez pour voir les details" class="uk-text-capitalize uk-button uk-button-small uk-button-primary uk-border-rounded"><span uk-icon="icon : more"></span></button>
+                        <button @click="getDetailsObjectif(o.id)" uk-toggle="target : #modal-detailObjectifs" uk-tooltip="Cliquez pour voir les details" class="uk-text-capitalize uk-button uk-button-small uk-button-primary uk-border-rounded"><span uk-icon="icon : more"></span></button>
                     </td>
                 </tr>
             </tbody>
@@ -67,10 +85,24 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 } catch(error) {
                     alert(error)
                 }
+            },
+            getDetailsObjectif : async function (id) {
+                try {
+                    let response = await axios.post('/admin/objectif/get-details',{
+                            _token : this.myToken,
+                            id_objectif : id
+                        })
+
+                    console.log(response.data)
+                } catch(error) {
+                    alert(error)
+                }
             }
         },
         computed : {
-
+            myToken() {
+                return this.$store.state.myToken
+            }
         }
     }
 </script>

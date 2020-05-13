@@ -55,7 +55,7 @@
                 <div class="uk-card uk-card-default uk-card-small" style="box-shadow : none">
                     <div class="uk-card-header" style="border : none !important">
                         <h4 class="uk-card-title">Reabonnement</h4>
-                        
+                        <ve-histogram :data="reabonnementData" :settings="chartSettingReabo"></ve-histogram>
                     </div>
                 </div>
             </div>
@@ -84,10 +84,16 @@ import VeHistogram from 'v-charts/lib/histogram.common'
                     yAxisType: ['M', 'percent'],
                     yAxisName: ['Qte', '%']
                 },
-                chartSettingTest : {
-
+                chartSettingReabo : {
+                    axisSite : {right : ['pourcent']},
+                    yAxisType : ['M','percent'],
+                    yAxisName : ['TTC','%']
                 },
                  recrutementData : {
+                     columns : ['class','plafond','realise','pourcent'],
+                     rows : []
+                 },
+                 reabonnementData : {
                      columns : ['class','plafond','realise','pourcent'],
                      rows : []
                  },
@@ -97,9 +103,16 @@ import VeHistogram from 'v-charts/lib/histogram.common'
         methods : {
             getRecrutementStat : async function () {
                 try {
+                    // get Recrutement Stat
                     let response = await axios.get('/admin/objectif/recrutement')
-                    // console.log(response.data)
+                    // get Reabonnement Stat
                     this.recrutementData.rows = response.data
+
+                    response = await axios.get('/admin/objectif/reabonnement')
+                    this.reabonnementData.rows = response.data
+
+                    console.log(response.data)
+                    
                 } catch(error) {
                     if(error.response.data.errors) {
                         let errorTab = error.response.data.errors

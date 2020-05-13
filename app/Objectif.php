@@ -27,5 +27,9 @@ class Objectif extends Model
 
         return false;
     }
+
+    public function objectifVendeurs() {
+        return $this->hasMany('App\ObjVendeur','id_objectif','id')->get();
+    }
     
 }

@@ -155,8 +155,8 @@
     </div>
 
     <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
-        <li><a @click="materialState = 'inactif',start = 0 , end =15 , currentPage = 1"  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiels Inactifs</a></li>
-        <li><a @click="materialState = 'actif' , start = 0 , end =15 , currentPage = 1"  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiels Actifs</a></li>
+        <li><a @click="materialState = 'inactif',start = 0 , end =15 , currentPage = 1"  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiels Inactifs <span v-if="materialState == 'inactif'" class="uk-badge">{{ListSerialNumber.length}}</span></a></li>
+        <li><a @click="materialState = 'actif' , start = 0 , end =15 , currentPage = 1"  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiels Actifs <span v-if="materialState == 'actif'" class="uk-badge">{{ListSerialNumber.length}}</span></a></li>
     </ul>
     <!-- FILTER BY USERS -->
     <template v-if="typeUser == 'admin' || typeUser == 'logistique'" id="">

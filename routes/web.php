@@ -49,6 +49,8 @@ Route::middleware(['auth','admin'])->group(function () {
 	// 
 	# DATA OBJECTIFS ON DASHBOARD
 	Route::get('/admin/objectif/recrutement','ObjectifController@getObjectifRecrutementStat');
+	Route::get('/admin/objectif/reabonnement','ObjectifController@getObjectifReabonnementStat');
+	Route::post('/admin/objectif/get-details','ObjectifController@getDetails');
 	#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// Promo
 	Route::post('/admin/promo/add','AdminController@addPromo');

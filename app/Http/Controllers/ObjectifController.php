@@ -50,9 +50,81 @@ class ObjectifController extends Controller
         ]
     ];
 
+    // 
+    
+    
+
 
 
     # DASHBOARD STATISTIQUES
+
+    public function getDetails(Request $request , Objectif $obj) {
+        try {
+            $objectif = $obj->find($request->input("id_objectif"));
+            $obj_vendeur = $objectif->objectifVendeurs();
+
+            return response()
+                ->json($obj_vendeur);
+        } catch(AppException $e) {
+            header("Erreur!",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function getObjectifReabonnementStat(Request $request , Objectif $obj , ObjVendeur $obv , RapportVente $rp) {
+        try {
+            
+            $month = date('m');
+            $objectif = $obj->select()->whereYear('debut',2020)
+                ->whereMonth('debut',$month)
+                ->whereYear('fin',2020)
+                ->whereMonth('fin',$month)
+                ->first();
+
+            if($objectif)  {
+
+                $userObjectifClassify = [
+                    'class_a'   =>  $obv->where('id_objectif',$objectif->id)->where('classe_reabonnement','A')->get(),
+                    'class_b'   =>  $obv->where('id_objectif',$objectif->id)->where('classe_reabonnement','B')->get(),
+                    'class_c'   =>  $obv->where('id_objectif',$objectif->id)->where('classe_reabonnement','C')->get()
+                ];
+                
+                $dataObjectif = [];
+                $i = 0 ;
+
+                foreach($userObjectifClassify as $key   =>  $value) {
+                    $som = 0;
+                    $atteint = 0;
+                    foreach($value as $_value) {
+                        $som += $_value->plafond_reabonnement;
+                        $rapp = $rp->whereYear('date_rapport',2020)
+                            ->whereMonth('date_rapport',$month)
+                            ->where('vendeurs',$_value->vendeurs)
+                            ->where('type','reabonnement')
+                            ->sum('montant_ttc');
+                            
+                        $atteint += $rapp;
+                        $dataObjectif[$i] = [  
+                            'plafond'   =>  $som,
+                            'realise'   =>  $atteint,
+                            'pourcent'  =>  $atteint/$som,
+                            'class' =>  $_value->classe_reabonnement
+                        ];
+                    }
+                    $i++;
+                }
+
+                return response()
+                    ->json($dataObjectif);
+            }
+
+            throw new AppException("Aucune donnees pour le mois en cours ...");
+
+        } catch(AppException $e) {
+            header("Erreur!",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
    
     
     public function getObjectifRecrutementStat(Request $request , Objectif $obj , ObjVendeur $obv , RapportVente $rp) {
@@ -63,6 +135,7 @@ class ObjectifController extends Controller
                 ->whereYear('fin',2020)
                 ->whereMonth('fin',$month)
                 ->first();
+
             if($objectif) {
 
                 $userObjectifClassify = [
