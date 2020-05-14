@@ -8,15 +8,48 @@
         <!-- modal details objectif -->
         <div id="modal-detailObjectifs" class="uk-modal-container" uk-modal="esc-close : false;bg-close : false">
             <div class="uk-modal-dialog">
-                <button class="uk-modal-close-default" type="button" uk-close></button>
+                <!-- <button class="uk-modal-close-default" type="button" uk-close></button> -->
                 <div class="uk-modal-header">
                     <h2 class="uk-modal-title">Details Objectif</h2>
                 </div>
                 <div class="uk-modal-body">
-                    
+                    <div class="uk-grid-small" uk-grid>
+                        <div class="uk-width-1-4@m">
+                            <label for="">
+                                <span uk-icon="icon : users"></span>
+                                Vendeurs
+                            </label>
+                            <input type="search" v-model="autocompleteSearch" class="uk-input uk-border-rounded">
+                        </div>
+                    </div>
+                    <table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover">
+                        <thead>
+                            <tr>
+                                <th>Vendeurs</th>
+                                <th>Obj:Recru</th>
+                                <th>Realise:Recru</th>
+                                <th>Obj:Rea</th>
+                                <th>Realise:Rea</th>
+                                <th>Class:Recru</th>
+                                <th>Class:Rea</th>
+                                <th>Bonus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="d in listonDetailsObjectif" :key="d.vendeur.username">
+                                <td>{{d.vendeur.localisation}}</td>
+                                <td>{{d.obj_recru}}</td>
+                                <td>{{d.realise.recrutement}} ({{(d.realise.recrutement/d.obj_recru) | numFormat('0.[00]%')}}) </td>
+                                <td>{{d.obj_rea | numFormat}}</td>
+                                <td>{{d.realise.reabonnement | numFormat}} ({{ (d.realise.reabonnement/ d.obj_rea) | numFormat('0.[00]%') }})</td>
+                                <td>{{d.class_recru}}</td>
+                                <td>{{d.class_rea}}</td>
+                                <td>{{d.bonus}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
                 <div class="uk-modal-footer uk-text-right">
-                    <!-- <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button> -->
                     <button class="uk-button uk-button-danger uk-border-rounded uk-button-small uk-text-capitalize uk-modal-close" type="button">Fermer</button>
                 </div>
             </div>
@@ -74,7 +107,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             return {
                 isLoading : false,
                 fullPage : true,
-                objectifs : []
+                objectifs : [],
+                detailsObjectif : [],
+                autocompleteSearch : ""
             }
         },
         methods : {
@@ -88,13 +123,17 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             },
             getDetailsObjectif : async function (id) {
                 try {
+                    this.isLoading = true
                     let response = await axios.post('/admin/objectif/get-details',{
                             _token : this.myToken,
                             id_objectif : id
                         })
 
-                    console.log(response.data)
+                    this.detailsObjectif = response.data
+                    this.isLoading = false
+
                 } catch(error) {
+                    this.isLoading = false
                     alert(error)
                 }
             }
@@ -102,6 +141,11 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         computed : {
             myToken() {
                 return this.$store.state.myToken
+            },
+            listonDetailsObjectif() {
+                return this.detailsObjectif.filter( (word) => {
+                    return word.vendeur.localisation.match(this.autocompleteSearch.toUpperCase())
+                })
             }
         }
     }

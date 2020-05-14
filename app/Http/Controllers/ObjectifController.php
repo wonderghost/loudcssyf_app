@@ -58,13 +58,37 @@ class ObjectifController extends Controller
 
     # DASHBOARD STATISTIQUES
 
-    public function getDetails(Request $request , Objectif $obj) {
+    public function getDetails(Request $request , Objectif $obj , RapportVente $rv) {
         try {
             $objectif = $obj->find($request->input("id_objectif"));
             $obj_vendeur = $objectif->objectifVendeurs();
+            $data = [];
+            foreach($obj_vendeur as $key => $value) {
+                $realise = [
+                    'recrutement'   =>  $rv->whereBetween('date_rapport',[$objectif->debut,$objectif->fin])
+                        ->where('vendeurs',$value->vendeurs()->username)
+                        ->where('type','recrutement')
+                        ->where('state','unaborted')
+                        ->sum('quantite'),
+                    'reabonnement'  =>  $rv->whereBetween('date_rapport',[$objectif->debut,$objectif->fin])
+                        ->where('vendeurs',$value->vendeurs()->username)
+                        ->where('type','reabonnement')
+                        ->where('state','unaborted')
+                        ->sum('montant_ttc')
+                ];
 
+                $data [$key] = [
+                    'vendeur'   =>  $value->vendeurs(),
+                    'obj_recru' =>  $value->plafond_recrutement,
+                    'obj_rea'   =>  $value->plafond_reabonnement,
+                    'class_recru'   =>  $value->classe_recrutement,
+                    'class_rea' =>  $value->classe_reabonnement,
+                    'realise'   =>  $realise,
+                    'bonus' =>  '-'
+                ];
+            }
             return response()
-                ->json($obj_vendeur);
+                ->json($data);
         } catch(AppException $e) {
             header("Erreur!",true,422);
             die(json_encode($e->getMessage()));
@@ -101,6 +125,7 @@ class ObjectifController extends Controller
                             ->whereMonth('date_rapport',$month)
                             ->where('vendeurs',$_value->vendeurs)
                             ->where('type','reabonnement')
+                            ->where('state','unaborted')
                             ->sum('montant_ttc');
                             
                         $atteint += $rapp;
@@ -155,6 +180,7 @@ class ObjectifController extends Controller
                             ->whereMonth('date_rapport',$month)
                             ->where('vendeurs',$_value->vendeurs)
                             ->where('type','recrutement')
+                            ->where('state','unaborted')
                             ->sum('quantite');
                             
                         $atteint += $rapp;

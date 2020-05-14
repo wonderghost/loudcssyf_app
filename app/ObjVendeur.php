@@ -8,4 +8,8 @@ class ObjVendeur extends Model
 {
     //
     protected $table = 'obj_vendeurs';
+
+    public function vendeurs() {
+        return $this->belongsTo('App\User','vendeurs','username')->first();
+    }
 }
