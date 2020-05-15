@@ -37,6 +37,7 @@
 
     <div id="app">
       <serial-search></serial-search>
+      <deblocage-cga></deblocage-cga>
       <home-component></home-component>
       <tools the-user="{{Auth::user()->type}}"></tools>
       <pay-comission-component></pay-comission-component>

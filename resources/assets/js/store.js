@@ -25,9 +25,13 @@ const store = new Vuex.Store({
     payComissionList : [],
     serialNumberList : [],
     listingPromo : [],
-    materials : []
+    materials : [],
+    deblocageCount : 0
   },
   mutations : {
+    setDeblocageCount (state,number) {
+      state.deblocageCount = number
+    },
     setMaterials(state,list) {
       state.materials = list
     },

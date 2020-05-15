@@ -179,7 +179,7 @@ export default {
     },
     methods : {
         sendDeblocageForm : async function () {
-            this.isLoading = true
+            // this.isLoading = true
             UIkit.modal($("#modal-plus")).hide()
             try {
                 this.deblocageForm._token = this.myToken

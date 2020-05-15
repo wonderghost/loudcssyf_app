@@ -340,8 +340,10 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/search/serial/{slug}','SearchController@finSerialNumber');
 	// SEND DEBLOCAGE FORM
 	Route::post('/user/tools/deblocage-cga','ToolsController@deblocageCga');
-	Route::get('tmp','AdminController@emailTest');
 	Route::get('/user/deblocage/get-infos','ToolsController@getInfos');
+	Route::get('/user/deblocage/list','ToolsController@getDeblocageList');
+	Route::post('/user/deblocage/confirm-state','ToolsController@ConfirmStateDeblocage');
+	// Route::get('tmp','AdminController@emailTest');
 	// SEND ANNULATION DE SAISIE FORM
 	Route::post('/user/tools/annulation-saisie','ToolsController@annulationSaisi');
 	// 

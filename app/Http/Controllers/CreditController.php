@@ -182,8 +182,10 @@ class CreditController extends Controller
 					$afrocash_courant->save();
 					$commande->save();
 					// ENREGISTREMENT DE LA NOTIFICATION
-					$this->sendNotification("Commande Credit","Vous avez annulé une commande pour : ".$commande->vendeurs()->localisation,Auth::user()->username);
-					$this->sendNotification("Commande Credit","Votre commande a été annulé",$commande->vendeurs);
+					$n = $this->sendNotification("Commande Credit","Vous avez annulé une commande pour : ".$commande->vendeurs()->localisation,Auth::user()->username);
+					$n->save();
+					$n = $this->sendNotification("Commande Credit","Votre commande a été annulé",$commande->vendeurs);
+					$n->save();
 					return response()->json('done');
 				} else {
 					$commande->status = 'aborted';
@@ -191,11 +193,17 @@ class CreditController extends Controller
 					// ENREGISTREMENT DE LA NOTIFICATION
 					$gcga = User::where("type",'gcga')->get();
 					foreach($gcga as $key => $value) {
-						$this->sendNotification("Commande Credit","Vous avez annulé une commande pour : ".$commande->vendeurs()->localisation,$value->username);
+						$n = $this->sendNotification("Commande Credit","Vous avez annulé une commande pour : ".$commande->vendeurs()->localisation,$value->username);
+						$n->save();
 					}
-					$this->sendNotification("Commande Credit","Votre commande a été annulé",$commande->vendeurs);
-					$this->sendNotification("Commande credit","Une commande a ete annulee pour : ".$commande->vendeurs()->localisation,'admin');
-					$this->sendNotification("Commande credit","Une commande a ete annulee pour : ".$commande->vendeurs()->localisation,'root');
+					$n = $this->sendNotification("Commande Credit","Votre commande a été annulé",$commande->vendeurs);
+					$n->save();
+					$n = $this->sendNotification("Commande credit","Une commande a ete annulee pour : ".$commande->vendeurs()->localisation,'admin');
+					$n->save();
+
+					$n = $this->sendNotification("Commande credit","Une commande a ete annulee pour : ".$commande->vendeurs()->localisation,'root');
+					$n->save();
+					
 					return response()->json('done');
 				}
 				} else {

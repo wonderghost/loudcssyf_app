@@ -10,10 +10,76 @@ use App\Mail\AnnulationDeSaisie;
 use App\User;
 use Illuminate\Support\Facades\Hash;
 use App\DeblocageCga;
-
+use Illuminate\Support\Facades\Auth;
+use App\Traits\Similarity;
 
 class ToolsController extends Controller
 {
+    use Similarity;
+
+    public function ConfirmStateDeblocage(Request $request,DeblocageCga $d) {
+        try {
+            $validation = $request->validate([
+                'deblocage_id'  =>  'required|exists:deblocage_cga,id',
+                'password'  =>  'required|string'
+            ]);
+            if(!Hash::check($request->input('password'),$request->user()->password)) {
+                throw new AppException("Mot de passe invalide !");
+            }
+
+            $data = $d->find($request->input('deblocage_id'));
+            $data->state_done = true;
+            // ENVOI DE NOTIFICATIONS
+            // gestionnaire de credit
+            $n = $this->sendNotification("Deblocage Cga","Vous avez debloquer un compte cga pour : ".$data->vendeurs()->localisation,$request->user()->username);
+            $n->save();
+            // administrateur
+            $admins = User::where('type','admin')->get();
+            foreach($admins as $value) {
+                $n = $this->sendNotification("Deblocage Cga","Vous avez debloquer un compte cga pour : ".$data->vendeurs()->localisation,$value->username);
+                $n->save();
+            }
+
+            // vendeurs
+            $n = $this->sendNotification("Deblocage Cga","Mot de passe Cga reinitialise. connectez vous avec ce mot de passe par defaut : 'canal' ",$data->vendeurs);
+            $n->save();
+                    
+            $data->save();            
+            return response()
+                ->json('done');
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function getDeblocageList(Request $request , DeblocageCga $d) {
+        try {
+            if($request->user()->type !== 'gcga') {
+                if($request->user()->type !== 'admin') {
+                    throw new AppException("not_autorize");
+                }
+            }
+
+            $all = $d->select()->orderBy('created_at','desc')->get();
+            $data = [];
+            foreach($all as $key => $value) {
+                $data[$key] =[
+                    'id'    =>  $value->id,
+                    'nom_prenom'    =>  $value->nom_prenom,
+                    'user_account'  =>  $value->user_account,
+                    'vendeurs'  =>  $value->vendeurs()->localisation,
+                    'num_dist'  =>  $value->vendeurs()->agence()->num_dist,
+                    'state' =>  $value->state_done
+                ];
+            }
+            return response()
+                ->json($data);
+        } catch(AppException $e) {
+            header("Erreur!",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
     // DEBLOCAGE DE COMPTE CGA
 
     public function deblocageCga(Request $request) {
@@ -38,10 +104,11 @@ class ToolsController extends Controller
             $deb->user_account = $request->input('compte_user');
             $deb->nom_prenom = $request->input('nom_prenom');
             $deb->vendeurs = Auth::user()->username;
-
+            $deb->state_done = false;
+            $deb->save();
             
             return response()
-                ->json($request);
+                ->json('done');
 
         } catch(AppException $e) {
             header("Erreur",true,422);
