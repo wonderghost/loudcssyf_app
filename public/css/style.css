@@ -118,12 +118,16 @@ div.vue-radial-menu-wrapper .vue-radial-menu-item {
 .promo-da-responsive {
   background :rgba(255,255,255,1) !important;
 }
-ul.dash-li > li {
+ul.dash-li > li , ul.obj-li > li {
   display:  inline-block !important;
 }
 
-ul.dash-li > li a {
+ul.dash-li > li a , ul.obj-li > li a {
   text-decoration : none !important;
+}
+
+ul.obj-li > li a {
+  /* color : #fff !important; */
 }
 
 /*  */

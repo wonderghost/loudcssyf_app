@@ -5,16 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Exceptions\AppException;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\DeblocageCga;
+// use App\Mail\DeblocageCga;
 use App\Mail\AnnulationDeSaisie;
 use App\User;
 use Illuminate\Support\Facades\Hash;
+use App\DeblocageCga;
 
 
 class ToolsController extends Controller
 {
-    //
+    // DEBLOCAGE DE COMPTE CGA
+
     public function deblocageCga(Request $request) {
+
         $validation =   $request->validate([
             'compte_user'  =>  'required|string',
             'nom_prenom'    =>  'required|string',
@@ -31,42 +34,14 @@ class ToolsController extends Controller
                 throw new AppException("Mot de passe incorrect !");
             }
 
-            $arrayMails = [
-                'mamoudou.diallo@canal-plus.com',
-                'reseautiers@loudcssyf.com',
-                'michelmawuena.adjavon@canal-plus.com',
-                'amadou.tall@canal-plus.com',
-                'loudcssyf@hotmail.com',
-                $request->user()->email
-            ];
+            $deb = new DeblocageCga;
+            $deb->user_account = $request->input('compte_user');
+            $deb->nom_prenom = $request->input('nom_prenom');
+            $deb->vendeurs = Auth::user()->username;
 
-            // $arrayMails = [
-            //     'bangourayans47@gmail.com'
-            // ];
-
-            // @@@@@@@@@@@@@@
-                // #ceci est pour le test
-            // Mail::to('layedjibacamara@gmail.com')
-            //     ->cc($arrayMails)
-            //     ->send(new DeblocageCga($request->user(),[
-            //         'compte_user'   =>  $request->input('compte_user'),
-            //         'nom_prenom'    =>  $request->input('nom_prenom'),
-            //         'comment'   =>  $request->input('comment'),
-            //         'num_dist'  =>  $request->input('num_dist')
-            //     ]));
-                    ###
-                    
-            Mail::to('relationdistributeur@canalplus-afrique.com')
-                ->cc($arrayMails)
-                ->send(new DeblocageCga($request->user(),[
-                    'compte_user'   =>  $request->input('compte_user'),
-                    'nom_prenom'    =>  $request->input('nom_prenom'),
-                    'comment'   =>  $request->input('comment'),
-                    'num_dist'  =>  $request->input('num_dist')
-                ]));
             
             return response()
-                ->json('done');
+                ->json($request);
 
         } catch(AppException $e) {
             header("Erreur",true,422);
@@ -83,6 +58,8 @@ class ToolsController extends Controller
             die(json_encode($e->getMessage()));
         }
     }
+
+    //  REQUETE D'ANNULATION DE SAISIE
 
     public function annulationSaisi(Request $request) {
         try {

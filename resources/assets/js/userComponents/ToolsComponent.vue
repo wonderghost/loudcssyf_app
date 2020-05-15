@@ -49,11 +49,10 @@
                                         <label for=""><span uk-icon="icon : lock"></span> Confirmez le mot de passe</label>
                                         <input type="password" class="uk-input uk-border-rounded" v-model="deblocageForm.password">
                                     </div>
-                                    <div class="uk-width-1-1@m">
+                                    <!-- <div class="uk-width-1-1@m">
                                         <label for=""><span uk-icon="icon : comment"></span> Commentaire</label>
-                                        <!-- <textarea rows="5" class="uk-textarea uk-border-rounded" v-model="deblocageForm.comment"></textarea> -->
                                         <VueTrix v-model="deblocageForm.comment" placeholder="Contenu"/>
-                                    </div>
+                                    </div> -->
                                     <div class="">
                                         <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
                                     </div>

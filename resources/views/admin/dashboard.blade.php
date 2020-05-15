@@ -38,26 +38,26 @@
         </div>
         <div id="obj" class="content-all">
           <h2>Objectifs</h2>
-          <ul uk-tab>
-              <li><a href="#">Apercue</a></li>
-              <li><a href="#">Nouvel Objectif</a></li>
-              <li><a href="#">Tous les objectifs</a></li>
+          <ul class="obj-li">
+              <li id="btn-visu" class="uk-button uk-button-small uk-border-rounded uk-button-default"><a href="#">Apercue</a></li>
+              <li id="btn-new" class="uk-button uk-button-small uk-border-rounded uk-button-default"><a href="#">Nouvel Objectif</a></li>
+              <li id="btn-allobj" class="uk-button uk-button-small uk-border-rounded uk-button-default"><a href="#">Tous les objectifs</a></li>
           </ul>
 
-          <ul class="uk-switcher uk-margin">
-              <li>
+          
+              <div class="obj-content" id="obj-visu">
                 <visual-objectif></visual-objectif>
-              </li>
-              <li>
-              <!-- NEW OBJECTIF -->
-              <div class="uk-container">
-                <objectif-component></objectif-component>
               </div>
-              </li>
-              <li>
+              <div class="obj-content" id="obj-create">
+              <!-- NEW OBJECTIF -->
+                <div class="uk-container">
+                  <objectif-component></objectif-component>
+                </div>
+              </div>
+              <div class="obj-content" id="obj-list">
                 <all-objectif></all-objectif>
-              </li>
-          </ul>          
+              </div>
+           
         </div>
     </div>
   </div>
@@ -80,6 +80,26 @@ $(document).ready(function () {
     }
     else {
       $('#obj').show(300)
+    }
+  })
+
+  let btnObj = $("ul.obj-li > li")
+
+  $('.obj-content').hide(300)
+  $("#obj-visu").show(300)
+
+  btnObj.on('click',function (e) {
+    $('.obj-content').hide(300)
+    if(this.id == 'btn-visu') {
+      // $(this).removeClass('uk-button-primary')
+      
+      $("#obj-visu").show(300)
+    }
+    else if(this.id == 'btn-new') {
+      $("#obj-create").show(300)
+    }
+    else {
+      $("#obj-list").show(300)
     }
   })
 })
