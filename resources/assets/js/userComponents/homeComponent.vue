@@ -8,6 +8,9 @@
         <a href="" class="uk-navbar-item uk-logo uk-visible@m">
           <img src="/img/layedist.png" width="100" alt="">
         </a>
+        <a href="" class="uk-navbar-item uk-logo uk-hidden@m">
+          <img src="/img/layedist.png" width="70" alt="">
+        </a>
     </div>
     <div class="uk-navbar-center uk-visible@m">
       <a class="uk-button uk-button-small border-button" href="/" uk-tooltip="Tableau de bord"><i class="material-icons">home</i></a>
@@ -21,6 +24,9 @@
                   <span class="uk-text-bold">{{n.titre}}</span>
                   <p class="uk-margin-remove">{{n.description}}</p>
                 </span>
+                  <div class="uk-text-right uk-margin-right">
+                    <a @click="readNotification(n.id)">vu</a>
+                  </div>
               </li>
             </ul>
             <a class="uk-button uk-button-link uk-text-capitalize" href="#all-notification" uk-toggle>Tout voir</a>
@@ -35,9 +41,9 @@
     <template v-if="typeUser == 'admin' || typeUser == 'gcga'" id="">
       <a class="uk-button uk-button-small border-button button-pay-comission" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
     </template>
-    <a class="uk-button uk-button-small border-button" uk-tooltip="Recherche" uk-toggle="target : #modal-search-serial"><i class="material-icons">search</i></a>
-    <a class="uk-button uk-button-small border-button" href="#modal-remboursement" uk-toggle uk-tooltip="Paiement Remboursement"><i class="material-icons">payment</i></a>
-    <a class="uk-button uk-button-small border-button" uk-toggle href="#modal-deblocage" uk-tooltip="Deblocage Cga"><i class="material-icons">lock_open</i><span v-if="typeUser !=='v_da' && typeUser !== 'v_standart'" class="uk-badge">{{deblocageCount}}</span> </a>
+      <a class="uk-button uk-button-small border-button" uk-tooltip="Recherche" uk-toggle="target : #modal-search-serial"><i class="material-icons">search</i></a>
+      <a class="uk-button uk-button-small border-button" href="#modal-remboursement" uk-toggle uk-tooltip="Paiement Remboursement"><i class="material-icons">payment</i></a>
+      <a class="uk-button uk-button-small border-button" uk-toggle href="#modal-deblocage" uk-tooltip="Deblocage Cga"><i class="material-icons">lock_open</i><span v-if="typeUser !=='v_da' && typeUser !== 'v_standart'" class="uk-badge">{{deblocageCount}}</span> </a>
     </div>
     <div class="uk-navbar-right uk-visible@m">
       <a class="uk-button"><span uk-icon="icon : user ;"></span> {{userLocalisation}} </a>
@@ -327,6 +333,19 @@
               this.notifications = response.data
             } catch (e) {
                 alert(e)
+            }
+          },
+          readNotification : async function (id) {
+            try {
+                let response = await axios.post('/user/notification/mark-as-read',{
+                  _token : this.myToken,
+                  id_notify : id
+                })
+                if(response.data == 'done') {
+                  this.getAllNotifications()
+                }
+            } catch(error) {
+                alert(error)
             }
           }
         },

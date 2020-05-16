@@ -151,9 +151,12 @@ Route::middleware(['auth','admin'])->group(function () {
 Auth::routes();
 
 Route::middleware(['auth','unblocked'])->group(function () {
+	
 	Route::get('/{slug}/all-vendeurs','LogistiqueController@allVendeurs');
 	Route::get('/{slug}/all-produits','LogistiqueController@allProduits');
 	// CONSTRUCTION DU TABLEAU DE BORD
+	// ENVOI DU FEEDBACK
+	Route::post('/user/feedback/send','ToolsController@sendFeedback');
 	// rapport pour controleur
 	Route::get('user/add-rapport','RapportControlleur@addRapport')->middleware('controleur');
 	Route::post('/user/send-rapport/{slug}','RapportControlleur@sendRapport')->middleware('controleur');

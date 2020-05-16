@@ -12,7 +12,7 @@
                 </div>
                 <div class="uk-modal-body" uk-overflow>
                     <!-- Erreor block -->
-                      <template v-if="errors.length" v-for="error in errors">
+                    <template v-if="errors.length" v-for="error in errors">
                         <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
                             <a href="#" class="uk-alert-close" uk-close></a>
                             <p>{{error}}</p>
@@ -49,10 +49,7 @@
                                         <label for=""><span uk-icon="icon : lock"></span> Confirmez le mot de passe</label>
                                         <input type="password" class="uk-input uk-border-rounded" v-model="deblocageForm.password">
                                     </div>
-                                    <!-- <div class="uk-width-1-1@m">
-                                        <label for=""><span uk-icon="icon : comment"></span> Commentaire</label>
-                                        <VueTrix v-model="deblocageForm.comment" placeholder="Contenu"/>
-                                    </div> -->
+                                    
                                     <div class="">
                                         <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
                                     </div>
@@ -83,6 +80,16 @@
                                         <label for=""><span uk-icon="icon : pencil"></span> Saisie correcte</label>
                                         <input type="text" v-model="annuleSaisiForm.saisie_correcte" class="uk-input uk-border-rounded">        
                                     </div>
+                                    <div class="uk-margin uk-width-1-2@m uk-grid-small uk-child-width-auto uk-grid">
+                                        <div>MODIFICATION</div>
+                                        <label><input class="uk-radio" value="OUI" name="modification_state" v-model="annuleSaisiForm.modification_state" type="radio"> OUI</label>
+                                        <label><input class="uk-radio" value="NON" name="modification_state" v-model="annuleSaisiForm.modification_state" type="radio"> NON</label>
+                                    </div>
+                                    <div class="uk-margin uk-width-1-2@m uk-grid-small uk-child-width-auto uk-grid">
+                                        <div>ANNULATION</div>
+                                        <label><input class="uk-radio" value="OUI" name="annulation_state" v-model="annuleSaisiForm.annulation_state" type="radio"> OUI</label>
+                                        <label><input class="uk-radio" value="NON" name="annulation_state" v-model="annuleSaisiForm.annulation_state" type="radio"> NON</label>
+                                    </div>
                                     <div class="uk-width-1-2@m">
                                         <label for=""><span uk-icon="icon : calendar"></span> Date de saisie</label>
                                         <input type="date" v-model="annuleSaisiForm.date_saisie" class="uk-input uk-border-rounded">
@@ -103,7 +110,7 @@
                         </li>
                     </ul>
                 </div>
-                <div class="uk-modal-footer">
+                <div class="uk-modal-footer uk-text-right">
                     <button class="uk-button uk-button-small uk-button-danger uk-border-rounded uk-modal-close">Fermer</button>
                 </div>
             </div>
@@ -153,7 +160,7 @@ export default {
         return {
             items: ['chat','feedback','share','more'],
             tooltips : ['Chat','Boit a suggestion','Reseaux Sociaux','Plus'],
-            modals : ['','','','modal-plus'],
+            modals : ['','modal-feedback','','modal-plus'],
             deblocageForm : {
                 num_dist : "",
                 _token : "",
@@ -170,7 +177,9 @@ export default {
                 saisie_correcte : "",
                 date_saisie : "",
                 password : "",
-                comment : ""
+                comment : "",
+                modification_state : "NON",
+                annulation_state : "OUI"
             },
             errors : [],
             isLoading : false,
@@ -179,7 +188,7 @@ export default {
     },
     methods : {
         sendDeblocageForm : async function () {
-            // this.isLoading = true
+            this.isLoading = true
             UIkit.modal($("#modal-plus")).hide()
             try {
                 this.deblocageForm._token = this.myToken
@@ -205,7 +214,7 @@ export default {
             }
         },
         sendAnnuleSaisi : async function() {
-            this.isLoading = true
+            // this.isLoading = true
             UIkit.modal($("#modal-plus")).hide()
             try {
                 this.annuleSaisiForm._token = this.myToken

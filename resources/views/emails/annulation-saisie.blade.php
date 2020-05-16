@@ -74,8 +74,8 @@
                         <td style="text-align : center">{{$data['saisie_errone']}}</td>
                         <td style="text-align : center">{{$data['saisie_correcte']}}</td>
                         <td style="text-align : center">{{$data['date_saisie']}}</td>
-                        <td style="text-align : center">NON</td>
-                        <td style="text-align : center">OUI</td>
+                        <td style="text-align : center">{{$data['modification_state']}}</td>
+                        <td style="text-align : center">{{$data['annulation_state']}}</td>
                     </tr>
                 </tbody>
             </table>

@@ -48,6 +48,7 @@ Vue.component('transfert-material-depot',require('./adminComponents/TransfertMat
 Vue.component('all-objectif',require('./adminComponents/AllObjectifComponents.vue').default)
 Vue.component('visual-objectif',require('./adminComponents/VisualObjectifComponent.vue').default)
 Vue.component('deblocage-cga',require('./adminComponents/DeblocageCgaComponent.vue').default)
+Vue.component('feedback',require('./userComponents/FeedBackComponent.vue').default)
 
 
 import Vue from 'vue'

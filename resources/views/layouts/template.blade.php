@@ -30,7 +30,7 @@
   </script>
   <title> LOUDCSSYF </title>
   </head>
-  <body onselectstart="return true" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;">
+  <body onselectstart="return false" oncontextmenu="return true" ondragstart="return false" onMouseOver="window.status=''; return true;">
     <input type="hidden" id="user-type" value="{{Auth::user()->type}}">
     <input type="hidden" id="user-localisation" value="{{Auth::user()->localisation}}">
     <input type="hidden" id="username" value="{{Auth::user()->username}}">
@@ -38,6 +38,7 @@
     <div id="app">
       <serial-search></serial-search>
       <deblocage-cga></deblocage-cga>
+      <feedback></feedback>
       <home-component></home-component>
       <tools the-user="{{Auth::user()->type}}"></tools>
       <pay-comission-component></pay-comission-component>
@@ -45,6 +46,14 @@
       <div class="uk-margin-bottom">
         @yield('content')
       </div>
+      <!-- FOOTER -->
+      <footer>
+        <div class="uk-container">
+          <p class="text-right">
+            &copy; COPYRIGHT|LOUDCSSYF-SARL|{{date('Y')}}|LAYEDIST v1.7.0
+          </p>
+        </div>
+      </footer>
     </div>
 
     <script type="application/javascript" src="{{asset('js/jquery-3.4.1.min.js')}}"></script>

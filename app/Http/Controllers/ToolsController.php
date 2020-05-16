@@ -12,10 +12,33 @@ use Illuminate\Support\Facades\Hash;
 use App\DeblocageCga;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\Similarity;
+use App\Feedback;
 
 class ToolsController extends Controller
 {
     use Similarity;
+
+    public function sendFeedback(Request $request) {
+        try {
+            $validation = $request->validate([
+                'commentaire'   =>  'required|string',
+                'password'  =>  'required|string'
+            ],[
+                'required'  =>  'Champ(s) :attribute requis'
+            ]);
+
+            $f = new Feedback;
+            $f->commentaire = $request->input('commentaire');
+            $f->vendeurs = $request->user()->username;
+            $f->save();
+
+            return response()
+                ->json('done');
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
 
     public function ConfirmStateDeblocage(Request $request,DeblocageCga $d) {
         try {
@@ -135,7 +158,9 @@ class ToolsController extends Controller
                 'num_abonne'    =>  'required|string',
                 'date_saisie'   =>  'required|date',
                 'password'  =>  'required',
-                'saisie_errone' =>  'required|string'
+                'saisie_errone' =>  'required|string',
+                'modification_state'    =>  'required|string',
+                'annulation_state'  =>  'required|string'
             ],[
                 'required'  =>  'Champ(s) :attribute requis!',
                 'string'    =>  'Champ(s) :attribute doit etre une chaine de caractere!'
@@ -144,7 +169,7 @@ class ToolsController extends Controller
             if(!Hash::check($request->input('password'),$request->user()->password)) {
                 throw new AppException("Mot de passe incorrect !");
             }
-
+            
             $arrayMails = [
                 'mamoudou.diallo@canal-plus.com',
                 'reseautiers@loudcssyf.com',
@@ -154,12 +179,14 @@ class ToolsController extends Controller
                 $request->user()->email
             ];
 
+            
+            // @@@@@@@@@@@@@@
+            // #ceci est pour le test
+
             // $arrayMails = [
             //     'bangourayans47@gmail.com'
             // ];
 
-            // @@@@@@@@@@@@@@
-                // #ceci est pour le test
             // Mail::to('layedjibacamara@gmail.com')
             //     ->cc($arrayMails)
             //     ->send(new AnnulationDeSaisie([
@@ -168,7 +195,9 @@ class ToolsController extends Controller
             //         'comment'   =>  $request->input('comment'),
             //         'num_dist'  =>  $request->input('num_dist'),
             //         'saisie_correcte'   =>  $request->input('saisie_correcte'),
-            //         'saisie_errone' =>  $request->input('saisie_errone')
+            //         'saisie_errone' =>  $request->input('saisie_errone'),
+            //         'modification_state'    =>  $request->input('modification_state'),
+            //         'annulation_state'  =>  $request->input('annulation_state')
             //     ]));
                     ###
                     
@@ -180,7 +209,9 @@ class ToolsController extends Controller
                     'comment'   =>  $request->input('comment'),
                     'num_dist'  =>  $request->input('num_dist'),
                     'saisie_correcte'   =>  $request->input('saisie_correcte'),
-                    'saisie_errone' =>  $request->input('saisie_errone')
+                    'saisie_errone' =>  $request->input('saisie_errone'),
+                    'modification_state'    =>  $request->input('modification_state'),
+                    'annulation_state'  =>  $request->input('annulation_state')
                 ]
             ));
 

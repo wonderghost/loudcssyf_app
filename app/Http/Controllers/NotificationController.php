@@ -22,21 +22,20 @@ class NotificationController extends Controller
       }
     }
 
-    public function markAsRead(Request $request) {
+    public function markAsRead(Request $request , Notifications $n) {
       try {
-        $notification = Notifications::find($request->input('ref-0'));
-        if($notification) {
-          $notification->status = 'read';
-          $notification->save();
-          return response()->json('done');
-        } else {
-          throw new AppException("Erreur !");
-        }
-        return response()->json($alert);
-      } catch (AppException $e) {
-        header("unprocessible entity",true,422);
-        die($e->getMessage());
-      }
+          $validation = $request->validate([
+            'id_notify' =>  'required|string|exists:notifications,id'
+          ]);
 
+          $notify = $n->find($request->input('id_notify'));
+          $notify->status = 'read';
+          $notify->save();
+          return response()
+            ->json('done');
+      } catch(AppException $e) {
+          header("Erreur",true,422);
+          die(json_encode($e->getMessage()));
+      }   
     }
 }
