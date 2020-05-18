@@ -375,7 +375,9 @@ class AdminController extends Controller
 
     public function historiqueApport() {
       try {
-          $apports = TransactionCreditCentral::where('type','apport')->orderBy('created_at','desc')->get();
+          $apports = TransactionCreditCentral::where('type','apport')
+            ->where('destinataire','afrocash')
+            ->orderBy('created_at','desc')->get();
           return response()
             ->json($apports);
       } catch(AppException $e) {
@@ -386,7 +388,10 @@ class AdminController extends Controller
 
     public function historiqueDepenses() {
       try{
-          $depenses = TransactionCreditCentral::where('type','depense')->orderBy('created_at','desc')->get();
+          $depenses = TransactionCreditCentral::where('type','depense')
+            ->where('expediteur','afrocash')
+            ->orderBy('created_at','desc')->get();
+            
           return response()
             ->json($depenses);
       } catch(AppException $e) {

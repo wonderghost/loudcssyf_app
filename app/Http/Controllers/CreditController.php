@@ -20,6 +20,7 @@ use App\RexAccount;
 use App\TransactionCga;
 use App\TransactionRex;
 use App\TransactionCredit;
+use App\TransactionCreditCentral;
 use App\Agence;
 use App\CommandCredit;
 use App\Exceptions\AppException;
@@ -82,7 +83,7 @@ class CreditController extends Controller
 			return $credit->all();
 		}
     //
-    public function makeAddAccount(CreditRequest $request) {
+    public function makeAddAccount(CreditRequest $request , TransactionCreditCentral $tc) {
 			try {
 				// dd($request);
 				$credit = new Credit;
@@ -105,15 +106,25 @@ class CreditController extends Controller
 					'solde'	=>	$new_solde_afrocash
 				]);
 				//
+				$tc->destinataire = 'cga';
+				$tc->montant = $request->input('montant');
+				$tc->type = 'apport';
+				$tc->solde_anterieur = 0;
+				
 				if($temp = $this->isExistCredit($credit->designation)) {
+					$tc->solde_anterieur += $temp->solde;
 					$solde = $temp->solde + $credit->solde;
+					$tc->nouveau_solde = $solde;
 					Credit::select()->where('designation',$credit->designation)->update(
 						[
 							'solde' => $solde
 						]);
 				} else {
+					$tc->nouveau_solde = $credit->solde;
 					$credit->save();
 				}
+				
+				$tc->save();
 				
 				return response()
 					->json('done');
