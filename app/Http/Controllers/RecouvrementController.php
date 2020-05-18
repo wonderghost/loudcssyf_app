@@ -22,7 +22,7 @@ class RecouvrementController extends Controller
       return view('recouvrements.operations');
     }
 
-    public function addRecouvrement(Request $request) {
+    public function addRecouvrement(Request $request , TransactionAfrocash $ta) {
       $validation = $request->validate([
         'vendeurs'  =>  'required|exists:users,username',
         'montant' =>  'required|numeric',
@@ -34,6 +34,17 @@ class RecouvrementController extends Controller
           throw new AppException("Recouvrement Impossible !");
         }
         if($request->input('montant_du') == $request->input('montant')) {
+          // VERIFIER SI LE MONTANT RECU EST EGAL AU MONTANT CALCULER
+          $total = $ta->whereIn('compte_debite',Afrocash::select('numero_compte')->where([
+            'type'  =>  'semi_grossiste',
+            'vendeurs'  =>  $request->input('vendeurs')
+          ])->get())->whereNull('recouvrement')->sum('montant');
+
+          if($request->input('montant') != $total) {
+            throw new AppException("Erreur Veuillez ressayer ulterieurment , Il semble qu'une transaction ait eu lieu , veuillez reprendre la procedure!");
+          }
+
+          // @@@@@@@@@@@@@@@2
           $recouvrement = new Recouvrement;
           $recouvrement->makeId();
           $recouvrement->montant = $request->input('montant');
@@ -61,12 +72,14 @@ class RecouvrementController extends Controller
             $recouvrement->numero_recu
           );
           // AJOUT DE L'ID DE RECOUVREMENT DANS LA TABLE TRANSACTIONS
+
           TransactionAfrocash::whereIn('compte_debite',Afrocash::select('numero_compte')->where([
             'type'  =>  'semi_grossiste',
             'vendeurs'  =>  $request->input('vendeurs')
           ])->get())->where('recouvrement',NULL)->update([
             'recouvrement'  =>  $temp
           ]);
+
           return response()
             ->json('done');
         } else {
@@ -92,7 +105,8 @@ class RecouvrementController extends Controller
             'destinataire'  => $value->afrocashcredite()->vendeurs()->localisation,
             'montant' =>  number_format($value->montant),
             'type'  =>  'depot',
-            'status'  =>  is_null($value->recouvrement) ? 'non effectue' : 'effectue'
+            'status'  =>  is_null($value->recouvrement) ? 'non effectue' : 'effectue',
+            'recu'  =>  $value->recouvrement() ?  $value->recouvrement()->numero_recu : ''
           ];
 
         }

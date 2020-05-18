@@ -40,6 +40,27 @@ class ToolsController extends Controller
         }
     }
 
+    public function listFeedback(Feedback $f) {
+        try {
+            $all = $f->select()->orderBy('created_at','desc')->get();
+            $data = [];
+            foreach($all as $key => $value) {
+                $data[$key] = [
+                    'id'    =>  $value->id, 
+                    'vendeurs'  => $value->vendeurs()->localisation,
+                    'commentaire'   =>  $value->commentaire,
+                    'date'  =>  $value->created_at,
+                    'read_at'   =>  $value->read_at
+                ];
+            }
+            return response()
+                ->json($data);
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
     public function ConfirmStateDeblocage(Request $request,DeblocageCga $d) {
         try {
             $validation = $request->validate([

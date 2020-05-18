@@ -60,6 +60,7 @@
               <th>Vendeurs</th>
               <th>Montant</th>
               <th>Numero Recu</th>
+              <th>-</th>
             </tr>
           </thead>
           <tbody>
@@ -68,6 +69,9 @@
               <td>{{r.vendeurs}}</td>
               <td>{{r.montant}}</td>
               <td>{{r.numero_recu}}</td>
+              <td>
+                <button class="uk-button uk-button-small uk-border-rounded uk-button-primary" uk-tooltip="Cliquez pour voir les details"><span uk-icon="icon : more"></span></button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -100,6 +104,7 @@
               <th>Montant</th>
               <th>Type</th>
               <th>Status de recouvrement</th>
+              <th>Recu</th>
             </tr>
           </thead>
           <tbody>
@@ -110,6 +115,7 @@
               <td>{{t.montant}}</td>
               <td>{{t.type}}</td>
               <td>{{t.status}}</td>
+              <td>{{t.recu}}</td>
             </tr>
           </tbody>
         </table>

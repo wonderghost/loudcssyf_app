@@ -157,6 +157,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// CONSTRUCTION DU TABLEAU DE BORD
 	// ENVOI DU FEEDBACK
 	Route::post('/user/feedback/send','ToolsController@sendFeedback');
+	Route::get('/user/feedback/list','ToolsController@listFeedback');
 	// rapport pour controleur
 	Route::get('user/add-rapport','RapportControlleur@addRapport')->middleware('controleur');
 	Route::post('/user/send-rapport/{slug}','RapportControlleur@sendRapport')->middleware('controleur');

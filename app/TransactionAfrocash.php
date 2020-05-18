@@ -18,4 +18,8 @@ class TransactionAfrocash extends Model
     public function afrocashcredite() {
       return $this->belongsTo('App\Afrocash','compte_credite','numero_compte')->first();
     }
+
+    public function recouvrement() {
+      return $this->belongsTo('App\Recouvrement','recouvrement','id')->first();
+    }
 }
