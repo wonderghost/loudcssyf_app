@@ -49,6 +49,7 @@ Vue.component('all-objectif',require('./adminComponents/AllObjectifComponents.vu
 Vue.component('visual-objectif',require('./adminComponents/VisualObjectifComponent.vue').default)
 Vue.component('deblocage-cga',require('./adminComponents/DeblocageCgaComponent.vue').default)
 Vue.component('feedback',require('./userComponents/FeedBackComponent.vue').default)
+Vue.component('objectif-user',require('./userComponents/ObjectifUserComponent.vue').default)
 
 
 import Vue from 'vue'

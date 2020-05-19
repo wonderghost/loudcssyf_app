@@ -31,5 +31,9 @@ class Objectif extends Model
     public function objectifVendeurs() {
         return $this->hasMany('App\ObjVendeur','id_objectif','id')->get();
     }
+
+    public function objectifVendeurStat() {
+        return $this->hasMany('App\ObjVendeur','id_objectif','id');
+    }
     
 }

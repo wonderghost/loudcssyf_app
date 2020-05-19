@@ -361,6 +361,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// ON RECUPERE LES DONNEES POUR LES GRAPHIQUES DE PERFORMANCES ET DES OBJECTIFS
 	Route::get('/user/chart/performances/recrutement','ChartController@performanceVendeurRecrutement')->middleware('vendeur');
 	Route::get('/user/chart/performances/reabonnement','ChartController@performanceVendeurReabonnement')->middleware('vendeur');
+	Route::get('/user/chart/objectif/recrutement','ObjectifController@statForVendeursRecrutement')->middleware('vendeur');
 	Route::post('/user/chart/performances/filter-by-date','ChartController@makeFilter')->middleware('vendeur');
 	#
 	Route::get('/user/chart/command-stat','ChartController@commandStat')->middleware('cga');

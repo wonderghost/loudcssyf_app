@@ -57,6 +57,44 @@ class ObjectifController extends Controller
 
 
     # DASHBOARD STATISTIQUES
+    #@@@@@@@@@@STATISTIQUES FOR USERS
+    
+    public function statForVendeursRecrutement(Request $request,Objectif $obj , RapportVente $rv) {
+        try {
+            $month = date('m');
+            $objectif = $obj->select()->whereYear('debut',2020)
+                ->whereMonth('debut',$month)
+                ->whereYear('fin',2020)
+                ->whereMonth('fin',$month)
+                ->first();
+            if($objectif) {
+                $tmp = $objectif->objectifVendeurStat()
+                    ->where('vendeurs',$request->user()->username)
+                    ->first();
+                $tmp['realise'] = [
+                    'recrutement'   =>  $rv->whereBetween('date_rapport',[$objectif->debut,$objectif->fin])
+                        ->where('vendeurs',$request->user()->username)
+                        ->where('type','recrutement')
+                        ->where('state','unaborted')
+                        ->sum('quantite'),
+
+                    'reabonnement'  =>  $rv->whereBetween('date_rapport',[$objectif->debut,$objectif->fin])
+                        ->where('vendeurs',$request->user()->username)
+                        ->where('type','reabonnement')
+                        ->where('state','unaborted')
+                        ->sum('montant_ttc')
+                ];
+
+                return response()
+                    ->json($tmp);
+            }
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    // 
 
     public function getDetails(Request $request , Objectif $obj , RapportVente $rv) {
         try {
