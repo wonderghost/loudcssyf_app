@@ -134,6 +134,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           type_credit : "cga"
         },
         errors : [],
+        listingPromo : []
       }
     },
     methods : {
@@ -141,6 +142,8 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         try {
           let response = await axios.get('/user/all-vendeurs')
           this.users = response.data
+          response = await axios.get('/user/promo/listing')
+          this.listingPromo = response.data
           this.isLoading = false
         } catch (e) {
             alert(e)
@@ -214,9 +217,6 @@ import 'vue-loading-overlay/dist/vue-loading.css';
       },
       typeUser () {
         return this.$store.state.typeUser
-      },
-      listingPromo () {
-        return this.$store.state.listingPromo
       }
     }
   }

@@ -121,15 +121,20 @@ public function payCommission(Request $request , PayCommission $pay) {
           $value->save();
         }
         // VENDEURS
-        $this->sendNotification("Paiement Commission","Vous avez envoye une demande de paiement de commission!",Auth::user()->username);
+        $n = $this->sendNotification("Paiement Commission","Vous avez envoye une demande de paiement de commission!",Auth::user()->username);
+        $n->save();
         // GESTIONNAIRE DE CREDIT
         $_user = User::where('type','gcga')->get();
         foreach($_user as $value) {
-          $this->sendNotification("Paiement Commission","Il y a une demande de paiement de commission de la part de : ".Auth::user()->localisation,$value->username);
+          $n = $this->sendNotification("Paiement Commission","Il y a une demande de paiement de commission de la part de : ".Auth::user()->localisation,$value->username);
+          $n->save();
         }
         // ADMIN
-        $this->sendNotification("Paiement Commission","Il y a une demande de paiement de commission de la part de : ".Auth::user()->localisation,'admin');
-        $this->sendNotification("Paiement Commission","Il y a une demande de paiement de commission de la part de : ".Auth::user()->localisation,'root');
+        $n = $this->sendNotification("Paiement Commission","Il y a une demande de paiement de commission de la part de : ".Auth::user()->localisation,'admin');
+        $n->save();
+
+        $n = $this->sendNotification("Paiement Commission","Il y a une demande de paiement de commission de la part de : ".Auth::user()->localisation,'root');
+        $n->save();
         return response()->json('done');
       } else {
         throw new AppException("Vous n'avez pas de commission !");
@@ -194,6 +199,47 @@ public function PayCommissionListForVendeurs(Request $request) {
 
   }
 
+  // ANNULATION PAIMENT DES COMMISSIONS
+  public function abortPayComission(Request $request , PayCommission $pay) {
+    try {
+        $validation = $request->validate([
+          'password_confirm' =>  'required|string',
+          'pay_comission_id'  =>  'required|string|exists:pay_comissions,id'
+        ],[
+          'required' => 'Le `:attribute` est requis !',
+          'exists'  =>  'Erreur , Ressayez plus tard !'
+        ]);
+
+        // VERIFIER LA VALIDITE DU MOT DE PASSE
+        if(!Hash::check($request->input('password_confirm'),$request->user()->password)) {
+          throw new AppException("Le Mot de passe est invalide ! Veuillez ressayez ...");
+        }
+
+        // recuperation des informations relatives a l'identifiant de la demande de paiment
+        $pay_comission = $pay->find($request->input('pay_comission_id'));
+
+        // verifier l'invalidite de son paiement
+        if($pay_comission->status !== 'unvalidated') {
+          throw new AppException("Impossible d'annuler cette demande , car elle a deja ete paye ...");
+        } 
+        // trouver tous les rapports ayant cette identifiant
+        $allRapports = $pay_comission->rapports()->get();
+        if($allRapports->count() > 0) {
+          // 
+          foreach($allRapports as $key => $value) {
+            $value->pay_comission_id = null;
+          }
+        }
+        
+        // $pay_comission->status = 'aborted';
+
+        return response()
+          ->json($allRapports);
+    } catch(AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
+    }
+  }
 
 // VALIDATION PAIEMENT DES COMMSSIONS
 
@@ -230,13 +276,18 @@ public function validatePayComission(Request $request) {
           $_user_credit = User::where('type','gcga')->get();
 
           foreach($_user_credit as $value) {
-            $this->sendNotification("Paiement Comission","Paiement de commission de : ".number_format($total)." GNF effectue pour :".$afrocash_account->vendeurs()->localisation,$value->username);
+            $n = $this->sendNotification("Paiement Comission","Paiement de commission de : ".number_format($total)." GNF effectue pour :".$afrocash_account->vendeurs()->localisation,$value->username);
+            $n->save();
           }
 
-          $this->sendNotification("Paiement Comission","Paiement de commission de : ".number_format($total)." GNF effectue pour :".$afrocash_account->vendeurs()->localisation,'admin');
-          $this->sendNotification("Paiement Comission","Paiement de commission de : ".number_format($total)." GNF effectue pour :".$afrocash_account->vendeurs()->localisation,'root');
+          $n = $this->sendNotification("Paiement Comission","Paiement de commission de : ".number_format($total)." GNF effectue pour :".$afrocash_account->vendeurs()->localisation,'admin');
+          $n->save();
 
-          $this->sendNotification("Paiement Comission","Paiement de commission a hauteur de : ".number_format($total)." GNF recu avec success!",$rapport->first()->vendeurs);
+          $n = $this->sendNotification("Paiement Comission","Paiement de commission de : ".number_format($total)." GNF effectue pour :".$afrocash_account->vendeurs()->localisation,'root');
+          $n->save();
+
+          $n = $this->sendNotification("Paiement Comission","Paiement de commission a hauteur de : ".number_format($total)." GNF recu avec success!",$rapport->first()->vendeurs);
+          $n->save();
           //
           $afrocash_central->solde-=$total;
           $afrocash_account->solde+=$total;

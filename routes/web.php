@@ -166,6 +166,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/all-rapport','RapportControlleur@listRapport')->middleware('controleur');
 	Route::get('/user/rapport/all','AdminController@getAllRapport')->middleware('controleur');
 	Route::get('user/rapport/commission-total','RapportControlleur@totalCommission')->middleware('controleur');
+	#listing promo
+	Route::get('/user/promo/listing','AdminController@getListingPromo');
 
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	Route::get('/user/rapport-ventes','RapportControlleur@getRapportByVendeurs')->middleware("vendeur");
@@ -334,6 +336,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/rapport-ventes/get-pay-commission','RapportControlleur@PayCommissionListForVendeurs')->middleware('vendeur');
 
 	Route::post('/user/rapport-ventes/validate-pay-commission','RapportControlleur@validatePayComission')->middleware('cga');
+	Route::post('/user/rapport-ventes/abort-pay-commission','RapportControlleur@abortPayComission')->middleware('cga');
+	
 	Route::get('/user/pay-comissions/all','RapportControlleur@payComissionList')->middleware('cga');
 	// NOTIFICATIONS
 	Route::get('/user/notification/getlist','NotificationController@getList');
