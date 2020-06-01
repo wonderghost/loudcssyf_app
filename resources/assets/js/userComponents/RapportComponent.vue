@@ -7,7 +7,8 @@
 
 
     <!-- modal details rapports -->
-    <template>
+    <detail-rapport :rapport="rappDetails"></detail-rapport>
+    <!-- <template>
       <div id="modal-detail-rapport" uk-modal="esc-close : false ; bg-close : true;">
         <div class="uk-modal-dialog">
           <div class="uk-modal-header">
@@ -24,7 +25,7 @@
           </div>
         </div>
       </div>
-    </template>
+    </template> -->
     <!-- // -->
 
     <template id="">
@@ -300,23 +301,20 @@ import datepicker from 'vue-date-picker'
               fin : ""
             },
             payFilter : "",
-            rapDetailsData : {
-              _token : "",
-              rapId : ""
-            },
-            detailSerials : []
+            rappDetails : {}
           }
         },
         methods : {
           getDetailsRapport : async function (rap) {
             try {
-                this.rapDetailsData._token = this.myToken
-                this.rapDetailsData.rapId = rap.id
-                $("#date-rap")[0].innerText = rap.date
+              this.rappDetails = rap
+              UIkit.modal("#modal-detail-rapport").show()
+                // this.rapDetailsData._token = this.myToken
+                // this.rapDetailsData.rapId = rap.id
+                // $("#date-rap")[0].innerText = rap.date
 
-                let response = await axios.post('/user/rapport-ventes/get-details',this.rapDetailsData)
-                this.detailSerials = response.data
-                UIkit.modal("#modal-detail-rapport").show()
+                // let response = await axios.post('/user/rapport-ventes/get-details',this.rapDetailsData)
+                // this.detailSerials = response.data
             } catch(error) {
                 alert(error)
             }

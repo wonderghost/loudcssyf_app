@@ -5,14 +5,6 @@
         :is-full-page="fullPage"
         loader="dots"></loading>
 
-  <!-- Error block -->
-        <template v-if="errors.length" v-for="error in errors">
-        <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert>
-          <a href="#" class="uk-alert-close" uk-close></a>
-          <p>{{error}}</p>
-        </div>
-      </template>
-      <!-- // -->
         <div class="uk-grid" uk-grid>
           <div class="uk-width-1-2@m">
             <div class="uk-margin-small">
@@ -48,42 +40,17 @@
 
         <ul class="uk-switcher uk-margin">
           <li>
-  					<form @submit.prevent="sendRapport('recrutement')" class="uk-width-1-2@m">
-              <div class="uk-margin-small">
-                <label for="">Quantite Materiel</label>
-                <input type="number" min="1" required v-model="formData.quantite_materiel" class="uk-input uk-border-rounded" value="">
-              </div>
-              <!-- SERIAL NUMBERS -->
-              <div v-if="with_serial" v-for="input in parseInt(formData.quantite_materiel)" class="uk-margin-small">
-                <input type="text" class="uk-input uk-border-rounded" v-model="formData.serial_number[input-1]" required :placeholder="'Serial Number '+input">
-              </div>
-              <!-- // -->
-              <div class="uk-margin-small">
-                <label for=""> <span uk-icon="icon : credit-card"></span> Montant TTC</label>
-                <input type="number" v-model="formData.montant_ttc" class="uk-input uk-border-rounded" value="">
-              </div>
-  					<button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
-          </form>
+  					<recrutement-component 
+              :rapp-date="formData.date"
+              :rapp-vendeur="formData.vendeurs"
+              :promo-id="'\''+formData.promo_id+'\''"></recrutement-component>
           </li>
           <li>
             <!-- REABONNEMENT -->
-  					<form @submit.prevent="sendRapport('reabonnement')" class="uk-width-1-2@m">
-                <div class="uk-margin-small">
-                  <label for=""> <span uk-icon="icon : credit-card"></span> Montant TTC</label>
-                  <input type="number" v-model="formData.montant_ttc" class="uk-input uk-border-rounded">
-                </div>
-    					<div class="uk-margin-small">
-    						<div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
-    	            <label>
-    								<input type="radio" name="type_credit" value="cga" checked> CGA
-    							</label>
-    	            <label>
-    								<input type="radio" name="type_credit" value="rex"> REX
-    							</label>
-    	        </div>
-    				</div>
-    				<button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
-          </form>
+  					<reabonnement-component
+              :rapp-date="formData.date"
+              :rapp-vendeur="formData.vendeurs"
+              :promo-id="'\''+formData.promo_id+'\''"></reabonnement-component>
             <!-- // -->
           </li>
           <li>
@@ -94,7 +61,7 @@
                 <input type="number" v-model="formData.quantite_materiel" min="1" class="uk-input uk-margin-small uk-border-rounded">
               </div>
               <!-- SERIAL NUMBERS -->
-              <div v-if="with_serial" v-for="input in parseInt(formData.quantite_materiel)" class="uk-margin-small">
+               <div v-if="with_serial" v-for="input in parseInt(formData.quantite_materiel)" :key="input" class="uk-margin-small">
                 <input type="text" class="uk-input uk-border-rounded" v-model="formData.serial_number[input-1]" required :placeholder="'Serial Number '+input">
               </div>
               <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
@@ -113,7 +80,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
       Loading
     },
     created (){
-      this.isLoading = true
+      
     },
     mounted() {
       this.getUsers()
@@ -121,7 +88,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
     data () {
       return {
         isLoading : false,
-        fullPage : true,
+        fullPage : false,
         users : [],
         with_serial : true,
         formData : {
@@ -131,6 +98,10 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           montant_ttc : 0,
           promo_id : "",
           serial_number : [],
+          formule : [],
+          debut : [],
+          duree : [],
+          options : [],
           type_credit : "cga"
         },
         errors : [],
@@ -139,8 +110,16 @@ import 'vue-loading-overlay/dist/vue-loading.css';
     methods : {
       getUsers : async function () {
         try {
+          this.isLoading = true
           let response = await axios.get('/user/all-vendeurs')
           this.users = response.data
+          if(this.typeUser == 'admin') {
+            response = await axios.get('/admin/formule/list')
+          } else {
+              response = await axios.get('/user/formule/list')
+          }
+          this.$store.commit('setFormuleList',response.data.formules)
+          this.$store.commit('setOptionList',response.data.options)
           this.isLoading = false
         } catch (e) {
             alert(e)
@@ -151,22 +130,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
 
         this.formData._token = this.myToken
         try {
-          if(type == 'recrutement') {
-            if(this.typeUser == 'admin') {
-              var response = await axios.post('/admin/send-rapport/recrutement',this.formData)
-            }
-            else {
-              var response = await axios.post('/user/send-rapport/recrutement',this.formData)
-            }
-            if(response.data == 'done') {
-              this.isLoading = false
-              UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Rapport ajoute :)</div>")
-                .then(function () {
-                  location.reload()
-                })
-            }
-          }
-          else if(type == 'reabonnement') {
+          if(type == 'reabonnement') {
             if(this.typeUser == 'admin') {
               var response = await axios.post('/admin/send-rapport/reabonnement',this.formData)
             }
@@ -209,6 +173,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
       }
     },
     computed : {
+      
       myToken () {
         return this.$store.state.myToken
       },

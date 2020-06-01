@@ -32,6 +32,8 @@ use App\RapportPromo;
 use App\CommandMaterial;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+use App\Abonnement;
+use App\AbonneOption;
 
 
 Trait Rapports {
@@ -55,10 +57,79 @@ Trait Rapports {
 		return view('admin.add-rapport-vente');
 	}
 
-	// ENREGISTREMENT D'UN RAPPORT
-	public function sendRapport(Request $request,$slug , Exemplaire $e ,RapportPromo $rp , Promo $p , StockVendeur $sv) {
-		try {
+	// 
+	#
+	public function checkSerialDebutDate($serialNumber) {
+
+		$serial = Exemplaire::find($serialNumber);
+		$abonnements = $serial ? $serial->abonnements() : null;
+		$valide_abonnement = null;
+		$future_abonnement = [];
+		$debut_prochain_abonnement = null;
+
+		if(!is_null($abonnements)) {
+			// trouver l'abonnement valide
+			foreach($abonnements as $key => $value) {
+				$debut = new Carbon($value->debut);
+	
+				$fin = new Carbon($value->debut);
+				$fin->addMonths($value->duree)->subDay();
+				$now = Carbon::now();
 				
+				if($debut <= $now && $now <= $fin) {
+					$valide_abonnement = $value;
+				} else {
+					$valide_abonnement = 'nothing';
+				}
+	
+				if($now < $debut) {
+					// abonement a venir
+					$future_abonnement[$key] = $value;
+				}
+			}
+	
+			// existence d'une abonnement valide
+			if(!is_null($valide_abonnement)) {
+				if(!empty($future_abonnement)) {
+					// existence de futur abonnement
+					// $last_future_abonnement = $future_abonnement
+				} else {
+					// aucun future abonnement
+					#calcul de la date de debut prevue
+					$debut_prochain_abonnement = new Carbon($valide_abonnement->debut);
+					$debut_prochain_abonnement->addMonths($valide_abonnement->duree);
+				}
+			} else {
+				// aucun abonnement valide n'existe
+			}
+	
+			return $debut_prochain_abonnement;
+		}
+		return false;
+	}
+	// VERIFIER LA VALIDITE D'UN ABONNEMENT POUR UN SERIAL NUMBER POUR DETERMINER LE DEBUT DE L'ABONNEMENT
+	public function checkSerialForGetDebutDate(Request $request) {
+		try {
+			if($this->checkSerialDebutDate($request->input('serial_materiel'))) {
+				return response()
+					->json($this->checkSerialDebutDate($request->input('serial_materiel'))->toDateString());
+			}
+				
+		} catch(AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
+
+	// ENREGISTREMENT D'UN RAPPORT
+	public function sendRapport(Request $request,$slug , Exemplaire $e ,RapportPromo $rp , Promo $p , StockVendeur $sv,Produits $produit) {
+		try {
+
+			// return response()
+			// 	->json($request);
+
+			// die();
+
 		if($slug) {
 
 				switch ($slug) {
@@ -66,14 +137,18 @@ Trait Rapports {
 
 					$validation = $request->validate([
 						'quantite_materiel'  =>  'required|min:1',
-						'montant_ttc' =>  'required|numeric|min:10000',
+						'montant_ttc' =>  'required|numeric',
 						'vendeurs'   =>  'required|exists:users,username',
 						'date'  =>  'required|before_or_equal:'.(date("Y/m/d",strtotime("now"))),
-						'serial_number.*'	=>	'required|distinct|exists:exemplaire,serial_number'
+						'serial_number.*'	=>	'required|distinct|exists:exemplaire,serial_number',
+						'debut.*'	=>	'required|date|after_or_equal:'.(date("Y/m/d",strtotime("now"))),
+						'formule.*'	=>	'required|string|exists:formule,nom',
+						'duree.*'	=>	'required|numeric'
 					],[
 						'required'  =>  'Veuillez remplir le champ `:attribute`',
 						'numeric'  =>  '`:attribute` doit etre une valeur numeric',
 						'before_or_equal' =>  'Vous ne pouvez ajouter de rapport a cette date',
+						'after_or_equal'	=>	'Le debut doit etre egal ou supereiru a la date d\'activation',
 						'distinct'	=>	"Doublons repere!",
 						'exists'	=>	'Numero inexistant! : `:attribute`'
 					]);
@@ -90,6 +165,7 @@ Trait Rapports {
 							}
 
 							$rapport = new RapportVente;
+
 							do {
 								$rapport->id_rapport =  Str::random(10).'_'.time();
 							} while ($rapport->isExistRapportById());
@@ -144,7 +220,7 @@ Trait Rapports {
 									$rp->promo = $tmp_promo->id;
 									$rapport->id_rapport_promo = $rp->id;
 									$rapport->promo = $tmp_promo->id;
-									$rp->save();
+									// $rp->save();
 								}
 							} else {
 								// la promo n'est pas active
@@ -159,8 +235,8 @@ Trait Rapports {
 									$rapport_date_to_carbon_date = new Carbon($request->input('date'));
 
 									if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
-										// le rapport est en mode promo
-										// AJOUT DU RAPPORT PROMO
+									// 	// le rapport est en mode promo
+									// 	// AJOUT DU RAPPORT PROMO
 										do {
 											$rp->id =  Str::random(10).'_'.time();
 										} while ($rp->isExistId());
@@ -172,7 +248,7 @@ Trait Rapports {
 
 										$rapport->promo = $thePromo->id;
 
-										$rp->save();
+										// $rp->save();
 									} else {
 										throw new AppException("La date choisi n'est pas inclut dans la periode de promo !");
 									}
@@ -180,7 +256,7 @@ Trait Rapports {
 								}
 							}
 
-							$rapport->save();
+							
 
 							// CHANGEMENT DE STATUS DES MATERIELS
 							foreach($request->input('serial_number') as $value) {
@@ -194,6 +270,34 @@ Trait Rapports {
 									]);
 							}
 
+							// ENREGISTREMENT DES ABONNEMENTS
+							$abonnement_data = [];
+							$allAbonnOption_data = [];
+							foreach($request->input('serial_number') as $key => $value) {
+								$abonnement_data[$key] = new Abonnement;
+								$abonnement_data[$key]->makeAbonnementId();
+								$abonnement_data[$key]->rapport_id = $id_rapport;
+								$abonnement_data[$key]->serial_number = $value;
+								$abonnement_data[$key]->debut = $request->input('debut')[$key];
+								$abonnement_data[$key]->duree = $request->input('duree')[$key];
+								$abonnement_data[$key]->formule_name = $request->input('formule')[$key];
+
+								// VERIFICATION DE L'EXISTENCE DE L'OPTION
+								if(array_key_exists($key,$request->input('options'))) {
+									$allAbonnOption_data[$key] = new AbonneOption;
+									$allAbonnOption_data[$key]->id_abonnement = $abonnement_data[$key]->id;
+									$allAbonnOption_data[$key]->id_option = $request->input('options')[$key];
+								}
+							}	
+
+							$rapport->save();
+							$rp->save();
+							foreach($request->input('serial_number') as $key => $value) {
+								$abonnement_data[$key]->save();
+								if(array_key_exists($key,$allAbonnOption_data)) {
+									$allAbonnOption_data[$key]->save();
+								}
+							}
 							// redirection
 							return response()
 								->json('done');
@@ -207,13 +311,21 @@ Trait Rapports {
 					case 'reabonnement':
 
 						$validation = $request->validate([
-							'montant_ttc' =>  'required|numeric|min : 10000',
+							'montant_ttc' =>  'required|numeric',
 							'vendeurs'   =>  'required|exists:users,username',
-							'date'  =>  'required|before_or_equal:'.(date("Y/m/d",strtotime("now")))
+							'date'  =>  'required|before_or_equal:'.(date("Y/m/d",strtotime("now"))),
+							'serial_number.*'	=>	'required|distinct|string|min:14|max:14',
+							'debut.*'	=>	'required|date|after_or_equal:date',
+							'formule.*'	=>	'required|string|exists:formule,nom',
+							'duree.*'	=>	'required|numeric'
+							
 						],[
 							'required'  =>  'Veuillez remplir le champ `:attribute`',
 							'numeric'  =>  '`:attribute` doit etre une valeur numeric',
-							'before_or_equal' =>  'Vous ne pouvez ajouter de rapport a cette date'
+							'before_or_equal' =>  'Vous ne pouvez ajouter de rapport a cette date',
+							'after_or_equal'	=>	'Le debut doit etre egal ou superieur a la date d\'activation',
+							'min'	=>	'14 chiffres requis!',
+							'max'	=>	'14 chiffres requis!'
 						]);
 
 						if(!$this->isExistRapportOnThisDate(new Carbon($request->input('date')),$request->input('vendeurs'),'reabonnement')) {
@@ -239,16 +351,110 @@ Trait Rapports {
 								$tmp_promo = $this->isExistPromo();
 								
 								if($tmp_promo) {
+
 									$promo_fin_to_carbon_date = new Carbon($tmp_promo->fin);
 									$promo_debut_to_carbon_date = new Carbon($tmp_promo->debut);
 									$rapport_date_to_carbon_date = new Carbon($request->input('date'));
+
 									if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
 										// le rapport est en mode promo
 										$rapport->promo = $tmp_promo->id;
 									}
+
+								} else {
+									// la promo n'est pas active
+									if($request->input('promo_id')) {
+										// le rapport appartien a une promo
+										$thePromo = $p->find($request->input('promo_id'));
+	
+										$promo_fin_to_carbon_date = new Carbon($thePromo->fin);
+	
+										$promo_debut_to_carbon_date = new Carbon($thePromo->debut);
+	
+										$rapport_date_to_carbon_date = new Carbon($request->input('date'));
+	
+										if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
+										// 	// le rapport est en mode promo
+											// $rapport->id_rapport_promo = $rp->id;
+											$rapport->promo = $thePromo->id;
+										} else {
+											throw new AppException("La date choisi n'est pas inclut dans la periode de promo !");
+										}
+	
+									}
+								}
+								$id_rapport = $rapport->id_rapport;
+								foreach($request->input('serial_number') as $key => $value) {
+									$tmp = $e->find($value);
+									if($tmp) {
+										// verifier si le numero est actif
+										if($tmp->status == 'inactif' && $tmp->origine == 1) {
+											throw new AppException("Attention Materiel vierge :`".$tmp->serial_number."` !");
+										}
+									} 
 								}
 
+								// verification de la date de debut en cas d'un abonnement actif
+								foreach($request->input('serial_number') as $key => $value) {
+									$dateSuggest = $this->checkSerialDebutDate($value);
+									$choiceDate = new Carbon($request->input('debut')[$key]);
+
+									if($choiceDate < $dateSuggest) {
+										throw new AppException("Erreur sur la date de debut pour :".$value);
+									}
+								}
+								
+
+							// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+								
+								foreach($request->input('serial_number') as $key	=>	$value) {
+									$tmp = $e->find($value);
+
+									$abonnement_data[$key] = new Abonnement;
+									$abonnement_data[$key]->makeAbonnementId();
+									$abonnement_data[$key]->rapport_id = $id_rapport;
+									$abonnement_data[$key]->serial_number = $value;
+									$abonnement_data[$key]->debut = $request->input('debut')[$key];
+									$abonnement_data[$key]->duree = $request->input('duree')[$key];
+									$abonnement_data[$key]->formule_name = $request->input('formule')[$key];
+									
+									// VERIFICATION DE L'EXISTENCE DE L'OPTION
+									if(array_key_exists($key,$request->input('options'))) {	
+										$allAbonnOption_data[$key] = new AbonneOption;
+										$allAbonnOption_data[$key]->id_abonnement = $abonnement_data[$key]->id;
+										$allAbonnOption_data[$key]->id_option = $request->input('options')[$key];
+									}
+
+									// verifier si un abonnement existe a la meme date de debut  pour le meme numero de materiel
+
+									// if($abonnement_data[$key]->isExistAbonnementForDebutDate()) {
+									// 	throw new AppException("Un abonnement existe deja a cette date de debut !");
+									// }
+									
+
+									if($tmp) {
+										// get serial info from database
+										
+									} else {
+										// insert into databse
+										$exem = new Exemplaire;
+										$exem->status = 'actif';
+										$exem->serial_number = $value;
+										$exem->origine = false;
+										$exem->produit = $produit->where('with_serial',1)->first()->reference;
+										$exem->save();
+									}
+								}
+								
 								$rapport->save();
+
+								foreach($request->input('serial_number') as $key => $value) {
+									$abonnement_data[$key]->save();
+									if(array_key_exists($key,$allAbonnOption_data) && !is_null($allAbonnOption_data[$key]->id_option)) {
+										$allAbonnOption_data[$key]->save();
+									}
+								}
+
 								return response()
 									->json('done');
 							} else if(($request->input('type_credit') == "rex") && $this->isRexDisponible($request->input('vendeurs'),$request->input('montant')) ) {
@@ -532,7 +738,7 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 			break;
 
 			case 'migration':
-				throw new AppException('En cous de parametrage , Ressayez plus tard');
+				throw new AppException('En cours de parametrage , Ressayez plus tard');
 			break;
 			
 			default:

@@ -32,6 +32,7 @@
         "vue": "^2.6.11",
         "vue-date-picker": "^2.5.0",
         "vue-filter-number-format": "^2.0.0",
+        "vue-flux": "^6.1.1",
         "vue-loading-overlay": "^3.2.0",
         "vue-quick-menu": "^1.0.7",
         "vue-radial-menu": "^1.1.1",

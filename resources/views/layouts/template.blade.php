@@ -30,7 +30,7 @@
   </script>
   <title> LOUDCSSYF </title>
   </head>
-  <body onselectstart="return false" oncontextmenu="return true" ondragstart="return false" onMouseOver="window.status=''; return true;">
+  <body onselectstart="return true" oncontextmenu="return true" ondragstart="return false" onMouseOver="window.status=''; return true;">
     <input type="hidden" id="user-type" value="{{Auth::user()->type}}">
     <input type="hidden" id="user-localisation" value="{{Auth::user()->localisation}}">
     <input type="hidden" id="username" value="{{Auth::user()->username}}">

@@ -15,7 +15,7 @@
                                 <h4 class="uk-card-title"><span uk-icon="icon : unlock"></span> Se Connecter</h4>
                             </div>
                             <div class="uk-card-body">
-                                <!-- Erreor block -->
+                                <!-- Error block -->
                                 <template v-if="errors.length" v-for="error in errors">
                                 <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
                                     <a href="#" class="uk-alert-close" uk-close></a>
@@ -54,7 +54,7 @@
                                         <h4>Pour utiliser la plateforme sur votre telephone</h4>
                                         <ol>
                                             <li>Ouvrez votre appareil photo sur le telephone</li>
-                                            <li>Positionnez votre telelphone face a cet ecran pour scanner le code</li>
+                                            <li>Positionnez votre telephone face a cet ecran pour scanner le code</li>
                                         </ol>
                                     </div>
                                     <div class="uk-width-1-3@m">

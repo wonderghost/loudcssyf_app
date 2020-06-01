@@ -50,7 +50,11 @@ Vue.component('visual-objectif',require('./adminComponents/VisualObjectifCompone
 Vue.component('deblocage-cga',require('./adminComponents/DeblocageCgaComponent.vue').default)
 Vue.component('feedback',require('./userComponents/FeedBackComponent.vue').default)
 Vue.component('objectif-user',require('./userComponents/ObjectifUserComponent.vue').default)
-
+Vue.component('formule-component',require('./adminComponents/FormuleComponent.vue').default)
+Vue.component('add-formule-component',require('./adminComponents/addFormuleComponent.vue').default)
+Vue.component('recrutement-component',require('./adminComponents/RecrutementComponent.vue').default)
+Vue.component('reabonnement-component',require('./adminComponents/ReabonnementComponent.vue').default)
+Vue.component('detail-rapport',require('./userComponents/DetailRapportComponent.vue').default)
 
 import Vue from 'vue'
 import Vuex from 'vuex'

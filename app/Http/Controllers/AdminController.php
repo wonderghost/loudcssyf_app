@@ -346,26 +346,65 @@ class AdminController extends Controller
     }
     //
     public function formule() {
-        $all = Formule::all();
-        $options = Option::all();
-        return view('admin.formule')->withFormule($all)->withOptions($options);
+        return view('admin.formule');
+    }
+    public function listFormule(Formule $f,Option $op) {
+      try {
+          return response()
+            ->json([
+              'formules'  =>  $f->all(),
+              'options' =>  $op->all()
+            ]);
+      } catch(AppException $e) {
+          header("Erreur",true,422);
+          die(json_encode($e->getMessage()));
+      }
     }
     //
-    public function addFormule(FormuleRequest $request) {
-        $formule = new Formule;
-        $formule->nom = $request->input('nom');
-        $formule->prix = $request->input('prix');
-        $formule->save();
-        return redirect('/admin/formule')->with('success',"Formule ajouté!");
+    public function addFormule(Request $request) {
+      try {
+            $validation = $request->validate([
+              'name'  => 'required|string|unique:formule,nom',
+              'price' =>  'required|numeric'
+            ],[
+              'required'  =>  'Champs `:attribute` requis',
+              'unique'  =>  '`:attribute` existe deja dans le systeme'
+            ]);
+
+            $formule = new Formule;
+            $formule->name = $request->input('name');
+            $formule->prix = $request->input('price'); 
+            $formule->save();
+            return response()
+              ->json('done');
+        } catch(AppException $e) {
+            header("Erreur!",true,422);
+            die(json_encode($e->getMessage()));
+        }
     }
 
     //
-    public function addOptionFormule(OptionRequest $request) {
-        $options = new Option;
-        $options->nom = $request->input('nom');
-        $options->prix = $request->input('prix');
-        $options->save();
-        return redirect('/admin/formule')->with('success',"Option ajoutée!");
+    public function addOptionFormule(Request $request) {
+      try {
+            $validation = $request->validate([
+              'name'  =>  'required|string|unique:options,nom',
+              'price'  =>  'required|numeric'
+            ],[
+              'required'  =>  'Champs `:attribute` requis',
+              'unique'  =>  '`:attribute` existe deja dans le systeme'
+            ]);
+
+            $option = new Option;
+            $option->nom = $request->input('name');
+            $option->prix = $request->input('price');
+            $option->save();
+
+            return response()
+              ->json('done');
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
     }
 
     //

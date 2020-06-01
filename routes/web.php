@@ -87,10 +87,12 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/rapport/all','AdminController@getAllRapport');
 	Route::get('/admin/rapport/commission-total','AdminController@totalCommission');
 	// OPTION DE FORMULES
-	Route::post('/admin/add-option','AdminController@addOptionFormule');
 	// FORMULES
 	Route::get('/admin/formule','AdminController@formule');
-	Route::post('/admin/formule','AdminController@addFormule');
+	Route::post('/admin/formule/add','AdminController@addFormule');
+	Route::post('/admin/option/add','AdminController@addOptionFormule');
+	
+	Route::get('/admin/formule/list','AdminController@listFormule');
 	// creation des comptes de credit
 	Route::get('/admin/add-account-credit','CreditController@addAccount');
 	Route::get('admin/get-global-solde','CreditController@getGlobalSolde');
@@ -162,10 +164,14 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('user/add-rapport','RapportControlleur@addRapport')->middleware('controleur');
 	Route::post('/user/send-rapport/{slug}','RapportControlleur@sendRapport')->middleware('controleur');
 	Route::post('/user/rapport/check-serial','RapportControlleur@checkSerial')->middleware('controleur');
+	Route::get('/user/formule/list','AdminController@listFormule')->middleware('controleur');
 
 	Route::get('/user/all-rapport','RapportControlleur@listRapport')->middleware('controleur');
 	Route::get('/user/rapport/all','AdminController@getAllRapport')->middleware('controleur');
 	Route::get('user/rapport/commission-total','RapportControlleur@totalCommission')->middleware('controleur');
+
+	# CHECK SERIAL FOR GET DEBUT DATE
+	Route::post('/user/rapport/check-serial-debut-date','RapportControlleur@checkSerialForGetDebutDate');
 
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	Route::get('/user/rapport-ventes','RapportControlleur@getRapportByVendeurs')->middleware("vendeur");

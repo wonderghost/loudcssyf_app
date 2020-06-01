@@ -56,7 +56,7 @@ class LoginController extends Controller
             return response()
                 ->json('done');
             } else {
-                throw new AppException("Donnees de connexions invalides!");
+                throw new AppException("Identifiant ou Mot de passe incorrect!");
             }
         } catch (AppException $e) {
             header("Erreur",true,422);

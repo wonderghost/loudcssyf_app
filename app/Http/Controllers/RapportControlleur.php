@@ -37,7 +37,8 @@ use App\Exceptions\AppException;
 use Illuminate\Support\Facades\Auth;
 use App\PayCommission;
 use App\TransactionAfrocash;
-
+use App\Abonnement;
+use App\AbonneOption;
 
 class RapportControlleur extends Controller
 {

@@ -63,6 +63,44 @@
               </div>
               <div class="uk-width-1-3@m">
                 <h4>Infos Abonnement</h4>
+                <div uk-slider>
+                  <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1">
+                      <ul class="uk-slider-items uk-grid-small uk-child-width-1-1@m">
+                          <li v-for="a in serialNumber.abonnements" :key="a.id">
+                              <div class="uk-card uk-card-default uk-padding-remove" style="box-shadow : none !important">
+                                  <div class="uk-card-body uk-padding-remove">
+                                     <ul class="uk-list">
+                                       <li class="uk-padding-remove uk-margin-remove">
+                                         <span>Formule : </span><span class="uk-text-bold">{{a.formule_name}}</span>
+                                       </li>
+                                       <li class="uk-padding-remove uk-margin-remove">
+                                         <span>Duree : </span><span class="uk-text-bold">{{a.duree}}</span>
+                                       </li>
+                                       <li class="uk-padding-remove uk-margin-remove">
+                                         <span>Option : </span><span class="uk-text-bold">
+                                           <i v-for="op in a.option" :key="op.id">{{op.id_option}}</i>
+                                         </span>
+                                       </li>
+                                       <li class="uk-padding-remove uk-margin-remove">
+                                         <span>Debut : </span><span class="uk-text-bold">{{a.debut}}</span>
+                                       </li>
+                                       <li class="uk-padding-remove uk-margin-remove">
+                                         <span>Fin : </span><span class="uk-text-bold">{{a.fin}}</span>
+                                       </li>
+                                       <li class="uk-margin-remove uk-padding-remove">
+                                         <span>Distributeur : </span><span class="uk-text-bold">{{a.distributeur}}</span>
+                                       </li>
+                                     </ul>
+                                  </div>
+                              </div>
+                          </li>
+                      </ul>
+                  </div>
+                  <div class="uk-margin-large-top">
+                    <a class="uk-position-bottom-center uk-position-small uk-margin-large-right" href="#" uk-slidenav-previous uk-slider-item="previous"></a>
+                    <a class="uk-position-bottom-center uk-position-small uk-margin-large-left " href="#" uk-slidenav-next uk-slider-item="next"></a>
+                </div>
+                </div>
               </div>
             </div>
           </div>

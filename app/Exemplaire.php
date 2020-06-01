@@ -33,4 +33,10 @@ class Exemplaire extends Model
       return $this->belongsTo('App\RapportVente','rapports','id_rapport')->first();
     }
 
+    public function abonnements() {
+      return $this->hasMany('App\Abonnement','serial_number','serial_number')
+        ->orderBy('debut','desc')
+        ->get();
+    }
+
 }
