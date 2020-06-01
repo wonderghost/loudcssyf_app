@@ -43,7 +43,7 @@
                     <td>
                     <template id="" v-if="pay.status == 'unvalidated' && typeUser == 'gcga'">
                         <button @click="userActiveValidate = pay" type="button" uk-toggle="target : #validate-payment-comission" class="uk-button uk-button-small uk-button-primary uk-text-capitalize uk-box-shadow-small uk-border-rounded">Validez</button>
-                        <button type="button" class="uk-button uk-button-small uk-button-danger uk-text-capitalize uk-box-shadow-small uk-border-rounded">Annulez</button>
+                        <button @click="userActiveValidate = pay" type="button" uk-toggle="target : #abort-payment-comission" class="uk-button uk-button-small uk-button-danger uk-text-capitalize uk-box-shadow-small uk-border-rounded">Annulez</button>
                     </template>
                   </td>
                   </tr>
@@ -95,6 +95,38 @@
   					</div>
   	    </div>
   	</div>
+    <!-- ANNULER UNE DEMANDE DE PAIEMENT DE COMMISSION -->
+    <div id="abort-payment-comission" uk-modal="esc-close : false ; bg-close : false">
+  	    <div class="uk-modal-dialog">
+
+  	        <div class="uk-modal-header" >
+              <div class="uk-alert-warning" uk-alert>
+                <p> <span uk-icon="icon : warning"></span> Vous confirmez l'annulation pour le paiement des commissions a hauteur de : <span class="uk-text-bold">{{ userActiveValidate.total }} GNF </span> , pour :  <span class="uk-text-bold">{{ userActiveValidate.vendeurs }}</span></p>
+              </div>
+  	        </div>
+  	        <div class="uk-modal-body">
+              <!-- Erreor block -->
+                <template v-if="errors.length" v-for="error in errors">
+                  <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+                    <a href="#" class="uk-alert-close" uk-close></a>
+                    <p>{{error}}</p>
+                  </div>
+                </template>
+              <form @submit.prevent="abortPayComission()">
+                <div class="uk-margin-small">
+                  <label for="">Confirmez votre mot de passe</label>
+                  <input type="password" v-model="passwordConfirm" class="uk-input uk-border-rounded uk-box-shadow-hover-small" placeholder="Entrez votre mot de passe ..." autofocus>
+                </div>
+                <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small">validez <span uk-icon="icon : check"></span> </button>
+              </form>
+  					</div>
+  	        <div class="uk-modal-footer uk-text-right">
+  						<button uk-toggle="target : #modal-commission" class="uk-button uk-button-default uk-border-rounded uk-box-shadow-small uk-button-small" type="button"> <span uk-icon="icon : arrow-left"></span> Retour</button>
+  						<button class="uk-button uk-button-danger uk-modal-close uk-border-rounded uk-box-shadow-small uk-button-small" type="button">Fermer</button>
+  					</div>
+  	    </div>
+  	</div>
+    <!-- // -->
   </div>
 </template>
 <script>
@@ -187,6 +219,29 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             } else {
                 this.errors.push(error.response.data)
             }
+          }
+        },
+        abortPayComission : async function () {
+          try {
+              // this.isLoading = true
+              UIkit.modal($("#abort-payment-comission")).hide()
+              let response = await axios.post('/user/rapport-ventes/abort-pay-commission',{
+                _token : this.myToken,
+                password_confirm : this.passwordConfirm,
+                pay_comission_id : this.userActiveValidate.id
+              })
+              console.log(response.data)
+          } catch(error) {
+              this.isLoading = false
+              UIkit.modal($("#abort-payment-comission")).show()
+              if(error.response.data.errors) {
+                let errorTab = error.response.data.errors
+                for (var prop in errorTab) {
+                  this.errors.push(errorTab[prop][0])
+                }
+              } else {
+                  this.errors.push(error.response.data)
+              }
           }
         }
       },

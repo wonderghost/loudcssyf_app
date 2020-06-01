@@ -13679,6 +13679,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     serialNumberList: [],
     listingPromo: [],
     materials: [],
+<<<<<<< HEAD
     deblocageCount: 0,
     optionsList: [],
     formulesList: []
@@ -13690,6 +13691,11 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     setOptionList: function setOptionList(state, list) {
       state.optionsList = list;
     },
+=======
+    deblocageCount: 0
+  },
+  mutations: {
+>>>>>>> version-1.7
     setDeblocageCount: function setDeblocageCount(state, number) {
       state.deblocageCount = number;
     },
