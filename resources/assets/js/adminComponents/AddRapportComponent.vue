@@ -114,7 +114,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           this.isLoading = true
           let response = await axios.get('/user/all-vendeurs')
           this.users = response.data
-<<<<<<< HEAD
+
           if(this.typeUser == 'admin') {
             response = await axios.get('/admin/formule/list')
           } else {
@@ -122,10 +122,10 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           }
           this.$store.commit('setFormuleList',response.data.formules)
           this.$store.commit('setOptionList',response.data.options)
-=======
+
           response = await axios.get('/user/promo/listing')
           this.listingPromo = response.data
->>>>>>> version-1.7
+
           this.isLoading = false
         } catch (e) {
             alert(e)
