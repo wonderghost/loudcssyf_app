@@ -17,7 +17,7 @@
         <form @submit.prevent="sendReabonnementRapport()" class="uk-width-1-1@m">
               <div class="uk-margin-small uk-width-1-6@m">
                 <label for="">Quantite Materiel</label>
-                <input type="number" min="1" required v-model="formData.quantite_materiel" class="uk-input uk-border-rounded" value="">
+                <input @keyup="ajusteQuantiteInput()" @change="ajusteQuantiteInput()" type="number" min="1" required v-model="formData.quantite_materiel" class="uk-input uk-border-rounded" value="">
               </div>
               <!-- SERIAL NUMBERS -->
               <div v-for="input in parseInt(formData.quantite_materiel)" :key="input" class="uk-margin-small uk-width-1-1@m uk-grid-small uk-border-rounded uk-padding-small" uk-grid style="border:solid 1px #ddd !important;">
@@ -160,6 +160,20 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 if(response.data) {
                   this.debutSuggest = response.data
                 }
+            } catch(error) {
+                alert(error)
+            }
+          },
+          ajusteQuantiteInput : function () {
+            try {
+                var diff = this.formData.quantite_materiel - this.formData.formule.length
+                var loop = diff * (-1)
+                if(diff < 0) {
+                  for(var i = 0; i < loop ; i++) {
+                    this.formData.formule.pop()
+                  }
+                }
+                this.calculMontantTtc()
             } catch(error) {
                 alert(error)
             }

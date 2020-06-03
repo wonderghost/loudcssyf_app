@@ -23,7 +23,7 @@
                     <template v-if="promoStatus">
                         <div class="uk-width-1-4@m">
                             <label for="">Promo en cours</label>
-                            <span class="uk-input uk-border-rounded">{{activePromo.intitule}}</span>
+                            <span class="uk-input uk-border-rounded" :uk-tooltip="activePromo.intitule">{{activePromo.intitule.substring(0,35)}}...</span>
                         </div>
                         <div class="uk-width-1-6@m">
                             <label for="">Debut</label>
@@ -49,7 +49,7 @@
                     <template v-if="promoStatus">
                         <div class="uk-width-1-1@s">
                             <label for="">Promo en cours</label>
-                            <span class="uk-input uk-border-rounded">{{activePromo.intitule}}</span>
+                            <span class="uk-input uk-border-rounded">{{activePromo.intitule.substring(0,30)}}...</span>
                         </div>
                         <div class="uk-width-1-1@s">
                             <label for="">Debut</label>

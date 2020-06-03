@@ -112,8 +112,34 @@ class ObjectifController extends Controller
                         ->where('vendeurs',$value->vendeurs()->username)
                         ->where('type','reabonnement')
                         ->where('state','unaborted')
+                        ->sum('montant_ttc'),
+                    
+                    'ttc_recrutement'   =>  $rv->whereBetween('date_rapport',[$objectif->debut,$objectif->fin])
+                        ->where('vendeurs',$value->vendeurs()->username)
+                        ->where('type','recrutement')
+                        ->where('state','unaborted')
                         ->sum('montant_ttc')
                 ];
+
+                $bonus = 0;
+                $bonus_reabonnement = 0;
+                $bonus_recrutement = 0;
+
+                // calcule de la marge arriere
+                
+                $pourcent_recrutement = $realise['recrutement'] / $value->plafond_recrutement;
+                $pourcent_reabonnement = $realise['reabonnement'] / $value->plafond_reabonnement;
+
+                if($pourcent_recrutement >= 1.1 && $value->classe_recrutement != 'C') {
+                    $bonus_recrutement = ($realise['ttc_recrutement'] / 1.18) * $objectif->marge_arriere;
+                }
+
+                if($pourcent_reabonnement >= 1.1 && $value->classe_reabonnement != 'C') {
+                    $bonus_reabonnement = ($realise['reabonnement'] / 1.18) * $objectif->marge_arriere;
+                }
+
+
+                $bonus = $bonus_recrutement + $bonus_reabonnement;
 
                 $data [$key] = [
                     'vendeur'   =>  $value->vendeurs(),
@@ -122,7 +148,7 @@ class ObjectifController extends Controller
                     'class_recru'   =>  $value->classe_recrutement,
                     'class_rea' =>  $value->classe_reabonnement,
                     'realise'   =>  $realise,
-                    'bonus' =>  '-'
+                    'bonus' =>  $bonus
                 ];
             }
             return response()

@@ -345,7 +345,11 @@ public function getDetailsForRapport(Request $request , RapportVente $r) {
         $debut = new Carbon($value->debut);
 	
 				$fin = new Carbon($value->debut);
-        $fin->addMonths($value->duree)->subDay();
+        $fin->addMonths($value->duree)
+          ->subDay()
+          ->addHours(23)
+          ->addMinutes(59)
+          ->addSeconds(59);;
         
         $data[$key] = [
           'serial'  =>  $value->serial_number,

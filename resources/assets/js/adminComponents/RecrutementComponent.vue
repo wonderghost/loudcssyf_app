@@ -16,7 +16,7 @@
         <form @submit.prevent="sendRecrutementRapport()" class="uk-width-1-1@m">
               <div class="uk-margin-small uk-width-1-6@m">
                 <label for="">Quantite Materiel</label>
-                <input type="number" min="1" required v-model="formData.quantite_materiel" class="uk-input uk-border-rounded" value="">
+                <input @keyup="ajusteQuantiteInput()" @change="ajusteQuantiteInput()" type="number" min="1" required v-model="formData.quantite_materiel" class="uk-input uk-border-rounded" value="">
               </div>
               <!-- SERIAL NUMBERS -->
               <div v-for="input in parseInt(formData.quantite_materiel)" :key="input" class="uk-margin-small uk-width-1-1@m uk-grid-small uk-border-rounded uk-padding-small" uk-grid style="border:solid 1px #ddd !important;">
@@ -27,18 +27,21 @@
                 <div class="uk-width-1-6@m">
                   <label for="">Formule</label>
                   <select @change="calculMontantTtc()" v-model="formData.formule[input-1]" class="uk-select uk-border-rounded">
+                    <option value="">--Formule--</option>
                     <option v-for="f in formules" :key="f.nom" :data-price="f.prix" :value="f.nom">{{f.nom}}</option>
                   </select>
                 </div>
                 <div class="uk-width-1-6@m">
                   <label for="">Options</label>
                   <select @change="calculMontantTtc()" v-model="formData.options[input-1]" class="uk-select uk-border-rounded">
+                    <option value="">--Option--</option>
                     <option v-for="o in options" :key="o.nom" :value="o.nom">{{o.nom}}</option>
                   </select>
                 </div>
                 <div class="uk-width-1-6@m">
                   <label for="">Duree</label>
                   <select @change="calculMontantTtc()" v-model="formData.duree[input-1]" class="uk-select uk-border-rounded">
+                    <option value="">--Duree--</option>
                     <option v-for="d in duree" :key="d" :value="d">{{d}}</option>
                   </select>
                 </div>
@@ -130,6 +133,20 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 }
             }
           },
+          ajusteQuantiteInput : function () {
+            try {
+                var diff = this.formData.quantite_materiel - this.formData.formule.length
+                var loop = diff * (-1)
+                if(diff < 0) {
+                  for(var i = 0; i < loop ; i++) {
+                    this.formData.formule.pop()
+                  }
+                }
+                this.calculMontantTtc()
+            } catch(error) {
+                alert(error)
+            }
+          },
           calculMontantTtc : function () {
             try {
                 var ttc_montant = 0
@@ -142,9 +159,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                   } else {
                       if(this.formData.formule[i] && this.formData.duree[i]) {
                         var tmp = parseFloat(this.currentFormule[0].prix) * parseInt(this.formData.duree[i])
-                      } else {
-                         throw "Veuillez choisir une Formule et une duree!"
-                      }
+                      } 
                   }
                   ttc_montant += tmp
                   i++

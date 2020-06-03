@@ -44,7 +44,7 @@
                                 <td>{{d.realise.reabonnement | numFormat}} ({{ (d.realise.reabonnement/ d.obj_rea) | numFormat('0.[00]%') }})</td>
                                 <td>{{d.class_recru}}</td>
                                 <td>{{d.class_rea}}</td>
-                                <td>{{d.bonus}}</td>
+                                <td>{{d.bonus | numFormat}}</td>
                             </tr>
                         </tbody>
                     </table>
