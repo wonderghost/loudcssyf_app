@@ -126,9 +126,9 @@ class VendeurController extends Controller
                     ->first();
             }
 
-            foreach($data as $value) {
+            foreach($data as $key => $value) {
                 $thePromo = $value->promos();
-                if(is_null($value->pay_at) && $value->montant !== 0 && $thePromo->status_promo == 'inactif') {
+                if((is_null($value->pay_at) && $value->montant != 0) && $thePromo->status_promo == 'inactif') {
                     $flag = false;
                 }
             }
