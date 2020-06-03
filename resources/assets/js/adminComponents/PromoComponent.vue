@@ -89,7 +89,7 @@
                                     <td>{{r.status}}</td>
                                     <td>{{r.promo.intitule}}</td>
                                     <td>
-                                        <template v-if="r.kits != 0 && !promoStatus">
+                                        <template v-if="r.kits !== 0 && r.promo.status_promo == 'inactif'">
                                             <template v-if="r.montant < 0">
                                                 <button @click="promoIdToCompense = r.promo.id" uk-toggle="target : #modal-confirm-password" class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-text-capitalize" v-if="r.pay_at == '-'"> compensez</button>
                                             </template>
@@ -231,6 +231,12 @@
                                         <label for=""><span uk-icon="icon : search"></span> Rechercher</label>
                                         <input type="search" class="uk-input uk-border-rounded">
                                     </div>
+                                    <div class="uk-width-1-4@m">
+                                        <label for=""><span uk-icon="icon : list">Liste Promo</span></label>
+                                        <select v-model="filterPromoId" @change="filterRemboursementByPromo()" class="uk-select uk-border-rounded">
+                                            <option v-for="p in listingPromo" :key="p.id" :value="p.id">{{p.intitule}}</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <table class="uk-table uk-table-striped uk-table-hover uk-table-small uk-table-divider">
                                     <thead>
@@ -334,10 +340,22 @@ export default {
             histoRemboursement : [],
             listingPromo : [],
             passwordConfirmation : "",
-            promoIdToCompense : ""
+            promoIdToCompense : "",
+            filterPromoId : ""
         }
     },
     methods : {
+        filterRemboursementByPromo : async function () {
+            try {
+                let response = await axios.post('/admin/promo/filter-get-remboursement',{
+                    _token : this.myToken,
+                    id_promo : this.filterPromoId
+                })
+                this.remboursementPromo = response.data
+            } catch(error) {
+                alert(error)
+            }
+        },
         getAllPromo : async function () {
             try {
                 let response = await axios.get('/admin/promo/listing')

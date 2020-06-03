@@ -115,13 +115,26 @@ class VendeurController extends Controller
 
     public function infosRemboursement(Request $request , Promo $p  , RemboursementPromo $rp) {
         try {
-            $lastPromo = $p->select()->orderBy('created_at','desc')->first();
-            $remboursementForUser = $rp->where('vendeurs',$request->user()->username)
-                ->where('promo_id',$lastPromo->id)
-                ->first();
+            $promos = $p->select()->orderBy('created_at','desc')->get();
+            $data = [];
+
+            $flag = true;
+
+            foreach($promos as $key => $value) {
+                $data [$key] = $rp->where('vendeurs',$request->user()->username)
+                    ->where('promo_id',$value->id)
+                    ->first();
+            }
+
+            foreach($data as $value) {
+                $thePromo = $value->promos();
+                if(is_null($value->pay_at) && $value->montant !== 0 && $thePromo->status_promo == 'inactif') {
+                    $flag = false;
+                }
+            }
 
             return response()
-                ->json($remboursementForUser);
+                ->json($flag);
         } catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));

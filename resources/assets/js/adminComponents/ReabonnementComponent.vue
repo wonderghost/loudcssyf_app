@@ -21,45 +21,52 @@
               </div>
               <!-- SERIAL NUMBERS -->
               <div v-for="input in parseInt(formData.quantite_materiel)" :key="input" class="uk-margin-small uk-width-1-1@m uk-grid-small uk-border-rounded uk-padding-small" uk-grid style="border:solid 1px #ddd !important;">
-                <div class="uk-width-1-6@m">
-                  <label for="">Materiel - {{input}}</label>
-                  <input type="text" @blur="searchSerialDebut(formData.serial_number[input-1],input)" class="uk-input uk-border-rounded" v-model="formData.serial_number[input-1]" required :placeholder="'Serial Number '+input">
+                <div class="uk-width-1-1@m uk-grid-small" v-if="upgradeState[input-1]" uk-grid>
+                  
+                  <div class="uk-width-1-6@m">
+                    <label for="">Ancienne formule</label>
+                    <select class="uk-select uk-border-rounded">
+                      <option value=""></option>
+                    </select>
+                  </div>
                 </div>
-                <div class="uk-margin-medium-top">
-                  <label for="">
-                    Upgrade
-                    <input v-model="upgradeState" type="checkbox" class="uk-checkbox">
-                  </label>
-                </div>
-                <div v-if="upgradeState" class="uk-width-1-6@m">
-                  <label for="">Ancienne Formule</label>
-                  <span class="uk-input uk-border-rounded"></span>
-                </div>
-                <div class="uk-width-1-6@m">
-                  <label for="">Formule</label>
-                  <select @change="calculMontantTtc()" v-model="formData.formule[input-1]" class="uk-select uk-border-rounded">
-                    <option value="">--Formule--</option>
-                    <option v-for="f in formules" :key="f.nom" :data-price="f.prix" :value="f.nom">{{f.nom}}</option>
-                  </select>
-                </div>
-                <div class="uk-width-1-6@m">
-                  <label for="">Options</label>
-                  <select @change="calculMontantTtc()" v-model="formData.options[input-1]" class="uk-select uk-border-rounded">
-                    <option value="">--Option--</option>
-                    <option v-for="o in options" :key="o.nom" :value="o.nom">{{o.nom}}</option>
-                  </select>
-                </div>
-                <div class="uk-width-1-6@m">
-                  <label for="">Duree</label>
-                  <select @change="calculMontantTtc()" v-model="formData.duree[input-1]" class="uk-select uk-border-rounded">
-                    <option value="">--duree--</option>
-                    <option v-for="d in duree" :key="d" :value="d">{{d}}</option>
-                  </select>
-                </div>
-                <div class="uk-width-1-6@m">
-                  <label for="">Debut : </label>
-                  <span class="uk-text-bold">{{debutSuggest}}</span>
-                  <input v-model="formData.debut[input-1]" :id="'debut-'+input" type="date" class="uk-input uk-border-rounded">
+                <div class="uk-width-1-1@m uk-grid-small" uk-grid>
+                  <div class="uk-width-1-6@m">
+                    <label for="">Materiel - {{input}}</label>
+                    <input type="text" @blur="searchSerialDebut(formData.serial_number[input-1],input)" class="uk-input uk-border-rounded" v-model="formData.serial_number[input-1]" required :placeholder="'Serial Number '+input">
+                  </div>
+                  <div class="uk-margin-medium-top">
+                    <label for="">
+                      Upgrade
+                      <input v-model="upgradeState[input-1]" @change="upgradeStateAction(formData.serial_number[input-1],upgradeState[input-1],input-1)" type="checkbox" class="uk-checkbox">
+                    </label>
+                  </div>
+                  <div class="uk-width-1-6@m">
+                    <label for="">Formule</label>
+                    <select @change="calculMontantTtc()" v-model="formData.formule[input-1]" class="uk-select uk-border-rounded">
+                      <option value="">--Formule--</option>
+                      <option v-for="f in formules" :key="f.nom" :data-price="f.prix" :value="f.nom">{{f.nom}}</option>
+                    </select>
+                  </div>
+                  <div class="uk-width-1-6@m">
+                    <label for="">Options</label>
+                    <select @change="calculMontantTtc()" v-model="formData.options[input-1]" class="uk-select uk-border-rounded">
+                      <option value="">--Option--</option>
+                      <option v-for="o in options" :key="o.nom" :value="o.nom">{{o.nom}}</option>
+                    </select>
+                  </div>
+                  <div class="uk-width-1-6@m">
+                    <label for="">Duree</label>
+                    <select @change="calculMontantTtc()" v-model="formData.duree[input-1]" class="uk-select uk-border-rounded">
+                      <option value="">--duree--</option>
+                      <option v-for="d in duree" :key="d" :value="d">{{d}}</option>
+                    </select>
+                  </div>
+                  <div class="uk-width-1-6@m">
+                    <label for="">Debut : </label>
+                    <span class="uk-text-bold">{{debutSuggest}}</span>
+                    <input v-model="formData.debut[input-1]" :id="'debut-'+input" type="date" class="uk-input uk-border-rounded">
+                  </div>
                 </div>
               </div>
               <!-- // -->
@@ -93,31 +100,57 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 isLoading : false,
                 fullPage : true,
                 formData : {
-                    _token : "",
-                    quantite_materiel : 1,
-                    vendeurs : "",
-                    date : "",
-                    montant_ttc : 0,
-                    promo_id : "",
-                    serial_number : [""],
-                    formule : [""],
-                    debut : [""],
-                    duree : [""],
-                    options : [""],
-                    type_credit : "cga"
+                  _token : "",
+                  quantite_materiel : 1,
+                  vendeurs : "",
+                  date : "",
+                  montant_ttc : 0,
+                  promo_id : "",
+                  serial_number : [""],
+                  formule : [""],
+                  debut : [""],
+                  duree : [""],
+                  options : [""],
+                  type_credit : "cga",
+                  upgrade_data : [{
+                    old_abonnement  : {},
+                    new_abonnement : {}
+                  }]
               },
+              upgradeData : [],
               duree : [1,2,3,6,12,24],
               amount_ttc : [],
               currentF : "",
               currentO : "",
               errors : [],
               // 
-              upgradeState : false,
-              debutSuggest : ""
+              upgradeState : [false],
+              debutSuggest : "",
+              failState : [false]
 
             }
         },
         methods : {
+          upgradeStateAction : async function (serial,stateUpgrade,index) {
+            try {
+                if(!stateUpgrade) {
+                  return 0
+                }
+                let response = await axios.post('/user/check-serial-upgrade/',{
+                  _token : this.myToken,
+                  serial_number : serial
+                })
+                
+                if(response.data == 'fail') {
+                  // sortir une ligne vierge
+                    this.failState[index] = true
+                } else {
+                    this.failState[index] = false
+                }
+            } catch(error) {
+                alert(error)
+            }
+          },
           searchSerialDebut : async function (serial,index) {
             try {
                 let response = await axios.post('/user/rapport/check-serial-debut-date',{

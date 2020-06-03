@@ -7,7 +7,7 @@
 
 
     <!-- modal details rapports -->
-    <detail-rapport :rapport="rappDetails"></detail-rapport>
+    <detail-rapport :rapport="rappDetails" :rapport-infos="rappInfos"></detail-rapport>
     <!-- <template>
       <div id="modal-detail-rapport" uk-modal="esc-close : false ; bg-close : true;">
         <div class="uk-modal-dialog">
@@ -156,7 +156,7 @@
           <tbody>
             <tr v-for="rap in rappWithDate.slice(start,end)" :key="rap.id_rapport">
               <td>{{rap.date}}</td>
-              <td>{{rap.vendeurs}}</td>
+              <td :uk-tooltip="rap.vendeurs">{{rap.vendeurs.substring(0,40)}}...</td>
               <td>{{rap.type}}</td>
               <td>{{rap.credit}}</td>
               <td>{{rap.quantite}}</td>
@@ -172,7 +172,7 @@
                   <span class="uk-alert-danger">invalide</span>
                 </template>
 
-                <template v-if="rap.state == 'unaborted' && (rap.type == 'recrutement' || rap.type == 'migration')">
+                <template v-if="rap.state == 'unaborted'">
                   <button @click="getDetailsRapport(rap)" class="uk-button uk-button-small uk-border-rounded uk-button-default uk-text-capitalize">Details</button>
                 </template>
               </td>
@@ -301,20 +301,20 @@ import datepicker from 'vue-date-picker'
               fin : ""
             },
             payFilter : "",
-            rappDetails : {}
+            rappDetails : [],
+            rappInfos : {}
           }
         },
         methods : {
           getDetailsRapport : async function (rap) {
             try {
-              this.rappDetails = rap
               UIkit.modal("#modal-detail-rapport").show()
-                // this.rapDetailsData._token = this.myToken
-                // this.rapDetailsData.rapId = rap.id
-                // $("#date-rap")[0].innerText = rap.date
-
-                // let response = await axios.post('/user/rapport-ventes/get-details',this.rapDetailsData)
-                // this.detailSerials = response.data
+              let response = await axios.post('/user/rapport-ventes/get-details',{
+                _token : this.myToken,
+                id_rapport : rap.id
+              })
+              this.rappDetails = response.data                
+              this.rappInfos = rap
             } catch(error) {
                 alert(error)
             }

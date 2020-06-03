@@ -58,6 +58,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/promo/edit','AdminController@editPromo');
 	Route::post('/admin/promo/interrompre','AdminController@interruptionPromo');
 	Route::get('/admin/promo/get-remboursement','AdminController@getRemboursementForUsers'); // vue sur les remboursements lies a la promo
+	Route::post('/admin/promo/filter-get-remboursement','AdminController@makeFilterRemboursementUsers');
 	Route::get('/admin/promo/listing','AdminController@getListingPromo'); // Listing de toutes les promos
 	// Depenses
 	Route::post('/admin/afrocash/depenses','AdminController@addDepenses');
@@ -165,13 +166,13 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/send-rapport/{slug}','RapportControlleur@sendRapport')->middleware('controleur');
 	Route::post('/user/rapport/check-serial','RapportControlleur@checkSerial')->middleware('controleur');
 	Route::get('/user/formule/list','AdminController@listFormule')->middleware('controleur');
+	Route::post('/user/check-serial-upgrade/','RapportControlleur@checkSerialOnUpgradeState');
 
 	Route::get('/user/all-rapport','RapportControlleur@listRapport')->middleware('controleur');
 	Route::get('/user/rapport/all','AdminController@getAllRapport')->middleware('controleur');
 	Route::get('user/rapport/commission-total','RapportControlleur@totalCommission')->middleware('controleur');
 	#listing promo
 	Route::get('/user/promo/listing','AdminController@getListingPromo');
-
 	# CHECK SERIAL FOR GET DEBUT DATE
 	Route::post('/user/rapport/check-serial-debut-date','RapportControlleur@checkSerialForGetDebutDate');
 

@@ -771,6 +771,115 @@ public function getInfosRemboursementPromo(Request $request,
 			die(json_encode($e->getMessage()));
 		}
 	}
+	// FILTER LA LISTE DE REMBOURSEMENT POUR LES UTILISATEURS
+	public function makeFilterRemboursementUsers(
+		Request $request,
+		User $u,
+		Produits $produit,
+		Livraison $l ,
+		Promo $p , 
+		commandMaterial $cm , 
+		Exemplaire $e , 
+		RavitaillementVendeur $rv,
+		LivraisonSerialFile $lf,
+		CommandProduit $cp,
+		RemboursementPromo $rp
+	) {
+		try {
+			$vendeurs = $u->whereIn('type',['v_da','v_user'])
+				->get();
+			$data = [];
+
+			foreach($vendeurs as $key => $value) {
+				
+				$remboursement = $this->FilterGetRemboursementForUsers(
+					$request,
+					$value->username,
+					$produit,
+					$l,
+					$p,
+					$cm,
+					$e,
+					$rv,
+					$lf,
+					$cp
+				);
+				
+				$_data = $rp->where('vendeurs',$value->username)
+					->where('promo_id',$remboursement['promo_id'])
+					->first();
+
+				if($_data) {
+					$data[$key] = [
+						'vendeur'	=>	$value->localisation,
+						'remboursement'	=>	$remboursement,
+						'pay_at'	=> $_data->pay_at ? $_data->pay_at : '-',
+						'status'	=>	$_data->pay_at ? 'regler' : '-'
+					];
+				} else {
+					$data[$key] = [
+						'vendeur'	=>	$value->localisation,
+						'remboursement'	=>	$remboursement,
+						'pay_at'	=>	'',
+						'status'	=>	''
+					];
+				}
+				// MISE A JOUR DE LA TABLE DE REMBOURSEMENT
+				if($data) {
+					$this->updateRemboursementTable($data[$key] , $value->username);
+				}
+			}
+			return response()
+				->json($data);
+		} catch(AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
+	
+	public function FilterGetRemboursementForUsers(
+		Request $request,
+		$vendeur,
+		Produits $produit,
+		Livraison $l ,
+		Promo $p , 
+		commandMaterial $cm , 
+		Exemplaire $e , 
+		RavitaillementVendeur $rv,
+		LivraisonSerialFile $lf,
+		CommandProduit $cp
+	) {
+		try {
+			$promo = $p->find($request->input('id_promo'));
+			
+			$terminal = $produit->where('with_serial',1)->first();
+
+			$command_promo = $cm->select('id_commande')
+				->where('vendeurs',$vendeur)
+				->whereIn('status',['confirmed','unconfirmed'])
+				->where('promos_id',$promo->id)->get();
+
+			$commandPromoQuantite = $cp->whereIn('commande',$command_promo)
+				->where('produit',$terminal->reference)
+				->sum('quantite_commande');
+			
+			$rapportPromo = RapportVente::where('promo',$promo->id)
+				->where('vendeurs',$vendeur)
+				->whereIn('type',['recrutement','migration'])
+				->whereBetween('date_rapport',[$promo->debut,$promo->fin])
+				->sum('quantite');
+
+			return [
+				'kits'	=>	$commandPromoQuantite - $rapportPromo,
+				'remboursement'	=>	($commandPromoQuantite - $rapportPromo) * $promo->subvention,
+				'promo_id'	=>	$promo->id,
+			];
+			
+		} catch(AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
 
 	// MISE A JOUR DANS LA TABLE DE REMBOURSEMENT
 

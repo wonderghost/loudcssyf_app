@@ -230,9 +230,11 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           testRemboursementAfterPromo : async function () {
             try {
                 let response = await axios.get('/user/promo/infos-remboursement')
-                console.log(response.data)
-                if(response.data.pay_at == null && response.data.montant !== 0) {
-                  this.remboursementPromoState = true
+                // console.log(response.data)
+                // return 0
+                // if(response.data.pay_at == null && response.data.montant !== 0) {
+                if(response.data == false) {
+                    this.remboursementPromoState = true
                 } else {
                     this.remboursementPromoState = false
                 }
@@ -261,10 +263,10 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 tva : Math.round(this.material.marge - (this.material.marge/1.18))
               }
               response  = await axios.get('/user/promo/list')
+                this.testRemboursementAfterPromo()
               if(response.data == 'fail') {
                 // la promo n'existe pas
                 this.promoState = false
-                this.testRemboursementAfterPromo()
               } else {
                   this.promoState = true
                   this.promo = response.data

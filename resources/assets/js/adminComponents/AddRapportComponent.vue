@@ -55,6 +55,14 @@
           </li>
           <li>
             <!-- MIGRATION -->
+            <!-- Error block -->
+            <template v-if="errors.length" v-for="error in errors">
+              <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert>
+                <a href="#" class="uk-alert-close" uk-close></a>
+                <p>{{error}}</p>
+              </div>
+            </template>
+          <!-- // -->
             <form @submit.prevent="sendRapport('migration')" class="uk-width-1-2@m">
               <div class="uk-margin-small">
                 <label for="">Quantite Materiel</label>

@@ -223,14 +223,20 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         },
         abortPayComission : async function () {
           try {
-              // this.isLoading = true
+              this.isLoading = true
               UIkit.modal($("#abort-payment-comission")).hide()
               let response = await axios.post('/user/rapport-ventes/abort-pay-commission',{
                 _token : this.myToken,
                 password_confirm : this.passwordConfirm,
                 pay_comission_id : this.userActiveValidate.id
               })
-              console.log(response.data)
+              if(response.data) {
+                this.isLoading = false
+                UIkit.modal.alert("<div class='uk-alert-sucess' uk-alert>Operation effectue avec success !</div>")
+                  .then(function () {
+                    location.reload()
+                  })
+              }
           } catch(error) {
               this.isLoading = false
               UIkit.modal($("#abort-payment-comission")).show()

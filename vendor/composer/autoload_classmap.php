@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'AfrocashSeeder' => $baseDir . '/database/seeds/AfrocashSeeder.php',
     'AgenceTableSeeder' => $baseDir . '/database/seeds/AgenceTableSeeder.php',
+    'App\\AbonneOption' => $baseDir . '/app/AbonneOption.php',
     'App\\Abonnement' => $baseDir . '/app/Abonnement.php',
     'App\\Afrocash' => $baseDir . '/app/Afrocash.php',
     'App\\Agence' => $baseDir . '/app/Agence.php',

@@ -58,6 +58,34 @@ Trait Rapports {
 	}
 
 	// 
+	// Trouver l'abonnement actif
+	public function checkAbonnementActif($abonnements) {
+		try {
+			$valide_abonnement = null;
+
+			foreach($abonnements as $key => $value) {
+				$debut = new Carbon($value->debut);
+	
+				$fin = new Carbon($value->debut);
+				$fin->addMonths($value->duree)->subDay();
+
+				$now = Carbon::now();
+				
+				if($debut <= $now && $now <= $fin) {
+					$valide_abonnement = $value;
+					break;
+				} else {
+					$valide_abonnement = null;
+				}
+			}
+
+			return $valide_abonnement;
+
+		} catch(AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
 	#
 	public function checkSerialDebutDate($serialNumber) {
 
@@ -120,6 +148,65 @@ Trait Rapports {
 			die(json_encode($e->getMessage()));
 		}
 	}
+	// VERIFIER L'EXISTENCE D'UN SERIAL NUMBER EN CAS DE REABONEMENT UPGRADE
+public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
+		try {
+			$serialNumber = $e->find($request->input('serial_number'));
+			$abonnements = null;
+			$valide_abonnement = null;
+
+			if($serialNumber) {
+				// le serial number existe
+				if(!$serialNumber->origine) {
+					// il n'appartien pas au reseau
+					$abonnements = $serialNumber->abonnements();
+					if($abonnements->count() > 0) {
+
+						$valide_abonnement = $this->checkAbonnementActif($abonnements);
+						if(!is_null($valide_abonnement)) {
+							return response()
+								->json($valide_abonnement);
+						}
+						return response()
+							->json('fail');
+
+					} else {
+						// aucun abonnement enregistre
+						return response()
+							->json('fail');
+					}
+				} else {
+					// s/n appartien au reseau
+					if($serialNumber->status == 'inactif') {
+						throw new AppException("Materiel vierge!");
+					}
+					$abonnements = $serialNumber->abonnements();
+					if($abonnements->count() > 0) {
+						// trouver l'abonnement actif
+						$valide_abonnement = $this->checkAbonnementActif($abonnements);
+						// renvoi de l'abonnement actif
+						if(!is_null($valide_abonnement)) {
+							return response()
+								->json($valide_abonnement);
+						}
+						return response()
+							->json('fail');
+					} else {
+						// aucun abonnement enregistre
+						return response()
+							->json('fail');
+					}	
+				}
+			} else {
+				// le numero n'existe pas dans le systeme
+				return response()
+					->json('fail');
+			}
+		} catch(AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
 
 	// ENREGISTREMENT D'UN RAPPORT
 	public function sendRapport(Request $request,$slug , Exemplaire $e ,RapportPromo $rp , Promo $p , StockVendeur $sv,Produits $produit) {
@@ -141,14 +228,14 @@ Trait Rapports {
 						'vendeurs'   =>  'required|exists:users,username',
 						'date'  =>  'required|before_or_equal:'.(date("Y/m/d",strtotime("now"))),
 						'serial_number.*'	=>	'required|distinct|exists:exemplaire,serial_number',
-						'debut.*'	=>	'required|date|after_or_equal:'.(date("Y/m/d",strtotime("now"))),
+						'debut.*'	=>	'required|date|after_or_equal:date',
 						'formule.*'	=>	'required|string|exists:formule,nom',
 						'duree.*'	=>	'required|numeric'
 					],[
 						'required'  =>  'Veuillez remplir le champ `:attribute`',
 						'numeric'  =>  '`:attribute` doit etre une valeur numeric',
 						'before_or_equal' =>  'Vous ne pouvez ajouter de rapport a cette date',
-						'after_or_equal'	=>	'Le debut doit etre egal ou supereiru a la date d\'activation',
+						'after_or_equal'	=>	'Le debut doit etre egal ou superieur a la date d\'activation',
 						'distinct'	=>	"Doublons repere!",
 						'exists'	=>	'Numero inexistant! : `:attribute`'
 					]);
@@ -220,7 +307,7 @@ Trait Rapports {
 									$rp->promo = $tmp_promo->id;
 									$rapport->id_rapport_promo = $rp->id;
 									$rapport->promo = $tmp_promo->id;
-									// $rp->save();
+									$rp->save();
 								}
 							} else {
 								// la promo n'est pas active
@@ -248,7 +335,7 @@ Trait Rapports {
 
 										$rapport->promo = $thePromo->id;
 
-										// $rp->save();
+										$rp->save();
 									} else {
 										throw new AppException("La date choisi n'est pas inclut dans la periode de promo !");
 									}
@@ -257,7 +344,9 @@ Trait Rapports {
 							}
 
 							
-
+							
+							// $rp->save();
+							$rapport->save();
 							// CHANGEMENT DE STATUS DES MATERIELS
 							foreach($request->input('serial_number') as $value) {
 								Exemplaire::where([
@@ -290,11 +379,9 @@ Trait Rapports {
 								}
 							}	
 
-							$rapport->save();
-							$rp->save();
 							foreach($request->input('serial_number') as $key => $value) {
 								$abonnement_data[$key]->save();
-								if(array_key_exists($key,$allAbonnOption_data)) {
+								if(array_key_exists($key,$allAbonnOption_data) && !is_null($allAbonnOption_data[$key]->id_option)) {
 									$allAbonnOption_data[$key]->save();
 								}
 							}
@@ -505,6 +592,38 @@ Trait Rapports {
 							if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
 								// le rapport est en mode promo
 								$rapport->promo = $tmp_promo->id;
+							}
+						} else {
+							// la promo n'est pas active
+							if($request->input('promo_id')) {
+								// le rapport appartien a une promo
+								$thePromo = $p->find($request->input('promo_id'));
+
+								$promo_fin_to_carbon_date = new Carbon($thePromo->fin);
+
+								$promo_debut_to_carbon_date = new Carbon($thePromo->debut);
+
+								$rapport_date_to_carbon_date = new Carbon($request->input('date'));
+
+								if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
+								// 	// le rapport est en mode promo
+								// 	// AJOUT DU RAPPORT PROMO
+									// do {
+									// 	$rp->id =  Str::random(10).'_'.time();
+									// } while ($rp->isExistId());
+
+									// $rp->quantite_a_compenser = $request->input('quantite_materiel');
+									// $rp->compense_espece = $request->input('quantite_materiel') * $thePromo->subvention;
+									// $rp->promo = $thePromo->id;
+									// $rapport->id_rapport_promo = $rp->id;
+
+									$rapport->promo = $thePromo->id;
+
+									// $rp->save();
+								} else {
+									throw new AppException("La date choisi n'est pas inclut dans la periode de promo !");
+								}
+
 							}
 						}
 						

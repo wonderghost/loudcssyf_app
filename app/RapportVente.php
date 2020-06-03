@@ -58,4 +58,11 @@ class RapportVente extends Model
     public function exemplaire() {
       return $this->hasMany('App\Exemplaire','rapports','id_rapport')->get();
     }
+    #@ tous les abonnement lies au rapports
+
+    public function abonnements() {
+      return $this->hasMany('App\Abonnement','rapport_id','id_rapport')
+        ->orderBy('created_at','desc')
+        ->get();
+    }
 }

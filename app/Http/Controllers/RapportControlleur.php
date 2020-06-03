@@ -158,11 +158,11 @@ public function PayCommissionListForVendeurs(Request $request) {
     foreach($payCommission as $key  =>  $value) {
       $all[$key]  = [
         'id'  =>  $value->id,
-        'du'=> $value->rapports()->get()->first()->date_rapport,
-        'au'=> $value->rapports()->get()->last()->date_rapport,
+        'du'=> $value->rapports()->get()->first() ? $value->rapports()->get()->first()->date_rapport : '',
+        'au'=> $value->rapports()->get()->last() ? $value->rapports()->get()->last()->date_rapport : '',
         'total' =>  number_format($value->montant),
         'status'  =>  $value->status,
-        'vendeurs'  => $value->rapports()->first()->vendeurs()->localisation
+        'vendeurs'  => $value->rapports()->first() ? $value->rapports()->first()->vendeurs()->localisation : ''
       ];
     }
     return response()->json($all);
@@ -176,16 +176,18 @@ public function PayCommissionListForVendeurs(Request $request) {
 
   public function payComissionList(PayCommission $pay){
     try {
-      $result = $pay->select()->orderBy('status','asc')->get();
+      $result = $pay->select()
+        ->whereIn('status',['unvalidated','validated'])
+        ->orderBy('created_at','desc')->get();
       $all = [];
       foreach ($result as $key => $value) {
         $all[$key] = [
           'id'  =>  $value->id,
-          'du'=> $value->rapports()->get()->first()->date_rapport,
-          'au'=> $value->rapports()->get()->last()->date_rapport,
+          'du'=> $value->rapports()->get()->first() ? $value->rapports()->get()->first()->date_rapport : '',
+          'au'=> $value->rapports()->get()->last() ? $value->rapports()->get()->last()->date_rapport : '',
           'total' =>  number_format($value->montant),
           'status'  =>  $value->status,
-          'vendeurs'  => $value->rapports()->first()->vendeurs()->localisation,
+          'vendeurs'  => $value->rapports()->first() ? $value->rapports()->first()->vendeurs()->localisation : '',
           'pay_at'  =>  $value->pay_at
         ];
       }
@@ -228,14 +230,16 @@ public function PayCommissionListForVendeurs(Request $request) {
         if($allRapports->count() > 0) {
           // 
           foreach($allRapports as $key => $value) {
-            $value->pay_comission_id = null;
+            $value->pay_comission_id = NULL;
+            $value->save();
           }
         }
-        
-        // $pay_comission->status = 'aborted';
+
+        $pay_comission->status = 'aborted';
+        $pay_comission->save();
 
         return response()
-          ->json($allRapports);
+          ->json('done');
     } catch(AppException $e) {
         header("Erreur",true,422);
         die(json_encode($e->getMessage()));
@@ -258,11 +262,13 @@ public function validatePayComission(Request $request) {
       if($comission->status == 'validated') {
         throw new AppException("Deja valide!");
       }
-      $rapport = $comission->rapports()->get();
+      $rapport = $comission->rapportsForCalculComission()->get();
 
       $total = $rapport->sum('commission');
 
-
+      // return response()
+      //   ->json([$total,$comission->montant]);
+      // die();
       $afrocash_account = Afrocash::where([
         'type'  =>  'courant',
         'vendeurs'  =>  $rapport->first()->vendeurs
@@ -331,8 +337,27 @@ public function validatePayComission(Request $request) {
 
 public function getDetailsForRapport(Request $request , RapportVente $r) {
   try {
-      $details = $r->find($request->input('rapId'));
-      return response()->json($details->exemplaire());
+      $rapport = $r->find($request->input('id_rapport'));
+      $abonnements = $rapport->abonnements();
+      $data = [];
+      foreach($abonnements as $key => $value) {
+        $options = $value->options();
+        $debut = new Carbon($value->debut);
+	
+				$fin = new Carbon($value->debut);
+        $fin->addMonths($value->duree)->subDay();
+        
+        $data[$key] = [
+          'serial'  =>  $value->serial_number,
+          'formule' =>  $value->formule_name,
+          'duree' =>  $value->duree,
+          'debut' =>  $debut->toDateTimeString(),
+          'fin' =>  $fin->toDateTimeString(),
+          'option'  =>  $options,
+          'created_at'  =>  $value->created_at,
+        ];
+      }
+      return response()->json($data);
   } catch(AppException $e) {
       header("Erreur",true,422);
       die(json_encode($e->getMessage()));

@@ -35,6 +35,7 @@
       </div>
       <a class="uk-button uk-button-small border-button" uk-tooltip="Conversations"><i class="material-icons">message</i></a>
       <a class="uk-button uk-button-small border-button" uk-tooltip="Alertes"><i class="material-icons">alarm</i></a>
+      <a class="uk-button uk-button-small border-button" uk-tooltip="Alertes"><i class="material-icons" style="color : red !important;">alarm</i></a>
       <template v-if="typeUser == 'admin'" id="">
       	<a class="uk-button uk-button-small uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span>  PROMO</a>
     </template>

@@ -5,6 +5,7 @@
     <!-- <h3>Tableau de bord</h3> -->
     <!-- <hr class="uk-divider-small"> -->
 
+    @if(Auth::user()->type == 'v_da' || Auth::user()->type == 'v_standart')
     <ul class="dash-li">
       <li id="visu-objectif"><a class="uk-button uk-button-default uk-border-rounded uk-button-small">
         <i class="material-icons uk-float-left">track_changes</i> Visu Objectif
@@ -19,6 +20,8 @@
     <div id="content-perf-vente" class='content-all'>
       <dashboard the-user="{{Auth::user()->type}}"></dashboard>
     </div>
+    @endif
+
   </div>
 </div>
 @endsection('content')
