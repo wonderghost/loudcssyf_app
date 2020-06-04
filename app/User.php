@@ -71,4 +71,10 @@ class User extends Authenticatable
     public function rapportGroupByPayId() {
       return RapportVente::select('pay_comission_id')->whereNotNull('pay_comission_id')->where("vendeurs",$this->username)->groupBy('pay_comission_id')->get();
     }
+
+    // details de l'objetif vendeurs
+    
+    public function objVendeur() {
+      return $this->hasMany('App\ObjVendeur','vendeurs','username');
+    }
 }

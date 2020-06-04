@@ -10,8 +10,6 @@ use App\User;
 
 class ObjectifController extends Controller
 {
-    //
-
     // recrutement classification
 
     protected $recrutement = [
@@ -52,9 +50,6 @@ class ObjectifController extends Controller
 
     // 
     
-    
-
-
 
     # DASHBOARD STATISTIQUES
     #@@@@@@@@@@STATISTIQUES FOR USERS
@@ -93,6 +88,89 @@ class ObjectifController extends Controller
             die(json_encode($e->getMessage()));
         }
     }
+
+    // GET BONUS OBJECTIF 
+    public function getBonusObjectif(Request $request ,Objectif $obj , RapportVente $rv) {
+        try {
+            $month = date('m');
+            $objectifs = $obj->select('id')->whereYear('debut',2020)
+                ->whereMonth('debut','<',$month)
+                ->whereYear('debut',2020)
+                ->groupBy('id')
+                ->get();
+            
+            $objVendeurs = $request->user()
+                ->objVendeur()
+                ->whereIn('id_objectif',$objectifs)
+                ->get();
+            $cumule_bonus = 0;
+
+            foreach($objVendeurs as $value) {
+                $cumule_bonus += $this->calculateBonusForObjectif($value,$rv , $request);
+            }
+            
+            
+            return response()
+                ->json($cumule_bonus);
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    // calcul le bonus pour un objectif
+
+    public function calculateBonusForObjectif(ObjVendeur $obj_vendeur , RapportVente $rv , Request $request) {
+        try {
+
+            $objectif = $obj_vendeur->objectif();
+
+            $realise = [
+                'recrutement'   =>  $rv->whereBetween('date_rapport',[$objectif->debut,$objectif->fin])
+                    ->where('vendeurs',$request->user()->username)
+                    ->where('type','recrutement')
+                    ->where('state','unaborted')
+                    ->sum('quantite'),
+                'reabonnement'  =>  $rv->whereBetween('date_rapport',[$objectif->debut,$objectif->fin])
+                    ->where('vendeurs',$request->user()->username)
+                    ->where('type','reabonnement')
+                    ->where('state','unaborted')
+                    ->sum('montant_ttc'),
+                
+                'ttc_recrutement'   =>  $rv->whereBetween('date_rapport',[$objectif->debut,$objectif->fin])
+                    ->where('vendeurs',$request->user()->username)
+                    ->where('type','recrutement')
+                    ->where('state','unaborted')
+                    ->sum('montant_ttc')
+            ];
+
+            $bonus = 0;
+            $bonus_reabonnement = 0;
+            $bonus_recrutement = 0;
+
+            // calcule de la marge arriere
+            
+            $pourcent_recrutement = $realise['recrutement'] / $obj_vendeur->plafond_recrutement;
+            $pourcent_reabonnement = $realise['reabonnement'] / $obj_vendeur->plafond_reabonnement;
+
+            if($pourcent_recrutement >= 1.1 && $obj_vendeur->classe_recrutement != 'C') {
+                $bonus_recrutement = ($realise['ttc_recrutement'] / 1.18) * $objectif->marge_arriere;
+            }
+
+            if($pourcent_reabonnement >= 1.1 && $obj_vendeur->classe_reabonnement != 'C') {
+                $bonus_reabonnement = ($realise['reabonnement'] / 1.18) * $objectif->marge_arriere;
+            }
+
+            $bonus = $bonus_recrutement + $bonus_reabonnement;
+
+            return round($bonus);
+
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
 
     // 
 
@@ -137,7 +215,6 @@ class ObjectifController extends Controller
                 if($pourcent_reabonnement >= 1.1 && $value->classe_reabonnement != 'C') {
                     $bonus_reabonnement = ($realise['reabonnement'] / 1.18) * $objectif->marge_arriere;
                 }
-
 
                 $bonus = $bonus_recrutement + $bonus_reabonnement;
 

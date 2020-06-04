@@ -4,6 +4,16 @@
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+        <!-- BONUS BUTTON -->
+        <div class="bonus-view uk-position-fixed uk-position-z-index">
+            <button class="uk-button uk-button-small uk-button-primary uk-border-rounded"  uk-tooltip="Bonus"> 
+                <img src="/img/coins.png" width="30" alt=""> 
+                <span class="uk-text-bold">
+                    {{bonus | numFormat}} GNF
+                </span>
+            </button>
+        </div>
+        <!-- // -->
         <!-- MODAL PLUS -->
         <div id="modal-plus" class="uk-modal-container" uk-modal="esc-close : false ; bg-close : false">
             <div class="uk-modal-dialog">
@@ -152,6 +162,7 @@ export default {
     },
     mounted() {
         this.getInfosForm()
+        this.getBonusObjectif()
     },
     props : {
         theUser : String
@@ -183,10 +194,22 @@ export default {
             },
             errors : [],
             isLoading : false,
-            fullPage : true
+            fullPage : true,
+            bonus : 0 // marge arriere 
         }
     },
     methods : {
+        // recuperation de la marge arriere (bonus)
+        getBonusObjectif : async function () {
+            try {
+                let response = await axios.get('/user/objectif/get-bonus-objectif')
+                if(response.data) {
+                    this.bonus = response.data
+                }
+            } catch(error) {
+                alert(error)
+            }
+        },
         sendDeblocageForm : async function () {
             this.isLoading = true
             UIkit.modal($("#modal-plus")).hide()

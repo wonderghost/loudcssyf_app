@@ -129,6 +129,19 @@ ul.dash-li > li a , ul.obj-li > li a {
 
 /*  */
 
+.bonus-view{
+  top : 20% !important;
+  right : 0 !important;
+  transition : all .3s ease;
+}
+
+.bonus-view:hover {
+  top : 19.5% !important;
+}
+
+
+/*  */
+
 @media screen and (max-width : 959) {
   /* .login-page-content {
     border : solid 1px #ccc;

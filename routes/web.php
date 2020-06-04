@@ -374,10 +374,14 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/chart/performances/reabonnement','ChartController@performanceVendeurReabonnement')->middleware('vendeur');
 	Route::get('/user/chart/objectif/recrutement','ObjectifController@statForVendeursRecrutement')->middleware('vendeur');
 	Route::post('/user/chart/performances/filter-by-date','ChartController@makeFilter')->middleware('vendeur');
+	// 
+	# get Bonus objectif
+	Route::get('/user/objectif/get-bonus-objectif','ObjectifController@getBonusObjectif')->middleware('vendeur');
 	#
 	Route::get('/user/chart/command-stat','ChartController@commandStat')->middleware('cga');
 	Route::get('/user/chart/command-material-stat','ChartController@commandMaterialStat')->middleware('logistique');
 	Route::get('/user/chart/livraison-stat','ChartController@livraisonMaterialStat')->middleware('logistique');
+	
 
 
 
