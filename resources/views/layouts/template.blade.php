@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="{{asset('css/uikit.min.css')}}">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.css" integrity="sha256-IvM9nJf/b5l2RoebiFno92E5ONttVyaEEsdemDC6iQA=" crossorigin="anonymous" />
-  <link rel="stylesheet" href="{{asset('css/style.css')}}">
+  <link rel="stylesheet" href="{{asset('css/style.css')}}?<?php echo filemtime('css/style.css') ?>">
   <link rel="icon" href="/img/logo.PNG" type="image/png">
   <script type="text/javascript">
   function noBack(){window.history.forward()}
@@ -36,6 +36,7 @@
     <input type="hidden" id="username" value="{{Auth::user()->username}}">
 
     <div id="app">
+      <alert-abonnement></alert-abonnement>
       <serial-search></serial-search>
       <deblocage-cga></deblocage-cga>
       <feedback></feedback>

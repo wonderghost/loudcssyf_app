@@ -5,13 +5,48 @@
         :is-full-page="fullPage"
         loader="dots"></loading>
         <!-- BONUS BUTTON -->
-        <div class="bonus-view uk-position-fixed uk-position-z-index">
+        <div v-if="typeUser == 'v_da' || typeUser == 'v_standart'" class="bonus-view uk-position-fixed uk-position-z-index" uk-toggle="target : #modal-pay-bonus">
             <button class="uk-button uk-button-small uk-button-primary uk-border-rounded"  uk-tooltip="Bonus"> 
                 <img src="/img/coins.png" width="30" alt=""> 
                 <span class="uk-text-bold">
                     {{bonus | numFormat}} GNF
                 </span>
             </button>
+        </div>
+        <!-- // -->
+        <!-- MODAL BONUS PAIEMENT -->
+        <div id="modal-pay-bonus" uk-modal="esc-close : false ; bg-close : false">
+            <div class="uk-modal-dialog">
+                <div class="uk-modal-header">
+                    <h2 class="uk-modal-title">Paiement Bonus</h2>
+                </div>
+                <div class="uk-modal-body">
+                    <form @submit.prevent="confirmPayBonus()" class="uk-grid-small" uk-grid>
+                        <!-- Erreor block -->
+                        <template v-if="errors.length" v-for="error in errors">
+                            <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-1@m" uk-alert>
+                                <a href="#" class="uk-alert-close" uk-close></a>
+                                <p>{{error}}</p>
+                            </div>
+                        </template>
+                        <p uk-alert class="uk-alert-info uk-border-rounded">
+                            <span uk-icon="icon : info"></span> Vous etes sur le point de confirmer le paiement de votre bonus qui s'eleve a : <span class="uk-text-bold">{{bonus | numFormat}} GNF</span>
+                        </p>
+                        <div class="uk-width-1-1@m">
+                            <label for=""><span uk-icon="icon : lock"></span> Confirmez votre mot de passe </label>
+                            <input type="password" placeholder="Entrez votre mot de passe" v-model="password_confirm" class="uk-input uk-border-rounded">
+                        </div>
+                        <div>
+                            <button class="uk-button uk-button-small uk-border-rounded uk-button-primary">
+                                Envoyez
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="uk-modal-footer uk-text-right">
+                    <button class="uk-button uk-button-danger uk-border-rounded uk-button-small uk-modal-close" type="button">Fermer</button>
+                </div>
+            </div>
         </div>
         <!-- // -->
         <!-- MODAL PLUS -->
@@ -195,10 +230,39 @@ export default {
             errors : [],
             isLoading : false,
             fullPage : true,
-            bonus : 0 // marge arriere 
+            bonus : 0 ,// marge arriere 
+            password_confirm : ""
         }
     },
     methods : {
+        // confirmation du paiement du bonus 
+        confirmPayBonus : async function () {
+            try {
+                this.isLoading = true
+                UIkit.modal($("#modal-pay-bonus")).hide()
+                let response = await axios.post('/user/objectif/pay-bonus-objectif',{
+                    _token : this.myToken,
+                    password_confirm : this.password_confirm
+                })
+                if(response.data == 'done') {
+                    UIkit.modal.alert("<div uk-alert class='uk-alert-success'>Operation effectue avec success !</div>")
+                        .then(function () {
+                            location.reload()
+                        })
+                }
+            } catch(error) {
+                this.isLoading = false
+                UIkit.modal($("#modal-pay-bonus")).show()
+                if(error.response.data.errors) {
+                    let errorTab = error.response.data.errors
+                    for (var prop in errorTab) {
+                    this.errors.push(errorTab[prop][0])
+                    }
+                } else {
+                    this.errors.push(error.response.data)
+                }
+            }
+        },
         // recuperation de la marge arriere (bonus)
         getBonusObjectif : async function () {
             try {
@@ -276,6 +340,9 @@ export default {
     computed : {
         myToken() {
             return this.$store.state.myToken
+        },
+        typeUser () {
+            return this.$store.state.typeUser
         }
     }
 }

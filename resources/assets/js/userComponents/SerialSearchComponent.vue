@@ -90,6 +90,9 @@
                                        <li class="uk-margin-remove uk-padding-remove">
                                          <span>Distributeur : </span><span class="uk-text-bold">{{a.distributeur}}</span>
                                        </li>
+                                       <li class="uk-margin-remove uk-padding-remove">
+                                         <span>Status : </span>
+                                       </li>
                                      </ul>
                                   </div>
                               </div>

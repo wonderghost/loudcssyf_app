@@ -9,6 +9,7 @@ use App\Traits\Similarity;
 use App\Traits\Afrocashes;
 use App\Traits\Rapports;
 use App\Traits\Cga;
+use App\Traits\Abonnements;
 use App\Http\Requests\FormuleRequest;
 use App\Http\Requests\OptionRequest;
 use App\Http\Requests\RapportRequest;
@@ -47,6 +48,7 @@ class RapportControlleur extends Controller
     use Afrocashes;
     use Cga;
     use Rapports;
+    use Abonnements;
 
     public function getRapportByVendeurs() {
       return view('simple-users.rapport-vente');
@@ -180,7 +182,9 @@ public function PayCommissionListForVendeurs(Request $request) {
         ->whereIn('status',['unvalidated','validated'])
         ->orderBy('created_at','desc')->get();
       $all = [];
+      
       foreach ($result as $key => $value) {
+        $demand_at = new Carbon($value->created_at);
         $all[$key] = [
           'id'  =>  $value->id,
           'du'=> $value->rapports()->get()->first() ? $value->rapports()->get()->first()->date_rapport : '',
@@ -188,7 +192,8 @@ public function PayCommissionListForVendeurs(Request $request) {
           'total' =>  number_format($value->montant),
           'status'  =>  $value->status,
           'vendeurs'  => $value->rapports()->first() ? $value->rapports()->first()->vendeurs()->localisation : '',
-          'pay_at'  =>  $value->pay_at
+          'pay_at'  =>  $value->pay_at,
+          'demand_at' =>  $demand_at->toDateTimeString()
         ];
       }
 

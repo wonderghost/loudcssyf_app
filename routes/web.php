@@ -12,6 +12,7 @@
 */
 
 Route::middleware(['auth','admin'])->group(function () {
+	// 
 	Route::get('tmp','AdminController@emailTest');
 	// @@@ Objectifs router@@@
 	Route::post('/admin/objectifs/make-classify','ObjectifController@classificationVendeurByCA');
@@ -154,6 +155,8 @@ Route::middleware(['auth','admin'])->group(function () {
 Auth::routes();
 
 Route::middleware(['auth','unblocked'])->group(function () {
+	# ALERTES ABONNEMENTS
+	Route::get('/{slug}/alert-abonnement/all','RapportControlleur@getAlertAbonnementForAllUsers');
 	
 	Route::get('/{slug}/all-vendeurs','LogistiqueController@allVendeurs');
 	Route::get('/{slug}/all-produits','LogistiqueController@allProduits');
@@ -377,12 +380,14 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// 
 	# get Bonus objectif
 	Route::get('/user/objectif/get-bonus-objectif','ObjectifController@getBonusObjectif')->middleware('vendeur');
+	# confirmation du paiement du bonus des objectif 
+	Route::post('/user/objectif/pay-bonus-objectif','ObjectifController@payBonusObjectif')->middleware('vendeur');
 	#
 	Route::get('/user/chart/command-stat','ChartController@commandStat')->middleware('cga');
 	Route::get('/user/chart/command-material-stat','ChartController@commandMaterialStat')->middleware('logistique');
 	Route::get('/user/chart/livraison-stat','ChartController@livraisonMaterialStat')->middleware('logistique');
 	
-
+	// 
 
 
 });

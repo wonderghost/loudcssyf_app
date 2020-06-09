@@ -34,8 +34,8 @@
         </div>
       </div>
       <a class="uk-button uk-button-small border-button" uk-tooltip="Conversations"><i class="material-icons">message</i></a>
-      <a class="uk-button uk-button-small border-button" uk-tooltip="Alertes"><i class="material-icons">alarm</i></a>
-      <a class="uk-button uk-button-small border-button" uk-tooltip="Alertes"><i class="material-icons" style="color : red !important;">alarm</i></a>
+      <a class="uk-button uk-button-small border-button" uk-tooltip="Alertes" uk-toggle="target : #modal-alert-abonnement"><span>{{alertCount}}</span> <i class="material-icons">alarm</i> <span style="color : red !important">{{alertInactifCount}}</span></a>
+      <!-- <a class="uk-button uk-button-small border-button" uk-tooltip="Alertes"><i class="material-icons" style="color : red !important;">alarm</i></a> -->
       <template v-if="typeUser == 'admin'" id="">
       	<a class="uk-button uk-button-small uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span>  PROMO</a>
     </template>
@@ -44,7 +44,7 @@
     </template>
       <a class="uk-button uk-button-small border-button" uk-tooltip="Recherche" uk-toggle="target : #modal-search-serial"><i class="material-icons">search</i></a>
       <a class="uk-button uk-button-small border-button" href="#modal-remboursement" uk-toggle uk-tooltip="Paiement Remboursement"><i class="material-icons">payment</i></a>
-      <a class="uk-button uk-button-small border-button" uk-toggle href="#modal-deblocage" uk-tooltip="Deblocage Cga"><i class="material-icons">lock_open</i><span v-if="typeUser !=='v_da' && typeUser !== 'v_standart'" class="uk-badge">{{deblocageCount}}</span> </a>
+      <a class="uk-button uk-button-small border-button" uk-toggle href="#modal-deblocage" uk-tooltip="Deblocage Cga"><i class="material-icons">lock_open</i><span v-if="typeUser !=='v_da' && typeUser !== 'v_standart'">{{deblocageCount}}</span> </a>
     </div>
     <div class="uk-navbar-right uk-visible@m">
       <a class="uk-button"><span uk-icon="icon : user ;"></span> {{userLocalisation}} </a>
@@ -351,6 +351,12 @@
           }
         },
         computed : {
+          alertInactifCount() {
+            return this.$store.state.alertInactifCount
+          },
+          alertCount() {
+            return this.$store.state.alertCount
+          },
           deblocageCount() {
             return this.$store.state.deblocageCount
           },

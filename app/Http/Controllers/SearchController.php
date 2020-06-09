@@ -34,7 +34,7 @@ class SearchController extends Controller
             ];
             
             return response()
-                ->json($all);            
+                ->json($all); 
         } catch (AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));

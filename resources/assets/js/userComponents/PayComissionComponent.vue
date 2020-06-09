@@ -27,6 +27,7 @@
   									<th>Total</th>
   									<th>Status</th>
                     <th>Paye le</th>
+                    <th>Demande le</th>
   									<th>Vendeurs</th>
                     <th>-</th>
   								</tr>
@@ -39,6 +40,7 @@
                     <td v-if="pay.status == 'unvalidated'" class="uk-text-danger">{{pay.status}}</td>
                     <td v-else class="uk-text-success">{{pay.status}}</td>
                     <td>{{pay.pay_at}}</td>
+                    <td>{{pay.demand_at}}</td>
                     <td>{{pay.vendeurs}}</td>
                     <td>
                     <template id="" v-if="pay.status == 'unvalidated' && typeUser == 'gcga'">

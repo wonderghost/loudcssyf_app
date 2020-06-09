@@ -707,6 +707,7 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 	public function organizeRapport($data) {
 		$all = [];
 		foreach ($data as $key => $value) {
+			$created_at = new Carbon($value->created_at);
 			$all[$key] = [
 				'id'	=>	$value->id_rapport,
 				'date'  =>  $value->date_rapport,
@@ -718,7 +719,8 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 				'commission'  =>  $value->commission,
 				'promo'	=>	$value->promo != 0 ? 'en promo' : 'hors promo',
 				'paiement_commission' =>  $value->statut_paiement_commission,
-				'state'	=>	$value->state
+				'state'	=>	$value->state,
+				'created_at'	=>	$created_at->toDateTimeString()
 			];
 		}
 		return $all;
@@ -742,7 +744,10 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 	$validation = $request->validate([
 		'id_rapport' => 'required|exists:rapport_vente,id_rapport'
 	]);
+
+	
 	try {
+		throw new AppException("Indisponible pour le moments!");
 		// verification du mot de passe
 		if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
 			throw new AppException("Mot de passe Invalide!");

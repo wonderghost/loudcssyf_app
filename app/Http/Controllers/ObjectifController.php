@@ -7,9 +7,15 @@ use App\Objectif;
 use App\ObjVendeur;
 use App\RapportVente;
 use App\User;
+use App\Credit;
+use App\TransactionAfrocash;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
+use App\Traits\Similarity;
 
 class ObjectifController extends Controller
 {
+    use Similarity;
     // recrutement classification
 
     protected $recrutement = [
@@ -49,6 +55,85 @@ class ObjectifController extends Controller
     ];
 
     // 
+
+    #PAIEMENT DU BONUS DES OBJECTIFS
+    public function payBonusObjectif(Request $request , Credit $c , TransactionAfrocash $ta , Objectif $obj , RapportVente $rv) {
+        try {
+
+            $validation = $request->validate([
+                'password_confirm'  =>  'required|string'
+            ],[
+                'required'  =>  'Mot de passe requis !'
+            ]);
+                
+            if(!Hash::check($request->input('password_confirm'),$request->user()->password)) {
+                throw new AppException("Mot de passe invalide !");
+            }
+
+            $tmp = $this->getBonusObjectif($request,$obj,$rv);
+
+            if($tmp->original <= 0 ) {
+                throw new AppException("Vous ne pouvez pas effectuer cette action !");
+            }
+            
+
+            $afrocash_account_user = $request->user()
+                ->afroCash()
+                ->first();
+
+            $afrocash_central = $c->find('afrocash');
+            
+            $afrocash_account_user->solde += $tmp->original;
+            $afrocash_central->solde -= $tmp->original;
+
+            $month = date('m');
+
+            $objectifs = $obj->select('id')->whereYear('debut',2020)
+                ->whereMonth('debut','<',$month)
+                ->whereYear('debut',2020)
+                ->groupBy('id')
+                ->get();
+
+            $objVendeurs = $request->user()
+                ->objVendeur()
+                ->whereIn('id_objectif',$objectifs)
+                ->whereNull('bonus_pay_at')
+                ->get();
+
+            $debut = $objVendeurs->first()->objectif()->debut;
+            $fin = $objVendeurs->last()->objectif()->fin;
+            
+
+            $ta->compte_credite = $afrocash_account_user->numero_compte;
+            $ta->montant = $tmp->original;
+            $ta->motif = "Bonus objectif du ".$debut.": au :".$fin;
+
+            $afrocash_central->save();
+            $afrocash_account_user->save();
+            $ta->save();
+
+            foreach($objVendeurs as $key => $value) {
+                $date = Carbon::now();
+                $value->bonus_pay_at = $date->toDateTimeString();
+                $value->save();
+            }
+
+            $n = $this->sendNotification("Paiement Bonus Objectif" , 
+                    "Vous avez recu un paiement de : ".$tmp->original.", pour avoir atteint votre objectif",
+                    $request->user()->username);
+            $n->save();
+
+            $n = $this->sendNotification("Paiement Bonus Objectif",
+            $request->user()->localisation." a recu son paiement de :".$tmp->original." , pour avoi atteint son objectif",'admin');
+            $n->save();
+            
+            return response()
+                ->json('done');
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
     
 
     # DASHBOARD STATISTIQUES
@@ -102,6 +187,7 @@ class ObjectifController extends Controller
             $objVendeurs = $request->user()
                 ->objVendeur()
                 ->whereIn('id_objectif',$objectifs)
+                ->whereNull('bonus_pay_at')
                 ->get();
             $cumule_bonus = 0;
 

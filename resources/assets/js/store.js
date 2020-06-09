@@ -28,9 +28,17 @@ const store = new Vuex.Store({
     materials : [],
     deblocageCount : 0,
     optionsList : [],
-    formulesList : []
+    formulesList : [],
+    alertCount : 0,
+    alertInactifCount : 0
   },
   mutations : {
+    setAlertInactifCount(state,number) {
+      state.alertInactifCount = number
+    },
+    setAlertCount(state,number) {
+      state.alertCount = number
+    },
     setFormuleList(state,list) {
       state.formulesList = list
     },

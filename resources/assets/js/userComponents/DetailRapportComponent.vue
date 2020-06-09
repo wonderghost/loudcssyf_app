@@ -3,7 +3,12 @@
         <div id="modal-detail-rapport" class="uk-modal-container" uk-modal>
             <div class="uk-modal-dialog">
                 <div class="uk-modal-header">
-                    <h2 class="uk-modal-title">Rapport du : <span>{{rapportInfos.date}}</span></h2>
+                    <h4 class="">
+                        <span>Rapport du : {{rapportInfos.date}}</span>,
+                        <span>Enregistre le : {{rapportInfos.created_at}}</span>,
+                        <span>Pour : {{rapportInfos.vendeurs}}</span>,
+                        <span>{{rapport.length}} Materiel(s)</span>
+                    </h4>
                 </div>
                 <div class="uk-modal-body">
                     <table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover">
@@ -25,7 +30,7 @@
                                 <td>{{d.debut}}</td>
                                 <td>{{d.fin}}</td>
                                 <td>
-                                    <span v-for="o in d.option" :key="o.nom">{{o.nom}} , </span>
+                                    <span v-for="o in d.option" :key="o.id_option">{{o.id_option}} , </span>
                                 </td>
                             </tr>
                         </tbody>
