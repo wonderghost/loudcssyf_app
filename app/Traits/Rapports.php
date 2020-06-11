@@ -151,6 +151,12 @@ Trait Rapports {
 	// VERIFIER L'EXISTENCE D'UN SERIAL NUMBER EN CAS DE REABONEMENT UPGRADE
 public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 		try {
+			$validation = $request->validate([
+				'serial_number'	=>	'required|string'
+			],[
+				'required'	=>	'`:attribute` est obligatoire !'
+			]);
+
 			$serialNumber = $e->find($request->input('serial_number'));
 			$abonnements = null;
 			$valide_abonnement = null;
@@ -164,6 +170,7 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 
 						$valide_abonnement = $this->checkAbonnementActif($abonnements);
 						if(!is_null($valide_abonnement)) {
+							$valide_abonnement['formule_prix'] = $valide_abonnement->formule()->prix;
 							return response()
 								->json($valide_abonnement);
 						}
@@ -186,6 +193,7 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 						$valide_abonnement = $this->checkAbonnementActif($abonnements);
 						// renvoi de l'abonnement actif
 						if(!is_null($valide_abonnement)) {
+							$valide_abonnement['formule_prix'] = $valide_abonnement->formule()->prix;
 							return response()
 								->json($valide_abonnement);
 						}
@@ -396,6 +404,10 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 					}
 					break;
 					case 'reabonnement':
+
+						return response()
+							->json($request);
+						die();
 
 						$validation = $request->validate([
 							'montant_ttc' =>  'required|numeric',

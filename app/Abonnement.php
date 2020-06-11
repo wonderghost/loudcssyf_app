@@ -45,4 +45,8 @@ class Abonnement extends Model
       return false;
     }
 
+    public function formule() {
+      return $this->belongsTo('App\Formule','formule_name','nom')->first();
+    }
+
 }

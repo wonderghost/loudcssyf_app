@@ -22,23 +22,56 @@
               <!-- SERIAL NUMBERS -->
               <div v-for="input in parseInt(formData.quantite_materiel)" :key="input" class="uk-margin-small uk-width-1-1@m uk-grid-small uk-border-rounded uk-padding-small" uk-grid style="border:solid 1px #ddd !important;">
                 <div class="uk-width-1-1@m uk-grid-small" v-if="upgradeState[input-1]" uk-grid>
-                  
                   <div class="uk-width-1-6@m">
+                    <label for="">Numero Materiel</label>
+                    <span class="uk-input uk-border-rounded">
+                      {{old_formule[input-1].serial_number}}
+                    </span>
+                  </div>
+
+                  <div v-if="failState[input-1]" class="uk-width-1-6@m" style="margin-left : 6.5% !important">
                     <label for="">Ancienne formule</label>
                     <select class="uk-select uk-border-rounded">
-                      <option value=""></option>
+                      <option value="">--Formule--</option>
+                      <option v-for="f in formules" :key="f.nom" :value="f.nom">{{f.nom}}</option>
                     </select>
                   </div>
+
+                  <div v-if="!failState[input-1]" class="uk-width-1-6@m" style="margin-left : 6.5% !important;">
+                    <label for="">Ancienne Formule</label>
+                    <span class="uk-input uk-border-rounded">
+                      {{old_formule[input-1].formule_name}}
+                    </span>
+                  </div>
+                  <div v-if="!failState[input-1]" class="uk-width-1-6@m">
+                    <label for="">Option</label>
+                    <span class="uk-input uk-border-rounded">
+                      
+                    </span>
+                  </div>
+                  <div v-if="!failState[input-1]" class="uk-width-1-6@m">
+                    <label for="">Duree</label>
+                    <span class="uk-input uk-border-rounded">
+                      {{old_formule[input-1].duree}}
+                    </span>
+                  </div>
+                  <div class="uk-width-1-6" v-if="!failState[input-1]">
+                    <label for="">Debut</label>
+                    <span class="uk-input uk-border-rounded">
+                      {{old_formule[input-1].debut}}
+                    </span>
+                  </div>
+
                 </div>
                 <div class="uk-width-1-1@m uk-grid-small" uk-grid>
                   <div class="uk-width-1-6@m">
                     <label for="">Materiel - {{input}}</label>
-                    <input type="text" @blur="searchSerialDebut(formData.serial_number[input-1],input)" class="uk-input uk-border-rounded" v-model="formData.serial_number[input-1]" required :placeholder="'Serial Number '+input">
+                    <input type="text" @blur="searchSerialDebut(formData.serial_number[input-1],input-1)" class="uk-input uk-border-rounded" v-model="formData.serial_number[input-1]" required :placeholder="'Serial Number '+input">
                   </div>
                   <div class="uk-margin-medium-top">
                     <label for="">
                       Upgrade
-                      <input v-model="upgradeState[input-1]" @change="upgradeStateAction(formData.serial_number[input-1],upgradeState[input-1],input-1)" type="checkbox" class="uk-checkbox">
+                      <input v-model="upgradeState[input-1]" @change="upgradeStateAction(formData.serial_number[input-1],upgradeState[input-1],input-1)" :id="'upgrade-id-'+(input-1)" type="checkbox" class="uk-checkbox">
                     </label>
                   </div>
                   <div class="uk-width-1-6@m">
@@ -64,8 +97,8 @@
                   </div>
                   <div class="uk-width-1-6@m">
                     <label for="">Debut : </label>
-                    <span class="uk-text-bold">{{debutSuggest}}</span>
-                    <input v-model="formData.debut[input-1]" :id="'debut-'+input" type="date" class="uk-input uk-border-rounded">
+                    <!-- <span class="uk-text-bold">{{debutSuggest[input-1]}}</span> -->
+                    <input v-model="formData.debut[input-1]" :id="'debut-'+(input-1)" type="date" class="uk-input uk-border-rounded">
                   </div>
                 </div>
               </div>
@@ -112,30 +145,33 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                   duree : [""],
                   options : [""],
                   type_credit : "cga",
-                  upgrade_data : [{
-                    old_abonnement  : {},
-                    new_abonnement : {}
-                  }]
               },
+              old_formule : [""],
               upgradeData : [],
-              duree : [1,2,3,6,12,24],
+              duree : [1,2,3,4,5,6,7,8,9,10,11,12,24],
               amount_ttc : [],
               currentF : "",
               currentO : "",
               errors : [],
               // 
               upgradeState : [false],
-              debutSuggest : "",
-              failState : [false]
+              debutSuggest : [""],
+              failState : [false],
 
+              testUpgradeIncrement : 0
             }
         },
         methods : {
           upgradeStateAction : async function (serial,stateUpgrade,index) {
             try {
                 if(!stateUpgrade) {
+                  if(this.old_formule.length != this.formData.quantite_materiel) {
+                    let nb = this.old_formule.length
+                    this.old_formule.splice((nb-1),1)
+                  }
                   return 0
                 }
+
                 let response = await axios.post('/user/check-serial-upgrade/',{
                   _token : this.myToken,
                   serial_number : serial
@@ -146,9 +182,39 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     this.failState[index] = true
                 } else {
                     this.failState[index] = false
+                    // get infos abonnement actif
+
+                    this.testUpgradeIncrement++
+
+                    this.upgradeData = response.data
+                    this.old_formule.push(this.upgradeData)
+                    
+                    if(this.testUpgradeIncrement == 1) {
+                      this.old_formule.shift()
+                    }
+
+                    if(this.formData.quantite_materiel != this.old_formule.length) {
+                      let nb = this.old_formule.length
+                      this.old_formule.splice((nb-1),1)
+                      // alert("Erreur")
+                      // location.reload()
+                    }
                 }
             } catch(error) {
-                alert(error)
+              
+              if(error.response.data.errors) {
+                let errorTab = error.response.data.errors
+                  for (var prop in errorTab) {
+                    this.errors.push(errorTab[prop][0])
+                    // alert(errorTab[prop][0])
+                  }
+                } else {
+                  this.errors.push(error.response.data)
+                    // alert(error.response.data)
+                }
+              var upgradeId = document.getElementById('upgrade-id-'+index)
+              upgradeId.checked = false
+              this.upgradeState[index] = false
             }
           },
           searchSerialDebut : async function (serial,index) {
@@ -158,7 +224,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                   serial_materiel : serial
                 })
                 if(response.data) {
-                  this.debutSuggest = response.data
+                  this.debutSuggest[index] = response.data
                 }
             } catch(error) {
                 alert(error)
@@ -184,15 +250,33 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 var i = 0 
                 this.formData.formule.forEach((f) => {
                   this.currentF = f
-                  if(this.formData.options[i]) {
-                    this.currentO = this.formData.options[i]
-                    var tmp  = (parseFloat(this.currentFormule[0].prix) + parseFloat(this.currentOption[0].prix)) * parseInt(this.formData.duree[i])
+                  if(this.upgradeState[i]) {
+                    // L'UPGRADE EST ACTIVE
+                    
+                    if(this.formData.options[i]) {
+                      this.currentO = this.formData.options[i]
+                      var tmp  = (parseFloat(this.currentFormule[0].prix) - parseFloat(this.old_formule[i].formule_prix) + parseFloat(this.currentOption[0].prix)) * parseInt(this.formData.duree[i])
+                    } else {
+                        if(this.formData.formule[i] && this.formData.duree[i]) {
+                          var tmp = (parseFloat(this.currentFormule[0].prix) - parseFloat(this.old_formule[i].formule_prix)) * parseInt(this.formData.duree[i])
+                        } else {
+                          //  throw "Veuillez choisir une Formule et une duree!"
+                        }
+                    }
+
                   } else {
-                      if(this.formData.formule[i] && this.formData.duree[i]) {
-                        var tmp = parseFloat(this.currentFormule[0].prix) * parseInt(this.formData.duree[i])
-                      } else {
-                        //  throw "Veuillez choisir une Formule et une duree!"
-                      }
+                      // JUSTE UN SIMPLE ABONNEMENT
+
+                    if(this.formData.options[i]) {
+                      this.currentO = this.formData.options[i]
+                      var tmp  = (parseFloat(this.currentFormule[0].prix) + parseFloat(this.currentOption[0].prix)) * parseInt(this.formData.duree[i])
+                    } else {
+                        if(this.formData.formule[i] && this.formData.duree[i]) {
+                          var tmp = parseFloat(this.currentFormule[0].prix) * parseInt(this.formData.duree[i])
+                        } else {
+                          //  throw "Veuillez choisir une Formule et une duree!"
+                        }
+                    }
                   }
                   ttc_montant += tmp
                   i++
@@ -204,11 +288,13 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           },
           sendReabonnementRapport : async function () {
             try {
-              this.isLoading = true
+              // this.isLoading = true
               this.formData._token = this.myToken
               this.formData.promo_id = this.promoId
               this.formData.vendeurs = this.rappVendeur
               this.formData.date = this.rappDate
+              this.formData.upgrade_state = this.upgradeState
+              this.formData.old_formule = this.old_formule
 
               if(this.typeUser === 'admin') {
                   var response = await axios.post('/admin/send-rapport/reabonnement',this.formData)

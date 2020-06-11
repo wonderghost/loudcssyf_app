@@ -27,7 +27,7 @@
                             <option v-for="u in users" :value="u.localisation" :key="u.username">{{u.localisation}}</option>
                         </select>
                     </div>
-                    <div v-if="typeUser == 'v_da' || typeUse == 'v_standart'" class="uk-width-1-3@m">
+                    <div v-if="typeUser == 'v_da' || typeUser == 'v_standart'" class="uk-width-1-3@m">
                         <label for="">
                             <span uk-icon="icon : users"></span>
                             Vendeurs

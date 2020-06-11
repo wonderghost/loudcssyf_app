@@ -56,6 +56,7 @@ Vue.component('recrutement-component',require('./adminComponents/RecrutementComp
 Vue.component('reabonnement-component',require('./adminComponents/ReabonnementComponent.vue').default)
 Vue.component('detail-rapport',require('./userComponents/DetailRapportComponent.vue').default)
 Vue.component('alert-abonnement',require('./userComponents/AlertComponent.vue').default)
+Vue.component('add-contact',require('./userComponents/AddContactComponent.vue').default)
 
 import Vue from 'vue'
 import Vuex from 'vuex'
