@@ -49,4 +49,8 @@ class Abonnement extends Model
       return $this->belongsTo('App\Formule','formule_name','nom')->first();
     }
 
+    public function upgrade() {
+      return $this->hasMany('App\Upgrade','id_abonnement','id')->first();
+    }
+
 }

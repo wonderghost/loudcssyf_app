@@ -354,7 +354,11 @@ public function getDetailsForRapport(Request $request , RapportVente $r) {
           ->subDay()
           ->addHours(23)
           ->addMinutes(59)
-          ->addSeconds(59);;
+          ->addSeconds(59);
+
+        
+        $upgrade_details = $value->upgrade();
+        
         
         $data[$key] = [
           'serial'  =>  $value->serial_number,
@@ -364,6 +368,8 @@ public function getDetailsForRapport(Request $request , RapportVente $r) {
           'fin' =>  $fin->toDateTimeString(),
           'option'  =>  $options,
           'created_at'  =>  $value->created_at,
+          'upgrade_state' => $value->upgrade ? 'UPGRADE' : '',
+          'old_formule' =>  $upgrade_details ? $upgrade_details->depart : ''
         ];
       }
       return response()->json($data);

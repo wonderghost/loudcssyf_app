@@ -25,7 +25,8 @@
                         <tbody>
                             <tr v-for="(d,index) in rapport" :key="index">
                                 <td>{{d.serial}}</td>
-                                <td>{{d.formule}}</td>
+                                <td class="uk-alert uk-alert-primary" v-if="d.upgrade_state">{{d.old_formule}} -> {{d.formule}} <span class="uk-text-bold" v-if="d.upgrade_state">({{ d.upgrade_state }})</span></td>
+                                <td v-else>{{d.formule}}</td>
                                 <td>{{d.duree}}</td>
                                 <td>{{d.debut}}</td>
                                 <td>{{d.fin}}</td>

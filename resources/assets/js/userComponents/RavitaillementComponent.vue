@@ -49,7 +49,7 @@
           </div>
         <div class="uk-width-1-6@m">
           <label>Quantite</label>
-          <input type="number" required min="1" class="uk-input uk-border-rounded" v-model="formData.quantite">
+          <input type="number" required min="0" class="uk-input uk-border-rounded" v-model="formData.quantite">
         </div>
         <div class="uk-width-1-6@m">
           <label>Compense</label>

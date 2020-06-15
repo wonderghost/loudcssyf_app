@@ -172,7 +172,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                   old_duree : [""],
                   old_debut : [""]
               },
-              duree : [1,2,3,4,5,6,7,8,9,10,11,12,24],
+              duree : [1,2,3,6,9,12,24],
               amount_ttc : [],
               currentF : "",
               currentO : "",
@@ -332,7 +332,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           },
           sendReabonnementRapport : async function () {
             try {
-              // this.isLoading = true
+              this.isLoading = true
               this.formData._token = this.myToken
               this.formData.promo_id = this.promoId
               this.formData.vendeurs = this.rappVendeur

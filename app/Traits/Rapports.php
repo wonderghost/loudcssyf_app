@@ -429,17 +429,14 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 					}
 					break;
 					case 'reabonnement':
-
-						// return response()
-						// 	->json($request);
-						// die();
-
+						
 						$validation = $request->validate([
 							'montant_ttc' =>  'required|numeric',
 							'vendeurs'   =>  'required|exists:users,username',
 							'date'  =>  'required|before_or_equal:'.(date("Y/m/d",strtotime("now"))),
 							'serial_number.*'	=>	'required|string|min:14|max:14',
 							// 'debut.*'	=>	'required|date|after_or_equal:date|exclude_if:upgrade,true',
+							'debut.*'	=>	'required|date',
 							'formule.*'	=>	'required|string|exists:formule,nom',
 							'duree.*'	=>	'required|numeric'
 							
@@ -465,11 +462,12 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 								$rapport->calculCommission('reabonnement');
 
 								// DEBIT DU SOLDE INDIQUE
-								$new_solde_cga = CgaAccount::where('vendeur',$request->input('vendeurs'))->first()->solde - $request->input('montant_ttc');
 
-								CgaAccount::where('vendeur',$request->input('vendeurs'))->update([
-									'solde' =>  $new_solde_cga
-								]);
+								$theUser = User::where('username',$request->input('vendeurs'))->first();
+
+								$cgaAccount = $theUser->cgaAccount();
+								
+								$cgaAccount->solde -= $request->input('montant_ttc');
 
 								// LA PROMO EXISTE
 								$tmp_promo = $this->isExistPromo();
@@ -520,9 +518,11 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 
 								// verification de la date de debut en cas d'un abonnement actif
 								foreach($request->input('serial_number') as $key => $value) {
-									if($request->input('upgrade')) {
+
+									if($request->input('upgrade')[$key]) {
 										// ceci est un upgrade
 										# pas besoin de ce test
+										
 
 									}
 									else {
@@ -531,9 +531,19 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 										$dateSuggest = $this->checkSerialDebutDate($value);
 										$choiceDate = new Carbon($request->input('debut')[$key]);
 	
-										if($choiceDate < $dateSuggest) {
-											throw new AppException("Erreur sur la date de debut pour :".$value);
+										// test sur la date de debut qui doit etre superieur ou egal a la date d'activation
+
+										$date_rapport = new Carbon($request->input('date'));
+
+										if($choiceDate < $date_rapport) {
+											throw new AppException("Le debut doit etre egal ou superieur a la date d'activation !");
 										}
+
+
+										if($choiceDate < $dateSuggest) {
+											throw new AppException("Erreur sur la date de debut pour :".$value.",la date suggeree est : `".$dateSuggest."`");
+										}
+
 									}
 								}
 								
@@ -558,17 +568,29 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 									$abonnement_data[$key]->debut = $request->input('debut')[$key];
 									$abonnement_data[$key]->duree = $request->input('duree')[$key];
 
-									if($request->input('upgrade')) {
+									if($request->input('upgrade')[$key]) {
 										// abonnement avec upgrade
 										$upgrade[$key] = new Upgrade;
 										
-										if($request->input('upgradeData')) {
+										if($request->input('upgradeData')[$key]) {
 											$upgrade[$key]->depart = $request->input('upgradeData')[$key]['formule_name'];
 										}
 										else {
-											$upgrade[$key]->depart = $request->input('old_formule');
+											$upgrade[$key]->depart = $request->input('old_formule')[$key];
 										}
 										
+										$upgrade[$key]->finale = $request->input('formule')[$key];
+										$upgrade[$key]->id_abonnement = $abonnement_data[$key]->id;
+										$abonnement_data[$key]->upgrade = true;
+
+									}
+									else {
+
+										// verifier si un abonnement existe a la meme date de debut  pour le meme numero de materiel
+	
+										if($abonnement_data[$key]->isExistAbonnementForDebutDate()) {
+											throw new AppException("Un abonnement existe deja a cette date de debut pour :`".$value."`!");
+										}
 									}
 									
 									// VERIFICATION DE L'EXISTENCE DE L'OPTION
@@ -578,11 +600,6 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 										$allAbonnOption_data[$key]->id_option = $request->input('options')[$key];
 									}
 
-									// verifier si un abonnement existe a la meme date de debut  pour le meme numero de materiel
-
-									// if($abonnement_data[$key]->isExistAbonnementForDebutDate()) {
-									// 	throw new AppException("Un abonnement existe deja a cette date de debut !");
-									// }
 
 
 									if($tmp) {
@@ -595,25 +612,24 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 										$exem->serial_number = $value;
 										$exem->origine = false;
 										$exem->produit = $produit->where('with_serial',1)->first()->reference;
-										// $exem->save();
+										$exem->save();
 									}
 								}
-								
-								// $rapport->save();
 
-								return response()
-									->json([$abonnement_data,$upgrade]);
+								$cgaAccount->save();
 
-								die();
+								$rapport->save();
 
 								foreach($request->input('serial_number') as $key => $value) {
-									// $abonnement_data[$key]->save();
+									$abonnement_data[$key]->save();
 									if(array_key_exists($key,$allAbonnOption_data) && !is_null($allAbonnOption_data[$key]->id_option)) {
-										// $allAbonnOption_data[$key]->save();
+										$allAbonnOption_data[$key]->save();
 									}
-								}
 
-								
+									if(array_key_exists($key,$upgrade)) {
+										$upgrade[$key]->save();
+									}
+								}								
 
 								return response()
 									->json('done');
