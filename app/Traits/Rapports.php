@@ -34,6 +34,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use App\Abonnement;
 use App\AbonneOption;
+use App\Upgrade;
 
 
 Trait Rapports {
@@ -171,6 +172,20 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 						$valide_abonnement = $this->checkAbonnementActif($abonnements);
 						if(!is_null($valide_abonnement)) {
 							$valide_abonnement['formule_prix'] = $valide_abonnement->formule()->prix;
+
+							// calcul de la duree restante en (mois) 
+							$fin_abonnement = new Carbon($valide_abonnement->debut);
+							$fin_abonnement->addMonths($valide_abonnement->duree)
+								->subDay()
+								->addHours(23)
+								->addMinutes(59)
+								->addSeconds(59);
+							$today = Carbon::now();
+							
+							$valide_abonnement['fin_abonnement'] = $fin_abonnement->toDateTimeString();
+							$valide_abonnement['jour_restant'] = $fin_abonnement->diffInDays($today);
+							$valide_abonnement['mois_restant'] = round($fin_abonnement->diffInDays($today) / 30);
+
 							return response()
 								->json($valide_abonnement);
 						}
@@ -194,6 +209,16 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 						// renvoi de l'abonnement actif
 						if(!is_null($valide_abonnement)) {
 							$valide_abonnement['formule_prix'] = $valide_abonnement->formule()->prix;
+							// calcul de la duree restante en (mois) 
+							$fin_abonnement = new Carbon($valide_abonnement->debut);
+							$fin_abonnement->addMonths($valide_abonnement->duree)
+								->subDay()
+								->addHours(23)
+								->addMinutes(59)
+								->addSeconds(59);
+							
+							$valide_abonnement['fin_abonnement'] = $fin_abonnement->toDateTimeString();
+
 							return response()
 								->json($valide_abonnement);
 						}
@@ -405,16 +430,16 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 					break;
 					case 'reabonnement':
 
-						return response()
-							->json($request);
-						die();
+						// return response()
+						// 	->json($request);
+						// die();
 
 						$validation = $request->validate([
 							'montant_ttc' =>  'required|numeric',
 							'vendeurs'   =>  'required|exists:users,username',
 							'date'  =>  'required|before_or_equal:'.(date("Y/m/d",strtotime("now"))),
-							'serial_number.*'	=>	'required|distinct|string|min:14|max:14',
-							'debut.*'	=>	'required|date|after_or_equal:date',
+							'serial_number.*'	=>	'required|string|min:14|max:14',
+							// 'debut.*'	=>	'required|date|after_or_equal:date|exclude_if:upgrade,true',
 							'formule.*'	=>	'required|string|exists:formule,nom',
 							'duree.*'	=>	'required|numeric'
 							
@@ -495,27 +520,56 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 
 								// verification de la date de debut en cas d'un abonnement actif
 								foreach($request->input('serial_number') as $key => $value) {
-									$dateSuggest = $this->checkSerialDebutDate($value);
-									$choiceDate = new Carbon($request->input('debut')[$key]);
+									if($request->input('upgrade')) {
+										// ceci est un upgrade
+										# pas besoin de ce test
 
-									if($choiceDate < $dateSuggest) {
-										throw new AppException("Erreur sur la date de debut pour :".$value);
+									}
+									else {
+										// ceci est un abonnement simple
+
+										$dateSuggest = $this->checkSerialDebutDate($value);
+										$choiceDate = new Carbon($request->input('debut')[$key]);
+	
+										if($choiceDate < $dateSuggest) {
+											throw new AppException("Erreur sur la date de debut pour :".$value);
+										}
 									}
 								}
 								
 
 							// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+								$abonnement_data = [];
+								$allAbonnOption_data = [];
+								$upgrade = [];
+
 								
 								foreach($request->input('serial_number') as $key	=>	$value) {
 									$tmp = $e->find($value);
+
+									// 
 
 									$abonnement_data[$key] = new Abonnement;
 									$abonnement_data[$key]->makeAbonnementId();
 									$abonnement_data[$key]->rapport_id = $id_rapport;
 									$abonnement_data[$key]->serial_number = $value;
+									$abonnement_data[$key]->formule_name = $request->input('formule')[$key];
 									$abonnement_data[$key]->debut = $request->input('debut')[$key];
 									$abonnement_data[$key]->duree = $request->input('duree')[$key];
-									$abonnement_data[$key]->formule_name = $request->input('formule')[$key];
+
+									if($request->input('upgrade')) {
+										// abonnement avec upgrade
+										$upgrade[$key] = new Upgrade;
+										
+										if($request->input('upgradeData')) {
+											$upgrade[$key]->depart = $request->input('upgradeData')[$key]['formule_name'];
+										}
+										else {
+											$upgrade[$key]->depart = $request->input('old_formule');
+										}
+										
+									}
 									
 									// VERIFICATION DE L'EXISTENCE DE L'OPTION
 									if(array_key_exists($key,$request->input('options'))) {	
@@ -529,7 +583,7 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 									// if($abonnement_data[$key]->isExistAbonnementForDebutDate()) {
 									// 	throw new AppException("Un abonnement existe deja a cette date de debut !");
 									// }
-									
+
 
 									if($tmp) {
 										// get serial info from database
@@ -541,18 +595,25 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 										$exem->serial_number = $value;
 										$exem->origine = false;
 										$exem->produit = $produit->where('with_serial',1)->first()->reference;
-										$exem->save();
+										// $exem->save();
 									}
 								}
 								
-								$rapport->save();
+								// $rapport->save();
+
+								return response()
+									->json([$abonnement_data,$upgrade]);
+
+								die();
 
 								foreach($request->input('serial_number') as $key => $value) {
-									$abonnement_data[$key]->save();
+									// $abonnement_data[$key]->save();
 									if(array_key_exists($key,$allAbonnOption_data) && !is_null($allAbonnOption_data[$key]->id_option)) {
-										$allAbonnOption_data[$key]->save();
+										// $allAbonnOption_data[$key]->save();
 									}
 								}
+
+								
 
 								return response()
 									->json('done');
