@@ -195,20 +195,43 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 return 0
               }
               
-              let response = await axios.post('/user/check-serial-upgrade/',{
+              // let response = await axios.post('/user/rapport/check-upgrade',{
+              //   _token : this.myToken,
+              //   serial_number : this.formData.serial_number[index]
+              // })
+
+              axios.post('/user/rapport/check-upgrade',{
                 _token : this.myToken,
                 serial_number : this.formData.serial_number[index]
               })
+              .then((response) => {
+                  if(response.data != 'fail') {
+                    Vue.set(this.formData.upgradeData,index,response.data)
+                  }
+                  else {
+                    Vue.set(this.formData.upgradeData,index,undefined)
+                  }
+                  this.calculMontantTtc()
+              }, (error) => {
+                  if(error.response.data.errors) {
+                    let errorTab = error.response.data.errors
+                    for (var prop in errorTab) {
+                      this.errors.push(errorTab[prop][0])
+                    }
+                  } else {
+                      this.errors.push(error.response.data)
+                  }
+              })
               
-              if(response) {
-                if(response.data != 'fail') {
-                  Vue.set(this.formData.upgradeData,index,response.data)
-                }
-                else {
-                  Vue.set(this.formData.upgradeData,index,undefined)
-                }
-                this.calculMontantTtc()
-              }
+              // if(response) {
+              //   if(response.data != 'fail') {
+              //     Vue.set(this.formData.upgradeData,index,response.data)
+              //   }
+              //   else {
+              //     Vue.set(this.formData.upgradeData,index,undefined)
+              //   }
+              //   this.calculMontantTtc()
+              // }
 
             } catch(error) {
                 if(error.response.data.errors) {
@@ -221,19 +244,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 }
             }
           },
-          // searchSerialDebut : async function (serial,index) {
-          //   try {
-          //       let response = await axios.post('/user/rapport/check-serial-debut-date',{
-          //         _token : this.myToken,
-          //         serial_materiel : serial
-          //       })
-          //       if(response.data) {
-          //         this.debutSuggest[index] = response.data
-          //       }
-          //   } catch(error) {
-          //       alert(error)
-          //   }
-          // },
+
           ajusteQuantiteInput : function () {
             try {
                 var diff = this.formData.quantite_materiel - this.formData.formule.length

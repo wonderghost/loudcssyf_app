@@ -170,8 +170,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/rapport/check-serial','RapportControlleur@checkSerial')->middleware('controleur');
 	Route::get('/user/formule/list','AdminController@listFormule')->middleware('controleur');
 	
-	Route::post('/user/check-serial-upgrade','RapportControlleur@checkSerialOnUpgradeState');
-	// Route::get('/user/check-serial-upgrade','RapportControlleur@checkSerialOnUpgradeState');
+	Route::post('/user/rapport/check-upgrade','RapportControlleur@checkSerialOnUpgradeState');
 
 	Route::get('/user/all-rapport','RapportControlleur@listRapport')->middleware('controleur');
 	Route::get('/user/rapport/all','AdminController@getAllRapport')->middleware('controleur');
