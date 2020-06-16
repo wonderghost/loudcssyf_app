@@ -431,7 +431,7 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 					case 'reabonnement':
 						
 						$validation = $request->validate([
-							'montant_ttc' =>  'required|numeric',
+							'montant_ttc' =>  'required|numeric|min:10000',
 							'vendeurs'   =>  'required|exists:users,username',
 							'date'  =>  'required|before_or_equal:'.(date("Y/m/d",strtotime("now"))),
 							'serial_number.*'	=>	'required|string|min:14|max:14',
