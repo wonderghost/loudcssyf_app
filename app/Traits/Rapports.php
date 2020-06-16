@@ -216,8 +216,11 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 								->addHours(23)
 								->addMinutes(59)
 								->addSeconds(59);
+							$today = Carbon::now();
 							
 							$valide_abonnement['fin_abonnement'] = $fin_abonnement->toDateTimeString();
+							$valide_abonnement['jour_restant'] = $fin_abonnement->diffInDays($today);
+							$valide_abonnement['mois_restant'] = round($fin_abonnement->diffInDays($today) / 30);
 
 							return response()
 								->json($valide_abonnement);
@@ -435,7 +438,6 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 							'vendeurs'   =>  'required|exists:users,username',
 							'date'  =>  'required|before_or_equal:'.(date("Y/m/d",strtotime("now"))),
 							'serial_number.*'	=>	'required|string|min:14|max:14',
-							// 'debut.*'	=>	'required|date|after_or_equal:date|exclude_if:upgrade,true',
 							'debut.*'	=>	'required|date',
 							'formule.*'	=>	'required|string|exists:formule,nom',
 							'duree.*'	=>	'required|numeric'
@@ -519,11 +521,10 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 								// verification de la date de debut en cas d'un abonnement actif
 								foreach($request->input('serial_number') as $key => $value) {
 
-									if($request->input('upgrade')[$key]) {
+									
+									if(array_key_exists($key,$request->input('upgrade')) && $request->input('upgrade')[$key]) {
 										// ceci est un upgrade
 										# pas besoin de ce test
-										
-
 									}
 									else {
 										// ceci est un abonnement simple
@@ -565,15 +566,28 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 									$abonnement_data[$key]->rapport_id = $id_rapport;
 									$abonnement_data[$key]->serial_number = $value;
 									$abonnement_data[$key]->formule_name = $request->input('formule')[$key];
-									$abonnement_data[$key]->debut = $request->input('debut')[$key];
-									$abonnement_data[$key]->duree = $request->input('duree')[$key];
 
-									if($request->input('upgrade')[$key]) {
+									
+									if(array_key_exists($key,$request->input('upgrade')) && $request->input('upgrade')[$key]){
 										// abonnement avec upgrade
 										$upgrade[$key] = new Upgrade;
-										
-										if($request->input('upgradeData')[$key]) {
+
+										if(array_key_exists($key,$request->input('upgradeData')) && !is_null($request->input('upgradeData')[$key])){
+
 											$upgrade[$key]->depart = $request->input('upgradeData')[$key]['formule_name'];
+
+											// tester la conformite de la date et de la duree
+
+											$debutTest = new Carbon($request->input('debut')[$key]);
+											$debutRequest = new Carbon($request->input('upgradeData')[$key]['debut']);
+
+											if($debutTest->ne($debutRequest)) {
+												throw new AppException("date de debut non conforme pour : `".$value."` ");
+											}
+
+											if($request->input('upgradeData')[$key]['mois_restant'] != $request->input('duree')[$key]) {
+												throw new AppException("Duree non conforme pour : `".$value."`");
+											}
 										}
 										else {
 											$upgrade[$key]->depart = $request->input('old_formule')[$key];
@@ -592,6 +606,9 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 											throw new AppException("Un abonnement existe deja a cette date de debut pour :`".$value."`!");
 										}
 									}
+
+									$abonnement_data[$key]->debut = $request->input('debut')[$key];
+									$abonnement_data[$key]->duree = $request->input('duree')[$key];
 									
 									// VERIFICATION DE L'EXISTENCE DE L'OPTION
 									if(array_key_exists($key,$request->input('options'))) {	
@@ -599,8 +616,6 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 										$allAbonnOption_data[$key]->id_abonnement = $abonnement_data[$key]->id;
 										$allAbonnOption_data[$key]->id_option = $request->input('options')[$key];
 									}
-
-
 
 									if($tmp) {
 										// get serial info from database
@@ -621,7 +636,9 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 								$rapport->save();
 
 								foreach($request->input('serial_number') as $key => $value) {
+
 									$abonnement_data[$key]->save();
+
 									if(array_key_exists($key,$allAbonnOption_data) && !is_null($allAbonnOption_data[$key]->id_option)) {
 										$allAbonnOption_data[$key]->save();
 									}
@@ -629,7 +646,7 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 									if(array_key_exists($key,$upgrade)) {
 										$upgrade[$key]->save();
 									}
-								}								
+								}
 
 								return response()
 									->json('done');

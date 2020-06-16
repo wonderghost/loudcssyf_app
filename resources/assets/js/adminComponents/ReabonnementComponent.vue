@@ -211,7 +211,9 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                   else {
                     Vue.set(this.formData.upgradeData,index,undefined)
                   }
+
                   this.calculMontantTtc()
+                  
               }, (error) => {
                   if(error.response.data.errors) {
                     let errorTab = error.response.data.errors
@@ -287,6 +289,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                   //  les donnees existent dans le systeme
                    this.prix_formule = this.upgradeDatas[i].formule_prix
                    this.duree_formule = this.upgradeDatas[i].mois_restant
+                   
                 } 
                 else if(this.formData.old_formule[i]) {
                   //  les donnees n'existent pas dans le systeme
@@ -310,6 +313,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     }
                 }
 
+
               } 
               else {
 
@@ -328,14 +332,18 @@ import 'vue-loading-overlay/dist/vue-loading.css';
               }
               
                 
-                ttc_montant += tmp
+
                 if(tmp < 0) {
                   this.formData.formule.pop()
                   throw "Veuillez choisir une formule superieure a l'ancienne"
                 }
+
+                ttc_montant += tmp
+                
                 i++
 
               })
+
               this.formData.montant_ttc = ttc_montant
             } catch(error) {
                 alert(error)

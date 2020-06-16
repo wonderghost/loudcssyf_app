@@ -29,12 +29,12 @@ class DeleteColIdOptionOnUpgradeTable extends Migration
     public function down()
     {
         //
-        Schema::table('upgrade',function(Blueprint $table) {
-            $table->string('id_options');
+        // Schema::table('upgrade',function(Blueprint $table) {
+        //     $table->string('id_options');
 
-            $table->foreign('id_options')
-                ->references('nom')
-                ->on('options');
-        });
+        //     $table->foreign('id_options')
+        //         ->references('nom')
+        //         ->on('options');
+        // });
     }
 }
