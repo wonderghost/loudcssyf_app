@@ -853,7 +853,6 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 
 	
 	try {
-		throw new AppException("Indisponible pour le moments!");
 		// verification du mot de passe
 		if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
 			throw new AppException("Mot de passe Invalide!");
@@ -906,6 +905,7 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 					->update([
 						'quantite'	=>	$new_qt_parabole
 					]);
+
 						##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 					// renvoi des numeros de series a l'etat inactif
 					$serialsNumbers = $rapport->exemplaire();
@@ -915,7 +915,22 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 						$serial->status = 'inactif';
 						$serial->save();
 					}
-					
+
+					// suppression des abonnements actifs
+
+					$abonnements = $rapport->abonnements();
+
+					foreach($abonnements as $key => $value) {
+						$options = $value->options();
+
+						if($options) {
+							foreach($options as $_value) {
+								$_value->delete();
+							}	
+						}
+						$value->delete();
+					}
+
 					// enregistrement de la notification
 					$n = $this->sendNotification("Annulation de Rapport","Le rapport du ".$rapport->date_rapport." a ete annule",$vendeurs->username);
 					$n->save();
@@ -948,6 +963,27 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 					$cga->solde += $rapport->montant_ttc;
 					$rapport->state = 'aborted';
 
+					$abonnements = $rapport->abonnements();
+
+					foreach($abonnements as $key => $value) {
+						$options = $value->options();
+						$upgrade = $value->upgrades();
+
+						if($options) {
+							foreach($options as $_key => $_value) {
+								$_value->delete();
+							}
+						}
+
+						if($upgrade) {
+							foreach($upgrade as $__key => $__value) {
+								$__value->delete();
+							}
+						}
+
+						$value->delete();
+					}
+
 					// enregistrement de la notification
 					$n = $this->sendNotification("Annulation de Rapport","Le rapport du ".$rapport->date_rapport." a ete annule",$vendeurs->username);
 					$n->save();
@@ -968,7 +1004,36 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 			break;
 
 			case 'migration':
-				throw new AppException('En cours de parametrage , Ressayez plus tard');
+				$rapport = $r->find($request->input('id_rapport'));
+				$rapport->state = 'aborted';
+
+				#recuperation du stock vendeur
+				$stock_vendeur_terminal = $sv->where('vendeurs',$vendeurs->username)
+				->where('produit',$p->where('with_serial',1)->first()->reference)->first();
+
+				// update de la quantite des materiels
+				$new_qt_terminal = $stock_vendeur_terminal->quantite + $rapport->quantite;
+
+				StockVendeur::where('vendeurs',$vendeurs->username)
+					->where('produit',$p->where('with_serial',1)->first()->reference)
+					->update([
+						'quantite'	=>	$new_qt_terminal
+					]);
+
+				// renvoi des numeros de series a l'etat inactif
+				$serialsNumbers = $rapport->exemplaire();
+
+				foreach($serialsNumbers as $serial) {
+					$serial->rapports = NULL;
+					$serial->status = 'inactif';
+					$serial->save();
+				}
+
+				$rapport->save();
+
+				return response()
+					->json('done');
+					
 			break;
 			
 			default:

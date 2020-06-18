@@ -53,4 +53,8 @@ class Abonnement extends Model
       return $this->hasMany('App\Upgrade','id_abonnement','id')->first();
     }
 
+    public function upgrades() {
+      return $this->hasMany('App\Upgrade','id_abonnement','id')->get();
+    }
+
 }
