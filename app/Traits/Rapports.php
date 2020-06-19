@@ -184,7 +184,12 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 							
 							$valide_abonnement['fin_abonnement'] = $fin_abonnement->toDateTimeString();
 							$valide_abonnement['jour_restant'] = $fin_abonnement->diffInDays($today);
-							$valide_abonnement['mois_restant'] = round($fin_abonnement->diffInDays($today) / 30);
+							if($valide_abonnement['jour_restant'] < 15 && $valide_abonnement['jour_restant'] > 0) {
+								$valide_abonnement['mois_restant'] = 1;
+							}
+							else {
+								$valide_abonnement['mois_restant'] = round($fin_abonnement->diffInDays($today) / 28);
+							}
 
 							return response()
 								->json($valide_abonnement);

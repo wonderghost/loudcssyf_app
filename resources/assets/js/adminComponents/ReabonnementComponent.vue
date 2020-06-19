@@ -41,7 +41,7 @@
 
                   <div class="uk-width-1-6@m">
                     <span class="uk-input uk-border-rounded">
-                      {{ upgradeDatas[input-1].duree }}
+                      {{ upgradeDatas[input-1].mois_restant }}
                     </span>
                   </div>
 
@@ -225,15 +225,6 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                   }
               })
               
-              // if(response) {
-              //   if(response.data != 'fail') {
-              //     Vue.set(this.formData.upgradeData,index,response.data)
-              //   }
-              //   else {
-              //     Vue.set(this.formData.upgradeData,index,undefined)
-              //   }
-              //   this.calculMontantTtc()
-              // }
 
             } catch(error) {
                 if(error.response.data.errors) {
@@ -275,6 +266,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           },
           calculMontantTtc : function () {
             try {
+              console.log('ok')
               var ttc_montant = 0
               var i = 0 
               this.formData.formule.forEach((f) => {
@@ -313,6 +305,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     }
                 }
 
+                console.log(tmp)
 
               } 
               else {
