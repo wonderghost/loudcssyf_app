@@ -33,8 +33,8 @@ Trait Abonnements {
 					->addMinutes(59)
 					->addSeconds(59);
 				
-				$diff = $fin->diffInDays($now);
-				if($diff <= 10) {
+				$diff = $now->diffInDays($fin,false);
+				if($diff <= 10 && $diff > 0) {
 					$thisMonthAbonnementEnd[$i] = $value;
 					$i++;
 				}
@@ -54,10 +54,16 @@ Trait Abonnements {
 					->addHours(23)
 					->addMinutes(59)
 					->addSeconds(59);
+
+				$debut = new Carbon($value->debut);
+				$_diff = $now->diffInDays($fin,false);
+
 				$data[$key] = [
 					'serial'	=>	$value->serial_number,
 					'distributeur'	=>	$value->rapportVente()->vendeurs()->localisation,
-					'fin'	=>	$fin->toDateTimeString()
+					'debut'	=>	$debut->toDateTimeString(),
+					'fin'	=>	$fin->toDateTimeString(),
+					'jours'	=>	$_diff
 				];
 			}
 			
@@ -68,10 +74,14 @@ Trait Abonnements {
 					->addHours(23)
 					->addMinutes(59)
 					->addSeconds(59);
+
+				$_diff = $now->diffInDays($fin,false);
 				$data_inactif[$key] = [
 					'serial'	=>	$value->serial_number,
 					'distributeur'	=>	$value->rapportVente()->vendeurs()->localisation,
-					'fin'	=>	$fin->toDateTimeString()
+					'debut'	=>	$value->debut,
+					'fin'	=>	$fin->toDateTimeString(),
+					'jours'	=>	$_diff
 				];
 			}
 

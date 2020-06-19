@@ -41,14 +41,18 @@
                                     <tr>
                                         <th>Materiel</th>
                                         <th>Distributeur</th>
+                                        <th>Debut Abonnement</th>
                                         <th>Fin Abonnement</th>
+                                        <td>Jour(s) Restants</td>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr :uk-tooltip="r.distributeur" v-for="r in relanceByUser" :key="r.serial">
                                         <td>{{r.serial}}</td>
                                         <td>{{r.distributeur.substring(0,10)}}...</td>
+                                        <td>{{r.debut}}</td>
                                         <td>{{r.fin}}</td>
+                                        <td>{{r.jours}}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -59,14 +63,18 @@
                                     <tr>
                                         <th>Materiel</th>
                                         <th>Distributeur</th>
+                                        <th>Debut</th>
                                         <th>Fin Abonnement</th>
+                                        <th>Jour(s)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr :uk-tooltip="r.distributeur" v-for="r in inactifByUser" :key="r.serial">
                                         <td>{{r.serial}}</td>
                                         <td>{{r.distributeur.substring(0,10)}}...</td>
+                                        <td>{{ r.debut }}</td>
                                         <td>{{r.fin}}</td>
+                                        <td>{{r.jours}}</td>
                                     </tr>
                                 </tbody>
                             </table>
