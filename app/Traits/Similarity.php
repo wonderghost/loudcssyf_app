@@ -108,16 +108,14 @@ Trait Similarity {
     $flag = $this->isCommandStatusChanged($commande,$vendeur);
     // dump($flag);
     $comProd = CommandProduit::where('commande',$commande)->get();
-    
-    // dump($comProd);
-    // dd($comProd);
+
     foreach ($comProd as $key => $value) {
       if($flag[$value->produit]  == 0) {
         // la commande n'est pas confirmer dabord pour ce produit
 
       } else {
         // la commande est confirmer pour ce produit
-        // echo "1";
+
         CommandProduit::where([
           'commande'  =>  $value->commande,
           'produit' =>  $value->produit,
@@ -131,12 +129,14 @@ Trait Similarity {
   public function isCommandStatusChanged($commande,$vendeur) {
     try {
       $laCommande = CommandProduit::where('commande',$commande)->get();
+      
       $live = [];
       $flag = [];
       foreach ($laCommande as $key => $item) {
         $rav = RavitaillementVendeur::select('id_ravitaillement')->where('commands',$commande)->where('vendeurs',$vendeur)->where('livraison','non_confirmer')->get();
         $live[$key] = Livraison::where('status','unlivred')->whereIn('ravitaillement',$rav)->where('produits',$item->produit)->sum('quantite');
-        if($live[$key]) {
+        
+        if(array_key_exists($key,$live)) {
           
           if($item->parabole_a_livrer > $live[$key]) {
             // 0  => non_confirmer , 1  =>  confirmer
