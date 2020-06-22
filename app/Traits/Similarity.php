@@ -108,6 +108,7 @@ Trait Similarity {
     $flag = $this->isCommandStatusChanged($commande,$vendeur);
     // dump($flag);
     $comProd = CommandProduit::where('commande',$commande)->get();
+    
     // dump($comProd);
     // dd($comProd);
     foreach ($comProd as $key => $value) {

@@ -120,16 +120,22 @@ class VendeurController extends Controller
 
             $flag = true;
 
-            foreach($promos as $key => $value) {
-                $data [$key] = $rp->where('vendeurs',$request->user()->username)
-                    ->where('promo_id',$value->id)
-                    ->first();
+            if($promos) {
+                
+                foreach($promos as $key => $value) {
+                    $data [$key] = $rp->where('vendeurs',$request->user()->username)
+                        ->where('promo_id',$value->id)
+                        ->first();
+                }
             }
 
+
             foreach($data as $key => $value) {
-                $thePromo = $value->promos();
-                if((is_null($value->pay_at) && $value->montant != 0) && $thePromo->status_promo == 'inactif') {
-                    $flag = false;
+                if(!is_null($value)) {
+                    $thePromo = $value->promos();
+                    if((is_null($value->pay_at) && $value->montant != 0) && $thePromo->status_promo == 'inactif') {
+                        $flag = false;
+                    }
                 }
             }
 

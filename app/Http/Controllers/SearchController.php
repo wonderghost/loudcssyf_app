@@ -18,10 +18,14 @@ class SearchController extends Controller
             }
 
             $abonnement =   $result->abonnements();
-            foreach($abonnement as $value) {
+            $rapportByAbonn = [];
+            foreach($abonnement as $key => $value) {
                 $value->fin = $this->calculDateFinAbonnement(new Carbon($value->debut),$value->duree);
                 $value->distributeur = $value->rapportVente()->vendeurs()->localisation;
                 $value->option = $value->options();
+
+                $rapportByAbonn[$key] = $value->rapportVente();
+
             }
             $all = [
                 'serial'    =>  $result->serial_number,
@@ -30,7 +34,8 @@ class SearchController extends Controller
                 'vendeurs'  =>  $result->vendeurs() ? $result->vendeurs()->localisation : '',
                 'origine'   =>  $result->depot() ? $result->depot()->depot : '-',
                 'abonnements'   =>  $abonnement,
-                'rapport_vente' =>  $result->rapport(),
+                'rapport_vente' =>  $result->rapport() ? $result->rapport() : null,
+                'rapp'  =>  $rapportByAbonn
             ];
             
             return response()

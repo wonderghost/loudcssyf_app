@@ -46,20 +46,39 @@
                 <!-- Infos Abonnement -->
                 <h4>Infos Activation</h4>
                 <!-- // -->
-                <ul v-if="serialNumber.rapport_vente" class="uk-list uk-list-divider">
-                  <li>
-                    <span>Active en : </span>
-                    <span class="uk-text-bold">{{serialNumber.rapport_vente.type}}</span>
-                  </li>
-                  <li>
-                    <span>Date d'activation : </span>
-                    <span class="uk-text-bold">{{serialNumber.rapport_vente.date_rapport}}</span>
-                  </li>
-                  <li>
-                    <span>Rapport enregistre le :</span>
-                    <span class="uk-text-bold">{{serialNumber.rapport_vente.created_at}}</span>
-                  </li>
-                </ul>
+                <template v-if="serialNumber.rapport_vente != null">
+
+                  <ul class="uk-list uk-list-divider">
+                    <li>
+                      <span>Active en : </span>
+                      <span class="uk-text-bold">{{serialNumber.rapport_vente.type}}</span>
+                    </li>
+                    <li>
+                      <span>Date d'activation : </span>
+                      <span class="uk-text-bold">{{serialNumber.rapport_vente.date_rapport}}</span>
+                    </li>
+                    <li>
+                      <span>Rapport enregistre le :</span>
+                      <span class="uk-text-bold">{{serialNumber.rapport_vente.created_at}}</span>
+                    </li>
+                  </ul>
+                </template>
+                <template v-else>
+                  <ul class="uk-list uk-list-divider">
+                    <li>
+                      <span>Active en : </span>
+                      <span class="uk-text-bold"></span>
+                    </li>
+                    <li>
+                      <span>Date d'activation : </span>
+                      <span class="uk-text-bold"></span>
+                    </li>
+                    <li>
+                      <span>Rapport enregistre le :</span>
+                      <span class="uk-text-bold"></span>
+                    </li>
+                  </ul>
+                </template>
               </div>
               <div class="uk-width-1-3@m">
                 <h4>Infos Abonnement</h4>
@@ -135,6 +154,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           dataSearch : ""
         },
         serialNumber : {},
+        infoAbonnRappId : ""
       }
     },
     methods : {

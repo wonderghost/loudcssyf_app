@@ -63,6 +63,7 @@ Trait Rapports {
 	public function checkAbonnementActif($abonnements) {
 		try {
 			$valide_abonnement = null;
+			$valides_abonnements = [];
 
 			foreach($abonnements as $key => $value) {
 				$debut = new Carbon($value->debut);
@@ -73,14 +74,15 @@ Trait Rapports {
 				$now = Carbon::now();
 				
 				if($debut <= $now && $now <= $fin) {
-					$valide_abonnement = $value;
-					break;
+					// $valide_abonnement = $value;
+					array_push($valides_abonnements,$value);
+					// break;
 				} else {
 					$valide_abonnement = null;
 				}
 			}
 
-			return $valide_abonnement;
+			return end($valides_abonnements);
 
 		} catch(AppException $e) {
 			header("Erreur",true,422);
@@ -225,7 +227,12 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 							
 							$valide_abonnement['fin_abonnement'] = $fin_abonnement->toDateTimeString();
 							$valide_abonnement['jour_restant'] = $fin_abonnement->diffInDays($today);
-							$valide_abonnement['mois_restant'] = round($fin_abonnement->diffInDays($today) / 30);
+							if($valide_abonnement['jour_restant'] < 15 && $valide_abonnement['jour_restant'] > 0) {
+								$valide_abonnement['mois_restant'] = 1;
+							}
+							else {
+								$valide_abonnement['mois_restant'] = round($fin_abonnement->diffInDays($today) / 28);
+							}
 
 							return response()
 								->json($valide_abonnement);
@@ -545,7 +552,6 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 											throw new AppException("Le debut doit etre egal ou superieur a la date d'activation !");
 										}
 
-
 										if($choiceDate < $dateSuggest) {
 											throw new AppException("Erreur sur la date de debut pour :".$value.",la date suggeree est : `".$dateSuggest."`");
 										}
@@ -580,6 +586,7 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 										if(array_key_exists($key,$request->input('upgradeData')) && !is_null($request->input('upgradeData')[$key])){
 
 											$upgrade[$key]->depart = $request->input('upgradeData')[$key]['formule_name'];
+											$upgrade[$key]->old_abonnement = $request->input('upgradeData')[$key]['id'];
 
 											// tester la conformite de la date et de la duree
 
@@ -600,6 +607,7 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 										
 										$upgrade[$key]->finale = $request->input('formule')[$key];
 										$upgrade[$key]->id_abonnement = $abonnement_data[$key]->id;
+										
 										$abonnement_data[$key]->upgrade = true;
 
 									}
@@ -652,7 +660,7 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 										$upgrade[$key]->save();
 									}
 								}
-
+								
 								return response()
 									->json('done');
 							} else if(($request->input('type_credit') == "rex") && $this->isRexDisponible($request->input('vendeurs'),$request->input('montant')) ) {

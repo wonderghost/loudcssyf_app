@@ -365,6 +365,8 @@ class LogistiqueController extends Controller
     $user = CommandMaterial::where('id_commande',$commande)->first()->vendeurs()->first();
     // dump($this->CommandChangeStatus($commande,$user->username));
     $this->CommandChangeStatus($commande,$user->username);
+    
+    die();
 
     if($this->changeCommandStatusGlobale($commande)) {
       return redirect('/user/commandes');

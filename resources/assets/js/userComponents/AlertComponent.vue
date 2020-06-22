@@ -47,7 +47,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr :uk-tooltip="r.distributeur" v-for="r in relanceByUser" :key="r.serial">
+                                    <tr :uk-tooltip="r.distributeur" v-for="(r,index) in relanceByUser" :key="index">
                                         <td>{{r.serial}}</td>
                                         <td>{{r.distributeur.substring(0,10)}}...</td>
                                         <td>{{r.debut}}</td>
@@ -69,7 +69,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr :uk-tooltip="r.distributeur" v-for="r in inactifByUser" :key="r.serial">
+                                    <tr :uk-tooltip="r.distributeur" v-for="(r,index) in inactifByUser" :key="index">
                                         <td>{{r.serial}}</td>
                                         <td>{{r.distributeur.substring(0,10)}}...</td>
                                         <td>{{ r.debut }}</td>

@@ -343,34 +343,46 @@ public function validatePayComission(Request $request) {
 public function getDetailsForRapport(Request $request , RapportVente $r) {
   try {
       $rapport = $r->find($request->input('id_rapport'));
-      $abonnements = $rapport->abonnements();
       $data = [];
-      foreach($abonnements as $key => $value) {
-        $options = $value->options();
-        $debut = new Carbon($value->debut);
-	
-				$fin = new Carbon($value->debut);
-        $fin->addMonths($value->duree)
-          ->subDay()
-          ->addHours(23)
-          ->addMinutes(59)
-          ->addSeconds(59);
+      if($rapport->type == 'migration') {
+        // details des rapports de migration
+        $migration = $rapport->exemplaire();
+        foreach($migration as $key => $value) {
+          $data[$key] =[
+            'serial'  =>  $value->serial_number,
+          ];
+        }
+      }
+      else {
 
-        
-        $upgrade_details = $value->upgrade();
-        
-        
-        $data[$key] = [
-          'serial'  =>  $value->serial_number,
-          'formule' =>  $value->formule_name,
-          'duree' =>  $value->duree,
-          'debut' =>  $debut->toDateTimeString(),
-          'fin' =>  $fin->toDateTimeString(),
-          'option'  =>  $options,
-          'created_at'  =>  $value->created_at,
-          'upgrade_state' => $value->upgrade ? 'UPGRADE' : '',
-          'old_formule' =>  $upgrade_details ? $upgrade_details->depart : ''
-        ];
+        $abonnements = $rapport->abonnements();
+        foreach($abonnements as $key => $value) {
+          $options = $value->options();
+          $debut = new Carbon($value->debut);
+    
+          $fin = new Carbon($value->debut);
+          $fin->addMonths($value->duree)
+            ->subDay()
+            ->addHours(23)
+            ->addMinutes(59)
+            ->addSeconds(59);
+  
+          
+          $upgrade_details = $value->upgrade();
+          
+          
+          $data[$key] = [
+            'serial'  =>  $value->serial_number,
+            'formule' =>  $value->formule_name,
+            'duree' =>  $value->duree,
+            'debut' =>  $debut->toDateTimeString(),
+            'fin' =>  $fin->toDateTimeString(),
+            'option'  =>  $options,
+            'created_at'  =>  $value->created_at,
+            'upgrade_state' => $value->upgrade ? 'UPGRADE' : '',
+            'old_formule' =>  $upgrade_details ? $upgrade_details->depart : ''
+          ];
+        }
       }
       return response()->json($data);
   } catch(AppException $e) {
