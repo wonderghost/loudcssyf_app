@@ -108,7 +108,8 @@ class LogistiqueController extends Controller
                 DB::table('exemplaire')->insert(
                     [
                         'serial_number' => $request->input("serials")[$i],
-                        'produit' => $produit->reference
+                        'produit' => $produit->reference,
+                        'origine' =>  true
                     ]
                 );
                 DB::table('stock_central')->insert(
@@ -389,15 +390,16 @@ class LogistiqueController extends Controller
               if($this->isRavitaillementPossible($commande,$request)) {
 
                 // verifier si c'est la parabole
+                $tmp = $p->where('with_serial',0)
+                  ->where('reference',$request->input('produit'))->first();
 
-                if($tmp = $p->where('with_serial',0)
-                  ->where('reference',$request->input('produit'))->first() && $request->input('compense') > 0) {
+                if($request->input('compense') > 0) {
                     // 
                     $compMat->quantite = $request->input('compense');
                     $compMat->commande_id = $commande;
                     $compMat->save();
                   }
-                  
+                
                 // verifier si le ravitaillement est possible pour ce vendeur
                 // ##@+++++
                 $ravitaillementVendeur = new RavitaillementVendeur;
@@ -811,11 +813,14 @@ class LogistiqueController extends Controller
       
       $depots = $d->all();
       $all = [];
+
       foreach($depots as $key => $value) {
+        
         $stock = $value->stockMateriel()->get();
 
         $terminal_quantite = 0 ;
         $parabole_quantite = 0;
+
         foreach ($stock as $_value) {
           if($_value->produits()->first()->with_serial == 1) {
             $terminal_quantite = $_value->quantite;
@@ -829,14 +834,15 @@ class LogistiqueController extends Controller
           'terminal'  =>  $terminal_quantite,
           'parabole'  =>  $parabole_quantite,
         ];
+
       }
 
       return response()
         ->json($all);
 
     } catch (AppException $e) {
-      header("Erreur!",true,422);
-      die(json_encode($e->getMessage()));
+        header("Erreur!",true,422);
+        die(json_encode($e->getMessage()));
     }
   }
 // RECUPERATION DES SERIALS NUMBER NON ATTRIBUE AUX VENDEURS

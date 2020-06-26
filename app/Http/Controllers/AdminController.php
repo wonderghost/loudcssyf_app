@@ -45,6 +45,7 @@ use App\Notifications;
 use App\TransfertMateriel;
 use App\TransfertSerial;
 use App\DeficientMaterial;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -372,8 +373,9 @@ class AdminController extends Controller
             ]);
 
             $formule = new Formule;
-            $formule->name = $request->input('name');
+            $formule->nom = $request->input('name');
             $formule->prix = $request->input('price'); 
+
             $formule->save();
             return response()
               ->json('done');
@@ -996,14 +998,43 @@ class AdminController extends Controller
         $destinationStock = $sd->where('depot',$request->input('destination'))
           ->where('produit',$p->where("with_serial",1)->first()->reference)
           ->first();
-        
-        
 
 
 
 
         return response()
           ->json([$originStock,$destinationStock]);
+    } catch(AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
+    }
+  }
+
+  // ############################### AFFECTATION DE MATERIELS DANS UN DEPOT ################################################
+
+  public function getInfosAffectation() {
+    try {
+
+        $result = DB::table('exemplaire')
+          ->join('stock_central','exemplaire.serial_number','=','stock_central.exemplaire')
+          ->get();
+
+        $_result = Exemplaire::where('origine',1)
+          ->whereNull('vendeurs')->get();
+
+
+        return response()
+          ->json([$result,$_result]);
+
+    } catch(AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
+    }
+  }
+
+  public function affectationMaterielToDepot() {
+    try {
+
     } catch(AppException $e) {
         header("Erreur",true,422);
         die(json_encode($e->getMessage()));

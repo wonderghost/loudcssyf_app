@@ -77,4 +77,8 @@ class User extends Authenticatable
     public function objVendeur() {
       return $this->hasMany('App\ObjVendeur','vendeurs','username');
     }
+
+    public function repertoire() {
+      return $this->hasMany('App\Repertoire','vendeurs','username')->get();
+    }
 }

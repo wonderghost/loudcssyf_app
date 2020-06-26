@@ -36,7 +36,7 @@
             <label for="">Materiel</label>
             <select  class="uk-select uk-border-rounded" v-model="formData.produit">
               <option value="">--Materiel--</option>
-              <option v-for="p in commande.materials" :value="p.reference"> {{p.libelle}}</option>
+              <option v-for="p in commande.materials" :key="p.reference" :value="p.reference"> {{p.libelle}}</option>
             </select>
           </div>
           <!-- SELECT DEPOT -->
@@ -44,7 +44,7 @@
             <label for="">Depot</label>
             <select id="depot" class="uk-select uk-border-rounded" v-model="formData.depot">
               <option value="">-- Choisissez un depot --</option>
-              <option :value="dep.localisation"  v-for="dep in depots">{{dep.localisation}} | Terminal : {{dep.terminal}} | Parabole: {{dep.parabole}}</option>
+              <option :value="dep.localisation" :key="dep.localisation"  v-for="dep in depots">{{dep.localisation}} | Terminal : {{dep.terminal}} | Parabole: {{dep.parabole}}</option>
             </select>
           </div>
         <div class="uk-width-1-6@m">
@@ -115,7 +115,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             }
           },
           sendRavitaillement : async function () {
-            this.isLoading = true
+            // this.isLoading = true
             try {
               let response = await axios.post("/user/ravitailler/"+this.commande.id,this.formData)
               if(response.data == 'done') {

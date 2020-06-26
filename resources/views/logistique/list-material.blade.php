@@ -8,7 +8,8 @@
 		<ul class="uk-subnav uk-subnav-pill" uk-switcher>
 			<li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-hover-small" href="#">Inventaire</a></li>
 			<li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-hover-small" href="#">Historique de ravitaillement</a></li>
-			<li><a href="#" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small">Transfert Materiel</a></li>
+			<li><a href="#" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-hover-small">Transfert Materiel</a></li>
+			<li><a href="#" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-hover-small">Affectation Materiel</a></li>
 		</ul>
 
 		<!-- This is the container of the content items -->
@@ -21,6 +22,9 @@
 			</li>
 			<li>
 				<transfert-material-depot></transfert-material-depot>
+			</li>
+			<li>
+				<affectation-materiel></affectation-materiel>
 			</li>
 		</ul>		
 	</div>

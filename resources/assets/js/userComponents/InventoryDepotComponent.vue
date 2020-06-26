@@ -7,7 +7,7 @@
       <div class="uk-child-width-1-4@m uk-grid-small" uk-grid>
         <template>
           <!-- INVENTAIRE DES MATERIELS -->
-          <div v-for="m in materials"  class="">
+          <div v-for="m in materials"  class="" :key="m.localisation">
             <div class="uk-card uk-border-rounded uk-box-shadow-hover-small uk-background-muted uk-dark uk-card-body uk-padding-small">
               <h3 class="uk-card-title">{{m.localisation}}</h3>
               <p>

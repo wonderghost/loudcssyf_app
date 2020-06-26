@@ -194,11 +194,6 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 Vue.set(this.formData.upgradeData,index,undefined)
                 return 0
               }
-              
-              // let response = await axios.post('/user/rapport/check-upgrade',{
-              //   _token : this.myToken,
-              //   serial_number : this.formData.serial_number[index]
-              // })
 
               axios.post('/user/rapport/check-upgrade',{
                 _token : this.myToken,
@@ -266,7 +261,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           },
           calculMontantTtc : function () {
             try {
-              console.log('ok')
+              
               var ttc_montant = 0
               var i = 0 
               this.formData.formule.forEach((f) => {
@@ -304,8 +299,6 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                       //  throw "Veuillez choisir une Formule et une duree!"
                     }
                 }
-
-                console.log(tmp)
 
               } 
               else {

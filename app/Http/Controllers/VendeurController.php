@@ -23,6 +23,8 @@ use Carbon\Carbon;
 use App\TransactionAfrocash;
 use Illuminate\Support\Facades\Hash;
 use App\Exceptions\AppException;
+use App\Produits;
+
 
 class VendeurController extends Controller
 {
@@ -45,48 +47,90 @@ class VendeurController extends Controller
     	return view('simple-users.add-client');
     }
 
-    public function makeAddClient(ClientRequest $request) {
-        if($client = $this->isExistClientInSystem($request->input('email'))) {
-            if($rep = $this->isExistClient($client->email,Auth::user()->username)) {
-                // dd($client);
-                return redirect('/user/add-client')->with('_errors',"Cet Client Existe deja!");
+    public function makeAddClient(Request $request , Client $c , Produits $produit , Repertoire $r) {
+        try {
 
-            } else {
-                $repertoire = new Repertoire;
-                $repertoire->client = $client->email;
-                $repertoire->vendeur = Auth::user()->username;
-                $repertoire->save();
+            $validation = $request->validate([
+                'nom'   =>  'required',
+                'prenom'    =>  'required',
+                'serial.*'  =>  'string|distinct',
+                'quantite_materiel' =>  'numeric|min:0'
+            ]);
+
+            $c->nom = $request->input('nom');
+            $c->prenom = $request->input('prenom');
+            $c->email = $request->input('email');
+            $c->phone = $request->input('phone');
+            $c->adresse = $request->input('adresse');
+            $c->makeClientId();
+            $tmp = $c->client_slug;
+            
+            $serials = [];
+
+            $r->vendeurs = $request->user()->username;
+            $r->id_clients = $tmp;
+            
+            $c->save();
+            
+            if($request->input('quantite_materiel') > 0) {
+                // les numeros de materiel existent
+                for($i = 0 ; $i < $request->input('quantite_materiel') ; $i++) {
+                    $serials[$i] = Exemplaire::find($request->input('serial')[$i]);
+                    if($serials[$i]) {
+                        // si le numero existe deja en base de donnees
+                        $serials[$i]->client_id = $tmp;
+                    }
+                    else {
+                        // le numero n'existe pas en base de donnees
+                        $serials[$i] = new Exemplaire;
+                        $serials[$i]->serial_number = $request->input('serial')[$i];
+                        $serials[$i]->produit = $produit->where('with_serial',1)->first()->reference;
+                        $serials[$i]->status = 'actif';
+                        $serials[$i]->origine = false;
+                        $serials[$i]->client_id = $tmp;
+                    }
+                }
+
+                for($i = 0 ; $i < $request->input('quantite_materiel') ; $i++) {
+                    $serials[$i]->save();
+                }
+
             }
-        } else {
-            $client = new Client;
-            $client->nom = $request->input('nom');
-            $client->prenom = $request->input('prenom');
-            $client->email = $request->input('email');
-            $client->phone = $request->input('phone');
-            $client->adresse = $request->input('adresse');
 
-            $repertoire = new Repertoire;
-            $repertoire->client = $request->input('email');
-            $repertoire->vendeur = Auth::user()->username;
-            // dd($repertoire);
-            $client->save();
-            $repertoire->save();
+            $r->save();
+
+            return response()
+                ->json('done');
+
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
         }
-        	return redirect('/user/add-client')->with('success',"Nouveau client ajouté!");
-
-    	// dd($client);
     }
 
-    public function listClient() {
+    public function listClient(Request $request) {
+        try {
+            $repertoire = $request->user()->repertoire();
+            $data = [];
 
-        return view('simple-users.list-client');
+            foreach($repertoire as $key => $value) {
+                $data[$key] = [
+                    'nom'   =>  $value->clients()->nom,
+                    'prenom'    =>  $value->clients()->prenom,
+                    'email' =>  $value->clients()->email,
+                    'phone' =>  $value->clients()->phone,
+                    'materiel'  =>  $value->clients()->materiel(),
+                    'id'    =>  $value->clients()->client_slug
+                ];
+            }
+
+            return response()
+                ->json($data);
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
     }
-
-    public function getListClient(Request $request) {
-        $all = Client::select()->whereIn('email',Repertoire::select('client')->where('vendeur',Auth::user()->username))->get();
-        return response()->json($all);
-    }
-
     public function allVentes() {
         return view('ventes.toutes-ventes');
     }

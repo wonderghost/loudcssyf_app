@@ -35,6 +35,7 @@ Trait Abonnements {
 				
 				$diff = $now->diffInDays($fin,false);
 				if($diff <= 10 && $diff > 0) {
+					
 					$thisMonthAbonnementEnd[$i] = $value;
 					$i++;
 				}

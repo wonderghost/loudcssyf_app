@@ -14,6 +14,8 @@
 Route::middleware(['auth','admin'])->group(function () {
 	// 
 	Route::get('tmp','AdminController@emailTest');
+	// affection des materiels dans les depots
+	Route::get('/admin/infos-affectation','AdminController@getInfosAffectation');
 	// @@@ Objectifs router@@@
 	Route::post('/admin/objectifs/make-classify','ObjectifController@classificationVendeurByCA');
 	Route::post('/admin/objectifs/finalise-make-objectif','ObjectifController@finaliseMakeObjectif');
@@ -280,9 +282,9 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/new-command/material','CommandController@sendCommand')->middleware('vendeur');
 	// REPERTOIRE CLIENT
 	Route::get('/user/add-client','VendeurController@addClient')->middleware('vendeur');
-	Route::post('/user/add-client','VendeurController@makeAddClient')->middleware('vendeur');
-	Route::get('/user/list-client/','VendeurController@listClient')->middleware('vendeur');
-	Route::post('/user/get-client/','VendeurController@getListClient')->middleware('vendeur');
+	Route::post('/user/carnet-adresse/add-client','VendeurController@makeAddClient')->middleware('vendeur');
+	Route::get('/user/carnet-adresse/list','VendeurController@listClient')->middleware('vendeur');
+	
 	// GESTIONNAIRE CGA
 	Route::get('/user/cga-credit/','CreditController@crediterVendeur')->middleware('cga');
 	Route::get('/user/credit-cga/commandes','CreditController@commandCredit')->middleware('cga');

@@ -118,12 +118,11 @@ Trait Rapports {
 					$future_abonnement[$key] = $value;
 				}
 			}
-	
+			
 			// existence d'une abonnement valide
-			if(!is_null($valide_abonnement)) {
+			if(!is_null($valide_abonnement) && $valide_abonnement != 'nothing') {
 				if(!empty($future_abonnement)) {
-					// existence de futur abonnement
-					// $last_future_abonnement = $future_abonnement
+					
 				} else {
 					// aucun future abonnement
 					#calcul de la date de debut prevue
@@ -132,6 +131,7 @@ Trait Rapports {
 				}
 			} else {
 				// aucun abonnement valide n'existe
+				return false;
 			}
 	
 			return $debut_prochain_abonnement;
@@ -172,7 +172,8 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 					if($abonnements->count() > 0) {
 
 						$valide_abonnement = $this->checkAbonnementActif($abonnements);
-						if(!is_null($valide_abonnement)) {
+
+						if(!is_null($valide_abonnement) && $valide_abonnement ) {
 							$valide_abonnement['formule_prix'] = $valide_abonnement->formule()->prix;
 
 							// calcul de la duree restante en (mois) 
@@ -542,6 +543,8 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 										// ceci est un abonnement simple
 
 										$dateSuggest = $this->checkSerialDebutDate($value);
+										
+
 										$choiceDate = new Carbon($request->input('debut')[$key]);
 	
 										// test sur la date de debut qui doit etre superieur ou egal a la date d'activation
