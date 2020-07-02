@@ -93,7 +93,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         if(this.theUser !== "") {
           this.filterState = this.theUser
         }
-        this.isLoading = false
       },
       data () {
         return {
@@ -113,6 +112,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       methods : {
         getMaterialsDepot : async function () {
           try {
+            this.isLoading = true
             if(this.typeUser == 'admin') {
               var response = await axios.get('/admin/inventory/depot')
             }
@@ -121,12 +121,14 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             }
             this.materials = response.data
             this.$store.commit('setMaterials',response.data)
+            this.isLoading = false
           } catch (e) {
               alert(e)
           }
         },
         getSerialNumberForDepot : async function () {
           try {
+            this.isLoading = true
             if(this.typeUser == 'admin') {
               var response = await axios.get('/admin/inventory/depot/serialNumber')
             }
@@ -134,6 +136,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               var response = await axios.get('/user/inventory/depot/serialNumber')
             }
             this.serials = response.data
+            this.isLoading = false
           } catch (e) {
               alert(e)
           }

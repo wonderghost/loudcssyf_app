@@ -1015,16 +1015,21 @@ class AdminController extends Controller
   public function getInfosAffectation() {
     try {
 
-        $result = DB::table('exemplaire')
-          ->join('stock_central','exemplaire.serial_number','=','stock_central.exemplaire')
-          ->get();
+        $e = Exemplaire::whereNull('vendeurs')->where('origine',1)->get();
+        $data = [];
+        
+        $i=0;
 
-        $_result = Exemplaire::where('origine',1)
-          ->whereNull('vendeurs')->get();
-
+        foreach($e as $key => $value) {
+          if(is_null($value->depot())) {
+            $data[$i] = $value;
+            $i++;
+          }
+          
+        }
 
         return response()
-          ->json([$result,$_result]);
+          ->json($data);
 
     } catch(AppException $e) {
         header("Erreur",true,422);
@@ -1032,9 +1037,49 @@ class AdminController extends Controller
     }
   }
 
-  public function affectationMaterielToDepot() {
+  public function affectationMaterielToDepot(Request $request , Exemplaire $e) {
     try {
+        $validation = $request->validate([
+          'confirmation_password' =>  'required|string',
+          'quantite'  =>  'required|numeric|min:1',
+          'serial_number.*' =>  'required|exists:exemplaire,serial_number',
+          'depots.*'    =>  'required',
+        ],[
+          'required'  =>  '`:attribute` requis !',
+          'exists'  =>  '`attribute` n\'existe pas dans le systeme ! ',
+          'min' =>  'Quantite minimum : 1 !'
+        ]);
+        // VERIFIER LA VALIDITE DU MOT DE PASSE 
+        if(!Hash::check($request->input('confirmation_password'),$request->user()->password)) {
+          throw new AppException("Mot de passe invalide !");
+        }
+        
+        $serials = [];
+        $dataStock = [];
 
+        for($i = 0 ; $i < $request->input('quantite') ; $i++) {
+
+          $serials[$i] = $e->find($request->input('serial_number')[$i]);
+
+          if(is_null($serials[$i]->depot())) {
+            // envoi de la requete 
+            $dataStock[$i] = new Stock;
+            $dataStock[$i]->exemplaire = $serials[$i]->serial_number;
+            $dataStock[$i]->depot = $request->input('depots')[$i];
+            $dataStock[$i]->quantite = 1;
+            $dataStock[$i]->origine = "Affectation";
+
+            
+          }
+        }
+
+        foreach($dataStock as $value) {
+          // enregistrement
+          $value->save();
+        }
+
+        return response()
+          ->json('done');
     } catch(AppException $e) {
         header("Erreur",true,422);
         die(json_encode($e->getMessage()));

@@ -63,17 +63,23 @@
                     <!-- INVENTAIRE DES MATERIELS -->
                         <div v-for="m in materials"  class="">
                             <div class="uk-card uk-border-rounded uk-box-shadow-hover-small uk-background-muted uk-dark uk-card-body uk-padding-small">
-                            <h3 class="uk-card-title">{{m.libelle}}</h3>
-                            <p>
-                                <ul class="uk-list uk-list-divider">
-                                <li>
-                                    <span class="uk-card-title">Prix : {{m.prix_vente | numFormat}}</span> ,
-                                </li>
-                                <li>
-                                    <span class="uk-card-title">Qte : {{m.quantite_centrale}}</span>
-                                </li>
-                                </ul>
-                            </p>
+                                <h3 class="uk-card-title">{{m.libelle}}</h3>
+                                <p>
+                                    <ul class="uk-list uk-list-divider">
+                                        <li>
+                                            <span class="">Prix : {{m.prix_vente | numFormat}}</span>
+                                        </li>
+                                        <li>
+                                            <span class="">Qte : {{m.quantite_centrale}}</span>
+                                        </li>
+                                        <li>
+                                            <span class="">Marge : {{m.marge | numFormat}}</span>
+                                        </li>
+                                        <li>
+                                            <button @click="editMaterial = m.reference" uk-toggle="target : #modal-edit-material" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-hover-small">Editer <span uk-icon="icon : pencil"></span></button>
+                                        </li>
+                                    </ul>
+                                </p>
                             </div>
                         </div>
                     </template>
@@ -81,6 +87,47 @@
                 <!-- // -->
             </li>
         </ul>        
+
+        <!-- EDIT INFOS MATERIALS -->
+        <div id="modal-edit-material" uk-modal>
+            <div class="uk-modal-dialog">
+                <!-- <button class="uk-modal-close-default" type="button" uk-close></button> -->
+                <div class="uk-modal-header">
+                    <h2 class="uk-modal-title">Editer Infos Materiels</h2>
+                </div>
+                <div class="uk-modal-body">
+                    <form @submit.prevent="" class="uk-width-1-1@m uk-grid-small" uk-grid>
+                        <div class="uk-width-1-2@m">
+                            <label for="">Libelle</label>
+                            <input type="text" class="uk-input uk-border-rounded" >
+                        </div>
+                        <div class="uk-width-1-2@m">
+                            <label for="">Prix initial</label>
+                            <input type="number" class="uk-input uk-border-rounded" >
+                        </div>
+                        <div class="uk-width-1-3@m">
+                            <label for="">Prix Unitaire</label>
+                            <input type="number" class="uk-input uk-border-rounded" >
+                        </div>
+                        <div class="uk-width-1-3@m">
+                            <label for="">Marge</label>
+                            <input type="number" class="uk-input uk-border-rounded" >
+                        </div>
+                        <div class="uk-width-1-3@m">
+                            <label for="">Quantite</label>
+                            <span type="text" class="uk-input uk-border-rounded"></span>
+                        </div>
+                        <div>
+                            <button class="uk-button-small uk-button uk-border-rounded uk-button-primary">Envoyez</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="uk-modal-footer uk-text-right">
+                    <button class="uk-button uk-button-danger uk-button-small uk-border-rounded uk-modal-close" type="button">Fermer</button>
+                </div>
+            </div>
+        </div>
+        <!-- // -->
     </div>
 </template>
 <script>
@@ -112,7 +159,8 @@ export default {
             isLoading : false,
             fullPage : true,
             errors : [],
-            materials : []
+            materials : [],
+            editMaterial : ""
         }
     },
     methods : {
@@ -121,6 +169,7 @@ export default {
                 let response = await axios.post('/admin/add-depot/auto-complete',{
                     wordSearch : this.newMaterialForm.libelle
                 })
+
                 if(response.data == 'fail') {
                     throw "Aucune correspondance!"
                 } 
@@ -169,7 +218,7 @@ export default {
     computed : {
         myToken() {
             return this.$store.state.myToken
-        }
+        },
     }
 }
 </script>

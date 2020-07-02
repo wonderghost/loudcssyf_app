@@ -10,9 +10,9 @@ use Carbon\Carbon;
 class SearchController extends Controller
 {
     //
-    public function finSerialNumber(Exemplaire $e , $search) {
+    public function finSerialNumber(Request $request , Exemplaire $e) {
         try {
-            $result = $e->find($search);
+            $result = $e->find($request->input('dataSearch'));
             if(!$result) {
                 throw new AppException("Aucune donnee trouvee!");
             }

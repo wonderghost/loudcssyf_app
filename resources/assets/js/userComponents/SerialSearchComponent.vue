@@ -165,7 +165,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           if(this.searchForm.dataSearch == '') {
             throw "Tapez une recherche dans le champs vides!"
           }
-          let response = await axios.get('/user/search/serial/'+this.searchForm.dataSearch)
+          this.searchForm._token = this.myToken 
+          let response = await axios.post('/user/search/serial',this.searchForm)
           this.serialNumber = response.data
           this.isLoading = false
           UIkit.modal($("#modal-search-serial")).show()

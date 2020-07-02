@@ -19,7 +19,7 @@ Trait Abonnements {
 	public function getAlertAbonnementForAllUsers(Abonnement $a) {
 		try {
 			$now = Carbon::now();
-			$abonnements = $a->all();
+			$abonnements = $a->select()->orderBy('created_at','desc')->limit(2000)->get();
 
 			$thisMonthAbonnementEnd = [];
 			$thisMonthAbonnementInactif = [];

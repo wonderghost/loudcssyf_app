@@ -16,6 +16,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('tmp','AdminController@emailTest');
 	// affection des materiels dans les depots
 	Route::get('/admin/infos-affectation','AdminController@getInfosAffectation');
+	Route::post('/admin/send-affectation','AdminController@affectationMaterielToDepot');
 	// @@@ Objectifs router@@@
 	Route::post('/admin/objectifs/make-classify','ObjectifController@classificationVendeurByCA');
 	Route::post('/admin/objectifs/finalise-make-objectif','ObjectifController@finaliseMakeObjectif');
@@ -358,7 +359,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// CHAT SERVICES
 	Route::get('/user/chat-service/users-list','ChatController@UserList');
 	// RECHERCHE INFORMATIONS  DE SERIAL NUMBER
-	Route::get('/user/search/serial/{slug}','SearchController@finSerialNumber');
+	Route::post('/user/search/serial','SearchController@finSerialNumber');
 	// SEND DEBLOCAGE FORM
 	Route::post('/user/tools/deblocage-cga','ToolsController@deblocageCga');
 	Route::get('/user/deblocage/get-infos','ToolsController@getInfos');
