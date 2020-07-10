@@ -30,13 +30,12 @@
   </script>
   <title> LOUDCSSYF </title>
   </head>
-  <body onselectstart="return true" oncontextmenu="return true" ondragstart="return false" onMouseOver="window.status=''; return true;">
+  <body onselectstart="return true" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;">
     <input type="hidden" id="user-type" value="{{Auth::user()->type}}">
     <input type="hidden" id="user-localisation" value="{{Auth::user()->localisation}}">
     <input type="hidden" id="username" value="{{Auth::user()->username}}">
 
     <div id="app">
-      <alert-abonnement></alert-abonnement>
       <serial-search></serial-search>
       <deblocage-cga></deblocage-cga>
       <feedback></feedback>
@@ -47,6 +46,7 @@
       <div class="uk-margin-bottom">
         @yield('content')
       </div>
+      <alert-abonnement></alert-abonnement>
       <!-- FOOTER -->
       <footer>
         <div class="uk-container">

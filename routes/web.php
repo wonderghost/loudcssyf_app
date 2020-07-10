@@ -148,8 +148,8 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/inventory/depot/serialNumber','LogistiqueController@getSerialNumberForDepot');
 	
 	// Editer les infos materiels
-	Route::get('/admin/edit-material/{reference}','LogistiqueController@editMaterial');
-	Route::post('/admin/edit-material/{reference}','LogistiqueController@makeEditMaterial');
+	// Route::get('/admin/edit-material/{reference}','LogistiqueController@editMaterial');
+	Route::post('/admin/edit-material/','LogistiqueController@makeEditMaterial');
 	//
 	#historique de ravitaillement des depots
 	Route::get('/admin/depot/historique-depot','LogistiqueController@historiqueRavitaillementDepot');
@@ -160,6 +160,7 @@ Auth::routes();
 Route::middleware(['auth','unblocked'])->group(function () {
 	# ALERTES ABONNEMENTS
 	Route::get('/{slug}/alert-abonnement/all','RapportControlleur@getAlertAbonnementForAllUsers');
+	Route::get('/{slug}/alert-abonnement/count','RapportControlleur@countAlertAbonnement');
 	
 	Route::get('/{slug}/all-vendeurs','LogistiqueController@allVendeurs');
 	Route::get('/{slug}/all-produits','LogistiqueController@allProduits');

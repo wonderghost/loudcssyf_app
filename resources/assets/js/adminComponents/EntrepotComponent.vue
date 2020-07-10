@@ -61,7 +61,7 @@
                 <div class="uk-child-width-1-4@m uk-grid-small" uk-grid>
                     <template>
                     <!-- INVENTAIRE DES MATERIELS -->
-                        <div v-for="m in materials"  class="">
+                        <div v-for="m in materials" :key="m.reference"  class="">
                             <div class="uk-card uk-border-rounded uk-box-shadow-hover-small uk-background-muted uk-dark uk-card-body uk-padding-small">
                                 <h3 class="uk-card-title">{{m.libelle}}</h3>
                                 <p>
@@ -76,7 +76,7 @@
                                             <span class="">Marge : {{m.marge | numFormat}}</span>
                                         </li>
                                         <li>
-                                            <button @click="editMaterial = m.reference" uk-toggle="target : #modal-edit-material" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-hover-small">Editer <span uk-icon="icon : pencil"></span></button>
+                                            <button @click="editMaterialFunction(m)" uk-toggle="target : #modal-edit-material" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-hover-small">Editer <span uk-icon="icon : pencil"></span></button>
                                         </li>
                                     </ul>
                                 </p>
@@ -96,26 +96,30 @@
                     <h2 class="uk-modal-title">Editer Infos Materiels</h2>
                 </div>
                 <div class="uk-modal-body">
-                    <form @submit.prevent="" class="uk-width-1-1@m uk-grid-small" uk-grid>
+                    <form @submit.prevent="sendEditForm()" class="uk-width-1-1@m uk-grid-small" uk-grid>
                         <div class="uk-width-1-2@m">
                             <label for="">Libelle</label>
-                            <input type="text" class="uk-input uk-border-rounded" >
+                            <input type="text" class="uk-input uk-border-rounded" v-model="editMaterialForm.libelle" placeholder="Libelle du Materiel">
                         </div>
                         <div class="uk-width-1-2@m">
                             <label for="">Prix initial</label>
-                            <input type="number" class="uk-input uk-border-rounded" >
+                            <input type="number" class="uk-input uk-border-rounded" v-model="editMaterialForm.prix_initial" placeholder="Prix Initial">
                         </div>
                         <div class="uk-width-1-3@m">
                             <label for="">Prix Unitaire</label>
-                            <input type="number" class="uk-input uk-border-rounded" >
+                            <input type="number" class="uk-input uk-border-rounded" v-model="editMaterialForm.prix_unitaire" placeholder="Prix Unitaire">
                         </div>
                         <div class="uk-width-1-3@m">
                             <label for="">Marge</label>
-                            <input type="number" class="uk-input uk-border-rounded" >
+                            <input type="number" class="uk-input uk-border-rounded" v-model="editMaterialForm.marge" placeholder="Marge Materiel">
                         </div>
                         <div class="uk-width-1-3@m">
                             <label for="">Quantite</label>
-                            <span type="text" class="uk-input uk-border-rounded"></span>
+                            <span type="text" class="uk-input uk-border-rounded">{{ editMaterialForm.quantite }}</span>
+                        </div>
+                        <div class="uk-width-1-1@m">
+                            <label for="">Confirmez votre mot de passe</label>
+                            <input type="password" class="uk-input uk-border-rounded" placeholder="Entrez votre mot de passe pour confirmer" v-model="editMaterialForm.password_confirmation">
                         </div>
                         <div>
                             <button class="uk-button-small uk-button uk-border-rounded uk-button-primary">Envoyez</button>
@@ -156,14 +160,65 @@ export default {
                 with_serial : true,
                 quantite : 0
             },
+
             isLoading : false,
             fullPage : true,
             errors : [],
             materials : [],
-            editMaterial : ""
+
+            editMaterialForm : {
+                _token : "",
+                reference : "",
+                libelle : "",
+                prix_initial : 0,
+                prix_unitaire : 0,
+                marge : 0,
+                quantite : 0,
+                password_confirmation : ""
+            }
         }
     },
     methods : {
+        editMaterialFunction : function (obj) {
+            try {   
+                this.editMaterialForm.reference = obj.reference
+                this.editMaterialForm.libelle = obj.libelle
+                this.editMaterialForm.prix_initial = obj.prix_initial
+                this.editMaterialForm.prix_unitaire = obj.prix_vente
+                this.editMaterialForm.marge = obj.marge
+                this.editMaterialForm.quantite = obj.quantite_centrale
+
+            } catch(error) {
+                alert(error)
+            }
+        },
+        sendEditForm : async function () {
+            try {
+                this.isLoading = true
+                this.editMaterialForm._token = this.myToken
+                let response = await axios.post('/admin/edit-material/',this.editMaterialForm)
+                if(response.data == 'done') {
+                    this.isLoading = false
+                    UIkit.modal.alert("<div class='uk-alert uk-alert-success uk-border-rounded'>Operation Success !</div>")
+                        .then(function () {
+                            location.reload()
+                        })
+                }
+            } catch(error) {
+                this.isLoading = false
+                if(error.response.data.errors) {
+                    let errorTab = error.response.data.errors
+                    for (var prop in errorTab) {
+                        // this.errors.push(errorTab[prop][0])
+                        alert(errorTab[prop][0])
+                    }
+                } else {
+                    // this.errors.push(error.response.data)
+                    alert(error.response.data)
+
+                }
+            }
+        },
         findMaterial : async function () {
             try {
                 let response = await axios.post('/admin/add-depot/auto-complete',{
@@ -219,6 +274,16 @@ export default {
         myToken() {
             return this.$store.state.myToken
         },
+        materialToEdit() {
+            if(this.editMaterial) {
+                return this.materials.filter((m) => {
+                    return m.reference.match(this.editMaterial)
+                })[0]
+            }
+            else {
+                return null
+            }
+        }
     }
 }
 </script>

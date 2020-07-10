@@ -116,8 +116,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         methods : {
             getInfosProfile : async function () {
                 try {
+                    this.isLoading = true
                     let response = await axios.get('/user/get-profile-infos')
-                    this.profile = response.data
+                    if(response) {
+                        this.profile = response.data
+                        this.isLoading = false
+                    }
                 } catch(error) {
                     alert(error)
                 }

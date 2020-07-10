@@ -13,42 +13,120 @@ use App\CgaAccount;
 use App\Abonnement;
 use App\Http\Requests\SearchRequest;
 
+use Illuminate\Support\Facades\DB;
+
+
 
 Trait Abonnements {
+
+
+
+	public function countAlertAbonnement(Abonnement $a) {
+		try {
+			$now = Carbon::now();
+
+			return response()
+				->json([
+					'relance_count'	=>	count($this->filterAlertAbonnement($a,$now)['relance']),
+					'inactif_count'	=>	count($this->filterAlertAbonnement($a,$now)['inactif'])
+				]);
+
+		} catch(AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
+
+	public function filterAlertAbonnement(Abonnement $a , $now) {
+		$serialGroup = DB::table('abonnements')
+			->select('serial_number')
+			->groupBy('serial_number')
+			->get();
+		
+		$all_datas = [];
+
+		foreach($serialGroup as $key => $value) {
+			$ab = $a->where('serial_number',$value->serial_number)->orderBy('debut','asc')->get();
+				
+			$all_datas[$key] = [
+				'serial'	=>	$value->serial_number,
+				'abonnements'	=>	$ab->count() > 0 ? $ab : null
+			];
+		}
+		
+		$thisMonthAbonnementEnd = [];
+		$thisMonthAbonnementInactif = [];
+		$i=0;
+		$j =0;
+
+		foreach($all_datas as $_key => $_value) {
+			if(!is_null($_value['abonnements'])) {
+				$flag = 0;
+				$tmp = null;
+				$futur = null;
+				foreach($_value['abonnements'] as $key => $value) {
+					// recuperer l'abonnement en cours
+					$debut = new Carbon($value->debut);
+					$fin = new Carbon($value->debut);
+					$fin->addMonths($value->duree)->subDay()
+						->addHours(23)
+						->addMinutes(59)
+						->addSeconds(59);
+
+						
+					if($debut <= $now && $now <= $fin) {
+						$endDiff = $fin->diffInDays($now);
+						// abonnement en cours
+						if($endDiff > 0 && $endDiff <= 10) {
+							$tmp = $value;
+							$flag++;
+						}
+					}
+
+					if($now < $debut) {
+						// abonnement futur
+						$futur = $value;
+						$flag++;
+					}					
+
+				}
+
+				if($flag == 1) {
+					// 
+					if(!is_null($tmp)) {
+
+						$thisMonthAbonnementEnd[$i] = $tmp;
+						$i++;
+					}
+				}
+			}
+			// last abonnement 
+			$last = $_value['abonnements']->last();
+			// recuperation de tous les abonnements interrompue
+			$_debut = new Carbon($last->debut);
+			$_fin = new Carbon($last->debut);
+			$_fin->addMonths($last->duree)->subDay()
+				->addHours(23)
+				->addMinutes(59)
+				->addSeconds(59);
+			
+			if($now > $_fin) {
+				$thisMonthAbonnementInactif[$j] = $last;
+				$j++;
+			}
+		}
+		return [
+			'relance'	=>	$thisMonthAbonnementEnd,
+			'inactif'	=>	$thisMonthAbonnementInactif
+		];
+	}
 	
 	public function getAlertAbonnementForAllUsers(Abonnement $a) {
 		try {
 			$now = Carbon::now();
-			$abonnements = $a->select()->orderBy('created_at','desc')->limit(2000)->get();
-
-			$thisMonthAbonnementEnd = [];
-			$thisMonthAbonnementInactif = [];
-			$i=0;
-			$j =0;
-			foreach($abonnements as $key => $value) {
-				$fin = new Carbon($value->debut);
-				$fin->addMonths($value->duree)
-					->subDay()
-					->addHours(23)
-					->addMinutes(59)
-					->addSeconds(59);
-				
-				$diff = $now->diffInDays($fin,false);
-				if($diff <= 10 && $diff > 0) {
-					
-					$thisMonthAbonnementEnd[$i] = $value;
-					$i++;
-				}
-
-				if($diff < 0) {
-					$thisMonthAbonnementInactif [$j] = $value;
-					$j++;
-				}
-			}
-
 			$data =[];
 			$data_inactif = [];
-			foreach($thisMonthAbonnementEnd as $key => $value) {
+			foreach($this->filterAlertAbonnement($a,$now)['relance'] as $key => $value) {
 				$fin = new Carbon($value->debut);
 				$fin->addMonths($value->duree)
 					->subDay()
@@ -68,7 +146,7 @@ Trait Abonnements {
 				];
 			}
 			
-			foreach($thisMonthAbonnementInactif as $key => $value) {
+			foreach($this->filterAlertAbonnement($a,$now)['inactif'] as $key => $value) {
 				$fin = new Carbon($value->debut);
 				$fin->addMonths($value->duree)
 					->subDay()

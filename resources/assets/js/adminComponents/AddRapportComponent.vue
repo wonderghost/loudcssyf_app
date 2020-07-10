@@ -174,15 +174,15 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             }
           }
         } catch (error) {
-          this.isLoading = false
-          if(error.response.data.errors) {
-            let errorTab = error.response.data.errors
-            for (var prop in errorTab) {
-              this.errors.push(errorTab[prop][0])
+            this.isLoading = false
+            if(error.response.data.errors) {
+              let errorTab = error.response.data.errors
+              for (var prop in errorTab) {
+                this.errors.push(errorTab[prop][0])
+              }
+            } else {
+                this.errors.push(error.response.data)
             }
-          } else {
-              this.errors.push(error.response.data)
-          }
         }
       }
     },

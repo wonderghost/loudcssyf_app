@@ -593,21 +593,49 @@ class LogistiqueController extends Controller
     public function inventoryVendeur() {
       return view('logistique.my-inventory');
     }
-    //
 
-    public function editMaterial($reference) {
-        $material = Produits::select()->where('reference',$reference)->first();
-        return view('logistique.edit-material')->withMaterial($material);
-    }
     //
-    public function makeEditMaterial(MaterialEditRequest $request) {
-        Produits::select()->where('reference',$request->input('reference'))->update([
-            'libelle' => $request->input('libelle'),
-            'prix_initial' => $request->input('prix_initial'),
-            'prix_vente' => $request->input('prix_unitaire'),
-            'marge' => $request->input('marge')
-        ]);
-        return redirect("/admin/edit-material/".$request->input('reference'))->with('success',"Modification reussie!");
+    public function makeEditMaterial(Request $request , Produits $p) {
+      try {
+          $validation = $request->validate([
+            'reference' =>  'required|string|exists:produits,reference',
+            'libelle' =>  'required|string|',
+            'prix_initial'  =>  'required',
+            'prix_unitaire' =>  'required',
+            'quantite'  =>  'required',
+            'marge' =>  'required',
+            'password_confirmation' =>  'required|string'
+          ],[
+            'required'  =>  '`:attribute` est requis!',
+            'exists'  =>  '`:attribute` n\'existe pas dans le systeme!'
+          ]);
+
+          if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
+            throw new AppException("Mot de passe invalide !");
+          }
+          $produit = $p->find($request->input('reference'));
+          $produit->libelle = $request->input('libelle');
+          $produit->marge = $request->input('marge');
+          // $produit->prix_achat = $r
+          $produit->prix_initial = $request->input('prix_initial');
+          $produit->prix_vente = $request->input('prix_unitaire');
+
+          $produit->save();
+          
+          return response()
+            ->json('done');
+      } catch(AppException $e) {
+          header("Erreur",true,422);
+          die(json_encode($e->getMessage()));
+      }
+
+        // Produits::select()->where('reference',$request->input('reference'))->update([
+        //     'libelle' => $request->input('libelle'),
+        //     'prix_initial' => $request->input('prix_initial'),
+        //     'prix_vente' => $request->input('prix_unitaire'),
+        //     'marge' => $request->input('marge')
+        // ]);
+        // return redirect("/admin/edit-material/".$request->input('reference'))->with('success',"Modification reussie!");
     }
 
     //
