@@ -129,7 +129,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         methods : {
           getCommandCredit : async function () {
             try {
-              if(this.theUser == 'admin') {
+              if(this.theUser == 'admin' || this.theUser == 'commercial') {
                 var response = await axios.get('/admin/commandes/credit-all')
               } else {
                 var response = await axios.get('/user/commandes/credit-all')
