@@ -34,7 +34,7 @@
               <a href="#" class="uk-alert-close" uk-close></a>
               <p>Success</p>
             </div>
-              <form @submit="crediterAccount($event)">
+              <form @submit.prevent="crediterAccount()">
   						<label>
                 <input type="radio" v-model="typeCredit" class="uk-radio" name="compte" value="cga"> CGA
   						</label>
@@ -149,11 +149,10 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             }
           }
           ,
-          crediterAccount : async function (event) {
-            this.isLoading = true
-            event.preventDefault()
+          crediterAccount : async function () {
 
             try {
+              this.isLoading = true
               if(this.typeUser !== 'admin') {
                 throw "Action non autorise!"
               }
@@ -162,8 +161,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 compte : this.typeCredit,
                 montant : this.montantCredit
               })
+
               if(response.data == 'done') {
-                $("#loader").hide()
                 this.requestState = true
                 this.montantCredit = 0
                 this.getSolde()
@@ -197,6 +196,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 return user.type.match(this.$store.state.typeUserFilter)
               }
             })
+          },
+          typeUser() {
+            return this.$store.state.typeUser
           }
         }
     }
