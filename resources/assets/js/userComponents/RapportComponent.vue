@@ -8,25 +8,6 @@
 
     <!-- modal details rapports -->
     <detail-rapport :rapport="rappDetails" :rapport-infos="rappInfos"></detail-rapport>
-    <!-- <template>
-      <div id="modal-detail-rapport" uk-modal="esc-close : false ; bg-close : true;">
-        <div class="uk-modal-dialog">
-          <div class="uk-modal-header">
-            <div class="uk-alert-info" uk-alert>
-              Materiels activ&eacute;  dans le rapport du : <span id="date-rap" class="uk-text-bold"></span>
-            </div>
-          </div>
-          <div class="uk-modal-body">
-            <div class="uk-grid-small" uk-grid>
-              <div v-for="s in detailSerials" class="uk-width-1-2@m">
-                <span class="uk-input uk-border-rounded">{{s.serial_number}}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </template> -->
-    <!-- // -->
 
     <template id="">
     <div class="uk-grid-small" uk-grid>
@@ -127,7 +108,7 @@
             </div>
           </div>
 
-          <div v-if="typeUser == 'admin' || typeUser == 'controleur'" class="uk-width-1-6@m">
+          <div v-if="typeUser == 'admin' || typeUser == 'controleur' || typeUser == 'commercial'" class="uk-width-1-6@m">
             <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
             <select class="uk-select uk-border-rounded" v-model="filterUser">
               <option value="">Tous les vendeurs</option>
@@ -261,7 +242,7 @@ import datepicker from 'vue-date-picker'
         mounted() {
           this.getRapportVente()
           this.showRapport = this.rappWithUser
-          if(this.typeUser == 'admin') {
+          if(this.typeUser == 'admin' || this.typeUser == 'commercial' || this.typeUser == 'controleur') {
             this.allUsers()
           }
 
@@ -356,7 +337,7 @@ import datepicker from 'vue-date-picker'
           },
           getRapportVente : async function () {
             try {
-              if(this.typeUser == 'admin') {
+              if(this.typeUser == 'admin' || this.typeUser == 'commercial') {
                 var response = await axios.get('/admin/rapport/all')
                 var responseCom = await axios.get('/admin/rapport/commission-total')
               }else if(this.typeUser == 'controleur'){

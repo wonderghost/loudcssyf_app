@@ -129,7 +129,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           },
           getMaterialCommande : async function () {
             try {
-              if(this.typeUser == 'admin') {
+              if(this.typeUser == 'admin' || this.typeUser == 'commercial') {
                 var response = await axios.get('/admin/commandes/all')
               } else if(this.typeUser == 'logistique') {
                 var response = await axios.get("/logistique/commandes/all")

@@ -13,7 +13,7 @@
         <ul class="uk-switcher uk-margin">
             <li>
                 <!-- APPORT -->
-                <button type="button" uk-toggle="target: #modal-apport" class="uk-width-1-4@m uk-button uk-button-primary uk-button-small  uk-border-rounded uk-box-shadow-small" name="button"><span uk-icon="icon : plus"></span> Effectuez un apport</button>
+                <button v-if="typeUser == 'admin'" type="button" uk-toggle="target: #modal-apport" class="uk-width-1-4@m uk-button uk-button-primary uk-button-small  uk-border-rounded uk-box-shadow-small" name="button"><span uk-icon="icon : plus"></span> Effectuez un apport</button>
           <!-- AUGMENTATION CAPITAL / APPORT -->
                 <div id="modal-apport" uk-modal>
                     <div class="uk-modal-dialog">
@@ -79,7 +79,7 @@
             </li>
             <li>
                 <!-- DEPENSES -->
-                <button type="button" uk-toggle="target: #modal-depenses" class="uk-width-1-4@m uk-button uk-button-primary uk-button-small  uk-border-rounded uk-box-shadow-small" name="button"><span uk-icon="icon : minus"></span> Ajouter une depense</button>
+                <button v-if="typeUser == 'admin'" type="button" uk-toggle="target: #modal-depenses" class="uk-width-1-4@m uk-button uk-button-primary uk-button-small  uk-border-rounded uk-box-shadow-small" name="button"><span uk-icon="icon : minus"></span> Ajouter une depense</button>
                 <!-- // -->
                 <div id="modal-depenses" uk-modal>
                     <div class="uk-modal-dialog">
@@ -280,6 +280,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           }
         }, 
         computed : {
+            typeUser() {
+                return this.$store.state.typeUser
+            },
             myToken() {
                 return this.$store.state.myToken
             }

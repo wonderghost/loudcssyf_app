@@ -107,7 +107,7 @@
             <!-- // -->
         </template>
 
-        <template v-if="theUser == 'admin'">
+        <template v-if="theUser == 'admin' || theUser == 'commercial'">
             <!-- MODAL PROMO -->
             <div id="modal-promo" class="uk-modal-container" uk-modal>
                 <div class="uk-modal-dialog  uk-margin-auto-vertical">

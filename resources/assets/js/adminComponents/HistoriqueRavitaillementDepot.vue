@@ -88,7 +88,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             getHistoriqueRavitaillementDepot : async function() {
                 this.isLoading = true
                 try {
-                    if(this.typeUser == 'admin') {
+                    if(this.typeUser == 'admin' || this.typeUser == 'commercial') {
                         var response = await axios.get('/admin/depot/historique-depot')
                         var depotResponse = await axios.get('/admin/inventory/depot')
                         var produitResponse = await axios.get('/admin/all-produits')

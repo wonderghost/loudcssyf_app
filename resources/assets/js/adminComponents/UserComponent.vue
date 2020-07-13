@@ -21,15 +21,25 @@
         <td :uk-tooltip="user.localisation">{{user.localisation.substring(0,30)+'...'}}</td>
         <td>{{user.status}}</td>
         <td> 
-          <a :href="userEditLink+'/'+user.username" :id="user.username" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-text-capitalize uk-box-shadow-small">editer <span uk-icon="icon : pencil"></span> </a>
-          <button
-            uk-toggle="target : #reset-modal"
-            @click="userToReset = user.localisation , userId = user.username"
-            :id="user.username"
-            class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small uk-text-capitalize"> reset <span uk-icon="icon : refresh"></span>
-          </button> 
-          <button @click="blockUser(user.username)" v-if="user.status === 'unblocked'" :id="user.username" class="uk-button uk-button-small uk-button-danger uk-text-capitalize uk-border-rounded uk-box-shadow-small">bloquer <span uk-icon="icon : lock"></span> </button>
-          <button @click="unblockUser(user.username)" v-else :id="user.username" class="uk-button uk-button-small uk-button-default uk-alert-success uk-text-capitalize uk-border-rounded uk-box-shadow-small">debloquer <span uk-icon="icon : unlock"></span> </button>
+          <template v-if="typeUser == 'commercial'">
+              <button
+              uk-toggle="target : #reset-modal"
+              @click="userToReset = user.localisation , userId = user.username"
+              :id="user.username"
+              class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small uk-text-capitalize"> reset <span uk-icon="icon : refresh"></span>
+            </button> 
+          </template>
+          <template v-else>
+            <a :href="userEditLink+'/'+user.username" :id="user.username" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-text-capitalize uk-box-shadow-small">editer <span uk-icon="icon : pencil"></span> </a>
+            <button
+              uk-toggle="target : #reset-modal"
+              @click="userToReset = user.localisation , userId = user.username"
+              :id="user.username"
+              class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small uk-text-capitalize"> reset <span uk-icon="icon : refresh"></span>
+            </button> 
+            <button @click="blockUser(user.username)" v-if="user.status === 'unblocked'" :id="user.username" class="uk-button uk-button-small uk-button-danger uk-text-capitalize uk-border-rounded uk-box-shadow-small">bloquer <span uk-icon="icon : lock"></span> </button>
+            <button @click="unblockUser(user.username)" v-else :id="user.username" class="uk-button uk-button-small uk-button-default uk-alert-success uk-text-capitalize uk-border-rounded uk-box-shadow-small">debloquer <span uk-icon="icon : unlock"></span> </button>
+          </template>
         </td>
       </tr>
     </tbody>
@@ -160,6 +170,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         }
       },
       computed : {
+        typeUser() {
+          return  this.$store.state.typeUser
+        },
         myToken () {
           return this.$store.state.myToken
         }

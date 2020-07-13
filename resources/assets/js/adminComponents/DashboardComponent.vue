@@ -5,7 +5,7 @@
         :is-full-page="fullPage"
         loader="dots"></loading>
         
-        <template v-if="theUser == 'admin' || theUser == 'logistique' || theUser == 'gcga'">
+        <template v-if="theUser == 'admin' || theUser == 'logistique' || theUser == 'gcga' || theUser == 'commercial'">
             <div class="uk-grid-small" uk-grid>
 
                 <template  v-if="theUser == 'admin'">

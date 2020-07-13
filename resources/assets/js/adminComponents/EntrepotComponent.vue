@@ -4,134 +4,142 @@
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
-        
-        <!-- Erreor block -->
-        <template v-if="errors.length" v-for="error in errors">
-            <div class="uk-alert-danger uk-width-1-2@m uk-border-rounded uk-box-shadow-hover-small" uk-alert>
-                <a href="#" class="uk-alert-close" uk-close></a>
-                <p>{{error}}</p>
-            </div>
-        </template>
-        <ul class="uk-subnav uk-subnav-pill" uk-switcher>
-            <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Nouveau Material</a></li>
-            <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Nouvau Depot</a></li>
-            <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Inventaire</a></li>
-        </ul>
-        
-        <ul class="uk-switcher">
-            <li>
-                <!-- NOUVEAU MATERIAL -->
-                <form @submit.prevent="addMaterial()" class="uk-grid-small uk-width-1-2@m" uk-grid>
-                    <div class="uk-width-1-2@m">
-                        <label for="">Libelle</label>
-                        <input @blur="findMaterial()" type="text" class="uk-input uk-border-rounded" v-model="newMaterialForm.libelle">
-                    </div>
-				    <div class="uk-width-1-2@m">
-                       <label for="">Prix Initial</label> 
-                       <input type="text" class="uk-input uk-border-rounded" v-model="newMaterialForm.prix_initial">
-                    </div>  
-                    <div class="uk-width-1-3@m">
-                        <label for="">Prix Unitaire</label>
-                        <input type="text" class="uk-input uk-border-rounded" v-model="newMaterialForm.prix_unitaire">
-                    </div>
-                    <div class="uk-width-1-3@m">
-                        <label for="">Marge</label>
-                        <input type="text" class="uk-input uk-border-rounded" v-model="newMaterialForm.marge">
-                    </div>
-                    <div class="uk-width-1-3@m">
-                        <label for="">Quantite</label>
-                        <input type="number" class="uk-input uk-border-rounded" v-model="newMaterialForm.quantite">
-                    </div>
-				
-                    <div class="uk-width-1-1@m">
-                        <label>
-                            Avec S/N
-                            <input type="checkbox" class="uk-checkbox" v-model="newMaterialForm.with_serial">
-                        </label>
-                    </div>
-                    <div>
-                        <button type="submit" class="uk-button uk-button-primary uk-button-small uk-border-rounded">validez</button>
-                    </div>
-				</form>
-                <!-- // -->
-            </li>
-            <li></li>
-            <li>
-                <!-- ENTREPOT -->
-                <div class="uk-child-width-1-4@m uk-grid-small" uk-grid>
-                    <template>
-                    <!-- INVENTAIRE DES MATERIELS -->
-                        <div v-for="m in materials" :key="m.reference"  class="">
-                            <div class="uk-card uk-border-rounded uk-box-shadow-hover-small uk-background-muted uk-dark uk-card-body uk-padding-small">
-                                <h3 class="uk-card-title">{{m.libelle}}</h3>
-                                <p>
-                                    <ul class="uk-list uk-list-divider">
-                                        <li>
-                                            <span class="">Prix : {{m.prix_vente | numFormat}}</span>
-                                        </li>
-                                        <li>
-                                            <span class="">Qte : {{m.quantite_centrale}}</span>
-                                        </li>
-                                        <li>
-                                            <span class="">Marge : {{m.marge | numFormat}}</span>
-                                        </li>
-                                        <li>
-                                            <button @click="editMaterialFunction(m)" uk-toggle="target : #modal-edit-material" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-hover-small">Editer <span uk-icon="icon : pencil"></span></button>
-                                        </li>
-                                    </ul>
-                                </p>
-                            </div>
-                        </div>
-                    </template>
+        <template v-if="typeUser == 'admin'">
+            <!-- Erreor block -->
+            <template v-if="errors.length" v-for="error in errors">
+                <div class="uk-alert-danger uk-width-1-2@m uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+                    <a href="#" class="uk-alert-close" uk-close></a>
+                    <p>{{error}}</p>
                 </div>
-                <!-- // -->
-            </li>
-        </ul>        
-
-        <!-- EDIT INFOS MATERIALS -->
-        <div id="modal-edit-material" uk-modal>
-            <div class="uk-modal-dialog">
-                <!-- <button class="uk-modal-close-default" type="button" uk-close></button> -->
-                <div class="uk-modal-header">
-                    <h2 class="uk-modal-title">Editer Infos Materiels</h2>
-                </div>
-                <div class="uk-modal-body">
-                    <form @submit.prevent="sendEditForm()" class="uk-width-1-1@m uk-grid-small" uk-grid>
+            </template>
+            <ul class="uk-subnav uk-subnav-pill" uk-switcher>
+                <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Nouveau Material</a></li>
+                <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Nouvau Depot</a></li>
+                <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Inventaire</a></li>
+            </ul>
+            
+            <ul class="uk-switcher">
+                <li>
+                    <!-- NOUVEAU MATERIAL -->
+                    <form @submit.prevent="addMaterial()" class="uk-grid-small uk-width-1-2@m" uk-grid>
                         <div class="uk-width-1-2@m">
                             <label for="">Libelle</label>
-                            <input type="text" class="uk-input uk-border-rounded" v-model="editMaterialForm.libelle" placeholder="Libelle du Materiel">
+                            <input @blur="findMaterial()" type="text" class="uk-input uk-border-rounded" v-model="newMaterialForm.libelle">
                         </div>
                         <div class="uk-width-1-2@m">
-                            <label for="">Prix initial</label>
-                            <input type="number" class="uk-input uk-border-rounded" v-model="editMaterialForm.prix_initial" placeholder="Prix Initial">
-                        </div>
+                        <label for="">Prix Initial</label> 
+                        <input type="text" class="uk-input uk-border-rounded" v-model="newMaterialForm.prix_initial">
+                        </div>  
                         <div class="uk-width-1-3@m">
                             <label for="">Prix Unitaire</label>
-                            <input type="number" class="uk-input uk-border-rounded" v-model="editMaterialForm.prix_unitaire" placeholder="Prix Unitaire">
+                            <input type="text" class="uk-input uk-border-rounded" v-model="newMaterialForm.prix_unitaire">
                         </div>
                         <div class="uk-width-1-3@m">
                             <label for="">Marge</label>
-                            <input type="number" class="uk-input uk-border-rounded" v-model="editMaterialForm.marge" placeholder="Marge Materiel">
+                            <input type="text" class="uk-input uk-border-rounded" v-model="newMaterialForm.marge">
                         </div>
                         <div class="uk-width-1-3@m">
                             <label for="">Quantite</label>
-                            <span type="text" class="uk-input uk-border-rounded">{{ editMaterialForm.quantite }}</span>
+                            <input type="number" class="uk-input uk-border-rounded" v-model="newMaterialForm.quantite">
                         </div>
+                    
                         <div class="uk-width-1-1@m">
-                            <label for="">Confirmez votre mot de passe</label>
-                            <input type="password" class="uk-input uk-border-rounded" placeholder="Entrez votre mot de passe pour confirmer" v-model="editMaterialForm.password_confirmation">
+                            <label>
+                                Avec S/N
+                                <input type="checkbox" class="uk-checkbox" v-model="newMaterialForm.with_serial">
+                            </label>
                         </div>
                         <div>
-                            <button class="uk-button-small uk-button uk-border-rounded uk-button-primary">Envoyez</button>
+                            <button type="submit" class="uk-button uk-button-primary uk-button-small uk-border-rounded">validez</button>
                         </div>
                     </form>
-                </div>
-                <div class="uk-modal-footer uk-text-right">
-                    <button class="uk-button uk-button-danger uk-button-small uk-border-rounded uk-modal-close" type="button">Fermer</button>
+                    <!-- // -->
+                </li>
+                <li></li>
+                <li>
+                    <!-- ENTREPOT -->
+                    <div class="uk-child-width-1-4@m uk-grid-small" uk-grid>
+                        <template>
+                        <!-- INVENTAIRE DES MATERIELS -->
+                            <div v-for="m in materials" :key="m.reference"  class="">
+                                <div class="uk-card uk-border-rounded uk-box-shadow-hover-small uk-background-muted uk-dark uk-card-body uk-padding-small">
+                                    <h3 class="uk-card-title">{{m.libelle}}</h3>
+                                    <p>
+                                        <ul class="uk-list uk-list-divider">
+                                            <li>
+                                                <span class="">Prix : {{m.prix_vente | numFormat}}</span>
+                                            </li>
+                                            <li>
+                                                <span class="">Qte : {{m.quantite_centrale}}</span>
+                                            </li>
+                                            <li>
+                                                <span class="">Marge : {{m.marge | numFormat}}</span>
+                                            </li>
+                                            <li>
+                                                <button @click="editMaterialFunction(m)" uk-toggle="target : #modal-edit-material" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-hover-small">Editer <span uk-icon="icon : pencil"></span></button>
+                                            </li>
+                                        </ul>
+                                    </p>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    <!-- // -->
+                </li>
+            </ul>        
+
+            <!-- EDIT INFOS MATERIALS -->
+            <div id="modal-edit-material" uk-modal>
+                <div class="uk-modal-dialog">
+                    <!-- <button class="uk-modal-close-default" type="button" uk-close></button> -->
+                    <div class="uk-modal-header">
+                        <h2 class="uk-modal-title">Editer Infos Materiels</h2>
+                    </div>
+                    <div class="uk-modal-body">
+                        <form @submit.prevent="sendEditForm()" class="uk-width-1-1@m uk-grid-small" uk-grid>
+                            <div class="uk-width-1-2@m">
+                                <label for="">Libelle</label>
+                                <input type="text" class="uk-input uk-border-rounded" v-model="editMaterialForm.libelle" placeholder="Libelle du Materiel">
+                            </div>
+                            <div class="uk-width-1-2@m">
+                                <label for="">Prix initial</label>
+                                <input type="number" class="uk-input uk-border-rounded" v-model="editMaterialForm.prix_initial" placeholder="Prix Initial">
+                            </div>
+                            <div class="uk-width-1-3@m">
+                                <label for="">Prix Unitaire</label>
+                                <input type="number" class="uk-input uk-border-rounded" v-model="editMaterialForm.prix_unitaire" placeholder="Prix Unitaire">
+                            </div>
+                            <div class="uk-width-1-3@m">
+                                <label for="">Marge</label>
+                                <input type="number" class="uk-input uk-border-rounded" v-model="editMaterialForm.marge" placeholder="Marge Materiel">
+                            </div>
+                            <div class="uk-width-1-3@m">
+                                <label for="">Quantite</label>
+                                <span type="text" class="uk-input uk-border-rounded">{{ editMaterialForm.quantite }}</span>
+                            </div>
+                            <div class="uk-width-1-1@m">
+                                <label for="">Confirmez votre mot de passe</label>
+                                <input type="password" class="uk-input uk-border-rounded" placeholder="Entrez votre mot de passe pour confirmer" v-model="editMaterialForm.password_confirmation">
+                            </div>
+                            <div>
+                                <button class="uk-button-small uk-button uk-border-rounded uk-button-primary">Envoyez</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="uk-modal-footer uk-text-right">
+                        <button class="uk-button uk-button-danger uk-button-small uk-border-rounded uk-modal-close" type="button">Fermer</button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <!-- // -->
+            <!-- // -->
+        </template>
+        <template v-else>
+            <div class="uk-alert-warning" uk-alert>
+                <p class="uk-text-center">
+                    <span uk-icon="icon : warning"></span> Vous n'etes pas autorise a effectuer cette , contactez l'administrateur.
+                </p>
+            </div>
+        </template>
     </div>
 </template>
 <script>
@@ -283,6 +291,9 @@ export default {
             else {
                 return null
             }
+        },
+        typeUser() {
+            return this.$store.state.typeUser
         }
     }
 }

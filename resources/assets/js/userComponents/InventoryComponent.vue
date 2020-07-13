@@ -41,7 +41,7 @@
           </div>
         </div>
       </template>
-      <template v-if="typeUser == 'admin'">
+      <template v-if="typeUser == 'admin' || typeUser == 'commercial'">
         <div class="uk-width-1-1@m">
         <ul uk-accordion>
           <li>
@@ -159,7 +159,7 @@
         <li><a @click="materialState = 'actif' , start = 0 , end =15 , currentPage = 1"  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiels Actifs <span v-if="materialState == 'actif'" class="uk-badge">{{ListSerialNumber.length}}</span></a></li>
     </ul>
     <!-- FILTER BY USERS -->
-    <template v-if="typeUser == 'admin' || typeUser == 'logistique'" id="">
+    <template v-if="typeUser == 'admin' || typeUser == 'logistique' || typeUser == 'commercial'" id="">
       <div class="uk-margin-remove uk-flex uk-flex-right">
         <select v-model="userFilter" class="uk-input uk-border-rounded uk-width-1-3@m" name="">
           <option value="">Tous les vendeurs</option>
@@ -296,7 +296,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           },
           getSerialNumberList : async function () { // listing des numeros de series
             try {
-              if(this.typeUser == 'admin') {
+              if(this.typeUser == 'admin' || this.typeUser == 'commercial') {
                 var response = await axios.get("/admin/inventory/get-serial-number-list")
               }else {
                 var response = await axios.get("/user/inventory/get-serial-number-list")
@@ -325,7 +325,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           },
           getMaterials : async function () { //recuperation de l'inventaire material
             try {
-              if(this.typeUser == 'admin') {
+              if(this.typeUser == 'admin' || this.typeUser == 'commercial') {
                 var response = await axios.get("/admin/inventory/all-material")
               }else if(this.typeUser == 'logistique') {
                 var response = await axios.get("/user/inventory/all-material")

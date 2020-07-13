@@ -112,7 +112,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           getSolde : async function () {
             try {
               this.soldes.total = 0
-              if(this.theUser == 'admin') {
+              if(this.theUser == 'admin' || this.theUser == 'commercial') {
                 var response = await axios.get('/admin/get-global-solde')
               }
               else {
@@ -136,7 +136,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           ,
           getsoldeVendeurs : async function () {
             try {
-              if(this.theUser == 'admin') {
+              if(this.theUser == 'admin' || this.theUser == 'commercial') {
                 var response = await axios.get('/admin/get-soldes')
               }
               else {
@@ -152,7 +152,11 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           crediterAccount : async function (event) {
             this.isLoading = true
             event.preventDefault()
+
             try {
+              if(this.typeUser !== 'admin') {
+                throw "Action non autorise!"
+              }
               let response = await axios.post(this.creditAccountUrl,{
                 _token : this.myToken,
                 compte : this.typeCredit,

@@ -36,10 +36,10 @@
       <a class="uk-button uk-button-small border-button" uk-tooltip="Conversations"><i class="material-icons">message</i></a>
       <a class="uk-button uk-button-small border-button" uk-tooltip="Alertes" uk-toggle="target : #modal-alert-abonnement"><span>{{alertCount}}</span> <i class="material-icons">alarm</i> <span style="color : red !important">{{alertInactifCount}}</span></a>
       <!-- <a class="uk-button uk-button-small border-button" uk-tooltip="Alertes"><i class="material-icons" style="color : red !important;">alarm</i></a> -->
-      <template v-if="typeUser == 'admin'" id="">
+      <template v-if="typeUser == 'admin' || typeUser == 'commercial'" id="">
       	<a class="uk-button uk-button-small uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span>  PROMO</a>
     </template>
-    <template v-if="typeUser == 'admin' || typeUser == 'gcga'" id="">
+    <template v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'" id="">
       <a class="uk-button uk-button-small border-button button-pay-comission" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
     </template>
       <a class="uk-button uk-button-small border-button" uk-tooltip="Recherche" uk-toggle="target : #modal-search-serial"><i class="material-icons">search</i></a>
@@ -104,7 +104,7 @@
           <li class="uk-nav-header">
             <h5>LAYE DIST / CANAL+ AFROCASH</h5>
           </li>
-          <template v-if="typeUser == 'admin'" id="">
+          <template v-if="typeUser == 'admin' || typeUser == 'commercial'" id="">
             <li class="uk-parent">
                 <a href="#"><span uk-icon="icon:user;ratio:0.9"></span> Utilisateurs</a>
                 <ul class="uk-nav-sub">
@@ -112,7 +112,7 @@
                     <li><a href="/admin/list-users"><span uk-icon="icon:arrow-right"></span> Tous les utilisateurs</a></li>
                 </ul>
             </li>
-            <li class="uk-parent">
+            <li class="uk-parent" >
                 <a href="#"><span uk-icon="icon:credit-card;ratio:0.9"></span> Compte Credit</a>
                 <ul class="uk-nav-sub">
                     <li><a href="/admin/add-account-credit"><span uk-icon="icon:arrow-right"></span> Comptes</a></li>
@@ -154,7 +154,9 @@
                   <li><a href="/admin/all-rapport"><span uk-icon="icon:arrow-right"></span> Toutes les ventes</a></li>
               </ul>
           </li>
-          <li class="uk-parent">
+          </template>
+          <template v-if="typeUser == 'admin'">
+            <li class="uk-parent">
             <a href="#"> <span uk-icon="icon : settings ; ratio : .9"></span> Parametres</a>
             <ul class="uk-nav-sub">
               <li><a href="/admin/formule"><span uk-icon="icon:check"></span> Formule</a></li>

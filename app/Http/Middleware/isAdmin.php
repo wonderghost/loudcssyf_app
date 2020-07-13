@@ -15,7 +15,7 @@ class isAdmin
     public function handle($request, Closure $next)
     {
         $user = $request->user();
-        if($user && $user->type !== 'admin'){
+        if(($user && $user->type !== 'admin') && ($user && $user->type !== 'commercial')){
             return redirect('/user');
         }
         return $next($request);

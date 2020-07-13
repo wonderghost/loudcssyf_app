@@ -21,6 +21,7 @@
       <dashboard the-user="{{Auth::user()->type}}"></dashboard>
     </div>
     @endif
+    
 
   </div>
 </div>

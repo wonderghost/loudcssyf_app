@@ -178,7 +178,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           },
         getPayComissionList : async function () {
           try {
-            if(this.typeUser == 'admin') {
+            if(this.typeUser == 'admin' || this.typeUser == 'commercial') {
               var response = await axios.get('/admin/pay-comissions/all')
             } else if(this.typeUser == 'gcga') {
               var response = await axios.get('/user/pay-comissions/all')
