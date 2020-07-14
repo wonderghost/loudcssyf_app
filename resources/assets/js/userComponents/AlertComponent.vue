@@ -163,8 +163,11 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             getAlertAbonnement : async function () {
                 try {
                     let response = await axios.get('/admin/alert-abonnement/all')
-                    this.relance = response.data.relance
-                    this.inactif = response.data.inactif
+
+                    if(response) {
+                        this.relance = response.data.relance
+                        this.inactif = response.data.inactif
+                    }
 
                     if(this.typeUser == 'v_da' || this.typeUser == 'v_standart') {
                         this.userSelect = this.userLocalisation

@@ -613,6 +613,7 @@ class LogistiqueController extends Controller
           if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
             throw new AppException("Mot de passe invalide !");
           }
+          
           $produit = $p->find($request->input('reference'));
           $produit->libelle = $request->input('libelle');
           $produit->marge = $request->input('marge');

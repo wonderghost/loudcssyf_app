@@ -147,9 +147,6 @@ import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 
 export default {
-    created() {
-        this.isLoading = true
-    },
     mounted() {
         this.etatEntrepot()
     },
@@ -203,17 +200,38 @@ export default {
         sendEditForm : async function () {
             try {
                 this.isLoading = true
+                UIkit.modal($("#modal-edit-material")).hide()
+
                 this.editMaterialForm._token = this.myToken
-                let response = await axios.post('/admin/edit-material/',this.editMaterialForm)
-                if(response.data == 'done') {
-                    this.isLoading = false
-                    UIkit.modal.alert("<div class='uk-alert uk-alert-success uk-border-rounded'>Operation Success !</div>")
-                        .then(function () {
-                            location.reload()
-                        })
-                }
+
+                axios.post('/admin/edit-material',this.editMaterialForm)
+                    .then((response) => {
+                        
+                        if(response.data == 'done') {
+                            alert("Success !")
+                            // location.reload()
+                            this.etatEntrepot()
+                        }
+
+                    } , (error) => {
+                            this.isLoading = false
+                            UIkit.modal($("#modal-edit-material")).show()
+                            if(error.response.data.errors) {
+                                let errorTab = error.response.data.errors
+                                for (var prop in errorTab) {
+                                    // this.errors.push(errorTab[prop][0])
+                                    alert(errorTab[prop][0])
+                                }
+                            } else {
+                                // this.errors.push(error.response.data)
+                                alert(error.response.data)
+
+                            }
+                    })
+                
             } catch(error) {
                 this.isLoading = false
+                UIkit.modal($("#modal-edit-material")).show()
                 if(error.response.data.errors) {
                     let errorTab = error.response.data.errors
                     for (var prop in errorTab) {
@@ -270,6 +288,7 @@ export default {
         },
         etatEntrepot : async function() {
             try {
+                this.isLoading = true
                 let response = await axios.get('/admin/entrepot/all')
                 this.materials = response.data
                 this.isLoading = false

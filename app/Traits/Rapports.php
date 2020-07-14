@@ -545,7 +545,11 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 										$dateSuggest = $this->checkSerialDebutDate($value);
 										
 
-										$choiceDate = new Carbon($request->input('debut')[$key]);
+										$choiceDate = $request->input('debut')[$key] ? new Carbon($request->input('debut')[$key]) : null;
+
+										if(is_null($choiceDate)) {
+											throw new AppException("Erreur ! ressayez ...");
+										}
 	
 										// test sur la date de debut qui doit etre superieur ou egal a la date d'activation
 

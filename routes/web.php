@@ -148,7 +148,6 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/inventory/depot/serialNumber','LogistiqueController@getSerialNumberForDepot');
 	
 	// Editer les infos materiels
-	// Route::get('/admin/edit-material/{reference}','LogistiqueController@editMaterial');
 	Route::post('/admin/edit-material/','LogistiqueController@makeEditMaterial');
 	//
 	#historique de ravitaillement des depots
