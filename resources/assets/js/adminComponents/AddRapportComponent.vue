@@ -6,78 +6,89 @@
         loader="dots"></loading>
 
         <template v-if="typeUser == 'admin' || typeUser == 'controleur'">
-          <div class="uk-grid" uk-grid>
-            <div class="uk-width-1-2@m">
-              <div class="uk-margin-small">
-                <label for=""> <span uk-icon="icon : calendar"></span> Date</label>
-                <input type="date" v-model="formData.date" class="uk-input uk-border-rounded" value="">
-              </div>
-              <div class="uk-margin-small">
-                <label for=""> <span uk-icon="icon : users"></span> Vendeurs</label>
-                <select class="uk-select uk-border-rounded" v-model="formData.vendeurs">
-                  <option value="">--Choisir un Vendeurs--</option>
-                  <option v-for="u in users" :key="u.username" :value="u.username">{{u.localisation}}</option>
-                </select>
-              </div>
-              <div class="uk-margin-small">
-                <div class="uk-alert-info uk-border-rounded" uk-alert>
-                  <p>
-                    <span uk-icon="icon : info"></span> Ce champs n'est pas obligatoire . activez le en cas de rapport promo !
-                  </p>
+          <template v-if="percentComExist">
+            <div class="uk-grid" uk-grid>
+              <div class="uk-width-1-2@m">
+                <div class="uk-margin-small">
+                  <label for=""> <span uk-icon="icon : calendar"></span> Date</label>
+                  <input type="date" v-model="formData.date" class="uk-input uk-border-rounded" value="">
                 </div>
-                <select v-model="formData.promo_id" class="uk-select uk-border-rounded">
-                  <option value=""> -- Promo --</option>
-                  <option :value="lp.id" v-for="lp in listingPromo" :key="lp.id">{{lp.intitule}}</option>
-                </select>
+                <div class="uk-margin-small">
+                  <label for=""> <span uk-icon="icon : users"></span> Vendeurs</label>
+                  <select class="uk-select uk-border-rounded" v-model="formData.vendeurs">
+                    <option value="">--Choisir un Vendeurs--</option>
+                    <option v-for="u in users" :key="u.username" :value="u.username">{{u.localisation}}</option>
+                  </select>
+                </div>
+                <div class="uk-margin-small">
+                  <div class="uk-alert-info uk-border-rounded" uk-alert>
+                    <p>
+                      <span uk-icon="icon : info"></span> Ce champs n'est pas obligatoire . activez le en cas de rapport promo !
+                    </p>
+                  </div>
+                  <select v-model="formData.promo_id" class="uk-select uk-border-rounded">
+                    <option value=""> -- Promo --</option>
+                    <option :value="lp.id" v-for="lp in listingPromo" :key="lp.id">{{lp.intitule}}</option>
+                  </select>
+                </div>
               </div>
             </div>
-          </div>
 
-          <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
-              <li><a @click="with_serial = true" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Recrutement</a></li>
-              <li><a @click="with_serial = false" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Reabonnement</a></li>
-              <li><a @click="with_serial = true" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Migration</a></li>
-          </ul>
+            <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
+                <li><a @click="with_serial = true" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Recrutement</a></li>
+                <li><a @click="with_serial = false" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Reabonnement</a></li>
+                <li><a @click="with_serial = true" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Migration</a></li>
+            </ul>
 
-          <ul class="uk-switcher uk-margin">
-            <li>
-              <recrutement-component 
-                :rapp-date="formData.date"
-                :rapp-vendeur="formData.vendeurs"
-                :promo-id="'\''+formData.promo_id+'\''"></recrutement-component>
-            </li>
-            <li>
-              <!-- REABONNEMENT -->
-              <reabonnement-component
-                :rapp-date="formData.date"
-                :rapp-vendeur="formData.vendeurs"
-                :promo-id="'\''+formData.promo_id+'\''"></reabonnement-component>
+            <ul class="uk-switcher uk-margin">
+              <li>
+                <recrutement-component 
+                  :rapp-date="formData.date"
+                  :rapp-vendeur="formData.vendeurs"
+                  :promo-id="'\''+formData.promo_id+'\''"></recrutement-component>
+              </li>
+              <li>
+                <!-- REABONNEMENT -->
+                <reabonnement-component
+                  :rapp-date="formData.date"
+                  :rapp-vendeur="formData.vendeurs"
+                  :promo-id="'\''+formData.promo_id+'\''"></reabonnement-component>
+                <!-- // -->
+              </li>
+              <li>
+                <!-- MIGRATION -->
+                <!-- Error block -->
+                <template v-if="errors.length" v-for="error in errors">
+                  <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert>
+                    <a href="#" class="uk-alert-close" uk-close></a>
+                    <p>{{error}}</p>
+                  </div>
+                </template>
               <!-- // -->
-            </li>
-            <li>
-              <!-- MIGRATION -->
-              <!-- Error block -->
-              <template v-if="errors.length" v-for="error in errors">
-                <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert>
-                  <a href="#" class="uk-alert-close" uk-close></a>
-                  <p>{{error}}</p>
-                </div>
-              </template>
-            <!-- // -->
-              <form @submit.prevent="sendRapport('migration')" class="uk-width-1-2@m">
-                <div class="uk-margin-small">
-                  <label for="">Quantite Materiel</label>
-                  <input type="number" v-model="formData.quantite_materiel" min="1" class="uk-input uk-margin-small uk-border-rounded">
-                </div>
-                <!-- SERIAL NUMBERS -->
-                <div v-if="with_serial" v-for="input in parseInt(formData.quantite_materiel)" :key="input" class="uk-margin-small">
-                  <input type="text" class="uk-input uk-border-rounded" v-model="formData.serial_number[input-1]" required :placeholder="'Serial Number '+input">
-                </div>
-                <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
-              </form>
-              <!-- // -->
-            </li>
-          </ul>
+                <form @submit.prevent="sendRapport('migration')" class="uk-width-1-2@m">
+                  <div class="uk-margin-small">
+                    <label for="">Quantite Materiel</label>
+                    <input type="number" v-model="formData.quantite_materiel" min="1" class="uk-input uk-margin-small uk-border-rounded">
+                  </div>
+                  <!-- SERIAL NUMBERS -->
+                  <div v-if="with_serial" v-for="input in parseInt(formData.quantite_materiel)" :key="input" class="uk-margin-small">
+                    <input type="text" class="uk-input uk-border-rounded" v-model="formData.serial_number[input-1]" required :placeholder="'Serial Number '+input">
+                  </div>
+                  <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
+                </form>
+                <!-- // -->
+              </li>
+            </ul>
+          </template>
+          <template v-else>
+            <div class="uk-alert-warning" uk-alert>
+              <p class="uk-text-center">
+                <span uk-icon="icon : warning"></span>
+                Les pourcentages des comissions ne sont pas definis , vous ne pouvez donc pas ajouter de rapports !
+                Contactez l'administrateur.
+              </p>
+            </div>
+          </template>
         </template>
         <template v-else>
           <div class="uk-alert-warning" uk-alert>
@@ -103,6 +114,12 @@ import 'vue-loading-overlay/dist/vue-loading.css';
     },
     mounted() {
       this.getUsers()
+      // 
+    },
+    updated() {
+      if(Object.keys(this.percentComission).length) {
+        this.percentComExist = true
+      }
     },
     data () {
       return {
@@ -124,7 +141,8 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           type_credit : "cga"
         },
         errors : [],
-        listingPromo : []
+        listingPromo : [],
+        percentComExist : false
       }
     },
     methods : {
@@ -198,7 +216,9 @@ import 'vue-loading-overlay/dist/vue-loading.css';
       }
     },
     computed : {
-      
+      percentComission() {
+        return this.$store.state.infosComissionPercent
+      },
       myToken () {
         return this.$store.state.myToken
       },

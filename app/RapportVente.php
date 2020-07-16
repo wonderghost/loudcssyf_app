@@ -13,6 +13,9 @@ class RapportVente extends Model
     protected $keyType = 'string';
     protected $primaryKey = 'id_rapport';
 
+    protected $percentRecrutement = 0;
+    protected $percentReabonnement = 0;
+
     public function isExistRapportById() {
       $temp = RapportVente::where('id_rapport',$this->id_rapport)->first();
       if($temp) {
@@ -27,15 +30,23 @@ class RapportVente extends Model
       } while ($this->isExistRapportById());
     }
 
-    public function calculCommission($type = 'recrutement') {
+    public function calculCommission($type = 'recrutement',\App\ComissionSetting $cs) {
+
+      $tmp = $cs->all()->first();
+      $this->percentRecrutement = $tmp ? $tmp->pourcentage_recrutement : null;
+      $this->percentReabonnement = $tmp ? $tmp->pourcentage_reabonnement : null;
+
+      if(is_null($this->percentRecrutement) || is_null($this->percentReabonnement)) {
+        throw new AppException("Erreur Ressayez plus tard ...");
+      }
 
       if($type == 'recrutement') {
 
-        $this->commission = ($this->montant_ttc / 1.18) * (12 / 100);
+        $this->commission = ($this->montant_ttc / 1.18) * ($this->percentRecrutement / 100);
 
       } elseif ($type == 'reabonnement') {
 
-        $this->commission = ($this->montant_ttc / 1.18) * (5.5 / 100);
+        $this->commission = ($this->montant_ttc / 1.18) * ($this->percentReabonnement / 100);
 
       }
       else {

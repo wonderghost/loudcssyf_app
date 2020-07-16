@@ -12,6 +12,9 @@
 */
 
 Route::middleware(['auth','admin'])->group(function () {
+	// traitement parametre rapport vente
+	Route::post('/admin/set-rapport-parameters','AdminController@setRapportParameters');
+	Route::get('/admin/get-rapport-parameters','AdminController@getRapporParameters');
 	// 
 	Route::get('tmp','AdminController@emailTest');
 	// affection des materiels dans les depots

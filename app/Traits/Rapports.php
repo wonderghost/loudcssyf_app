@@ -258,7 +258,7 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 	}
 
 	// ENREGISTREMENT D'UN RAPPORT
-	public function sendRapport(Request $request,$slug , Exemplaire $e ,RapportPromo $rp , Promo $p , StockVendeur $sv,Produits $produit) {
+	public function sendRapport(Request $request,$slug , Exemplaire $e ,RapportPromo $rp , Promo $p , StockVendeur $sv,Produits $produit , \App\ComissionSetting $cs) {
 		try {
 
 			// return response()
@@ -313,7 +313,7 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 							$rapport->quantite =  $request->input('quantite_materiel');
 							$rapport->credit_utilise  = 'cga';
 							$rapport->type = 'recrutement';
-							$rapport->calculCommission('recrutement');
+							$rapport->calculCommission('recrutement',$cs);
 
 							// DEBIT DU CREDIT CGA
 
@@ -474,7 +474,7 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 								$rapport->type  = 'reabonnement';
 								$rapport->credit_utilise  = $request->input('type_credit');
 								$rapport->date_rapport  = $request->input('date');
-								$rapport->calculCommission('reabonnement');
+								$rapport->calculCommission('reabonnement',$cs);
 
 								// DEBIT DU SOLDE INDIQUE
 
@@ -1067,4 +1067,52 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 	}
 }
 
+// SET RAPPORT VENTE PARAMETERS
+	public function getRapporParameters(\App\ComissionSetting $cs) {
+		try {
+			return response()
+				->json($cs->all()->first());
+		} catch(AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
+
+	public function setRapportParameters(Request $request , \App\ComissionSetting $cs) {
+		try {
+			$validation = $request->validate([
+				'pourcent_recrut'	=>	'required|numeric',
+				'pourcent_reabo'	=>	'required|numeric',
+				'password_confirmation'	=>	'required'
+			]);
+
+			if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
+				throw new AppException("Mot de passe invalide !");
+			}
+			// 
+			$tmp = $cs->find(1);
+			
+			if($tmp) {
+				// existe deja modifier
+				$tmp->pourcentage_recrutement = $request->input('pourcent_recrut');
+				$tmp->pourcentage_reabonnement = $request->input('pourcent_reabo');
+				$tmp->save();
+			}
+			else {
+				// n'existe pas ajouter
+
+				$cs->pourcentage_recrutement = $request->input('pourcent_recrut');
+				$cs->pourcentage_reabonnement = $request->input('pourcent_reabo');
+				$cs->save();
+			}
+
+			// 
+
+			return response()
+				->json('done');
+		} catch(AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
 }

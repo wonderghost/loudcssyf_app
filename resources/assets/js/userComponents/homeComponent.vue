@@ -161,6 +161,7 @@
             <ul class="uk-nav-sub">
               <li><a href="/admin/formule"><span uk-icon="icon:check"></span> Formule</a></li>
               <li><a href="/admin/settings"><span uk-icon="icon:user"></span> Profile</a></li>
+              <li><a href="#" uk-toggle="target : #rapport-setting-modal"><span uk-icon="icon : minus"></span> Reglage Rapport de vente</a></li>
               <li>
                   <form action="/logout" method="post">
                     <input type="hidden" name="_token" :value="myToken">
