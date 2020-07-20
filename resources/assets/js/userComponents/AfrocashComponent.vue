@@ -6,19 +6,22 @@
         loader="dots"></loading>
 
         <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
-          <template id="" v-if="typeUser == 'v_standart'">
+          <template v-if="typeUser == 'v_standart'">
             <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small " href="#"><span uk-icon="icon : arrow-down"></span> Depots</a></li>
           </template>
             <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small " href="#"><span uk-icon="icon : shrink"></span> Transfert Courant</a></li>
             <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small " href="#"><span uk-icon="icon : arrow-up"></span> Retrait</a></li>
+          <template v-if="typeUser == 'v_standart'">
+            <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small " href="#"><span uk-icon="icon : arrow-down"></span> PDC</a></li>
+          </template>
         </ul>
         <!-- Erreor block -->
         <template v-if="errors.length" v-for="error in errors">
-        <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-3@m" uk-alert>
-          <a href="#" class="uk-alert-close" uk-close></a>
-          <p>{{error}}</p>
-        </div>
-      </template>
+          <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-3@m" uk-alert>
+            <a href="#" class="uk-alert-close" uk-close></a>
+            <p>{{error}}</p>
+          </div>
+        </template>
 
         <ul class="uk-switcher uk-margin">
           <template v-if="typeUser == 'v_standart'" id="">
@@ -74,6 +77,32 @@
             <li>
               <h3>Effectuez un retrait</h3>
             </li>
+              <template v-if="typeUser == 'v_standart'">
+                <li>
+                  <!-- DEPOT POINT DE CONTACT -->
+                    <h3>Depot PDC  (Point de Contact)</h3>
+
+                    <form @submit.prevent="depotPdc()" class="uk-width-1-3@m">
+                      <div class="uk-margin-small">
+                        <label for=""><span uk-icon="icon : users"></span> Point de Contact</label>
+                        <select v-model="depotData.pdc" class="uk-select uk-border-rounded">
+                          <option value="">-- Point de Contact --</option>
+                          <option :value="p.id_vendeurs" v-for="p in pdcList" :key="p.id_vendeurs"> {{p.vendeurs}} </option>
+                        </select>
+                      </div>
+                      <div class="uk-margin-small">
+                        <label for=""><span uk-icon="icon : credit-card"></span> Montant</label>
+                        <input v-model="depotData.montant" type="number" min="1000000" class="uk-border-rounded uk-input" placeholder="Entrez le montant">
+                      </div>
+                      <div class="uk-margin-small">
+                        <label for=""><span uk-icon="icon : lock"></span> Mot de passe</label>
+                        <input v-model="depotData.password_confirmation" type="password" class="uk-input uk-border-rounded" placeholder="Entrez votre de mot de passe">
+                      </div>
+                      <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez <span uk-icon="icon : check"></span> </button>
+                    </form>  
+                  <!--  -->
+                </li>
+              </template>
         </ul>
 
 
@@ -99,6 +128,12 @@ import 'vue-loading-overlay/dist/vue-loading.css';
       return {
         isLoading : false,
         fullPage : true,
+        depotData : {
+          _token : "",
+          pdc : "",
+          montant : 0,
+          password_confirmation : ""
+        },
         AfrocashData : {
           _token : "",
           numero_compte_courant : "",
@@ -114,14 +149,40 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           type_operation : "transfert_courant"
         },
         accounts : [],
-        errors : []
+        errors : [],
+        pdcList : []
       }
     },
     methods : {
+      depotPdc : async function () {
+        try {
+            this.isLoading = true
+            this.depotData._token = this.myToken
+            let response = await axios.post('/user/afrocash/depot-pdc/',this.depotData)
+            
+            if(response && response.data) {
+              this.isLoading = false
+              alert("Success!")
+              Object.assign(this.$data,this.$options.data())
+              this.accountList()
+            }
+        } catch(error) {
+            this.isLoading = false
+            if(error.response.data.errors) {
+              let errorTab = error.response.data.errors
+              for (var prop in errorTab) {
+                this.errors.push(errorTab[prop][0])
+              }
+            } else {
+                this.errors.push(error.response.data)
+            }
+        }
+      },
       accountList : async function () {
         try {
           let response = await axios.get('/user/afrocash/get-account-list')
-          this.accounts = response.data
+          this.accounts = response.data.account_da
+          this.pdcList = response.data.account_pdc
           this.isLoading = false
         } catch (e) {
             alert(e)

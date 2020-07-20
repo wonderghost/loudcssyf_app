@@ -104,7 +104,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             creditAccountUrl : "/admin/add-account-credit",
             errors : [],
             requestState : false,
-            soldeVendeurs : ['vendeurs','type','afrocash courant','afrocash grossiste','cga','rex']
+            soldeVendeurs : ['Utilisateurs','type','afrocash courant','afrocash grossiste','cga','rex']
           }
         }
         ,

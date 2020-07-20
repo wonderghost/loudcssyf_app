@@ -261,29 +261,6 @@ class AdminController extends Controller
     }
   }
 
-    public function isExistUsername ($temp) {
-    	$users = User::select()->where('username',$temp)->first();
-    	if($users) {
-    		return $users;
-    	}
-    	return false;
-    }
-
-    public function isExistAgence($temp) {
-    	$agence = Agence::select()->where('societe',$temp)->first();
-    	if($agence) {
-    		return $agence;
-    	}
-    	return false;
-    }
-
-    public function isExistAgenceRef($ref) {
-    	$temp = Agence::select()->where('reference',$ref)->first();
-    	if($temp) {
-    		return $temp;
-    	}
-    	return false;
-    }
 
     // Edit users
     public function editUser($username) {

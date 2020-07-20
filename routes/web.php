@@ -12,6 +12,13 @@
 */
 
 Route::middleware(['auth','admin'])->group(function () {
+	// RESEAUX DES PDC ET PDRAF
+	Route::get('/admin/pdc/list','PdcController@getList');
+
+	Route::post('/admin/pdc/add','PdcController@addNewPdc');
+	Route::post('/admin/pdraf/add','PdrafController@addNewPdraf');
+
+	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// traitement parametre rapport vente
 	Route::post('/admin/set-rapport-parameters','AdminController@setRapportParameters');
 	Route::get('/admin/get-rapport-parameters','AdminController@getRapporParameters');
@@ -160,6 +167,9 @@ Route::middleware(['auth','admin'])->group(function () {
 Auth::routes();
 
 Route::middleware(['auth','unblocked'])->group(function () {
+	// Reseaux pdc / pdraf
+	Route::post('/user/afrocash/depot-pdc/','PdcController@depotDepot')->middleware('vendeur');
+	#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	# ALERTES ABONNEMENTS
 	Route::get('/{slug}/alert-abonnement/all','RapportControlleur@getAlertAbonnementForAllUsers');
 	Route::get('/{slug}/alert-abonnement/count','RapportControlleur@countAlertAbonnement');

@@ -13,63 +13,64 @@
         <p>{{error}}</p>
       </div>
     </template>
-    <template id="" v-if="success">
-      <div class="uk-alert-success uk-border-rounded uk-box-shadow-hover-small" uk-alert>
-        <a href="#" class="uk-alert-close" uk-close></a>
-        <p>Nouvel utilisateur ajouté</p>
-      </div>
-    </template>
 
     <template v-if="typeUser == 'admin'">
       <form>
-        <div class="uk-alert-warning uk-border-rounded uk-box-shadow-small" uk-alert>
-          <a href="#" class="uk-alert-close" uk-close></a>
-          <p> <span uk-icon="icon : warning"> </span> (*) Champs obligatoires !</p>
-        </div>
         <div class="uk-child-width-1-2@m" uk-grid>
           <div class="">
             <!-- champs obligatoires -->
             <div class="">
               <label for="">Email *</label>
-              <input v-model="email" type="email" name="" :class="inputClass" value="" placeholder="ex : xyz@gmail.com">
+              <input v-model="dataForm.email" type="email" name="" :class="inputClass" placeholder="ex : xyz@gmail.com">
             </div>
             <div class="">
               <label for="">Telephone *</label>
-              <input v-model="phone"  type="text" name="" :class="inputClass" value="" placeholder="ex : 666 000 000">
+              <input v-model="dataForm.phone"  type="text" name="" :class="inputClass" placeholder="ex : 666 000 000">
             </div>
             <div class="">
               <label>Agence *</label>
-              <input v-model="agence" type="text" name="" :class="inputClass" value="" placeholder="Entrez le nom de l'agence">
+              <input v-model="dataForm.agence" type="text" name="" :class="inputClass" placeholder="Entrez le nom de l'agence">
             </div>
             <div class="">
               <label for="">Niveau d'access *</label>
-              <select v-model="access" class="uk-select uk-border-rounded uk-box-shadow-hover-small uk-margin-small" name="">
+              <select @change="setRequireState()" v-model="dataForm.access" class="uk-select uk-border-rounded uk-box-shadow-hover-small uk-margin-small" name="">
                 <option value="">-- Niveau d'access --</option>
-                <option v-for="(type , name) in typeAccess" :value="name"> {{type}}</option>
+                <option v-for="(type , name) in typeAccess" :key="name" :value="name"> {{type}}</option>
               </select>
             </div>
+            <div v-if="dataForm.access == 'pdraf'">
+              <label for="">Point de contact *</label>
+              <select v-model="dataForm.pdc" class="uk-select uk-border-rounded uk-box-shadow-small uk-margin-small">
+                <option value="">--Point de Contact --</option>
+                <option :value="p.username" v-for="p in pdcUsers" :key="p.username">{{ p.localisation }}</option>
+              </select>
+            </div>
+            <div>
+              <label for="">Confirmez votre mot de passe</label>
+              <input v-model="dataForm.password_confirmation" type="password" class="uk-input uk-border-rounded" placeholder="Entrez votre mot de passe">
+            </div>
           </div>
-          <div class="">
+          <div class="" v-if="requireState">
             <!-- champs facultatif -->
             <div class="">
               <label for="">NumDist</label>
-              <input v-model="numdist" type="text" name="" value="" :class="inputClass" placeholder="Numero Distributeur">
+              <input v-model="dataForm.numdist" type="text" name="" value="" :class="inputClass" placeholder="Numero Distributeur">
             </div>
             <div class="">
-              <label for="">Societe</label>
-              <input v-model="societe" type="text" name="" value="" :class="inputClass" placeholder="Nom de l'entreprise">
+              <label for="">Societe <span v-if="dataForm.access == 'pdc'">*</span></label>
+              <input v-model="dataForm.societe" type="text" name="" :class="inputClass" placeholder="Nom de l'entreprise">
             </div>
             <div class="">
               <label for="">Rccm</label>
-              <input v-model="rccm" type="text" name="" value="" :class="inputClass" placeholder="Numero Registre du commerce">
+              <input v-model="dataForm.rccm" type="text" name="" :class="inputClass" placeholder="Numero Registre du commerce">
             </div>
             <div class="">
               <label for="">Ville</label>
-              <input v-model="ville" type="text" name="" value="" :class="inputClass" placeholder="ex : Conakry">
+              <input v-model="dataForm.ville" type="text" name="" :class="inputClass" placeholder="ex : Conakry">
             </div>
             <div class="">
               <label for="">Adresse</label>
-              <input v-model="adresse" type="text" name="" value="" :class="inputClass" placeholder="Quartier">
+              <input v-model="dataForm.adresse" type="text" name="" :class="inputClass" placeholder="Quartier">
             </div>
           </div>
         </div>
@@ -94,7 +95,7 @@ import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
     export default {
         mounted() {
-
+          this.allPdc()
         },
         components : {
           Loading
@@ -111,45 +112,78 @@ import 'vue-loading-overlay/dist/vue-loading.css';
               coursier : "Coursier",
               gdepot : 'Gestionnaire depot',
               commercial : 'Responsable commercial',
-              technicien : 'Technicien'
+              technicien : 'Technicien',
+              pdc : 'Point de Contact',
+              pdraf : 'Point de Retrait Afrocash'
             },
             inputClass : "uk-input uk-border-rounded uk-box-shadow-hover-small uk-margin-small",
             isLoading : false,
             fullPage : true,
             // form data
-            email : "",
-            phone : "",
-            agence : "",
-            access : "",
-            numdist : "",
-            societe : "",
-            rccm : "",
-            ville : "",
-            adresse : "",
+            dataForm : {
+              _token : "",
+              email : "",
+              phone : "",
+              agence : "",
+              access : "",
+              numdist : "",
+              societe : "",
+              rccm : "",
+              ville : "",
+              adresse : "",
+              password_confirmation : "",
+              pdc : ""
+            },
             // error
             errors : [],
-            success : false
+            requireState : true,
+            pdcUsers : []
           }
         },
         methods : {
+          allPdc : async function () {
+            try {
+                let response = await axios.get('/admin/pdc/list')
+                if(response) {
+                  this.pdcUsers = response.data
+                }
+            } catch(error) {
+                alert(error)
+            }
+          },
+          setRequireState : function () {
+            try {
+                if(this.dataForm.access == 'v_da' || this.dataForm.access == 'pdc' || this.dataForm.access == "") {
+                  // set requireState to true
+                  this.requireState = true
+                }
+                else {
+                  // set requireState to false
+                  this.requireState = false
+                }
+            } catch(error) {
+                alert(error)
+            }
+          },
           addUser : async function() {
             try {
               this.isLoading = true
-              let response = await axios.post("/admin/add-user",{
-                _token : this.myToken,
-                email : this.email,
-                phone : this.phone,
-                localisation : this.agence,
-                type : this.access,
-                num_dist : this.numdist,
-                societe : this.societe,
-                rccm : this.rccm,
-                ville : this.ville,
-                adresse : this.adresse
-              })
-              if(response.data == 'done') {
+              this.dataForm._token = this.myToken
+              if(this.dataForm.access == 'pdc') {
+                var response = await axios.post('/admin/pdc/add',this.dataForm)
+              }
+              else if(this.dataForm.access == 'pdraf') {
+                var response = await axios.post('/admin/pdraf/add',this.dataForm)
+              }
+              else {
+                var response = await axios.post("/admin/add-user",this.dataForm)
+              }
+
+              if(response && response.data == 'done') {
                 this.isLoading = false
-                this.success = true
+                alert("Operation success!")
+                Object.assign(this.$data,this.$options.data())
+                this.allPdc()
               }
             } catch (error) {
               this.isLoading = false

@@ -97,6 +97,7 @@ export default {
                     this.isLoading = false
                     alert('Operation Success !')
                     this.getParametersInfos()
+                    location.reload()
                 }
             } catch(error) {
                 this.isLoading = false

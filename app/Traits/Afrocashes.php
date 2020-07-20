@@ -57,7 +57,7 @@ Trait Afrocashes {
 	public function getSoldesVendeurs(Request $request) {
 		// recuperation de la liste des vendeurs
 
-		$vendeurs =	User::whereIn('type',['v_standart','v_da','logistique'])->orderBy('localisation','asc')->get();
+		$vendeurs =	User::whereIn('type',['v_standart','v_da','logistique','pdc','pdraf'])->orderBy('localisation','asc')->get();
 		$all = [];
 		foreach($vendeurs as $key => $value) {
 			$agence = $value->agence();
@@ -336,8 +336,17 @@ Trait Afrocashes {
 				->whereIn('vendeurs',$u->select('username')
 					->whereIn('type',['v_da','v_standart']))
 				->get();
+			
+			$_temp = $a->select(['numero_compte','vendeurs'])->where('type','semi_grossiste')
+				->whereIn('vendeurs',$u->select('username')
+					->whereIn('type',['pdc']))
+				->get();
+
 			return response()
-				->json($this->organizeAccountList($temp));
+				->json([
+					'account_da' => $this->organizeAccountList($temp),
+					'account_pdc'	=>	$this->organizeAccountList($_temp)
+					]);
 		}catch (AppException $e) {
 			header("Erreur",true,422);
 			die(json_encode($e->getMessage()));

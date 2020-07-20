@@ -61,7 +61,6 @@ Vue.component('affectation-materiel',require('./adminComponents/AffectationMater
 Vue.component('view-contact',require('./userComponents/ContactComponent.vue').default)
 Vue.component('set-rapport-parametre',require('./adminComponents/SetRapportParametre.vue').default)
 
-
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Vuikit from 'vuikit'

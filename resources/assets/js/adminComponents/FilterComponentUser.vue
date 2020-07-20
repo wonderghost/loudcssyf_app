@@ -33,7 +33,9 @@
               'gcga' : 'gestionnaire cga',
               'grex' : 'gestionnaire rex',
               'coursier' : 'coursier',
-              'controleur' : 'controleur'
+              'controleur' : 'controleur',
+              'pdc' : 'Point de controle',
+              'pdraf' : 'Point de Recharge Afrocash'
             },
             wordSearch : "",
             type : ""
