@@ -60,18 +60,38 @@ Vue.component('add-contact',require('./userComponents/AddContactComponent.vue').
 Vue.component('affectation-materiel',require('./adminComponents/AffectationMaterielComponent.vue').default)
 Vue.component('view-contact',require('./userComponents/ContactComponent.vue').default)
 Vue.component('set-rapport-parametre',require('./adminComponents/SetRapportParametre.vue').default)
+Vue.component('users-list',require('./userComponents/UserListComponent.vue').default)
+Vue.component('creation-pdraf',require('./adminComponents/CreationPdraf.vue').default)
+// RESEAUX PDC
+
+Vue.component('afrocash-operation',require('./pdcComponents/AfrocashOperation.vue').default)
+Vue.component('pdc-home',require('./pdcComponents/PdcHome.vue').default)
+Vue.component('pdc-transactions',require('./pdcComponents/PdcTransaction.vue').default)
+Vue.component('inventaire-pdraf',require('./pdcComponents/InventairePdraf.vue').default)
+Vue.component('pdraf-home',require('./pdrafComponents/pdrafHome.vue').default)
+
+
+// 
 
 import Vue from 'vue'
 import Vuex from 'vuex'
+import VueRouter from 'vue-router'
 import Vuikit from 'vuikit'
 import numeral from 'numeral';
 import numFormat from 'vue-filter-number-format'
 import store from './store'
+import Router from './router.js'
+
+// import AfrocashOperation from './pdcComponents/AfrocashOperation.vue'
+// import PdcHome from './pdcComponents/PdcHome.vue'
+
 Vue.use(Vuikit)
 Vue.use(Vuex)
 Vue.filter('numFormat', numFormat(numeral))
+Vue.use(VueRouter)
 
 const app = new Vue({
     el: '#app',
-    store
+    store,
+    router : Router
 });

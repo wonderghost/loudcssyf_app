@@ -10,6 +10,7 @@ use App\User;
 use App\Agence;
 use App\Afrocash;
 use App\TransactionAfrocash;
+use App\MakePdraf;
 
 use App\Traits\Similarity;
 use App\Traits\Afrocashes;
@@ -20,6 +21,193 @@ class PdcController extends Controller
 {
     use Similarity;
     use Afrocashes;
+
+    public function getCreateRequest(Request $request , MakePdraf $m) {
+        try {
+            return response()
+                ->json($m->where('pdc_user_id',$request->user()->username)
+                ->get());
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function getListPdraf(Request $request) {
+        try {
+            $tmp = $request->user()->pdrafUsers();
+            
+            return response()
+                ->json($tmp);
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+
+
+    public function SendPdrafAddRequest(Request $request) {
+        try {
+
+            $validation = $request->validate([
+                'email' =>  'unique:make_pdraf,email',
+                'agence'    =>  'required|string|unique:make_pdraf,agence',
+                'telephone' =>  'required|string|unique:make_pdraf,telephone|min:9|max:9',
+                'adresse'   =>  'required|string|',
+                'password_confirmation' => 'required'
+            ],[
+                'required'  =>  '`:attribute` requis !',
+                'unique'    =>  '`:attribute` existe deja dans le systeme',
+            ]);
+                
+            // validation du password
+
+            if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
+                throw new AppException("Mot de passe invalide !");
+            }
+
+            $req = new MakePdraf;
+            $req->email = $request->input('email');
+            $req->telephone = $request->input('telephone');
+            $req->agence = $request->input('agence');
+            $req->adresse = $request->input('adresse');
+            $req->pdc_user_id = $request->user()->username;
+
+            $req->save();
+
+            $n = $this->sendNotification(
+                "Creation Pdraf",
+                "Vous avez envoye une demande de creation de pdraf !",
+                $request->user()->username
+            );
+
+            $n->save();
+
+            $n = $this->sendNotification(
+                "Creation Pdraf",
+                "Une demande de creation de Pdraf en attente de traitement !",
+                'admin'
+            );
+
+            $n->save();
+            
+            return response()
+                ->json('done');
+        } catch(AppExceptioni $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function operation() {
+        return view('pdc.pdc-home');
+    }
+
+    public function getPdrafSoldes(Request $request) {
+        try {
+            $pdc_user = $request->user();
+            $pdrafs = $pdc_user->pdrafUsers();
+
+            $data = [];
+            foreach($pdrafs as $key => $value) {
+                $_tmp = $value->usersPdraf();
+                $data[$key] = [
+                    'utilisateur'   =>  $_tmp->localisation,
+                    'solde' =>  $_tmp->afroCash()->first()->solde
+                ];
+            }
+
+            return response()
+                ->json($data);
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function sendTransaction(Request $request) {
+        try {
+            $validation = $request->validate([
+                'pdraf_id'  =>  'required|string|exists:users,username',
+                'montant'   =>  'required|numeric|min:100000',
+                'password_confirmation' =>  'required|string'
+            ],[
+                'required'  =>  '`:attribute` requis!',
+                'exists'    =>  '`:attribute` n\'existe pas dans le systeme!',
+                'min'   =>  'Le `:attribute` minimum est de : 100,000 !'
+            ]);
+
+            // verification de la validite du mot de passe
+            if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
+                throw new AppException("Mot de passe invalide !");
+            }
+
+            // traitement de la transaction 
+            #recuperation des infos de compte du pdraf
+            $pdraf_user = User::where('username',$request->input('pdraf_id'))
+                ->where('type','pdraf')
+                ->first();
+
+            $pdraf_account = $pdraf_user->afroCash()->first();
+
+            #infos compte du pdc
+            $pdc_account = $request->user()->afroCash('semi_grossiste')->first();
+
+            // verification de la disponibilite du montant chez le pdc
+
+            if($request->input('montant') > $pdc_account->solde) {
+                throw new AppException("Montant indisponible !");
+            }
+
+            #debit et credit des comptes
+            $pdraf_account->solde += $request->input('montant');
+            $pdc_account->solde -= $request->input('montant');
+
+            // enregistrement de la transaction
+            $trans = new TransactionAfrocash;
+            $trans->compte_debite = $pdc_account->numero_compte;
+            $trans->compte_credite = $pdraf_account->numero_compte;
+            $trans->montant = $request->input('montant');
+            $trans->motif = "Depot Afrocash";
+
+            $pdraf_account->save();
+            $pdc_account->save();
+            $trans->save();
+
+            #envoi des notifications
+
+            $n = $this->sendNotification(
+                "Depot Afrocash" ,
+                "Depot de  ".number_format($request->input('montant'))." GNF effectué par :".$request->user()->localisation." sur le compte de :".$pdraf_user->localisation,
+                'admin'
+            );
+
+            $n->save();
+
+            $n = $this->sendNotification(
+                "Depot Afrocash" ,
+                "Reception de ".number_format($request->input('montant'))." GNF de la part de ".$request->user()->localisation,
+                $pdraf_user->username);
+
+            $n->save();
+
+            $n = $this->sendNotification(
+                "Depot Afrocash",
+                "Vous avez effectue un depot de ".number_format($request->input('montant'))." GNF pour ".$pdraf_user->localisation,
+                $request->user()->username
+            );
+
+            $n->save();
+
+
+            return response()
+                ->json('done');
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
 
     public function depotDepot(Request $request , Afrocash $a) {
         try {
@@ -46,6 +234,10 @@ class PdcController extends Controller
 
             // recuperation des informations du compte a debiter
             $sender_account = $request->user()->afroCash('semi_grossiste')->first();
+
+            if($request->input('montant') > $sender_account->solde) {
+                throw new AppException("Montant indisponible !");
+            }
 
             $pdc_account->solde += $request->input('montant');
             $sender_account->solde -= $request->input('montant');
@@ -88,6 +280,16 @@ class PdcController extends Controller
 
             return response()
                 ->json('done');                
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function getSoldePdc(Request $request) {
+        try {
+            return response()
+                ->json($request->user()->afroCash('semi_grossiste')->first());
         } catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));

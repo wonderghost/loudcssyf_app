@@ -81,4 +81,14 @@ class User extends Authenticatable
     public function repertoire() {
       return $this->hasMany('App\Repertoire','vendeurs','username')->get();
     }
+
+    // pdc -> pdraf
+
+    public function pdrafUsers() {
+      return $this->hasMany('App\ReseauxPdc','id_pdc','username')->get();
+    }
+
+    public function pdcUser() {
+      return $this->hasOne('App\ReseauxPdc','id_pdraf','username')->first();
+    }
 }

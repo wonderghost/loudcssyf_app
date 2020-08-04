@@ -179,11 +179,11 @@ class AdminController extends Controller
       	$agence = new Agence;
       	$user->email = $request->input('email');
       	$user->phone = $request->input('phone');
-      	$user->type = $request->input('type');
+      	$user->type = $request->input('access');
       	$user->password = bcrypt("Loudcssyf");
-      	$user->localisation = $request->input('localisation');
+      	$user->localisation = $request->input('agence');
 
-      	if($request->input('type') == 'v_da') {
+      	if($request->input('access') == 'v_da') {
       		//ajout d'un distributeur agree
 
       		do {
@@ -215,7 +215,7 @@ class AdminController extends Controller
       			return response()->json('done');
       	} else {
       		// vendeurs standart
-              if($user->type !== 'v_standart') {
+              if($user->type !== 'v_standart' && $user->localisation == "") {
                   $user->localisation = 'local'.time();
               }
 
@@ -1061,5 +1061,9 @@ class AdminController extends Controller
         header("Erreur",true,422);
         die(json_encode($e->getMessage()));
     }
+  }
+
+  public function creationPdraf() {
+    return view('admin.pdraf.list');
   }
 }

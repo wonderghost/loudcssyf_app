@@ -22,7 +22,14 @@ class RedirectIfAuthenticated
         if($user){
             if($user->type == 'admin') {
                 return redirect('/admin');
-            } else {
+            }
+            else if($user->type == 'pdc') {
+                return redirect('/user/pdc');
+            }
+            else if($user->type == 'pdraf') {
+                return redirect('/user/pdraf');
+            }
+             else {
                 return redirect('/user');
             }
         } 

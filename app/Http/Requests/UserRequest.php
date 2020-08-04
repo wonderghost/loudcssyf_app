@@ -27,8 +27,7 @@ class UserRequest extends FormRequest
             //requi
             'email'=>'required|email|unique:users',
             'phone'=>'required',
-            'type'=>'required',
-            'societe'=>'required'
+            'access'=>'required',
         ];
     }
 

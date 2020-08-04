@@ -118,7 +118,6 @@
                   </div>
                   <div class="uk-width-1-6@m">
                     <label for="">Debut : </label>
-                    <!-- <span class="uk-text-bold">{{debutSuggest[input-1]}}</span> -->
                     <input v-model="formData.debut[input-1]" :id="'debut-'+(input-1)" type="date" class="uk-input uk-border-rounded">
                   </div>
                 </div>
@@ -317,8 +316,6 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 }
               }
               
-                
-
                 if(tmp < 0) {
                   this.formData.formule.pop()
                   throw "Veuillez choisir une formule superieure a l'ancienne"

@@ -13,6 +13,9 @@
                 <div class="uk-modal-body">
                     <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
                         <li><a class="uk-button uk-button-small uk-button-primary uk-border-rounded" href="#">Commission</a></li>
+                        <li>
+                            <a href="#" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Reabo Afrocash</a>
+                        </li>
                     </ul>
 
                     <ul class="uk-switcher uk-margin">
@@ -38,6 +41,26 @@
                                 </form>
                             </div>
 
+                        </li>
+                        <li>
+                            <div uk-grid class="uk-grid-small">
+                                <form @submit.prevent="sendReaboSetting()" class="uk-width-1-2@m">
+                                    <div class="uk-width-1-2@m uk-margin-small">
+                                        <label for=""><span uk-icon="users"></span>  Utilisateur</label>
+                                        <select v-model="reaboSetting.username" class="uk-select uk-border-rounded">
+                                            <option value="">-- Utilisateur --</option>
+                                            <option :value="u.username" v-for="(u,index) in userStandart" :key="index">{{u.localisation}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="uk-width-1-2@m uk-margin-small">
+                                        <label for="">Confirmez le mot de passe</label>
+                                        <input v-model="reaboSetting.password_confirmation" type="password" class="uk-input uk-border-rounded" placeholder="Confirmez votre mot de passe">
+                                    </div>
+                                    <div>
+                                        <button type="submit" class="uk-button uk-button-primary uk-border-rounded uk-button-small">Envoyez</button>
+                                    </div>
+                                </form>
+                            </div>
                         </li>
                     </ul>                    
                     
@@ -70,19 +93,54 @@ export default {
                 pourcent_reabo : 0,
                 password_confirmation : ""
             },
-            percentInfos : {}
+            reaboSetting : {
+                _token : "",
+                username : "",
+                password_confirmation : ""
+            },
+            percentInfos : {},
+            userList : []
         }
     },
     methods : {
+        sendReaboSetting : async function () {
+            try {
+                this.isLoading = true
+                this.reaboSetting._token = this.myToken
+                let response = await axios.post('/admin/pdraf/set-vendeur-for-reabo',this.reaboSetting)
+                if(response && response.data == 'done') {
+                    this.isLoading = false
+                    alert("Success!")
+                    this.getParametersInfos()
+                    location.reload()
+                }
+            } catch(error) {    
+                if(error.response.data.errors) {
+                    let errorTab = error.response.data.errors
+                    for (var prop in errorTab) {
+                    // this.errors.push(errorTab[prop][0])
+                    alert(errorTab[prop][0])
+                    }
+                } else {
+                    // this.errors.push(error.response.data)
+                    alert(error.response.data)
+                }
+            }
+        },
         getParametersInfos : async function () {
             try {
-                let response = await axios.get('/admin/get-rapport-parameters')
+                var response = await axios.get('/admin/get-rapport-parameters')
                 if(response.data) {
                     this.percentInfos = response.data
                     this.dataForm.pourcent_recrut = this.percentInfos.pourcentage_recrutement
                     this.dataForm.pourcent_reabo = this.percentInfos.pourcentage_reabonnement
 
                     this.$store.commit('setInfosComissions',response.data)
+                }
+
+                response = await axios.get('/admin/all-vendeurs')
+                if(response && response.data) {
+                    this.userList = response.data
                 }
             } catch(error){
                 alert(error)
@@ -117,6 +175,11 @@ export default {
     computed : {
         myToken() {
             return this.$store.state.myToken
+        },
+        userStandart() {
+            return this.userList.filter((u) => {
+                return u.type == 'v_standart'
+            })
         }
     }
 }

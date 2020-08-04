@@ -17,6 +17,9 @@ Route::middleware(['auth','admin'])->group(function () {
 
 	Route::post('/admin/pdc/add','PdcController@addNewPdc');
 	Route::post('/admin/pdraf/add','PdrafController@addNewPdraf');
+	Route::get('/admin/pdraf/list','AdminController@creationPdraf');
+	Route::get('/admin/pdraf/get-list','PdrafController@getListCreationPdraf');
+	Route::post('/admin/pdraf/set-vendeur-for-reabo','PdrafController@setUserStandartForReabo');
 
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// traitement parametre rapport vente
@@ -168,7 +171,29 @@ Auth::routes();
 
 Route::middleware(['auth','unblocked'])->group(function () {
 	// Reseaux pdc / pdraf
+	######################################  PDC #########################$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	Route::post('/user/afrocash/depot-pdc/','PdcController@depotDepot')->middleware('vendeur');
+	Route::get('/user/pdc/','PdcController@operation')->middleware('pdc');
+	Route::get('/user/get-pdraf-list','PdrafController@getList')->middleware('pdc');
+	Route::post('/user/pdc/send-transaction','PdcController@sendTransaction')->middleware('pdc');
+	Route::get('/user/pdc/get-solde','PdcController@getSoldePdc')->middleware('pdc');
+	Route::get('/user/pdc/get-pdraf-solde','PdcController@getPdrafSoldes')->middleware('pdc');
+	Route::post('/user/pdc/send-pdraf-add-request','PdcController@SendPdrafAddRequest')->middleware('pdc');
+	Route::get('/user/pdc/get-create-request','PdcController@getCreateRequest')->middleware('pdc');
+
+	##############################@@@@@@@@@@@@@ -------------- PDRAF -------------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@####
+
+	Route::get('/user/pdraf','PdrafController@index')->middleware('pdraf');
+	Route::get('/user/pdraf/get-other-users','PdrafController@getOtherUsers')->middleware('pdraf');
+	Route::post('/user/pdraf/send-transaction','PdrafController@sendTransaction')->middleware('pdraf');
+	Route::get('/user/pdraf/retour-afrocash-infos','PdrafController@infosRetourAfrocash')->middleware('pdraf');
+	Route::post('/user/pdraf/send-retour-afrocash','PdrafController@sendRetourAfrocash')->middleware('pdraf');
+	Route::get('/user/pdraf/get-solde','PdrafController@getSolde')->middleware('pdraf');
+	Route::post('/user/pdraf/send-reabo-afrocash','PdrafController@sendReaboAfrocash')->middleware('pdraf');
+	
+
+
+	
 	#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	# ALERTES ABONNEMENTS
 	Route::get('/{slug}/alert-abonnement/all','RapportControlleur@getAlertAbonnementForAllUsers');
@@ -184,7 +209,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('user/add-rapport','RapportControlleur@addRapport')->middleware('controleur');
 	Route::post('/user/send-rapport/{slug}','RapportControlleur@sendRapport')->middleware('controleur');
 	Route::post('/user/rapport/check-serial','RapportControlleur@checkSerial')->middleware('controleur');
-	Route::get('/user/formule/list','AdminController@listFormule')->middleware('controleur');
+	Route::get('/user/formule/list','AdminController@listFormule');//->middleware('controleur');
 	
 	Route::post('/user/rapport/check-upgrade','RapportControlleur@checkSerialOnUpgradeState');
 

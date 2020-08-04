@@ -114,7 +114,8 @@ import 'vue-loading-overlay/dist/vue-loading.css';
               commercial : 'Responsable commercial',
               technicien : 'Technicien',
               pdc : 'Point de Contact',
-              pdraf : 'Point de Retrait Afrocash'
+              pdraf : 'Point de Retrait Afrocash',
+              graf : 'Gestionnaire Reseaux Afrocash'
             },
             inputClass : "uk-input uk-border-rounded uk-box-shadow-hover-small uk-margin-small",
             isLoading : false,

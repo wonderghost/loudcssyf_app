@@ -110,6 +110,7 @@
                 <ul class="uk-nav-sub">
                     <li><a href="/admin/add-user"><span uk-icon="icon:arrow-right"></span> Nouveau</a></li>
                     <li><a href="/admin/list-users"><span uk-icon="icon:arrow-right"></span> Tous les utilisateurs</a></li>
+                    <li><a href="/admin/pdraf/list"><span uk-icon="icon : arrow-right"></span> Creation Pdraf</a></li>
                 </ul>
             </li>
             <li class="uk-parent" >
@@ -289,14 +290,14 @@
             <!-- // -->
           </template>
           <!-- PDC -->
-          <template>
-            <li class="uk-parent">
-              <a href="#"><span uk-icon="icon : credit-card;"></span> Afrocash</a>
-              <ul class="uk-nav-sub">
-                  <li><a href="#"><span uk-icon="icon : check"></span> Operation</a></li>
+          <template v-if="typeUser == 'pdc'">
+            <li class="">
+              <a href="/user/pdc/"><span uk-icon="icon : credit-card;"></span> Afrocash</a>
+              <!-- <ul class="uk-nav-sub">
+                  <li><a href="/user/afrocash/pdc-operation"><span uk-icon="icon : check"></span> Operation</a></li>
                   <li><a href="#"><span uk-icon="icon : check"></span> Toutes les transactions</a></li>
                   <li><a href="#"><span uk-icon="icon : check"></span> Inventaire PDRAF</a></li>
-              </ul>
+              </ul> -->
             </li>
             <li class="uk-parent">
               <a href="#"><span uk-icon="icon : cart;"></span> Ventes</a>
@@ -305,12 +306,12 @@
                   <li><a href="#"><span uk-icon="icon : check"></span> Apercue</a></li>
               </ul>
             </li>
-            <li class="uk-parent">
+            <li class="">
               <a href="#"><span uk-icon="icon : users;"></span> Gestion des Utilisateurs</a>
-              <ul class="uk-nav-sub">
+              <!-- <ul class="uk-nav-sub">
                   <li><a href="#"><span uk-icon="icon : check"></span> Tous les utilisateurs</a></li>
                   <li><a href="#"><span uk-icon="icon : check"></span> Ajouter un PDRAF</a></li>
-              </ul>
+              </ul> -->
             </li>
           </template>
           <!-- // -->

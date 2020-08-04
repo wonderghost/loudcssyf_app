@@ -29,6 +29,8 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\isControleur::class,
         \App\Http\Middleware\isCoursier::class,
         \App\Http\Middleware\isCommercial::class,
+        \App\Http\Middleware\isPdc::class,
+        \App\Http\Middleware\isPdraf::class
     ];
 
     /**
@@ -76,6 +78,8 @@ class Kernel extends HttpKernel
         'depot' =>  \App\Http\Middleware\IsDepot::class,
         'controleur' =>  \App\Http\Middleware\isControleur::class,
         'coursier' =>  \App\Http\Middleware\isCoursier::class,
-        'commercial'    =>  \App\Http\Middleware\isCommercial::class
+        'commercial'    =>  \App\Http\Middleware\isCommercial::class,
+        'pdc'   =>  \App\Http\Middleware\isPdc::class,
+        'pdraf' =>  \App\Http\Middleware\isPdraf::class
     ];
 }
