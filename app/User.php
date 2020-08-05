@@ -91,4 +91,10 @@ class User extends Authenticatable
     public function pdcUser() {
       return $this->hasOne('App\ReseauxPdc','id_pdraf','username')->first();
     }
+
+    // all vente reabo afrocash
+
+    public function reaboAfrocash() {
+      return $this->hasMany('App\ReaboAfrocash','pdraf_id','username')->get();
+    }
 }

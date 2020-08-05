@@ -94,7 +94,7 @@ class PdcController extends Controller
             
             return response()
                 ->json('done');
-        } catch(AppExceptioni $e) {
+        } catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));
         }

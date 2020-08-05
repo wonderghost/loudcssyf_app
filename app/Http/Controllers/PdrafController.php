@@ -16,7 +16,9 @@ use App\TransactionAfrocash;
 use App\ReaboAfrocash;
 use App\ReaboAfrocashSetting;
 use App\OptionReaboAfrocash;
+use App\MakePdraf;
 
+use Carbon\Carbon;
 
 class PdrafController extends Controller
 {
@@ -86,6 +88,14 @@ class PdrafController extends Controller
             $u->save();
             $this->newAccount($u->username);
             $r->save();
+
+            // 
+            
+            if($request->input('tag') == 'by_confirm') {
+                $actifDemand = MakePdraf::find($request->input('by_confirm_id'));
+                $actifDemand->confirmed_at = Carbon::now();
+                $actifDemand->save();
+            }
 
             
             return response()
@@ -410,6 +420,90 @@ class PdrafController extends Controller
             
             return response()
                 ->json('done');
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    ################################ ALL REABO AFROCASH ###########################
+
+    // get Reabo Afrocash by pdc
+
+    public function getAllReaboAfrocash(Request $request) {
+        try {
+            // $data = $request->user()->reaboAfrocash();
+            $data = ReaboAfrocash::all();
+            $all = [];
+
+            foreach($data as $key => $value) {
+                $marge = (($value->montant_ttc/1.18) * (1.5/100));
+                $options = "";
+                foreach($value->options() as $_value) {
+                    $options .= $_value->id_option.",";
+                }
+
+                $all[$key] = [
+                    'materiel'  =>  $value->serial_number,
+                    'formule'   =>  $value->formule_name,
+                    'duree' =>  $value->duree,
+                    'option'    =>  $options,
+                    'montant'   =>  $value->montant_ttc,
+                    'comission' =>  $value->comission,
+                    'telephone_client'  =>  $value->telephone_client,
+                    'pdraf' =>  $value->pdrafUser()->only('localisation','username'),
+                    'pdc_hote'  =>  $value->pdrafUser()->pdcUser()->usersPdc()->only('localisation','username'),
+                    'marge' =>  $marge,
+                    'total' =>  $marge + $value->comission
+                ];
+
+            }
+
+            return response()
+                ->json($all);
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function getList(Request $request) {
+        try {
+            $pdraf_users = $request->user()->pdrafUsers();
+            $all = [];
+            foreach($pdraf_users as $key => $value) {
+                $all[$key] = [
+                    'user'  =>  $value->usersPdraf()
+                ];
+            }
+            return response()
+                ->json($all);
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function getListCreationPdraf() {
+        try {
+            $data = MakePdraf::all();
+            $all = [];
+
+            foreach($data as $key => $value) {
+                $all[$key] = [
+                    'id'    =>  $value->id,
+                    'email' =>  $value->email,
+                    'telephone' =>  $value->telephone,
+                    'agence'    =>  $value->agence,
+                    'adresse'   =>  $value->adresse,
+                    'pdc'   =>  $value->pdcUser(),
+                    'confirmed_at'  =>  $value->confirmed_at,
+                    'remove_at'    =>  $value->removed_at
+                ];
+            }
+
+            return response()
+                ->json($all);
         } catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));

@@ -31,6 +31,15 @@
                 </ul>
             </div>            
 
+            <a class="uk-button uk-button-small uk-border-rounded"><span uk-icon="icon : users"></span> Ventes</a>
+            <div class="uk-box-shadow-small uk-border-rounded" uk-dropdown>
+                <ul class="uk-nav uk-dropdown-nav">
+                    <li class="">
+                        <router-link class="uk-text-left uk-button uk-button-small" to="/all-ventes"><span uk-icon="icon : link"></span> Toutes les ventes</router-link>
+                    </li>
+                </ul>
+            </div>
+
             <router-view></router-view>
         </div>
     </div>

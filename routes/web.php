@@ -190,7 +190,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/pdraf/send-retour-afrocash','PdrafController@sendRetourAfrocash')->middleware('pdraf');
 	Route::get('/user/pdraf/get-solde','PdrafController@getSolde')->middleware('pdraf');
 	Route::post('/user/pdraf/send-reabo-afrocash','PdrafController@sendReaboAfrocash')->middleware('pdraf');
-	
+	Route::get('/user/pdraf/get-reabo-afrocash','PdrafController@getAllReaboAfrocash');
 
 
 	

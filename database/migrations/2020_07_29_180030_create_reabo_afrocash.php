@@ -25,8 +25,8 @@ class CreateReaboAfrocash extends Migration
 
             $table->UnsignedInteger('duree')->default(1);
             $table->string('telephone_client');
-            $table->float('montant_ttc')->default(0);
-            $table->float('comission')->default(0);
+            $table->float('montant_ttc',8,0)->default(0);
+            $table->float('comission',8,0)->default(0);
 
             $table->timestamp('pay_at')->nullable();
             $table->timestamp('remove_at')->nullable();
@@ -48,10 +48,6 @@ class CreateReaboAfrocash extends Migration
      */
     public function down()
     {
-
-        Schema::table('reabo_afrocash',function(Blueprint $table) {
-            $table->dropForeign('reabo_afrocash_serial_number_foreign');
-        });
         Schema::dropIfExists('reabo_afrocash');
     }
 }

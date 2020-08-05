@@ -27,4 +27,12 @@ class ReaboAfrocash extends Model
         return false;
     }
 
+    public function pdrafUser() {
+        return $this->belongsTo('App\User','pdraf_id','username')->first();
+    }
+
+    public function options() {
+        return $this->hasMany('App\OptionReaboAfrocash','id_reabo_afrocash','id')->get();
+    }
+
 }

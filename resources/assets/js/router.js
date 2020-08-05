@@ -12,6 +12,7 @@ import TransfertCourant from './pdrafComponents/TransfertCourant.vue'
 import PdrafTransaction from './pdrafComponents/PdrafTransaction.vue'
 import RetourAfrocash from './pdrafComponents/RetourAfrocash.vue'
 import ReaboAfrocash from './pdrafComponents/ReaboAfrocash.vue'
+import AllVenteReabo from './pdrafComponents/AllVenteReaboAfrocash.vue'
 
 Vue.use(VueRouter);
 
@@ -49,6 +50,10 @@ const router = new VueRouter({
         {
             path : '/all-make-pdraf',
             component : CreatePdraf
+        },
+        {
+            path : '/all-ventes',
+            component: AllVenteReabo
         }
         // PDRAF ROUTERS
         ,
@@ -67,6 +72,10 @@ const router = new VueRouter({
         {
             path : '/reabonnement-afrocash',
             component : ReaboAfrocash
+        },
+        {
+            path : '/all-ventes-pdraf',
+            component : AllVenteReabo
         }
     ]
 

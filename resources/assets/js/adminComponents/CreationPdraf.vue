@@ -139,12 +139,14 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 
                     
                     if(response && response.data == 'done') {
+                        this.isLoading = false
                         alert("Success !")
                         UIkit.modal($("#modal-confirmation-create-pdraf")).hide()
                         Object.assign(this.$data,this.$options.data())
                         this.getList()
                     }
                 } catch(error) {
+                    this.isLoading = false
                     UIkit.modal($("#modal-confirmation-create-pdraf")).show()
                     if(error.response.data.errors) {
                         let errorTab = error.response.data.errors
@@ -159,8 +161,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             getList : async function () {
                 try {
                     let response = await axios.get('/admin/pdraf/get-list')
-                    this.listCreation = response.data
-                    console.log(response.data)
+                    if(response) {
+                        this.listCreation = response.data
+                    }
                 } catch(error) {
                     alert(error)
                     console.log(error)
