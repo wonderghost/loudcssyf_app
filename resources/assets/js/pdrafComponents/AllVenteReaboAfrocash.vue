@@ -9,6 +9,32 @@
            <h3 class="uk-margin-top">Tous les Reabonnements</h3>
             <hr class="uk-divider-small">
 
+            <!-- MODAL CONFIRM PAIEMENT COMISSION -->
+            <div id="modal-pay-comission" uk-modal="esc-close : false ; bg-close : false">
+                <div class="uk-modal-dialog">
+                    <!-- <button class="uk-modal-close-default" type="button" uk-close></button> -->
+                    <div class="uk-modal-header">
+                        <h2 class="uk-modal-title">Paiement Comission</h2>
+                    </div>
+                    <div class="uk-modal-body">
+                        <p class="uk-text-lead">
+                            La Comission allant du : , au : , d'un montant de xxx 
+                        </p>
+                        <form @submit.prevent="">
+                            <div class="uk-margin-small">
+                                <label for="">Confirmez votre mot de passe</label>
+                                <input type="password" class="uk-input uk-border-rounded" placeholder="Entrez le mot de passe">
+                            </div>
+                            <button class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
+                        </form>
+                    </div>
+                    <div class="uk-modal-footer uk-text-right">
+                        <button class="uk-button uk-button-danger uk-border-rounded uk-modal-close uk-button-small" type="button">Cancel</button>
+                    </div>
+                </div>
+            </div>            
+            <!-- // -->
+
             <div class="uk-grid-small" uk-grid>
                 <div class="uk-width-1-4@m">
                     <label for=""><span uk-icon="users"></span> Utilisateur</label>
@@ -28,6 +54,9 @@
                 <div class="uk-width-1-6@m">
                     <label for=""><span uk-icon="credit-card"></span> Comission Total</label>
                     <span class="uk-input uk-border-rounded uk-text-center">{{ totalCom.total | numFormat }}</span>
+                    <span>
+                        <button uk-toggle="target : #modal-pay-comission " class="uk-button uk-button-small uk-button-primary uk-border-rounded">Demander les comissions</button>
+                    </span>
                 </div>
             </div>
             <table class="uk-table uk-table-small uk-table-striped uk-table-hover uk-table-divider">
