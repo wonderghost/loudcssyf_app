@@ -12,18 +12,23 @@
             <!-- MODAL CONFIRM PAIEMENT COMISSION -->
             <div id="modal-pay-comission" uk-modal="esc-close : false ; bg-close : false">
                 <div class="uk-modal-dialog">
-                    <!-- <button class="uk-modal-close-default" type="button" uk-close></button> -->
                     <div class="uk-modal-header">
                         <h2 class="uk-modal-title">Paiement Comission</h2>
                     </div>
                     <div class="uk-modal-body">
-                        <p class="uk-text-lead">
-                            La Comission allant du : , au : , d'un montant de xxx 
+                        <div class="uk-alert-danger" uk-alert v-for="(err,index) in errors" :key="index">
+                            <a class="uk-alert-close" uk-close></a>
+                            <p>{{err}}</p>
+                        </div>
+                        <p class="">
+                            La Comission allant du : <span v-if="pdcListFirst" class="uk-text-bold">{{pdcListFirst.created_at}}</span> , 
+                            au : <span v-if="pdcListLast" class="uk-text-bold">{{pdcListLast.created_at}}</span>, d'un montant de :
+                            <span class="uk-text-bold">{{totalCom.total | numFormat}} GNF</span> 
                         </p>
-                        <form @submit.prevent="">
+                        <form @submit.prevent="sendPayComissionRequest()">
                             <div class="uk-margin-small">
                                 <label for="">Confirmez votre mot de passe</label>
-                                <input type="password" class="uk-input uk-border-rounded" placeholder="Entrez le mot de passe">
+                                <input v-model="password_confirmation" type="password" class="uk-input uk-border-rounded" placeholder="Entrez le mot de passe">
                             </div>
                             <button class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
                         </form>
@@ -34,34 +39,45 @@
                 </div>
             </div>            
             <!-- // -->
-
-            <div class="uk-grid-small" uk-grid>
-                <div class="uk-width-1-4@m">
-                    <label for=""><span uk-icon="users"></span> Utilisateur</label>
-                    <select v-model="filterPdraf" class="uk-select uk-border-rounded">
-                        <option value="">Tous</option>
-                        <option v-for="(p,index) in pdrafList" :key="index" :value="p.user.username">{{p.user.localisation}}</option>
-                    </select>
+            <template v-if="typeUser == 'pdc'">
+                <div class="uk-grid-small" uk-grid>
+                    <div class="uk-width-1-4@m">
+                        <label for=""><span uk-icon="users"></span> Utilisateur</label>
+                        <select v-model="filterPdraf" class="uk-select uk-border-rounded">
+                            <option value="">Tous</option>
+                            <option v-for="(p,index) in pdrafList" :key="index" :value="p.user.username">{{p.user.localisation}}</option>
+                        </select>
+                    </div>
+                    <div class="uk-width-1-6@m">
+                        <label for="">Total Comission Pdraf</label>
+                        <span class="uk-input uk-border-rounded">{{totalCom.com | numFormat }}</span>
+                    </div>
+                    <div class="uk-width-1-6@m">
+                        <label for="">Total Marge</label>
+                        <span class="uk-input uk-border-rounded">{{totalCom.mar | numFormat }}</span>
+                    </div>
+                    <div class="uk-width-1-6@m">
+                        <label for=""><span uk-icon="credit-card"></span> Comission Total</label>
+                        <span class="uk-input uk-border-rounded uk-text-center">{{ totalCom.total | numFormat }}</span>
+                        <span v-if="filterPdraf == ''">
+                            <button uk-toggle="target : #modal-pay-comission " class="uk-button uk-text-capitalize uk-button-small uk-button-primary uk-border-rounded">se faire payer</button>
+                        </span>
+                    </div>
                 </div>
-                <div class="uk-width-1-6@m">
-                    <label for="">Total Comission Pdraf</label>
-                    <span class="uk-input uk-border-rounded">{{totalCom.com | numFormat }}</span>
+            </template>
+            <template v-if="typeUser == 'pdraf'">
+                <div class="uk-grid-small" uk-grid>
+                    <div class="uk-width-1-6@m">
+                        <label for="">Comission Total (GNF)</label>
+                        <span class="uk-input uk-text-center uk-border-rounded">{{totalComissionPdraf | numFormat}}</span>
+                    </div>
                 </div>
-                <div class="uk-width-1-6@m">
-                    <label for="">Total Marge</label>
-                    <span class="uk-input uk-border-rounded">{{totalCom.mar | numFormat }}</span>
-                </div>
-                <div class="uk-width-1-6@m">
-                    <label for=""><span uk-icon="credit-card"></span> Comission Total</label>
-                    <span class="uk-input uk-border-rounded uk-text-center">{{ totalCom.total | numFormat }}</span>
-                    <span>
-                        <button uk-toggle="target : #modal-pay-comission " class="uk-button uk-button-small uk-button-primary uk-border-rounded">Demander les comissions</button>
-                    </span>
-                </div>
-            </div>
+            </template>
+            
             <table class="uk-table uk-table-small uk-table-striped uk-table-hover uk-table-divider">
                 <thead>
                     <tr>
+                        <th>Date</th>
                         <th>Materiel</th>
                         <th>Formule</th>
                         <th>Duree</th>
@@ -79,6 +95,7 @@
                 <tbody>
                     <template v-if="typeUser == 'pdc'">
                         <tr v-for="(r,index) in pdcListReaboByPdraf" :key="index">
+                            <td>{{r.created_at}}</td>
                             <td>{{r.materiel}}</td>
                             <td>{{r.formule}}</td>
                             <td>{{r.duree}}</td>
@@ -93,6 +110,7 @@
                     </template>
                     <template v-if="typeUser == 'pdraf'">
                         <tr v-for="(r,index) in pdrafListReabo" :key="index">
+                            <td>{{r.created_at}}</td>
                             <td>{{r.materiel}}</td>
                             <td>{{r.formule}}</td>
                             <td>{{r.duree}}</td>
@@ -127,10 +145,37 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 isLoading : false,
                 fullPage : true,
                 pdrafList : [],
-                filterPdraf : ""
+                filterPdraf : "",
+                password_confirmation : "",
+                errors : []
             }
         },
         methods : {
+            sendPayComissionRequest : async function () {
+                try {
+                    let response = await axios.post('/user/pdc/pay-comission-request',{
+                        _token : this.myToken,
+                        password_confirmation : this.password_confirmation,
+                        montant : Math.round(this.totalCom.total),
+                        debut : this.pdcListFirst.created_at,
+                        fin : this.pdcListLast.created_at,
+                    })
+
+                    if(response) {
+                        console.log(response.data)
+                    }
+                } catch(error) {
+                    this.isLoading = false
+                    if(error.response.data.errors) {
+                        let errorTab = error.response.data.errors
+                        for (var prop in errorTab) {
+                            this.errors.push(errorTab[prop][0])
+                        }
+                    } else {
+                        this.errors.push(error.response.data)
+                    }
+                }
+            },
             getAllData : async function () {
                 try {
                     this.isLoading = true
@@ -138,10 +183,12 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     if(response) {
                         this.all = response.data
                     }
+                    if(this.typeUser == 'pdc') {
+                        response = await axios.get('/user/get-pdraf-list')
 
-                    response = await axios.get('/user/get-pdraf-list')
-                    if(response) {
-                        this.pdrafList = response.data
+                        if(response) {
+                            this.pdrafList = response.data
+                        }
                     }
 
                     this.isLoading = false
@@ -154,6 +201,13 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             }
         },
         computed : {
+            totalComissionPdraf() {
+                var som = 0
+                this.pdrafListReabo.forEach(r => {
+                    som += r.comission
+                })
+                return som
+            },
             totalCom() {
                 var som = 0
                 var sum = 0
@@ -168,6 +222,12 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     com : sum ,
                     mar : tot
                 }
+            },
+            pdcListLast() {
+                return this.pdcListReaboByPdraf[this.pdcListReaboByPdraf.length - 1]
+            },
+            pdcListFirst() {
+                return this.pdcListReaboByPdraf[0]
             },
             pdcListReaboByPdraf() {
                 return this.pdcListReabo.filter((l) => {
@@ -189,6 +249,9 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             },
             userName() {
                 return this.$store.state.userName
+            },
+            myToken() {
+                return this.$store.state.myToken
             }
         }
     }

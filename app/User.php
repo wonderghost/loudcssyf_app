@@ -27,6 +27,20 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    public function randomEmailGenerate() {
+      do {  
+        $this->email = Str::random(4)."@gmail.com";
+      } while($this->isExistByEmail());
+    }
+
+    public function isExistByEmail() {
+      $tmp = self::where("email",$this->email)->first();
+      if($tmp) {
+        return $tmp;
+      }
+      return false;
+    }
+
     public function exemplaire () {
       return $this->hasMany('App\Exemplaire');
     }

@@ -11,6 +11,8 @@ use App\Agence;
 use App\Afrocash;
 use App\TransactionAfrocash;
 use App\MakePdraf;
+use App\PayCommission;
+use App\ReaboAfrocash;
 
 use App\Traits\Similarity;
 use App\Traits\Afrocashes;
@@ -382,6 +384,30 @@ class PdcController extends Controller
 
             return response()
                 ->json('done');
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+    // SEND PAY COMISSION REQUEST
+
+    public function sendPayComissionRequest(Request $request) {
+        try {
+            $validation = $request->validate([
+                'montant'   =>  'required|numeric|min : 10000',
+                'password_confirmation'  => 'required|string',
+            ],[
+                'required'  =>  '`:attribute` requis !',
+                'min'   =>  'Le montant minimum requis est de : 10000 GNF'
+            ]);
+
+            if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
+                throw new AppException("Mot de passe invalide !");
+            }
+
+            
+            return response()
+                ->json($request);
         } catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));

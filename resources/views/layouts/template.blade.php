@@ -47,7 +47,9 @@
       <div class="uk-margin-bottom">
         @yield('content')
       </div>
+      @if(Auth::user()->type == 'v_da' || Auth::user()->type == 'v_standart' || Auth::user()->type == 'admin' || Auth::user()->type == 'commercial')
       <alert-abonnement></alert-abonnement>
+      @endif
       <!-- FOOTER -->
       <footer>
         <div class="uk-container">
@@ -64,9 +66,9 @@
     <script type="application/javascript" src="{{asset('js/uikit.min.js')}}"></script>
     <script type="application/javascript" src="{{asset('js/uikit-icons.min.js')}}"></script>
 
-    <script type="application/javascript" src="{{ mix('js/echo.js') }}" ></script>
-    <script type="application/javascript" src="{{ mix('js/store.js') }}" ></script>
     <script type="application/javascript" src="{{mix('js/app.js')}}?<?php echo filemtime('js/app.js') ?>" ></script>
+    <script type="application/javascript" src="{{ mix('js/store.js') }}" ></script>
+    <!-- <script type="application/javascript" src="{{ mix('js/echo.js') }}" ></script> -->
     @yield('script')
   </body>
 </html>

@@ -180,6 +180,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/pdc/get-pdraf-solde','PdcController@getPdrafSoldes')->middleware('pdc');
 	Route::post('/user/pdc/send-pdraf-add-request','PdcController@SendPdrafAddRequest')->middleware('pdc');
 	Route::get('/user/pdc/get-create-request','PdcController@getCreateRequest')->middleware('pdc');
+	Route::post('/user/pdc/pay-comission-request','PdcController@sendPayComissionRequest')->middleware('pdc');
 
 	##############################@@@@@@@@@@@@@ -------------- PDRAF -------------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@####
 

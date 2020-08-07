@@ -343,10 +343,10 @@
         mounted() {
           this.getAllNotifications()
 
-          var channel = Echo.channel('notification');
-          channel.listen('notify', function(data) {
-            alert(JSON.stringify(data));
-          });
+          // var channel = Echo.channel('notification');
+          // channel.listen('notify', function(data) {
+          //   alert(JSON.stringify(data));
+          // });
         },
         props : {
 

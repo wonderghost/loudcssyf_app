@@ -103,7 +103,7 @@ public function payCommission(Request $request , PayCommission $pay) {
         ->get();
 
       if($pay_request->count() > 0) {
-        throw new AppException("Vous avez deja une demande de paiement de comissions en attente de traitement , Veuillez Ressayez plus tart :-)");
+        throw new AppException("Vous avez deja une demande de paiement de comissions en attente de traitement , Veuillez Ressayez plus tard :-)");
       }
 
       $rapport = $request->user()->rapportsPayNUll();

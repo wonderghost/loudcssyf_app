@@ -35,10 +35,11 @@ class PdrafController extends Controller
         return $_id;
     }
 
+
     public function addNewPdraf(Request $request) {
         try {
             $validation = $request->validate([
-                'email' =>  'required|email|unique:users,email',
+                // 'email' =>  'required|email|unique:users,email',
                 'phone' =>  'required|string',
                 'agence'    =>  'required|string',
                 'access'    =>  'required|string',
@@ -63,7 +64,8 @@ class PdrafController extends Controller
 
 
             $u->username = $this->generateId();
-            $u->email = $request->input("email");
+            // $u->email = $request->input("email");
+            $u->randomEmailGenerate();
             $u->phone = $request->input('phone');
             $u->type = $request->input('access');
             $u->localisation = $request->input('agence');
@@ -443,6 +445,8 @@ class PdrafController extends Controller
                     $options .= $_value->id_option.",";
                 }
 
+                $created_at = new Carbon($value->created_at);
+
                 $all[$key] = [
                     'materiel'  =>  $value->serial_number,
                     'formule'   =>  $value->formule_name,
@@ -454,7 +458,8 @@ class PdrafController extends Controller
                     'pdraf' =>  $value->pdrafUser()->only('localisation','username'),
                     'pdc_hote'  =>  $value->pdrafUser()->pdcUser()->usersPdc()->only('localisation','username'),
                     'marge' =>  $marge,
-                    'total' =>  $marge + $value->comission
+                    'total' =>  $marge + $value->comission,
+                    'created_at'    =>  $created_at->toDateTimeString(),
                 ];
 
             }
