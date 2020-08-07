@@ -158,14 +158,33 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         try {
             this.isLoading = true
             this.depotData._token = this.myToken
-            let response = await axios.post('/user/afrocash/depot-pdc/',this.depotData)
-            
-            if(response && response.data) {
-              this.isLoading = false
-              alert("Success!")
-              Object.assign(this.$data,this.$options.data())
-              this.accountList()
-            }
+            // let response = await axios.post('/user/afrocash/depot-pdc/',this.depotData)
+
+            axios.post('/user/afrocash/depot-pdc',this.depotData)
+            .then((response) => {
+                if(response.data == 'done') {
+                  this.isLoading = false
+                  alert("Success!")
+                  Object.assign(this.$data,this.$options.data())
+                  this.accountList()
+                }
+            }, (error) => {
+                this.isLoading = false
+                if(error.response.data.errors) {
+                  let errorTab = error.response.data.errors
+                  for (var prop in errorTab) {
+                    this.errors.push(errorTab[prop][0])
+                  }
+                } else {
+                    this.errors.push(error.response.data)
+                }
+            });                        
+            // if(response && response.data) {
+            //   this.isLoading = false
+            //   alert("Success!")
+            //   Object.assign(this.$data,this.$options.data())
+            //   this.accountList()
+            // }
         } catch(error) {
             this.isLoading = false
             if(error.response.data.errors) {
