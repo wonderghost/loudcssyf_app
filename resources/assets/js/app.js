@@ -62,12 +62,14 @@ Vue.component('view-contact',require('./userComponents/ContactComponent.vue').de
 Vue.component('set-rapport-parametre',require('./adminComponents/SetRapportParametre.vue').default)
 Vue.component('users-list',require('./userComponents/UserListComponent.vue').default)
 Vue.component('creation-pdraf',require('./adminComponents/CreationPdraf.vue').default)
+Vue.component('reabo-afrocash-list',require('./adminComponents/ReaboAfrocashList.vue').default)
 // RESEAUX PDC
 
 Vue.component('afrocash-operation',require('./pdcComponents/AfrocashOperation.vue').default)
 Vue.component('pdc-home',require('./pdcComponents/PdcHome.vue').default)
 Vue.component('pdc-transactions',require('./pdcComponents/PdcTransaction.vue').default)
 Vue.component('inventaire-pdraf',require('./pdcComponents/InventairePdraf.vue').default)
+Vue.component('all-vente-reabo-afrocash',require('./pdrafComponents/AllVenteReaboAfrocash.vue').default)
 Vue.component('pdraf-home',require('./pdrafComponents/pdrafHome.vue').default)
 
 

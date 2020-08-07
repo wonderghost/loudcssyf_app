@@ -20,6 +20,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/pdraf/list','AdminController@creationPdraf');
 	Route::get('/admin/pdraf/get-list','PdrafController@getListCreationPdraf');
 	Route::post('/admin/pdraf/set-vendeur-for-reabo','PdrafController@setUserStandartForReabo');
+	Route::post('/admin/pdraf/confirm-reabo-afrocash','PdrafController@confirmReaboAfrocash');
 
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// traitement parametre rapport vente

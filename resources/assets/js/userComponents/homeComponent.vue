@@ -37,7 +37,8 @@
       <a v-if="typeUser == 'v_da' || typeUser == 'v_standart' || typeUser == 'admin' || typeUser == 'commercial'" class="uk-button uk-button-small border-button" uk-tooltip="Alertes" uk-toggle="target : #modal-alert-abonnement"><span>{{alertCount}}</span> <i class="material-icons">alarm</i> <span style="color : red !important">{{alertInactifCount}}</span></a>
       <!-- <a class="uk-button uk-button-small border-button" uk-tooltip="Alertes"><i class="material-icons" style="color : red !important;">alarm</i></a> -->
       <template v-if="typeUser == 'admin' || typeUser == 'commercial'" id="">
-      	<a class="uk-button uk-button-small uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded uk-box-shadow-hover-small" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span>  PROMO</a>
+      	<a class="uk-button uk-button-small uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span>  PROMO</a>
+        <a class="uk-margin-left" uk-toggle uk-tooltip="Reabonnement Afrocash" href="#modal-reabo-afrocash-list"><span uk-icon="grid"></span></a>
     </template>
     <template v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'" id="">
       <a class="uk-button uk-button-small border-button button-pay-comission" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>

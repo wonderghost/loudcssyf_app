@@ -6,7 +6,7 @@
         loader="dots"></loading>
 
        <div class="uk-container uk-container-large">
-           <h3 class="uk-margin-top">Tous les Reabonnements</h3>
+           <h3 class="uk-margin-top">Tous les Reabonnements <a @click="getAllData()" class="uk-button" uk-tooltip="Rafraichir la liste"><span uk-icon="refresh"></span></a></h3>
             <hr class="uk-divider-small">
 
             <!-- MODAL CONFIRM PAIEMENT COMISSION -->
@@ -74,7 +74,7 @@
                 </div>
             </template>
             
-            <table class="uk-table uk-table-small uk-table-striped uk-table-hover uk-table-divider">
+            <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover uk-table-divider uk-table-responsive">
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -83,16 +83,40 @@
                         <th>Duree</th>
                         <th>Option</th>
                         <th>Montant Ttc</th>
-                        <th>Comission</th>
-                        <th>Telephone Client</th>
+                        <template v-if="typeUser != 'admin'">
+                            <th>Comission</th>
+                            <th>Telephone Client</th>
+                        </template>
                         <th>Pdraf</th>
-                        <template v-if="typeUser == 'pdc'">
+                        <template v-if="typeUser == 'pdc' || typeUser == 'admin'">
                             <th>Marge</th>
                             <th>Total</th>
+                        </template>
+                        <template v-if="typeUser == 'admin'">
+                            <th>-</th>
                         </template>
                     </tr>
                 </thead>
                 <tbody>
+                    <template v-if="typeUser == 'admin'">
+                        <tr v-for="(r,index) in all" :key="index">
+                            <td>{{r.created_at}}</td>
+                            <td>{{r.materiel}}</td>
+                            <td>{{r.formule}}</td>
+                            <td>{{r.duree}}</td>
+                            <td>{{r.option}}</td>
+                            <td>{{r.montant |numFormat}}</td>
+                            <td>{{r.pdraf.localisation}}</td>
+                            <td>{{r.marge | numFormat}}</td>
+                            <td>{{r.total | numFormat }}</td>
+                            <td>
+                                <template v-if="!r.confirm_at && !r.remove_at">
+                                    <button @click="confirmRequestForAdmin(r)" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-text-small uk-text-capitalize">confirmer</button>
+                                    <button class="uk-button uk-button-small uk-button-danger uk-border-rounded uk-text-small uk-text-capitalize">annuler</button>
+                                </template>
+                            </td>
+                        </tr>
+                    </template>
                     <template v-if="typeUser == 'pdc'">
                         <tr v-for="(r,index) in pdcListReaboByPdraf" :key="index">
                             <td>{{r.created_at}}</td>
@@ -151,6 +175,22 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             }
         },
         methods : {
+            confirmRequestForAdmin : async function (r) {
+                try {
+                    let response = await axios.post('/admin/pdraf/confirm-reabo-afrocash',{
+                        _token : this.myToken,
+                        id : r.id
+                    })
+                    if(response && response.data) {
+                        alert("Success!")
+                        Object.assign(this.$data,this.$options.data())
+                        this.getAllData()
+                    }
+                } catch(error) {
+                    alert(error) 
+                    console.log(error)
+                }
+            },
             sendPayComissionRequest : async function () {
                 try {
                     let response = await axios.post('/user/pdc/pay-comission-request',{
@@ -181,18 +221,18 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     this.isLoading = true
                     var response = await axios.get('/user/pdraf/get-reabo-afrocash')
                     if(response) {
+                        this.isLoading = false
                         this.all = response.data
                     }
                     if(this.typeUser == 'pdc') {
+                        this.isLoading = true
                         response = await axios.get('/user/get-pdraf-list')
 
                         if(response) {
+                            this.isLoading = false
                             this.pdrafList = response.data
                         }
-                    }
-
-                    this.isLoading = false
-                    
+                    }                    
 
                 } catch(error) {
                     alert(error)

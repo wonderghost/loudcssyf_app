@@ -435,7 +435,7 @@ class PdrafController extends Controller
     public function getAllReaboAfrocash(Request $request) {
         try {
             // $data = $request->user()->reaboAfrocash();
-            $data = ReaboAfrocash::all();
+            $data = ReaboAfrocash::select()->orderBy('created_at','desc')->get();
             $all = [];
 
             foreach($data as $key => $value) {
@@ -446,8 +446,10 @@ class PdrafController extends Controller
                 }
 
                 $created_at = new Carbon($value->created_at);
+                $confirm_at = $value->confirm_at ? new Carbon($value->confirm_at) : null;
 
                 $all[$key] = [
+                    'id'    =>  $value->id,
                     'materiel'  =>  $value->serial_number,
                     'formule'   =>  $value->formule_name,
                     'duree' =>  $value->duree,
@@ -460,6 +462,7 @@ class PdrafController extends Controller
                     'marge' =>  $marge,
                     'total' =>  $marge + $value->comission,
                     'created_at'    =>  $created_at->toDateTimeString(),
+                    'confirm_at'    => $confirm_at ? $confirm_at->toDateTimeString() : null
                 ];
 
             }
@@ -509,6 +512,24 @@ class PdrafController extends Controller
 
             return response()
                 ->json($all);
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    // CONFIRM REABO AFROCASH
+    public function confirmReaboAfrocash(Request $request) {
+        try {
+            $validation = $request->validate([
+                'id'    =>  'required|exists:reabo_afrocash,id',
+            ]);
+
+            $reabo_afrocash = ReaboAfrocash::find($request->input('id'));
+            $reabo_afrocash->confirm_at = Carbon::now();
+            $reabo_afrocash->save();
+            return response()
+                ->json('done');
         } catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));
