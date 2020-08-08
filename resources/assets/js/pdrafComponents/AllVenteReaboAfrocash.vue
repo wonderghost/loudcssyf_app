@@ -83,7 +83,7 @@
                         <th>Duree</th>
                         <th>Option</th>
                         <th>Montant Ttc</th>
-                        <template v-if="typeUser != 'admin' || typeUser != 'gcga'">
+                        <template v-if="typeUser != 'admin' && typeUser != 'gcga'">
                             <th>Comission</th>
                             <th>Telephone Client</th>
                         </template>
@@ -162,6 +162,13 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         },
         mounted () {
             this.getAllData()
+
+            Echo.channel('reaboafrocash')
+            .listen('addReaboAfrocash', (e) => {
+
+                this.all = e.reabo_afrocash
+
+            })         
         },
         data() {
             return {

@@ -67,9 +67,9 @@
     <script type="application/javascript" src="{{asset('js/uikit.min.js')}}"></script>
     <script type="application/javascript" src="{{asset('js/uikit-icons.min.js')}}"></script>
 
-    <script type="application/javascript" src="{{mix('js/app.js')}}?<?php echo filemtime('js/app.js') ?>" ></script>
+    <script type="application/javascript" src="{{ mix('js/echo.js') }}" ></script>
     <script type="application/javascript" src="{{ mix('js/store.js') }}" ></script>
-    <!-- <script type="application/javascript" src="{{ mix('js/echo.js') }}" ></script> -->
+    <script type="application/javascript" src="{{mix('js/app.js')}}?<?php echo filemtime('js/app.js') ?>" ></script>
     @yield('script')
   </body>
 </html>

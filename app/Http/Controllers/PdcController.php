@@ -16,6 +16,7 @@ use App\ReaboAfrocash;
 
 use App\Traits\Similarity;
 use App\Traits\Afrocashes;
+use App\Notifications;
 
 
 
@@ -130,6 +131,7 @@ class PdcController extends Controller
 
     public function sendTransaction(Request $request) {
         try {
+
             $validation = $request->validate([
                 'pdraf_id'  =>  'required|string|exists:users,username',
                 'montant'   =>  'required|numeric|min:100000',
@@ -173,6 +175,9 @@ class PdcController extends Controller
             $trans->montant = $request->input('montant');
             $trans->motif = "Depot Afrocash";
 
+            $data['afrocash_account'] = $pdraf_account;
+            
+
             $pdraf_account->save();
             $pdc_account->save();
             $trans->save();
@@ -202,6 +207,11 @@ class PdcController extends Controller
 
             $n->save();
 
+            $data ['notify'] = Notifications::where('vendeurs',$request->user()->username)->orderBy('created_at','desc')->get();
+            $data['transaction'] = [];
+            
+
+            event(new \App\Events\sendTransaction($data));
 
             return response()
                 ->json('done');

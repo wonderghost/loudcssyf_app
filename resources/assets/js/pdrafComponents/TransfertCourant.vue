@@ -63,6 +63,11 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         },
         mounted() {
             this.getOtherPdraf()
+
+            Echo.channel('notify')
+            .listen('sendTransaction', (e) => {
+                this.userAccount = e.afrocash_account
+            })         
         },
         data() {
             return {

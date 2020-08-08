@@ -167,7 +167,7 @@ class CreditController extends Controller
 
 	// RECUPERATION DE LA LISTE DE TOUTES LES COMMANES , POUR L'ADMINISTRATEUR
 	public function getAllCommandes(Request $request , CommandCredit $c) {
-		$all = $c->select()->orderBy('created_at','desc')->get();
+		$all = $c->select()->orderBy('created_at','desc')->limit(1000)->get();
 		return response()->json($this->organizeCommandGcga($all));
 	}
 

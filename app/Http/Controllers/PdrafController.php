@@ -384,7 +384,10 @@ class PdrafController extends Controller
             $trans->save();
 
 
-            
+            $data['reabo_afrocash'] = $this->rangeItems(ReaboAfrocash::select()->orderBy('created_at','desc')->get());
+
+            event(new \App\Events\addReaboAfrocash($data));
+
             return response()
                 ->json('done');
         } catch(AppException $e) {
@@ -432,43 +435,47 @@ class PdrafController extends Controller
 
     // get Reabo Afrocash by pdc
 
+    public function  rangeItems($data) {
+        $all = [];
+        foreach($data as $key => $value) {
+            $marge = (($value->montant_ttc/1.18) * (1.5/100));
+            $options = "";
+            foreach($value->options() as $_value) {
+                $options .= $_value->id_option.",";
+            }
+
+            $created_at = new Carbon($value->created_at);
+            $confirm_at = $value->confirm_at ? new Carbon($value->confirm_at) : null;
+
+            $all[$key] = [
+                'id'    =>  $value->id,
+                'materiel'  =>  $value->serial_number,
+                'formule'   =>  $value->formule_name,
+                'duree' =>  $value->duree,
+                'option'    =>  $options,
+                'montant'   =>  $value->montant_ttc,
+                'comission' =>  $value->comission,
+                'telephone_client'  =>  $value->telephone_client,
+                'pdraf' =>  $value->pdrafUser()->only('localisation','username'),
+                'pdc_hote'  =>  $value->pdrafUser()->pdcUser()->usersPdc()->only('localisation','username'),
+                'marge' =>  $marge,
+                'total' =>  $marge + $value->comission,
+                'created_at'    =>  $created_at->toDateTimeString(),
+                'confirm_at'    => $confirm_at ? $confirm_at->toDateTimeString() : null
+            ];
+
+        }
+        return $all;
+    }
+
     public function getAllReaboAfrocash(Request $request) {
         try {
             // $data = $request->user()->reaboAfrocash();
             $data = ReaboAfrocash::select()->orderBy('created_at','desc')->get();
-            $all = [];
-
-            foreach($data as $key => $value) {
-                $marge = (($value->montant_ttc/1.18) * (1.5/100));
-                $options = "";
-                foreach($value->options() as $_value) {
-                    $options .= $_value->id_option.",";
-                }
-
-                $created_at = new Carbon($value->created_at);
-                $confirm_at = $value->confirm_at ? new Carbon($value->confirm_at) : null;
-
-                $all[$key] = [
-                    'id'    =>  $value->id,
-                    'materiel'  =>  $value->serial_number,
-                    'formule'   =>  $value->formule_name,
-                    'duree' =>  $value->duree,
-                    'option'    =>  $options,
-                    'montant'   =>  $value->montant_ttc,
-                    'comission' =>  $value->comission,
-                    'telephone_client'  =>  $value->telephone_client,
-                    'pdraf' =>  $value->pdrafUser()->only('localisation','username'),
-                    'pdc_hote'  =>  $value->pdrafUser()->pdcUser()->usersPdc()->only('localisation','username'),
-                    'marge' =>  $marge,
-                    'total' =>  $marge + $value->comission,
-                    'created_at'    =>  $created_at->toDateTimeString(),
-                    'confirm_at'    => $confirm_at ? $confirm_at->toDateTimeString() : null
-                ];
-
-            }
+            
 
             return response()
-                ->json($all);
+                ->json($this->rangeItems($data));
         } catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));

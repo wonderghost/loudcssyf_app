@@ -340,79 +340,78 @@
 </template>
 
 <script type="application/javascript">
-    export default {
-        mounted() {
-          this.getAllNotifications()
+  export default {
+      mounted() {
+        this.getAllNotifications()
+        Echo.channel('notify')
+          .listen('sendTransaction', (e) => {
+            this.notifications = e.notify
+          })         
+      },
+      props : {
 
-          // var channel = Echo.channel('notification');
-          // channel.listen('notify', function(data) {
-          //   alert(JSON.stringify(data));
-          // });
-        },
-        props : {
-
+      }
+      ,
+      data () {
+        return {
+          notifications : []
         }
-        ,
-        data () {
-          return {
-            notifications : []
+      },
+      methods : {
+        getAllNotifications : async function () {
+          try {
+            let response = await axios.get('/user/notification/getlist')
+            this.notifications = response.data
+          } catch (e) {
+              alert(e)
           }
         },
-        methods : {
-          getAllNotifications : async function () {
-            try {
-              let response = await axios.get('/user/notification/getlist')
-              this.notifications = response.data
-            } catch (e) {
-                alert(e)
-            }
-          },
-          readNotification : async function (id) {
-            try {
-                let response = await axios.post('/user/notification/mark-as-read',{
-                  _token : this.myToken,
-                  id_notify : id
-                })
-                if(response.data == 'done') {
-                  this.getAllNotifications()
-                }
-            } catch(error) {
-                alert(error)
-            }
-          }
-        },
-        computed : {
-          alertInactifCount() {
-            return this.$store.state.alertInactifCount
-          },
-          alertCount() {
-            return this.$store.state.alertCount
-          },
-          deblocageCount() {
-            return this.$store.state.deblocageCount
-          },
-          typeUser() {
-            return this.$store.state.typeUser
-          },
-          myToken () {
-            return this.$store.state.myToken
-          },
-          userLocalisation() {
-            return this.$store.state.userLocalisation
-          },
-          username () {
-            return this.$store.state.userName
-          },
-          unreadNotifications() {
-            return this.notifications.filter((n) => {
-              return n.status == "unread"
-            })
-          },
-          readNotifications() {
-            return this.notifications.filter((n) => {
-              return n.status == "read"
-            })
+        readNotification : async function (id) {
+          try {
+              let response = await axios.post('/user/notification/mark-as-read',{
+                _token : this.myToken,
+                id_notify : id
+              })
+              if(response.data == 'done') {
+                this.getAllNotifications()
+              }
+          } catch(error) {
+              alert(error)
           }
         }
-    }
+      },
+      computed : {
+        alertInactifCount() {
+          return this.$store.state.alertInactifCount
+        },
+        alertCount() {
+          return this.$store.state.alertCount
+        },
+        deblocageCount() {
+          return this.$store.state.deblocageCount
+        },
+        typeUser() {
+          return this.$store.state.typeUser
+        },
+        myToken () {
+          return this.$store.state.myToken
+        },
+        userLocalisation() {
+          return this.$store.state.userLocalisation
+        },
+        username () {
+          return this.$store.state.userName
+        },
+        unreadNotifications() {
+          return this.notifications.filter((n) => {
+            return n.status == "unread"
+          })
+        },
+        readNotifications() {
+          return this.notifications.filter((n) => {
+            return n.status == "read"
+          })
+        }
+      }
+  }
 </script>
