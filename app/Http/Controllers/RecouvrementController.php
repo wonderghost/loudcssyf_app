@@ -93,8 +93,14 @@ class RecouvrementController extends Controller
 
     public function allTransactions(Request $request , TransactionAfrocash $ta) {
       try {
-        $transactions = $ta->whereIn('compte_debite',Afrocash::select('numero_compte')->where('type','semi_grossiste')->get())
-          ->orderBy('created_at','desc')->get();
+        $users_standarts = User::select('username')->where('type','v_standart')
+          ->get();
+        $afrocash_account = Afrocash::select('numero_compte')->whereIn('vendeurs',$users_standarts)->get();
+        
+        $transactions = $ta->whereIn('compte_debite',$afrocash_account)
+          ->orderBy('created_at','desc')
+          ->get();
+        
         $all = [];
         foreach($transactions as $key => $value) {
           $date = new Carbon($value->created_at);
