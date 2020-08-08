@@ -183,6 +183,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/pdc/get-create-request','PdcController@getCreateRequest')->middleware('pdc');
 	Route::post('/user/pdc/pay-comission-request','PdcController@sendPayComissionRequest')->middleware('pdc');
 
+	Route::post('/user/pdraf/confirm-reabo-afrocash','PdrafController@confirmReaboAfrocash')->middleware('cga');
+
 	##############################@@@@@@@@@@@@@ -------------- PDRAF -------------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@####
 
 	Route::get('/user/pdraf','PdrafController@index')->middleware('pdraf');

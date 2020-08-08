@@ -83,22 +83,22 @@
                         <th>Duree</th>
                         <th>Option</th>
                         <th>Montant Ttc</th>
-                        <template v-if="typeUser != 'admin'">
+                        <template v-if="typeUser != 'admin' || typeUser != 'gcga'">
                             <th>Comission</th>
                             <th>Telephone Client</th>
                         </template>
                         <th>Pdraf</th>
-                        <template v-if="typeUser == 'pdc' || typeUser == 'admin'">
+                        <template v-if="typeUser == 'pdc' || typeUser == 'admin' || typeUser == 'gcga'">
                             <th>Marge</th>
                             <th>Total</th>
                         </template>
-                        <template v-if="typeUser == 'admin'">
+                        <template v-if="typeUser == 'admin' || typeUser == 'gcga'">
                             <th>-</th>
                         </template>
                     </tr>
                 </thead>
                 <tbody>
-                    <template v-if="typeUser == 'admin'">
+                    <template v-if="typeUser == 'admin' || typeUser == 'gcga'">
                         <tr v-for="(r,index) in all" :key="index">
                             <td>{{r.created_at}}</td>
                             <td>{{r.materiel}}</td>
@@ -177,10 +177,19 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         methods : {
             confirmRequestForAdmin : async function (r) {
                 try {
-                    let response = await axios.post('/admin/pdraf/confirm-reabo-afrocash',{
-                        _token : this.myToken,
-                        id : r.id
-                    })
+                    if(this.typeUser == 'admin') {
+
+                        var response = await axios.post('/admin/pdraf/confirm-reabo-afrocash',{
+                            _token : this.myToken,
+                            id : r.id
+                        })
+                    }
+                    else if(this.typeUser == 'gcga') {
+                        var response = await axios.post('/user/pdraf/confirm-reabo-afrocash',{
+                            _token : this.myToken,
+                            id : r.id
+                        })
+                    }
                     if(response && response.data) {
                         alert("Success!")
                         Object.assign(this.$data,this.$options.data())
