@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div id="modal-reabo-afrocash-list" class="uk-modal-full" uk-modal="esc-close : false;bg-close : false">
+        <div id="modal-reabo-afrocash-list" class="uk-modal-container" uk-modal="esc-close : false;bg-close : false">
             <div class="uk-modal-dialog">
                 <div class="uk-modal-header">
                     <h2 class="uk-modal-title"><a class="uk-button uk-modal-close"><span uk-icon="arrow-left"></span></a> Reabonnement Afrocash</h2>

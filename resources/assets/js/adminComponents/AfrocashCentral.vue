@@ -1,10 +1,13 @@
 <template>
-    <div>
+    <div class="uk-container uk-container-large">
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
 
+
+        <h3>Operation Afrocash</h3>
+        <hr class="uk-divider-small">
         <ul uk-tab>
             <li><a href="#">Apport</a></li>
             <li><a href="#">Depenses</a></li>
@@ -194,18 +197,18 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             makeDepenseAfrocashCentral : async function() {
                 try {
                     this.isLoading = true
-                    UIkit.modal($("#modal-depenses")).hide()
+                    
                     this.depenseForm._token = this.myToken
                     let response = await axios.post('/admin/afrocash/depenses',this.depenseForm)
                     if(response.data == 'done') {
-                        UIkit.modal.alert("<div class='uk-alert-success uk-border-rounded' uk-alert>Operation effectue avec success !</div>")
-                            .then(function() {
-                                location.reload()
-                            })
+                        alert("Success !")
+                        Object.assign(this.$data,this.$options.data())
+                        this.historiqueDepense()
+                        
                     }
                 } catch(error) {
                     this.isLoading = false
-                    UIkit.modal($("#modal-depenses")).show()
+                    
                     if(error.response.data.errors) {
                         let errorTab = error.response.data.errors
                         for (var prop in errorTab) {
@@ -219,19 +222,20 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             makeApportAfrocashCentral : async function () {
                 try {
                     this.isLoading = true
-                    UIkit.modal($("#modal-apport")).hide()
+                    
                     this.formData._token = this.myToken
                     let response = await axios.post('/admin/afrocash/apport',this.formData)
                     
                     if(response.data == 'done') {
-                        UIkit.modal.alert("<div class='uk-alert-success uk-border-rounded' uk-alert>Operation effectue avec sucess !</div>")
-                            .then(function() {
-                                location.reload()
-                            })
+
+                        alert("Success !")
+                        Object.assign(this.$data,this.$options.data())
+                        this.historiqueApport()
+                        
                     }
                 } catch(error) {
                     this.isLoading = false
-                    UIkit.modal($("#modal-apport")).show()
+                    
                     if(error.response.data.errors) {
                         let errorTab = error.response.data.errors
                         for (var prop in errorTab) {

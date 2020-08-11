@@ -1,18 +1,20 @@
 <template>
 
-<div class="">
+<div class="uk-container uk-container-large">
   <loading :active.sync="isLoading"
       :can-cancel="false"
       :is-full-page="fullPage"
       loader="dots"></loading>
 
+  <h3 class="uk-margin-top">Ajoutez un Utilisateur</h3>
+  <hr class="uk-divider-small">
 <!-- Erreor block -->
       <template v-if="errors.length" v-for="error in errors">
-      <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
-        <a href="#" class="uk-alert-close" uk-close></a>
-        <p>{{error}}</p>
-      </div>
-    </template>
+        <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+          <a href="#" class="uk-alert-close" uk-close></a>
+          <p>{{error}}</p>
+        </div>
+      </template>
 
     <template v-if="typeUser == 'admin'">
       <form>

@@ -1,9 +1,12 @@
 <template>
-  <div class="">
+  <div class="uk-container uk-container-large">
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+
+        <h3>Toutes les transactions</h3>
+        <hr class="uk-divider-small">
 
     <div class="uk-grid" uk-grid>
       <form class="uk-width-1-1@m" uk-grid>

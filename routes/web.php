@@ -118,7 +118,10 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/add-account-credit','CreditController@makeAddAccount');
 
 	// admin routing
-	Route::get('/admin','AdminController@dashboard');
+	// Route::get('/admin','AdminController@dashboard');
+	Route::get('/app',function () {
+		return view('layouts.template');
+	});
 // //
 	Route::get('/admin/add-user','AdminController@getFormUser');
 	Route::post('/admin/add-user','AdminController@addUser');

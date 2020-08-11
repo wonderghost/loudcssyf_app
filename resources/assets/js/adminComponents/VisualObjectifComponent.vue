@@ -1,9 +1,22 @@
 <template>
-    <div>
+    <div class="uk-container uk-container-large">
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+
+    <h3 class="uk-margin-top">Visu Objectifs</h3>
+    <hr class="uk-divider-small">    
+
+    <nav class="" uk-navbar>
+        <div class="uk-navbar-left">
+            <ul class="uk-navbar-nav">
+                <li class="uk-active"><router-link to="/admin/objectifs/new">Nouvel Objectif</router-link></li>
+                <li class="uk-active"><router-link to="/admin/objectifs/all">Tous les objectifs</router-link></li>
+            </ul>
+
+        </div>
+    </nav>    
 
         <!-- Erreor block -->
         <template v-if="errors.length" v-for="error in errors">
@@ -110,8 +123,6 @@ import VeHistogram from 'v-charts/lib/histogram.common'
 
                     response = await axios.get('/admin/objectif/reabonnement')
                     this.reabonnementData.rows = response.data
-
-                    console.log(response.data)
                     
                 } catch(error) {
                     if(error.response.data.errors) {

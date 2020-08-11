@@ -5,7 +5,7 @@
     <div class="uk-navbar-left">
         <button class="uk-navbar-item uk-button" uk-toggle="target:#side-nav" uk-icon="icon:menu"></button>
         <!-- <a href="" class="uk-navbar-item uk-logo uk-visible@m">LAYE DISTRIBUTION</a> -->
-        <a href="" class="uk-navbar-item uk-logo uk-visible@m">
+        <a href="/" class="uk-navbar-item uk-logo uk-visible@m">
           <img src="/img/layedist.png" width="100" alt="">
         </a>
         <a href="" class="uk-navbar-item uk-logo uk-hidden@m">
@@ -13,7 +13,16 @@
         </a>
     </div>
     <div class="uk-navbar-center uk-visible@m">
-      <a class="uk-button uk-button-small border-button" href="/" uk-tooltip="Tableau de bord"><i class="material-icons">home</i></a>
+      <span uk-tooltip="Tableau de bord" class="uk-margin-right">
+        <router-link to="/admin/dashboard"><i class="material-icons">dashboard</i></router-link>
+      </span>
+      <span uk-tooltip="Performances" class="uk-margin-right">
+        <router-link to="/admin/performances"><i class="material-icons">timeline</i></router-link>
+      </span>
+      <span uk-tooltip="Objectifs" class="uk-margin-right">
+        <router-link to="/admin/objectifs/visu"><i class="material-icons">track_changes</i></router-link>
+      </span>
+      
       <div class="uk-inline">
         <a class="uk-button uk-button-small border-button" uk-tooltip="Notifications"><i class="material-icons">notifications</i><span class="">{{unreadNotifications.length}}</span> </a>
         <div class="" uk-drop="mode: click ; animation: uk-animation-slide-top-small;">
@@ -37,11 +46,17 @@
       <a v-if="typeUser == 'v_da' || typeUser == 'v_standart' || typeUser == 'admin' || typeUser == 'commercial'" class="uk-button uk-button-small border-button" uk-tooltip="Alertes" uk-toggle="target : #modal-alert-abonnement"><span>{{alertCount}}</span> <i class="material-icons">alarm</i> <span style="color : red !important">{{alertInactifCount}}</span></a>
       <!-- <a class="uk-button uk-button-small border-button" uk-tooltip="Alertes"><i class="material-icons" style="color : red !important;">alarm</i></a> -->
       <template v-if="typeUser == 'admin' || typeUser == 'commercial'" id="">
-      	<a class="uk-button uk-button-small uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span>  PROMO</a>
-    </template>
+      	<!-- <a class="uk-button uk-button-small uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span>  PROMO</a> -->
+        <span uk-tooltip="Promo">
+          <router-link to="/admin/promo"><span uk-icon="icon : tag"></span>  PROMO</router-link>
+        </span>
+      </template>
     <template v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'" id="">
       <a class="uk-button uk-button-small border-button button-pay-comission" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
-      <a class="uk-margin-left" uk-toggle uk-tooltip="Reabonnement Afrocash" href="#modal-reabo-afrocash-list"><span uk-icon="grid"></span></a>
+      <!-- <a class="uk-margin-left" uk-toggle uk-tooltip="Reabonnement Afrocash" href="#modal-reabo-afrocash-list"><span uk-icon="grid"></span></a> -->
+      <span class="" uk-tooltip="Reabonnement Afrocash">
+        <router-link to="/all-ventes-pdraf"><span uk-icon="grid"></span></router-link>
+      </span>
     </template>
       <a class="uk-button uk-button-small border-button" uk-tooltip="Recherche" uk-toggle="target : #modal-search-serial"><i class="material-icons">search</i></a>
       <a v-if="typeUser == 'v_da'" class="uk-button uk-button-small border-button" href="#modal-remboursement" uk-toggle uk-tooltip="Paiement Remboursement"><i class="material-icons">payment</i></a>
@@ -109,23 +124,44 @@
             <li class="uk-parent">
                 <a href="#"><span uk-icon="icon:user;ratio:0.9"></span> Utilisateurs</a>
                 <ul class="uk-nav-sub">
-                    <li><a href="/admin/add-user"><span uk-icon="icon:arrow-right"></span> Nouveau</a></li>
-                    <li><a href="/admin/list-users"><span uk-icon="icon:arrow-right"></span> Tous les utilisateurs</a></li>
-                    <li><a href="/admin/pdraf/list"><span uk-icon="icon : arrow-right"></span> Creation Pdraf</a></li>
+                    <!-- <li><a href="/admin/add-user"><span uk-icon="icon:arrow-right"></span> Nouveau</a></li> -->
+                    <li>
+                      <router-link to="/user/add"><span uk-icon="icon : link"></span> Nouveau</router-link>
+                    </li>
+
+                    <li>
+                      <router-link to="/user/list"><span uk-icon="link"></span> Tous les Utilisateur</router-link>
+                    </li>
+                    <li>
+                      <router-link to="/pdraf/list"><span uk-icon="link"></span> Creation Pdraf</router-link>
+                    </li> 
+                    <!-- <li><a href="/admin/pdraf/list"><span uk-icon="icon : arrow-right"></span> Creation Pdraf</a></li> -->
                 </ul>
             </li>
             <li class="uk-parent" >
                 <a href="#"><span uk-icon="icon:credit-card;ratio:0.9"></span> Compte Credit</a>
                 <ul class="uk-nav-sub">
-                    <li><a href="/admin/add-account-credit"><span uk-icon="icon:arrow-right"></span> Comptes</a></li>
+                    <!-- <li><a href="/admin/add-account-credit"><span uk-icon="icon:arrow-right"></span> Comptes</a></li> -->
+                    <li>
+                      <router-link to="/account"><span uk-icon="link"></span> Compte Credit</router-link>
+                    </li>
                 </ul>
             </li>
             <li class="uk-parent">
               <a href="#"><span uk-icon="icon: credit-card;"></span> Afrocash</a>
               <ul class="uk-nav-sub">
-                <li><a href="/admin/afrocash"><span uk-icon="icon :arrow-right;"></span> Operations</a>	</li>
-                <li><a href="/admin/afrocash/all-transactions"><span uk-icon="icon : arrow-right;"></span> Toutes les transactions</a>	</li>
-                <li><a href="/admin/recouvrement/operations"><span uk-icon="icon : arrow-right"></span> Recouvrements</a></li>
+                <!-- <li><a href="/admin/afrocash"><span uk-icon="icon :arrow-right;"></span> Operations</a>	</li> -->
+                <li>
+                  <router-link to="/afrocash/operation"><span uk-icon="link"></span> Operation</router-link>
+                </li>
+                <!-- <li><a href="/admin/afrocash/all-transactions"><span uk-icon="icon : arrow-right;"></span> Toutes les transactions</a>	</li> -->
+                <li>
+                  <router-link to="/afrocash/all-transaction"><span uk-icon="link"></span> Toutes les transactions</router-link>
+                </li>
+                <!-- <li><a href="/admin/recouvrement/operations"><span uk-icon="icon : arrow-right"></span> Recouvrements</a></li> -->
+                <li>
+                  <router-link to="/afrocash/recouvrement"><span uk-icon="link"></span> Recouvrements</router-link>
+                </li>
               </ul>
             </li>
             <li class="uk-parent">

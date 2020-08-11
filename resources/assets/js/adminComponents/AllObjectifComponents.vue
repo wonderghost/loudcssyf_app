@@ -1,9 +1,13 @@
 <template>
-    <div>
+    <div class="uk-container uk-container-large">
+
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+
+    <h3 class="uk-margin-top"><router-link to="/admin/objectifs/visu"><button class="uk-button uk-button-defaul uk-button-small uk-border-rounded" uk-tooltip="Visu Objectif"><span uk-icon="arrow-left"></span></button></router-link> Tous les objectifs</h3>
+    <hr class="uk-divider-small">            
 
         <!-- modal details objectif -->
         <div id="modal-detailObjectifs" class="uk-modal-container" uk-modal="esc-close : false;bg-close : false">

@@ -1,9 +1,12 @@
 <template>
-    <div>
+    <div class="uk-container uk-container-large">
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+
+    <h3 class="uk-margin-top">Creation Pdraf</h3>
+    <hr class="uk-divider-small">
 
         <!-- MODAL CONFIRMATION -->
         <div id="modal-confirmation-create-pdraf" uk-modal>

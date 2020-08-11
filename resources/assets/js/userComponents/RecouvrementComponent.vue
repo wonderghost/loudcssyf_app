@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div class="uk-container ">
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
@@ -21,7 +21,7 @@
 
     <ul class="uk-switcher uk-margin">
       <li>
-        <template v-if="theUser == 'coursier'">
+        <template v-if="typeUser == 'coursier'">
           <form @submit.prevent="sendRecouvrement()" class="uk-width-1-2@m">
           <h3>Enregistrer un recouvrement</h3>
           <div class="uk-margin-small">
@@ -169,7 +169,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
     },
     methods : {
       getData : async function () {
-        if(this.theUser == 'coursier') {
+        if(this.typeUser == 'coursier') {
           let response = await axios.get('/user/all-vendeurs')
           this.vendeurs = response.data
 
@@ -247,6 +247,9 @@ import 'vue-loading-overlay/dist/vue-loading.css';
       }
     },
     computed : {
+      typeUser() {
+        return this.$store.state.typeUser
+      },
       myToken() {
         return this.$store.state.myToken
       },

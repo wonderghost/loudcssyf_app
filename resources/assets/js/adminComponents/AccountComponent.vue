@@ -1,9 +1,13 @@
 <template>
-  <div class="">
+  <div class="uk-container uk-container-large">
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+
+    <h3>Compte Credit</h3>
+    <hr class="uk-divider-small">
+    
     <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
 		    <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Comptes</a></li>
 		    <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Soldes Vendeurs</a></li>
@@ -21,7 +25,7 @@
   						</div>
           </template>
           </div>
-          <template  v-if="theUser == 'admin'" id="">
+          <template  v-if="typeUser == 'admin'" id="">
             <div class="">
               <h4>Crediter les comptes</h4>
               <template v-if="errors.length" v-for="error in errors">
@@ -112,7 +116,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           getSolde : async function () {
             try {
               this.soldes.total = 0
-              if(this.theUser == 'admin' || this.theUser == 'commercial') {
+              if(this.typeUser == 'admin' || this.typeUser == 'commercial') {
                 var response = await axios.get('/admin/get-global-solde')
               }
               else {
@@ -136,7 +140,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           ,
           getsoldeVendeurs : async function () {
             try {
-              if(this.theUser == 'admin' || this.theUser == 'commercial') {
+              if(this.typeUser == 'admin' || this.typeUser == 'commercial') {
                 var response = await axios.get('/admin/get-soldes')
               }
               else {

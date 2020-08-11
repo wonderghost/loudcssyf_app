@@ -1,9 +1,15 @@
 <template>
-<div class="">
+<div class="uk-container uk-container-large">
   <loading :active.sync="isLoading"
       :can-cancel="false"
       :is-full-page="fullPage"
       loader="dots"></loading>
+
+  <h3 class="uk-margin-top">Tous les Utilisateurs</h3>
+  <hr class="uk-divider-small">
+  
+  <filter-user-component></filter-user-component>
+  
   <table  class="uk-table uk-table-divider uk-table-striped uk-table-small uk-table-hover uk-table-responsive">
     <thead>
       <tr>
@@ -121,9 +127,10 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             admin_password : userPassword,
             user : userId
           }).then(function (response) {
-            UIkit.modal.alert("Mot de passe reinitialise!").then(function () {
-              location.reload()
-            })
+
+              alert("Success !")
+              Object.assign(this.$data,this.$options.data())
+              this.listUser()
           }).catch(function (error) {
             UIkit.modal($("#reset-modal")).show()
             UIkit.notification({

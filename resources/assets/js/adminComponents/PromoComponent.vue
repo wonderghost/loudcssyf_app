@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="uk-container uk-container-large">
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
@@ -107,14 +107,15 @@
             <!-- // -->
         </template>
 
-        <template v-if="theUser == 'admin' || theUser == 'commercial'">
+        <template v-if="typeUser == 'admin' || typeUser == 'commercial'">
             <!-- MODAL PROMO -->
-            <div id="modal-promo" class="uk-modal-container" uk-modal>
-                <div class="uk-modal-dialog  uk-margin-auto-vertical">
-                    <div class="uk-modal-header">
-                        <h3 class="uk-modal-title">Parametre Promo</h3>
+            <div id="" class="">
+                <div class="">
+                    <div class="">
+                        <h3 class="">Parametre Promo</h3>
+                        <hr class="uk-divider-small">
                     </div>
-                    <div class="uk-modal-body">
+                    <div class="">
                         <ul class="uk-subnav uk-subnav-pill" uk-switcher>
                             <li><a href="#" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small">Promo en cours</a></li>
                             <li><a href="#" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small">Toutes les promos</a></li>
@@ -434,16 +435,13 @@ export default {
         },
         addPromo : async function() {
             this.isLoading = true
-            UIkit.modal($("#modal-promo")).hide()
             try {
                 this.formData._token = this.myToken
                 if(this.formState == 'add') {
                     var response = await axios.post('/admin/promo/add',this.formData)
                     if(response.data == 'done') {
-                    UIkit.modal.alert("<div class='uk-alert-success uk-border-rounded' uk-alert>Promo ajoute avec success !</div>")
-                        .then(function () {
-                            location.reload()
-                        })
+                        alert("Success!")
+                        Object.assign(this.$data,this.$options.data())
                     }
                 } else if(this.formState == 'edit') {
                     var response = await axios.post('/admin/promo/edit',this.formData)
@@ -456,7 +454,6 @@ export default {
                 }
             } catch(error) {
                 this.isLoading = false
-                UIkit.modal($("#modal-promo")).show()
                 if(error.response.data.errors) {
                     let errorTab = error.response.data.errors
                     for (var prop in errorTab) {
@@ -531,6 +528,9 @@ export default {
         }
     },
     computed : {
+        typeUser() {
+            return this.$store.state.typeUser
+        },
         myToken() {
             return this.$store.state.myToken
         }

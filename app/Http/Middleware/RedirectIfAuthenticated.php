@@ -21,7 +21,7 @@ class RedirectIfAuthenticated
         // dd($user);
         if($user){
             if($user->type == 'admin') {
-                return redirect('/admin');
+                return redirect('/app');
             }
             else if($user->type == 'pdc') {
                 return redirect('/user/pdc');

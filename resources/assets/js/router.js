@@ -13,12 +13,90 @@ import PdrafTransaction from './pdrafComponents/PdrafTransaction.vue'
 import RetourAfrocash from './pdrafComponents/RetourAfrocash.vue'
 import ReaboAfrocash from './pdrafComponents/ReaboAfrocash.vue'
 import AllVenteReabo from './pdrafComponents/AllVenteReaboAfrocash.vue'
+// 
+
+// ADMIN ROUTER
+import addUser from './adminComponents/AddUserComponent.vue'
+import listUser from './adminComponents/UserComponent.vue'
+import dashboard from './adminComponents/DashboardComponent.vue'
+import creationPdraf from './adminComponents/CreationPdraf.vue'
+import performance from './adminComponents/PerformObjectifComponent.vue'
+import objectifs from './adminComponents/VisualObjectifComponent.vue'
+import newObjectif from './adminComponents/ObjectifComponent.vue'
+import allObjectif from './adminComponents/AllObjectifComponents.vue'
+import promo from './adminComponents/PromoComponent.vue'
+import account from './adminComponents/AccountComponent.vue'
+import afrocashOperationAdmin from './adminComponents/AfrocashCentral.vue'
+import transactionAfrocash from './userComponents/TransactionAfrocashComponent.vue'
+import recouvrement from './userComponents/RecouvrementComponent.vue'
 
 Vue.use(VueRouter);
 
 const router = new VueRouter({
     mode : 'hash',
     routes:[
+        // {
+        //     path : '/',
+        //     redirect : '/admin/dashboard'
+        // },
+        // GESTION DES UTILISATEURS
+        {
+            path : '/user/add',
+            component : addUser
+        },
+        {
+            path : '/user/list',
+            component : listUser
+        },
+        {
+            path : '/pdraf/list',
+            component : creationPdraf
+
+        },
+        // DASHBOARD
+        {
+            path : '/admin/dashboard',
+            component : dashboard
+        },
+        {
+            path : '/admin/performances',
+            component : performance
+        },
+        {
+            path : '/admin/objectifs/visu',
+            component : objectifs
+        },
+        {
+            path : '/admin/objectifs/new',
+            component : newObjectif
+        },
+        {
+            path : "/admin/objectifs/all",
+            component : allObjectif
+        },
+        // PROMO 
+        {
+            path : '/admin/promo',
+            component : promo
+        },
+        //compte credit
+        {
+            path : '/account',
+            component : account
+        },
+        //AFROCASH ADMIN
+        {
+            path : '/afrocash/operation',
+            component : afrocashOperationAdmin
+        },
+        {
+            path : '/afrocash/all-transaction',
+            component : transactionAfrocash
+        },
+        {
+            path : '/afrocash/recouvrement',
+            component : recouvrement
+        },
         {
             path:"/user/pdc/",
             redirect : '/operation'

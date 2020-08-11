@@ -36,21 +36,22 @@
     <input type="hidden" id="username" value="{{Auth::user()->username}}">
 
     <div id="app">
-      <reabo-afrocash-list></reabo-afrocash-list>
       <set-rapport-parametre></set-rapport-parametre>
       <serial-search></serial-search>
+      <pay-comission-component></pay-comission-component>
       <deblocage-cga></deblocage-cga>
-      <feedback></feedback>
+      <!-- <feedback></feedback> -->
       <home-component></home-component>
       <tools the-user="{{Auth::user()->type}}"></tools>
-      <pay-comission-component></pay-comission-component>
-      <promo the-user="{{Auth::user()->type}}"></promo>
-      <div class="uk-margin-bottom">
+
+      <router-view></router-view>
+      <!-- <promo the-user="{{Auth::user()->type}}"></promo> -->
+      <!-- <div class="uk-margin-bottom">
         @yield('content')
-      </div>
-      @if(Auth::user()->type == 'v_da' || Auth::user()->type == 'v_standart' || Auth::user()->type == 'admin' || Auth::user()->type == 'commercial')
-      <alert-abonnement></alert-abonnement>
-      @endif
+      </div> -->
+      <!-- @if(Auth::user()->type == 'v_da' || Auth::user()->type == 'v_standart' || Auth::user()->type == 'admin' || Auth::user()->type == 'commercial') -->
+      <!-- <alert-abonnement></alert-abonnement> -->
+      <!-- @endif -->
       <!-- FOOTER -->
       <footer>
         <div class="uk-container">
@@ -70,6 +71,5 @@
     <script type="application/javascript" src="{{mix('js/app.js')}}?<?php echo filemtime('js/app.js') ?>" ></script>
     <script type="application/javascript" src="{{ mix('js/store.js') }}" ></script>
     <!-- <script type="application/javascript" src="{{ mix('js/echo.js') }}" ></script> -->
-    @yield('script')
   </body>
 </html>

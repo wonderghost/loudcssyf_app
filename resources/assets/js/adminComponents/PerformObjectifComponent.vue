@@ -1,9 +1,12 @@
 <template>
-    <div>
+    <div class="uk-container uk-container-large">
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+
+    <h3 class="uk-margin-top">Performances Vente</h3>
+    <hr class="uk-divider-small">
 
         <form @submit.prevent="makeFilter()" id="form-filter" class="uk-grid-small" uk-grid>
             <div class="uk-width-1-1@m uk-grid-small" uk-grid>

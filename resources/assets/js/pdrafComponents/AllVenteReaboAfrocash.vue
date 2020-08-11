@@ -83,7 +83,7 @@
                         <th>Duree</th>
                         <th>Option</th>
                         <th>Montant Ttc</th>
-                        <template v-if="typeUser != 'admin' || typeUser != 'gcga'">
+                        <template v-if="typeUser != 'admin' && typeUser != 'gcga'">
                             <th>Comission</th>
                             <th>Telephone Client</th>
                         </template>

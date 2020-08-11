@@ -16,7 +16,7 @@ class isAdmin
     {
         $user = $request->user();
         if(($user && $user->type !== 'admin') && ($user && $user->type !== 'commercial')){
-            return redirect('/user');
+            return redirect('/');
         }
         return $next($request);
     }
