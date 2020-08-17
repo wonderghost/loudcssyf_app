@@ -40,12 +40,14 @@
       <serial-search></serial-search>
       <pay-comission-component></pay-comission-component>
       <deblocage-cga></deblocage-cga>
-      <!-- <feedback></feedback> -->
+      <feedback></feedback>
       <home-component></home-component>
       <tools the-user="{{Auth::user()->type}}"></tools>
+      @if(Auth::user()->type == 'v_da' || Auth::user()->type == 'v_standart')
+      <promo the-user="{{Auth::user()->type}}"></promo>
+      @endif
 
       <router-view></router-view>
-      <!-- <promo the-user="{{Auth::user()->type}}"></promo> -->
       <!-- <div class="uk-margin-bottom">
         @yield('content')
       </div> -->
@@ -54,7 +56,7 @@
       <!-- @endif -->
       <!-- FOOTER -->
       <footer>
-        <div class="uk-container">
+        <div class="uk-container uk-margin-top">
           <p class="text-right">
             &copy; COPYRIGHT|LOUDCSSYF-SARL|{{date('Y')}}|LAYEDIST v1.8.0
           </p>

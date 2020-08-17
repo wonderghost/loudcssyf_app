@@ -18,7 +18,7 @@
           <label for=""> <span uk-icon="icon : calendar"></span> Au</label>
           <input type="date" class="uk-input uk-border-rounded" v-model="filterData.au">
         </div>
-        <div v-if="!theUser" class="uk-width-1-4@m">
+        <div v-if="typeUser == 'admin'" class="uk-width-1-4@m">
           <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
           <select class="uk-select uk-border-rounded" v-model="filterData.vendeurs">
             <option value="">-- Selectionnez le vendeur --</option>
@@ -27,7 +27,7 @@
         </div>
         <div v-else="" class="uk-width-1-4@m">
           <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
-          <span class="uk-input uk-border-rounded">{{theUser}}</span>
+          <span class="uk-input uk-border-rounded">{{userLocalisation}}</span>
         </div>
       </form>
     </div>
@@ -67,6 +67,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       Loading
     },
     created() {
+      // this.theUser = this.userLocalisation
       this.isLoading = true
     },
     mounted() {
@@ -123,16 +124,19 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       }
     },
     computed : {
+      userLocalisation() {
+        return this.$store.state.userLocalisation
+      },
       typeUser () {
         return this.$store.state.typeUser
       },
       transactionsList() {
         return this.transactions.filter((t) =>  {
-          if(!this.theUser) {
+          if(this.typeUser == 'admin') {
             return (t.expediteur.match(this.filterData.vendeurs) || t.destinataire.match(this.filterData.vendeurs))
           }
           else {
-            return (t.expediteur.match(this.theUser) || t.destinataire.match(this.theUser))
+            return (t.expediteur.match(this.userLocalisation) || t.destinataire.match(this.userLocalisation))
           }
         })
       }

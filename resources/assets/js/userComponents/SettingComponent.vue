@@ -1,9 +1,13 @@
 <template>
-   <div>
+   <div class="uk-container uk-container-large">
+
        <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+
+        <h3>Profile</h3>
+        <hr class="uk-divider-small">
 
        <ul uk-tab>
 		    <li><a href="#">Mes informations</a></li>
@@ -132,10 +136,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                     this.formPasswordData._token = this.myToken
                     let response = await axios.post('/user/change-password',this.formPasswordData)
                     if(response.data == 'done') {
-                        UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Changement effectue !</div>")
-                            .then(function () {
-                                location.reload()
-                            })
+                        alert("Success !")
+                        location.reload()
                     }
                 } catch(error) {
                     this.isLoading = false

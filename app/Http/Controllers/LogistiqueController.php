@@ -803,7 +803,7 @@ class LogistiqueController extends Controller
 // GET INFOS COMMANDES
   public function getInfosCommande($slug , CommandMaterial $c ,Produits $p) {
     try {
-      $commande = $c->find($slug);
+      $commande = $c->find(Crypt::decryptString($slug));
       $rv = [];
       $terminal = 0;
       $parabole = 0;

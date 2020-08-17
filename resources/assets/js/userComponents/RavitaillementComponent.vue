@@ -1,9 +1,11 @@
 <template>
-  <div class="">
+  <div class="uk-container uk-container-large">
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+        <h3><router-link to="/command/list"><button class="uk-button uk-button-default uk-button-small uk-border-rounded" uk-tooltip="Retour"><span uk-icon="arrow-left"></span></button></router-link> Ravitailler un vendeur</h3>
+        <hr class="uk-divider-small">
         <!-- Erreor block -->
           <template v-if="errors.length" v-for="error in errors">
           <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
@@ -83,7 +85,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             isLoading : false,
             fullPage : true,
             commande : {
-              id : document.querySelector("input[id=id_commande]").value,
+              id : this.$route.params.id,
               restant_ravit : ""
             },
             depots : [],
@@ -102,6 +104,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         methods : {
           getInfosCommande : async function () {
             try {
+              this.isLoading = true
               let response = await axios.get("/logistique/ravitaillement/"+this.commande.id+"/infos")
               this.commande = response.data
               this.formData.compense = this.commande.parabole_du
@@ -115,7 +118,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             }
           },
           sendRavitaillement : async function () {
-            // this.isLoading = true
+            this.isLoading = true
             try {
               let response = await axios.post("/user/ravitailler/"+this.commande.id,this.formData)
               if(response.data == 'done') {

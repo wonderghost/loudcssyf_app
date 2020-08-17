@@ -31,7 +31,7 @@
                 </ul>
             </div>            
 
-            <a class="uk-button uk-button-small uk-border-rounded"><span uk-icon="icon : users"></span> Ventes</a>
+            <a class="uk-button uk-button-small uk-border-rounded"><span uk-icon="icon : cart"></span> Ventes</a>
             <div class="uk-box-shadow-small uk-border-rounded" uk-dropdown>
                 <ul class="uk-nav uk-dropdown-nav">
                     <li class="">

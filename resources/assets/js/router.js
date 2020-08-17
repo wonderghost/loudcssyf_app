@@ -29,16 +29,37 @@ import account from './adminComponents/AccountComponent.vue'
 import afrocashOperationAdmin from './adminComponents/AfrocashCentral.vue'
 import transactionAfrocash from './userComponents/TransactionAfrocashComponent.vue'
 import recouvrement from './userComponents/RecouvrementComponent.vue'
+import entrepot from './adminComponents/EntrepotComponent.vue'
+import allMaterial from './userComponents/InventoryDepotComponent.vue'
+import inventaireReseaux from './userComponents/InventoryComponent.vue'
+import commande from './adminComponents/CommandComponent.vue'
+import addRapport from './adminComponents/AddRapportComponent.vue'
+import listRapport from './userComponents/RapportComponent.vue'
+import formule from './adminComponents/FormuleComponent.vue'
+
+// VENDEURS
+import objectifUser from './userComponents/ObjectifUserComponent.vue'
+import addContact from './userComponents/AddContactComponent.vue'
+import listContact from './userComponents/ContactComponent.vue'
+import afrocashOperationUser from './userComponents/AfrocashComponent.vue'
+import newCommand from './userComponents/NewCommandComponent.vue'
+import profile from './userComponents/SettingComponent.vue'
+// 
+
+// LOGISTIQUE
+import ravitaillerDepot from './adminComponents/RavitaillementDepotComponent.vue'
+import ravitaillerVendeur from './userComponents/RavitaillementComponent.vue'
+
 
 Vue.use(VueRouter);
 
 const router = new VueRouter({
     mode : 'hash',
     routes:[
-        // {
-        //     path : '/',
-        //     redirect : '/admin/dashboard'
-        // },
+        {
+            path : '*',
+            redirect : '/dashboard'
+        },
         // GESTION DES UTILISATEURS
         {
             path : '/user/add',
@@ -55,28 +76,28 @@ const router = new VueRouter({
         },
         // DASHBOARD
         {
-            path : '/admin/dashboard',
+            path : '/dashboard',
             component : dashboard
         },
         {
-            path : '/admin/performances',
+            path : '/performances',
             component : performance
         },
         {
-            path : '/admin/objectifs/visu',
+            path : '/objectifs/visu',
             component : objectifs
         },
         {
-            path : '/admin/objectifs/new',
+            path : '/objectifs/new',
             component : newObjectif
         },
         {
-            path : "/admin/objectifs/all",
+            path : "/objectifs/all",
             component : allObjectif
         },
         // PROMO 
         {
-            path : '/admin/promo',
+            path : '/promo',
             component : promo
         },
         //compte credit
@@ -96,6 +117,37 @@ const router = new VueRouter({
         {
             path : '/afrocash/recouvrement',
             component : recouvrement
+        },
+        {
+            path : "/material/entrepot",
+            component : entrepot
+        },
+        {
+            path : '/material/all-material',
+            component : allMaterial
+        },
+        {
+            path : '/inventory',
+            component : inventaireReseaux
+        },
+        //COMMANDES
+        {
+            path : '/commandes',
+            component : commande
+        },
+        // RAPPORT DE VENTE
+        {
+            path : '/rapport/add',
+            component : addRapport            
+        },
+        {
+            path : '/rapport/list',
+            component : listRapport
+        },
+        // USER DASHBOARD 
+        {
+            path : '/objectifs-user',
+            component : objectifUser
         },
         {
             path:"/user/pdc/",
@@ -154,6 +206,49 @@ const router = new VueRouter({
         {
             path : '/all-ventes-pdraf',
             component : AllVenteReabo
+        },
+        // REPERTOIRE DE CONTACT
+        {
+            path : '/client/add',
+            component : addContact
+        },
+        {
+            path : '/client/list',
+            component : listContact
+        },
+        {
+            path : '/afrocash/user-operation',
+            component : afrocashOperationUser
+        },
+        {
+            path : '/afrocash/transactions',
+            component : transactionAfrocash
+        },
+        // NEW COMMANDE 
+        {
+            path : '/command/new',
+            component : newCommand
+        },
+        {
+            path : '/command/list',
+            component : commande
+        },
+        // PARAMETERS
+        {
+            path : '/setting/profile',
+            component : profile
+        },
+        {
+            path : '/setting/formule',
+            component : formule
+        },
+        {
+            path : '/depot/ravitailler',
+            component : ravitaillerDepot
+        },
+        {
+            path : '/ravitailler/vendeur/:id',
+            component : ravitaillerVendeur
         }
     ]
 

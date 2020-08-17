@@ -335,12 +335,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             }
           },
           livraisonFilter () {
-            if(!this.theUser) {
+            if(this.typeUser == 'admin' || this.typeUser == 'logistique' || this.typeUser == 'commercial') {
               return this.livraisonMaterial
             }
             else {
               return this.livraisonMaterial.filter( (liv) => {
-                return liv.vendeur.match(this.theUser)
+                return liv.vendeur.match(this.userLocalisation)
               })
             }
           }
@@ -353,6 +353,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           },
           myToken () {
             return this.$store.state.myToken
+          },
+          userLocalisation() {
+            return this.$store.state.userLocalisation
           }
         }
     }

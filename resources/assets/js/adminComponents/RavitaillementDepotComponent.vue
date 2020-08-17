@@ -1,9 +1,12 @@
 <template>
-  <div class="">
+  <div class="uk-container uk-container-large">
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+
+        <h3>Ravitaillement Depot</h3>
+        <hr class="uk-divider-small">
 
         <!-- Erreor block -->
           <template v-if="errors.length" v-for="error in errors">
@@ -92,7 +95,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
     },
     methods : {
       makeSerial : function (event) {
-        // console.log(event.target.value)
         var terminal
         this.materiels.forEach( (value) => {
           if(value.with_serial == 1) {
@@ -123,10 +125,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           this.formData._token = this.myToken
           let response = await axios.post('/user/ravitailler-depot',this.formData)
           if(response.data == 'done') {
-            UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Ravitaillement effectue!</div>")
-              .then(function () {
-                location.reload()
-              })
+            alert("Success !")
+            Object.assign(this.$data,this.$options.data())
           }
           this.isLoading = false
         } catch (error) {

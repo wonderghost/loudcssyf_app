@@ -15,6 +15,11 @@ class PayCommission extends Model
         ->orderBy('date_rapport','asc');
     }
 
+    public function reaboAfrocash() {
+      return $this->hasMany('App\ReaboAfrocash','pay_comission_id','id')
+        ->orderBy('created_at','asc');
+    }
+
     
 
     public function rapportsForCalculComission() {

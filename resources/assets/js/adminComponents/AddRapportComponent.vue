@@ -1,9 +1,12 @@
 <template>
-  <div class="">
+  <div class="uk-container uk-container-large">
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+
+        <h3>Nouveau Rapport</h3>
+        <hr class="uk-divider-small">
 
         <template v-if="typeUser == 'admin' || typeUser == 'controleur'">
           <template v-if="percentComExist">

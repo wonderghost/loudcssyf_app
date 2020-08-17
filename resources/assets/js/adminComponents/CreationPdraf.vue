@@ -89,7 +89,7 @@
                     <td v-if="l.confirmed_at && !l.remove_at"><span class="uk-alert-success">confirmer</span></td>
                     <td v-if="!l.confirmed_at && l.remove_at"><span class="uk-alert-danger">annuler</span></td>
                     <td>
-                        <template v-if="!l.confirmed_at && !l.remove_at">
+                        <template v-if="(!l.confirmed_at && !l.remove_at) && typeUser == 'admin'">
                             <button @click="actifDemand = l" uk-toggle="target : #modal-confirmation-create-pdraf" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-button-primary">confirm</button>
                             <button class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-button-danger">annuler</button>
                         </template>
@@ -176,6 +176,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         computed : {
             myToken() {
                 return this.$store.state.myToken
+            },
+            typeUser() {
+                return this.$store.state.typeUser
             }
         }       
     }

@@ -1,13 +1,16 @@
 <template>
-  <div class="">
+  <div class="uk-container uk-container-large">
     <loading :active.sync="isLoading"
-        :can-cancel="true"
         :is-full-page="fullPage"
         loader="dots"></loading>
+
+        <h3>Inventaire Reseaux</h3>
+        <hr class="uk-divider-small">
+        
     <div class="uk-child-width-1-6@m uk-grid-small" uk-grid>
       <template>
         <!-- INVENTAIRE DES MATERIELS -->
-        <div v-for="mat in materials" class="">
+        <div v-for="(mat,index) in materials" class="" :key="index">
           <div class="uk-card uk-border-rounded uk-box-shadow-hover-small uk-background-muted uk-dark uk-card-body uk-padding-small">
             <h3 class="uk-card-title">{{ mat.article }}</h3>
             <p>
@@ -199,9 +202,6 @@ import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 
     export default {
-      created () {
-        this.isLoading = true
-      },
       components : {
         Loading
       },
@@ -296,6 +296,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           },
           getSerialNumberList : async function () { // listing des numeros de series
             try {
+              this.isLoading = true
               if(this.typeUser == 'admin' || this.typeUser == 'commercial') {
                 var response = await axios.get("/admin/inventory/get-serial-number-list")
               }else {
@@ -325,6 +326,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           },
           getMaterials : async function () { //recuperation de l'inventaire material
             try {
+              this.isLoading = true
               if(this.typeUser == 'admin' || this.typeUser == 'commercial') {
                 var response = await axios.get("/admin/inventory/all-material")
               }else if(this.typeUser == 'logistique') {
@@ -334,24 +336,29 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               }
               this.materials = response.data
               this.listUserForFilter()
+              this.isLoading = false
             } catch (e) {
                 alert(e)
             }
           },
           listUserForFilter : async function () { //recuperation de la liste des utilisateurs pour le filtre
             try {
+              this.isLoading = true
               var response = await axios.get("/admin/all-vendeurs")
               this.users = response.data
+              this.isLoading = false
             } catch (e) {
                 alert(e)
             }
           },
           getCreditForVendeurs : async function () { // inventaire des soldes du vendeur
             try {
+              this.isLoading = true
                if(this.typeUser == 'v_da' || this.typeUser == 'v_standart') {
                 var response = await axios.get("/user/inventory/all-credit-vendeurs")
+                this.credits = response.data
+                this.isLoading = false
               }
-              this.credits = response.data
             } catch (e) {
                 alert(e)
             }

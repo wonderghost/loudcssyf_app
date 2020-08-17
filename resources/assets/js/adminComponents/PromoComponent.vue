@@ -137,7 +137,7 @@
                                         <h4 v-if="formState == 'add'">Nouvel Promo</h4>
                                         <h4 v-else>Editer</h4>
                                         <hr class="uk-divider-small">
-                                        <form @submit.prevent="addPromo()" class="uk-grid-small" uk-grid>
+                                        <form v-if="typeUser == 'admin'" @submit.prevent="addPromo()" class="uk-grid-small" uk-grid>
                                             <div class="uk-width-1-2@m">
                                                 <label for=""><span uk-icon="icon : calendar"></span> Debut de la promo</label>
                                                 <input type="date" class="uk-input uk-border-rounded" v-model="formData.debut">
@@ -188,7 +188,7 @@
                                                 <!-- <label for="">Description :</label> -->
                                                 <span class="">{{activePromo.description}} </span>
                                             </div>
-                                            <div class="uk-width-1-1@m">
+                                            <div v-if="typeUser == 'admin'" class="uk-width-1-1@m">
                                                 <button @click="editPromo()" type="button" class="uk-button uk-button-small uk-button-default uk-border-rounded"><span uk-icon="icon : pencil"></span> Edit</button>
                                                 <button @click="abortPromo()" type="button" class="uk-button uk-button-small uk-button-danger uk-border-rounded"><span uk-icon="icon : ban"></span> Interrompre</button>
                                             </div>

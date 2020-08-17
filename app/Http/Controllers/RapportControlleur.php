@@ -114,7 +114,7 @@ public function payCommission(Request $request , PayCommission $pay) {
           $pay->montant+= $value->commission;
         }
         if($pay->montant < 100000) {
-          // si le montant est valide !
+          // si le montant n'est pas valide !
           throw new AppException("Vous devez avoir au moins 100,000 GNF !");
         }
         $tmp = $pay->id;
@@ -185,13 +185,17 @@ public function PayCommissionListForVendeurs(Request $request) {
       
       foreach ($result as $key => $value) {
         $demand_at = new Carbon($value->created_at);
+        $du = $value->reaboAfrocash()->get()->first() ? new Carbon($value->reaboAfrocash()->get()->first()->created_at) : null;
+        $au = $value->reaboAfrocash()->get()->last() ? new Carbon($value->reaboAfrocash()->get()->last()->created_at) : null;
+        $pdrafVendeur = $value->reaboAfrocash()->first() ? $value->reaboAfrocash()->first()->pdrafUser()->pdcUser()->usersPdc()->localisation : '';
+
         $all[$key] = [
           'id'  =>  $value->id,
-          'du'=> $value->rapports()->get()->first() ? $value->rapports()->get()->first()->date_rapport : '',
-          'au'=> $value->rapports()->get()->last() ? $value->rapports()->get()->last()->date_rapport : '',
+          'du'=> $value->rapports()->get()->first() ? $value->rapports()->get()->first()->date_rapport : $du->toDateString(),
+          'au'=> $value->rapports()->get()->last() ? $value->rapports()->get()->last()->date_rapport : $au->toDateString(),
           'total' =>  number_format($value->montant),
           'status'  =>  $value->status,
-          'vendeurs'  => $value->rapports()->first() ? $value->rapports()->first()->vendeurs()->localisation : '',
+          'vendeurs'  => $value->rapports()->first() ? $value->rapports()->first()->vendeurs()->localisation : $pdrafVendeur,
           'pay_at'  =>  $value->pay_at,
           'demand_at' =>  $demand_at->toDateTimeString()
         ];
@@ -270,10 +274,7 @@ public function validatePayComission(Request $request) {
       $rapport = $comission->rapportsForCalculComission()->get();
 
       $total = $rapport->sum('commission');
-
-      // return response()
-      //   ->json([$total,$comission->montant]);
-      // die();
+      
       $afrocash_account = Afrocash::where([
         'type'  =>  'courant',
         'vendeurs'  =>  $rapport->first()->vendeurs

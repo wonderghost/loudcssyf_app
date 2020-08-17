@@ -1,9 +1,12 @@
 <template>
-  <div class="">
+  <div class="uk-container uk-container-large">
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+
+        <h3>Operation</h3>
+        <hr class="uk-divider-small">
 
         <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
           <template v-if="typeUser == 'v_standart'">
@@ -158,7 +161,6 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         try {
             this.isLoading = true
             this.depotData._token = this.myToken
-            // let response = await axios.post('/user/afrocash/depot-pdc/',this.depotData)
 
             axios.post('/user/afrocash/depot-pdc',this.depotData)
             .then((response) => {
@@ -178,13 +180,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 } else {
                     this.errors.push(error.response.data)
                 }
-            });                        
-            // if(response && response.data) {
-            //   this.isLoading = false
-            //   alert("Success!")
-            //   Object.assign(this.$data,this.$options.data())
-            //   this.accountList()
-            // }
+            });
         } catch(error) {
             this.isLoading = false
             if(error.response.data.errors) {
@@ -214,10 +210,8 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         try {
           let response = await axios.post('/user/afrocash/transaction',this.AfrocashData)
           if(response.data == 'done') {
-            UIkit.modal.alert("<div class='uk-alert-success' uk-alert><span uk-icon='icon : check'></span> Transaction effectue avec success !</div>")
-              .then(function () {
-                location.reload()
-              })
+            alert("Success !")
+            Object.assign(this.$data,this.$options.data())
           }
         } catch (error) {
           this.isLoading = false
@@ -239,10 +233,8 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           let response = await axios.post('/user/afrocash/transaction',this.AfrocashCourant)
           if(response.data == 'done') {
             this.isLoading = false
-            UIkit.modal.alert("<div class='uk-alert-success uk-border-rounded' uk-alert><span uk-icon='icon : check'></span> Transaction effectue avec success!</div>")
-              .then(function () {
-                location.reload()
-              })
+            alert("Sucess!")
+            Object.assign(this.$data,this.$options.data())
           }
         }
         catch (error) {

@@ -21,6 +21,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/pdraf/get-list','PdrafController@getListCreationPdraf');
 	Route::post('/admin/pdraf/set-vendeur-for-reabo','PdrafController@setUserStandartForReabo');
 	Route::post('/admin/pdraf/confirm-reabo-afrocash','PdrafController@confirmReaboAfrocash');
+	Route::post('/admin/pdraf/remove-reabo-afrocash','PdrafController@removeReaboAfrocash');
 
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// traitement parametre rapport vente
@@ -174,6 +175,7 @@ Route::middleware(['auth','admin'])->group(function () {
 Auth::routes();
 
 Route::middleware(['auth','unblocked'])->group(function () {
+	Route::get('/user/get-all-pdraf','PdrafController@getAllPdraf');
 	// Reseaux pdc / pdraf
 	######################################  PDC #########################$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	Route::post('/user/afrocash/depot-pdc/','PdcController@depotDepot')->middleware('vendeur');
@@ -198,6 +200,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/pdraf/get-solde','PdrafController@getSolde')->middleware('pdraf');
 	Route::post('/user/pdraf/send-reabo-afrocash','PdrafController@sendReaboAfrocash')->middleware('pdraf');
 	Route::get('/user/pdraf/get-reabo-afrocash','PdrafController@getAllReaboAfrocash');
+	Route::post('/user/pdraf/pay-comission-request','PdrafController@sendPayComissionRequest')->middleware('pdraf');
 
 
 	
@@ -263,7 +266,10 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/change-password','Settings@changePasswordUser');
 	// Route::get('/user/profile/','')
 	// ==
-	Route::get('/user','UtilisateurSimple@dashboard');
+	// Route::get('/user','UtilisateurSimple@dashboard');
+	Route::get('/user',function () {
+		return view('layouts.template');
+	});
 	// LOGISTIQUE
 	// CONFIRMER UNE COMMANDE
 	Route::post('/user/confirm-command/{id}','LogistiqueController@confirmCommand')->middleware('logistique');

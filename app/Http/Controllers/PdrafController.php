@@ -17,6 +17,7 @@ use App\ReaboAfrocash;
 use App\ReaboAfrocashSetting;
 use App\OptionReaboAfrocash;
 use App\MakePdraf;
+use App\PayCommission;
 
 use Carbon\Carbon;
 
@@ -447,6 +448,8 @@ class PdrafController extends Controller
 
                 $created_at = new Carbon($value->created_at);
                 $confirm_at = $value->confirm_at ? new Carbon($value->confirm_at) : null;
+                $remove_at = $value->remove_at ? new Carbon($value->remove_at) : null;
+                $pay_at = $value->pay_at ? new Carbon($value->pay_at) : null;
 
                 $all[$key] = [
                     'id'    =>  $value->id,
@@ -462,13 +465,33 @@ class PdrafController extends Controller
                     'marge' =>  $marge,
                     'total' =>  $marge + $value->comission,
                     'created_at'    =>  $created_at->toDateTimeString(),
-                    'confirm_at'    => $confirm_at ? $confirm_at->toDateTimeString() : null
+                    'confirm_at'    => $confirm_at ? $confirm_at->toDateTimeString() : null,
+                    'remove_at' =>  $remove_at ? $remove_at->toDateTimeString() : null,
+                    'pay_at'    =>  $pay_at ? $pay_at->toDateTimeString() : null
                 ];
 
             }
 
             return response()
                 ->json($all);
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function getAllPdraf() {
+        try {
+            $pdraf_users = User::where('type','pdraf')->get();
+            $data = [];
+            foreach($pdraf_users as $key => $value) {
+                $data[$key] = [
+                    'user'  =>  $value
+                ];
+            }
+            return response()
+                ->json($data);
+
         } catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));
@@ -526,8 +549,156 @@ class PdrafController extends Controller
             ]);
 
             $reabo_afrocash = ReaboAfrocash::find($request->input('id'));
+            if(!is_null($reabo_afrocash->remove_at) && !is_null($reabo_afrocash->confirm_at)) {
+                throw new AppException("Confirmation impossible pour les reabonnements deja annule !");
+            }
+
             $reabo_afrocash->confirm_at = Carbon::now();
             $reabo_afrocash->save();
+            return response()
+                ->json('done');
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    // REMOVE REABO AFROCASH
+
+    public function removeReaboAfrocash(Request $request) {
+        try {
+            $validation = $request->validate([
+                'id'    =>  'required|exists:reabo_afrocash,id'
+            ]);
+
+            $reabo_afrocash = ReaboAfrocash::find($request->input('id'));
+            // verifier s'il n'a pas ete confirmer
+            if(!is_null($reabo_afrocash->confirm_at) && !is_null($reabo_afrocash->remove_at)) {
+                throw new AppException("Annulation impossible !");
+            }
+            $reabo_afrocash->remove_at = Carbon::now();
+
+            // account pdraf
+            $receiver_user = $reabo_afrocash->pdrafUser();
+            $receiver_account = $receiver_user->afroCash()->first();
+
+            $reabo_afrocash_setting = ReaboAfrocashSetting::all()->first();
+
+            if(!$reabo_afrocash_setting) {
+                throw new AppException("Parametre Reabo non defini , contactez l'administrateur !");
+            }
+
+            $sender_user = User::where('username',$reabo_afrocash_setting->user_to_receive)->first();
+            $sender_account = $sender_user->afroCash()->first();
+
+            $receiver_account->solde += $reabo_afrocash->montant_ttc;
+            $sender_account->solde -= $reabo_afrocash->montant_ttc;
+
+            // enregistrement de la transaction
+
+            $trans = new TransactionAfrocash;
+            $trans->compte_debite = $sender_account->numero_compte;
+            $trans->compte_credite = $receiver_account->numero_compte;
+            $trans->montant = $reabo_afrocash->montant_ttc;
+            $trans->motif = "Annul_Reabo_Afrocash";
+
+
+            $sender_account->save();
+            $receiver_account->save();
+            $reabo_afrocash->save();
+            $trans->save();
+
+            return response()
+                ->json('done');
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    // DEMANDE DE PAIEMENT DE COMISSION POUR PDRAF
+
+    public function sendPayComissionRequest(Request $request) {
+        try {
+            $validation = $request->validate([
+                'montant'   =>  'required|numeric|min : 10000',
+                'password_confirmation'  => 'required|string',
+            ],[
+                'required'  =>  '`:attribute` requis !',
+                'min'   =>  'Le montant minimum requis est de : 100,000 GNF'
+            ]);
+                // verification de la validite du mot de passe
+            if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
+                throw new AppException("Mot de passe invalide !");
+            }
+
+            $reabo_afrocash = $request->user()->reaboAfrocash()
+                ->whereNull('remove_at')
+                ->whereNull('pay_at')
+                ->whereNotNull('confirm_at')
+                ->get();
+
+            if($reabo_afrocash->count() <= 0) {
+                throw new AppException("Vous n'avez pas de comission !");
+            }
+
+            $comission = 0;
+
+            foreach($reabo_afrocash as $value) {
+                $comission += $value->comission;
+                $value->pay_at = Carbon::now();
+            }
+
+            if($comission != $request->input('montant')) {
+                throw new AppException("Erreur ! Ressayez");
+            }
+
+            $receiver_account = $request->user()->afroCash()->first();
+
+            $sender_user = $request->user()->pdcUser()->usersPdc();
+            $sender_account = $sender_user->afroCash('semi_grossiste')->first();
+
+            $receiver_account->solde += $comission;
+            $sender_account->solde -= $comission;
+
+            $trans = new TransactionAfrocash;
+            $trans->compte_debite = $sender_account->numero_compte;
+            $trans->compte_credite = $receiver_account->numero_compte;
+            $trans->montant = $comission;
+            $trans->motif = "Paiement_Comission";
+            
+
+            
+
+            $sender_account->save();
+            $receiver_account->save();
+            $trans->save();
+
+            foreach($reabo_afrocash as $value) {
+                $value->save();
+            }
+
+            $n = $this->sendNotification(
+                "Paiement Comission" ,
+                "Reception de ".number_format($comission)." GNF de la part de ".$sender_user->localisation,
+                $request->user()->username
+                );
+            $n->save();
+
+            $n = $this->sendNotification(
+                "Paiement Comission" ,
+                "Envoi de ".number_format($comission)." GNF a :".$request->user()->localisation,
+                $sender_user->username
+                );
+            $n->save();
+
+            $n = $this->sendNotification(
+                "Paiement Comission" ,
+                "Envoi de : ".number_format($comission)." GNF de la part de ".$sender_user->localisation.", a : ".$request->user()->localisation,
+                'admin'
+                );
+            $n->save();
+
             return response()
                 ->json('done');
         } catch(AppException $e) {

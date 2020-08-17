@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div class="uk-container uk-container-large">
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
@@ -57,14 +57,17 @@
               </thead>
               <tbody>
                 <tr v-for="command in commandList.slice(start,end)">
-                  <td v-for="(column , name) in command" v-if="name != 'link' && name != 'id' && name!='status'">{{column}}</td>
+                  <td v-for="(column , name) in command" v-if="name != 'link' && name != 'id' && name!='status' && name != 'id_command'">{{column}}</td>
 
                   <td class="uk-text-danger" v-if="command.status == 'unconfirmed'">{{command.status}}</td>
                   <td class="uk-text-success" v-if="command.status == 'confirmed'" >{{command.status}}</td>
                   <td class="uk-text-warning" v-if="command.status == 'aborted'" >{{command.status}}</td>
-                  <td> <a :href="command.link" v-if="typeUser == 'logistique' && command.status == 'unconfirmed'" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-text-capitalize">confirmer</a> </td>
+                  <!-- <td> <a :href="command.link" v-if="typeUser == 'logistique' && command.status == 'unconfirmed'" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-text-capitalize">confirmer</a> </td> -->
+                  <td>
+                    <router-link :to="'/ravitailler/vendeur/'+command.id_command" v-if="typeUser == 'logistique' && command.status == 'unconfirmed'"><span class="uk-button uk-border-rounded uk-button-small uk-text-small uk-text-capitalize uk-button-primary">Confirmer</span></router-link>
+                  </td>
                   <td v-if="command.status == 'unconfirmed'">
-                    <a @click="abortCommandMaterial(command.id)" v-if="typeUser == 'logistique'" class="uk-button-small uk-button uk-button-danger uk-border-rounded uk-text-capitalize">Annuler</a>
+                    <a @click="abortCommandMaterial(command.id)" v-if="typeUser == 'logistique'" class="uk-button-small uk-text-small uk-button uk-button-danger uk-border-rounded uk-text-capitalize">Annuler</a>
                   </td>
                 </tr>
               </tbody>
@@ -78,12 +81,12 @@
       </li>
       <li>
         <template id="">
-          <livraison :the-user="theUser"></livraison>
+          <livraison :the-user="userLocalisation"></livraison>
         </template>
       </li>
       <template id="" v-if="typeUser == 'admin' || typeUser == 'commercial' || typeUser == 'gcga' || typeUser == 'v_da' || typeUser == 'v_standart'">
         <li>
-          <credit-component :the-user="theUser"></credit-component>
+          <credit-component :the-user="userLocalisation"></credit-component>
         </li>
     </template>
     </ul>
@@ -186,13 +189,16 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           }
         },
         computed : {
+          userLocalisation() {
+            return this.$store.state.userLocalisation
+          },
           commandList () {
-            if(!this.theUser) {
+            if(this.typeUser != 'v_da' && this.typeUser != 'v_standart' && this.typeuser != 'pdc') {
               return this.commandMaterial
             }
             else {
               return this.commandMaterial.filter((command) => {
-                return command.vendeurs.match(this.theUser)
+                return command.vendeurs.match(this.userLocalisation)
               })
             }
           }

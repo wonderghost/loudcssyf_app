@@ -1,9 +1,12 @@
 <template>
-    <div>
+    <div class="uk-container uk-container-large">
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+
+        <h3>Nouveau Contact</h3>
+        <hr class="uk-divider-small">
         <!-- Error block -->
         <template v-if="errors.length" v-for="error in errors">
             <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert>

@@ -124,10 +124,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                     this.formData._token = this.myToken
                     let response = await axios.post('/admin/formule/add',this.formData)
                     if(response.data == 'done') {
-                        UIkit.modal.alert("<div class='uk-alert-success uk-border-rounded' uk-alert>Operation effectue avec success !</div>")
-                            .then(function() {
-                                location.reload()
-                            })
+                        alert("Success !")
+                        Object.assign(this.$data,this.$options.data())
+                        // UIkit.modal.alert("<div class='uk-alert-success uk-border-rounded' uk-alert>Operation effectue avec success !</div>")
+                        //     .then(function() {
+                        //         location.reload()
+                        //     })
                     }
                 } catch(error) {
                     this.isLoading = false

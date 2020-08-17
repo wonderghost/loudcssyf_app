@@ -1,9 +1,12 @@
 <template>
-    <div>
+    <div class="uk-container uk-container-large">
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+
+        <h3>Repertoire</h3>
+        <hr class="uk-divider-sma">
         
         <div class="uk-width-1-1@m uk-grid-small" uk-grid>
             <div class="uk-width-1-6@m"></div>

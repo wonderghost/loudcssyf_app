@@ -1,9 +1,13 @@
 <template>
-    <div>
+    <div class="uk-container uk-container-large">
          <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+
+        <h3>Entrepot</h3>
+        <hr class="uk-divider-sma">
+
         <template v-if="typeUser == 'admin'">
             <!-- Erreor block -->
             <template v-if="errors.length" v-for="error in errors">
@@ -12,6 +16,7 @@
                     <p>{{error}}</p>
                 </div>
             </template>
+            
             <ul class="uk-subnav uk-subnav-pill" uk-switcher>
                 <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Nouveau Material</a></li>
                 <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Nouvau Depot</a></li>

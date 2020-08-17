@@ -1,9 +1,12 @@
 <template>
-<div class="">
+<div class="uk-container uk-container-large">
   <loading :active.sync="isLoading"
       :can-cancel="false"
       :is-full-page="fullPage"
       loader="dots"></loading>
+
+      <h3>Nouvel Commande</h3>
+      <hr class="uk-divider-small">
 
       <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
         <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiel</a></li>
@@ -310,10 +313,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               if(response.data == 'done') {
                 
                 this.isLoading = false
-                UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Votre commande a ete envoye :-)</div>")
-                  .then(function () {
-                    location.reload()
-                  })
+                alert("Success !")
+                Object.assign(this.$data,this.$options.all())
               }
             } catch (error) {
               this.isLoading = false
@@ -334,10 +335,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               let response = await axios.post('/user/new-command/cga',this.formDataCga)
               if(response.data == 'done') {
                 this.isLoading = false
-                UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Votre commande a ete envoye :-)</div>")
-                  .then(function () {
-                    location.reload()
-                  })
+                alert("Success !")
+                Object.assign(this.$data,this.$options.all())
               }
             }
             catch (error) {
@@ -372,10 +371,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               })
               if(response.data == 'done') {
                 this.isLoading = false
-                UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Commande envoyee avec success :-)</div>")
-                  .then(function () {
-                    location.reload()
-                  })
+                alert("Success !")
+                Object.assign(this.$data,this.$options.all())
+                // UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Commande envoyee avec success :-)</div>")
+                //   .then(function () {
+                //     location.reload()
+                //   })
               }
             }
             catch (error) {

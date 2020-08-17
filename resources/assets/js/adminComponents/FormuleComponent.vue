@@ -1,9 +1,13 @@
 <template>
-    <div>
+    <div class="uk-container uk-container-large">
         <loading :active.sync="isLoading"
             :can-cancel="false"
             :is-full-page="fullPage"
             loader="dots"></loading>        
+
+            <h3>Formule</h3>
+            <hr class="uk-divider-small">
+            
         <ul class="uk-subnav uk-subnav-pill" uk-switcher>
             <li><a class="uk-button uk-button-primary uk-border-rounded uk-button-small" href="#">Nouvelle Formule</a></li>
             <li><a class="uk-button uk-button-primary uk-border-rounded uk-button-small" href="#">Toutes les formules</a></li>

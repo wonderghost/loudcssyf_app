@@ -7,7 +7,7 @@
 
        <div class="uk-container uk-container-large">
            <h3 class="uk-margin-top">Tous les Reabonnements <a @click="getAllData()" class="uk-button" uk-tooltip="Rafraichir la liste"><span uk-icon="refresh"></span></a></h3>
-            <hr class="uk-divider-small">
+           <hr class="uk-divider-small">
 
             <!-- MODAL CONFIRM PAIEMENT COMISSION -->
             <div id="modal-pay-comission" uk-modal="esc-close : false ; bg-close : false">
@@ -21,9 +21,17 @@
                             <p>{{err}}</p>
                         </div>
                         <p class="">
-                            La Comission allant du : <span v-if="pdcListFirst" class="uk-text-bold">{{pdcListFirst.created_at}}</span> , 
-                            au : <span v-if="pdcListLast" class="uk-text-bold">{{pdcListLast.created_at}}</span>, d'un montant de :
-                            <span class="uk-text-bold">{{totalCom.total | numFormat}} GNF</span> 
+                            La Comission allant du : 
+                            <span v-if="typeUser == 'pdc' && pdcListFirst" class="uk-text-bold">{{pdcListFirst.created_at}}</span>
+                            <span v-if="typeUser == 'pdraf' && pdrafFirst" class="uk-text-bold">{{pdrafFirst.created_at}}</span>
+                             , 
+                            au : 
+                            <span v-if="typeUser == 'pdc' && pdcListLast" class="uk-text-bold">{{pdcListLast.created_at}}</span>
+                            <span v-if="typeUser == 'pdraf' && pdrafLast" class="uk-text-bold">{{pdrafLast.created_at}}</span>
+                             ,
+                             d'un montant de :
+                            <span v-if="typeUser == 'pdc'" class="uk-text-bold">{{totalCom.total | numFormat}} GNF</span> 
+                            <span v-if="typeUser == 'pdraf'" class="uk-text-bold">{{totalComissionPdraf | numFormat}} GNF</span>
                         </p>
                         <form @submit.prevent="sendPayComissionRequest()">
                             <div class="uk-margin-small">
@@ -39,13 +47,23 @@
                 </div>
             </div>            
             <!-- // -->
-            <template v-if="typeUser == 'pdc'">
+            <!-- ADMIN -->
+            <template v-if="typeUser == 'admin' || typeUser == 'commercial'">
                 <div class="uk-grid-small" uk-grid>
-                    <div class="uk-width-1-4@m">
+                    <div class="uk-width-1-6@m">
                         <label for=""><span uk-icon="users"></span> Utilisateur</label>
                         <select v-model="filterPdraf" class="uk-select uk-border-rounded">
                             <option value="">Tous</option>
                             <option v-for="(p,index) in pdrafList" :key="index" :value="p.user.username">{{p.user.localisation}}</option>
+                        </select>
+                    </div>
+                    <div class="uk-width-1-6@m">
+                        <label for="">Etat</label>
+                        <select v-model="filterEtat" class="uk-select uk-border-rounded">
+                            <option value="">Tous</option>
+                            <option value="confirme">confirme</option>
+                            <option value="annule">annule</option>
+                            <option value="en_instance">en instance</option>
                         </select>
                     </div>
                     <div class="uk-width-1-6@m">
@@ -59,7 +77,40 @@
                     <div class="uk-width-1-6@m">
                         <label for=""><span uk-icon="credit-card"></span> Comission Total</label>
                         <span class="uk-input uk-border-rounded uk-text-center">{{ totalCom.total | numFormat }}</span>
-                        <span v-if="filterPdraf == ''">
+                    </div>
+                </div>
+            </template>
+            <!-- // -->
+            <template v-if="typeUser == 'pdc'">
+                <div class="uk-grid-small" uk-grid>
+                    <div class="uk-width-1-4@m">
+                        <label for=""><span uk-icon="users"></span> Utilisateur</label>
+                        <select v-model="filterPdraf" class="uk-select uk-border-rounded">
+                            <option value="">Tous</option>
+                            <option v-for="(p,index) in pdrafList" :key="index" :value="p.user.username">{{p.user.localisation}}</option>
+                        </select>
+                    </div>
+                    <div class="uk-width-1-6@m">
+                        <label for="">Etat</label>
+                        <select v-model="filterEtat" class="uk-select uk-border-rounded">
+                            <option value="">Tous</option>
+                            <option value="confirme">confirme</option>
+                            <option value="annule">annule</option>
+                            <option value="en_instance">en instance</option>
+                        </select>
+                    </div>
+                    <div class="uk-width-1-6@m">
+                        <label for="">Total Comission Pdraf</label>
+                        <span class="uk-input uk-border-rounded">{{totalCom.com | numFormat }}</span>
+                    </div>
+                    <div class="uk-width-1-6@m">
+                        <label for="">Total Marge</label>
+                        <span class="uk-input uk-border-rounded">{{totalCom.mar | numFormat }}</span>
+                    </div>
+                    <div class="uk-width-1-6@m">
+                        <label for=""><span uk-icon="credit-card"></span> Comission Total</label>
+                        <span class="uk-input uk-border-rounded uk-text-center">{{ totalCom.total | numFormat }}</span>
+                        <span v-if="filterPdraf == '' && filterEtat == 'confirme'">
                             <button uk-toggle="target : #modal-pay-comission " class="uk-button uk-text-capitalize uk-button-small uk-button-primary uk-border-rounded">se faire payer</button>
                         </span>
                     </div>
@@ -71,8 +122,19 @@
                         <label for="">Comission Total (GNF)</label>
                         <span class="uk-input uk-text-center uk-border-rounded">{{totalComissionPdraf | numFormat}}</span>
                     </div>
+                    <div class="uk-width-1-6@m">
+                        <label for="">Etat</label>
+                        <select v-model="filterEtat" class="uk-select uk-border-rounded">
+                            <option value="confirme">confirme</option>
+                            <option value="annule">annule</option>
+                        </select>
+                        <span v-if="filterEtat == 'confirme'">
+                            <button uk-toggle="target : #modal-pay-comission " class="uk-button uk-text-capitalize uk-button-small uk-button-primary uk-border-rounded">se faire payer</button>
+                        </span>
+                    </div>
                 </div>
             </template>
+            
             
             <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover uk-table-divider uk-table-responsive">
                 <thead>
@@ -83,23 +145,25 @@
                         <th>Duree</th>
                         <th>Option</th>
                         <th>Montant Ttc</th>
-                        <template v-if="typeUser != 'admin' && typeUser != 'gcga'">
+                        <template v-if="typeUser != 'admin' && typeUser != 'gcga' && typeUser != 'commercial'">
                             <th>Comission</th>
                             <th>Telephone Client</th>
                         </template>
                         <th>Pdraf</th>
-                        <template v-if="typeUser == 'pdc' || typeUser == 'admin' || typeUser == 'gcga'">
+                        <template v-if="typeUser == 'pdc' || typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'">
                             <th>Marge</th>
                             <th>Total</th>
                         </template>
-                        <template v-if="typeUser == 'admin' || typeUser == 'gcga'">
+                        <th>Etat</th>
+                        <th>Paiement</th>
+                        <template v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'">
                             <th>-</th>
                         </template>
                     </tr>
                 </thead>
                 <tbody>
-                    <template v-if="typeUser == 'admin' || typeUser == 'gcga'">
-                        <tr v-for="(r,index) in all" :key="index">
+                    <template v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'">
+                        <tr v-for="(r,index) in listForAllbyEtat" :key="index">
                             <td>{{r.created_at}}</td>
                             <td>{{r.materiel}}</td>
                             <td>{{r.formule}}</td>
@@ -110,15 +174,34 @@
                             <td>{{r.marge | numFormat}}</td>
                             <td>{{r.total | numFormat }}</td>
                             <td>
+                                <template v-if="r.confirm_at">
+                                    <span class="uk-alert-success">confirme</span>
+                                </template>
+                                <template v-else-if="r.remove_at">
+                                    <span class="uk-alert-danger">annule</span>
+                                </template>
+                                <template v-else>
+                                    <span class="uk-alert-primary">en instance</span>
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="r.pay_at">
+                                    <span class="uk-alert-success" uk-icon="check"></span>
+                                </template>
+                                <template v-else>
+                                    <span class="uk-alert-danger" uk-icon="close"></span>
+                                </template>
+                            </td>
+                            <td>
                                 <template v-if="!r.confirm_at && !r.remove_at">
                                     <button @click="confirmRequestForAdmin(r)" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-text-small uk-text-capitalize">confirmer</button>
-                                    <button class="uk-button uk-button-small uk-button-danger uk-border-rounded uk-text-small uk-text-capitalize">annuler</button>
+                                    <button @click="removeRequestForAdmin(r)" class="uk-button uk-button-small uk-button-danger uk-border-rounded uk-text-small uk-text-capitalize">annuler</button>
                                 </template>
                             </td>
                         </tr>
                     </template>
                     <template v-if="typeUser == 'pdc'">
-                        <tr v-for="(r,index) in pdcListReaboByPdraf" :key="index">
+                        <tr v-for="(r,index) in pdcListEtatReabo" :key="index">
                             <td>{{r.created_at}}</td>
                             <td>{{r.materiel}}</td>
                             <td>{{r.formule}}</td>
@@ -130,10 +213,29 @@
                             <td>{{r.pdraf.localisation}}</td>
                             <td>{{r.marge | numFormat}}</td>
                             <td>{{r.total | numFormat }}</td>
+                            <td>
+                                <template v-if="r.confirm_at">
+                                    <span class="uk-alert-success">confirme</span>
+                                </template>
+                                <template v-else-if="r.remove_at">
+                                    <span class="uk-alert-danger">annule</span>
+                                </template>
+                                <template v-else>
+                                    <span class="uk-alert-primary">en instance</span>
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="r.pay_at">
+                                    <span class="uk-alert-success" uk-icon="check"></span>
+                                </template>
+                                <template v-else>
+                                    <span class="uk-alert-danger" uk-icon="close"></span>
+                                </template>
+                            </td>
                         </tr>
                     </template>
                     <template v-if="typeUser == 'pdraf'">
-                        <tr v-for="(r,index) in pdrafListReabo" :key="index">
+                        <tr v-for="(r,index) in pdrafListEtatReabo" :key="index">
                             <td>{{r.created_at}}</td>
                             <td>{{r.materiel}}</td>
                             <td>{{r.formule}}</td>
@@ -143,6 +245,25 @@
                             <td>{{r.comission | numFormat}}</td>
                             <td>{{r.telephone_client}}</td>
                             <td>{{r.pdraf.localisation}}</td>
+                            <td>
+                                <template v-if="r.confirm_at">
+                                    <span class="uk-alert-success">confirme</span>
+                                </template>
+                                <template v-else-if="r.remove_at">
+                                    <span class="uk-alert-danger">annule</span>
+                                </template>
+                                <template v-else>
+                                    <span class="uk-alert-primary">en instance</span>
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="r.pay_at">
+                                    <span class="uk-alert-success" uk-icon="check"></span>
+                                </template>
+                                <template v-else>
+                                    <span class="uk-alert-danger" uk-icon="close"></span>
+                                </template>
+                            </td>
                         </tr>
                     </template>
                 </tbody>
@@ -171,10 +292,39 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 pdrafList : [],
                 filterPdraf : "",
                 password_confirmation : "",
-                errors : []
+                errors : [],
+                filterEtat : "confirme"
             }
         },
         methods : {
+            removeRequestForAdmin : async function(r) {
+                try {
+                    this.isLoading = true
+                    if(this.typeUser == 'admin') {
+                        var response = await axios.post('/admin/pdraf/remove-reabo-afrocash',{
+                            _token : this.myToken,
+                            id : r.id
+                        })
+                    }
+
+                    if(response && response.data == 'done') {
+                        this.isLoading = false
+                        alert("Success !")
+                        this.getAllData()
+                    }
+
+                } catch(error) {
+                    this.errors = []
+                    if(error.response.data.errors) {
+                        let errorTab = error.response.data.errors
+                        for (var prop in errorTab) {
+                            this.errors.push(errorTab[prop][0])
+                        }
+                    } else {
+                        this.errors.push(error.response.data)
+                    }
+                }
+            },
             confirmRequestForAdmin : async function (r) {
                 try {
                     if(this.typeUser == 'admin') {
@@ -196,24 +346,53 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                         this.getAllData()
                     }
                 } catch(error) {
-                    alert(error) 
-                    console.log(error)
+                    this.errors = []
+                    if(error.response.data.errors) {
+                        let errorTab = error.response.data.errors
+                        for (var prop in errorTab) {
+                            this.errors.push(errorTab[prop][0])
+                        }
+                    } else {
+                        this.errors.push(error.response.data)
+                    }
                 }
             },
             sendPayComissionRequest : async function () {
                 try {
-                    let response = await axios.post('/user/pdc/pay-comission-request',{
-                        _token : this.myToken,
-                        password_confirmation : this.password_confirmation,
-                        montant : Math.round(this.totalCom.total),
-                        debut : this.pdcListFirst.created_at,
-                        fin : this.pdcListLast.created_at,
-                    })
 
-                    if(response) {
-                        console.log(response.data)
+                    UIkit.modal($("#modal-pay-comission")).hide()
+                    this.isLoading = true
+
+                    var url = ""
+
+                    if(this.typeUser == 'pdc') {
+                        url = '/user/pdc/pay-comission-request'
+                        var response = await axios.post(url,{
+                            _token : this.myToken,
+                            password_confirmation : this.password_confirmation,
+                            montant : Math.round(this.totalCom.total),
+                            debut : this.pdcListFirst.created_at,
+                            fin : this.pdcListLast.created_at,
+                        })
+                    } 
+                    else if(this.typeUser == 'pdraf') {
+                        url = '/user/pdraf/pay-comission-request'
+                        var response = await axios.post(url,{
+                            _token : this.myToken,
+                            password_confirmation : this.password_confirmation,
+                            montant : Math.round(this.totalComissionPdraf),
+                            debut : this.pdrafFirst.created_at,
+                            fin : this.pdrafLast.created_at,
+                        })
+                    }
+
+                    if(response && response.data == 'done') {
+                        this.isLoading = false
+                        alert("Success !")
+                        this.getAllData()
                     }
                 } catch(error) {
+                    UIkit.modal($("#modal-pay-comission")).show()
                     this.isLoading = false
                     if(error.response.data.errors) {
                         let errorTab = error.response.data.errors
@@ -241,7 +420,16 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                             this.isLoading = false
                             this.pdrafList = response.data
                         }
-                    }                    
+                    }
+                    else if(this.typeUser == 'commercial' || this.typeUser == 'admin') {
+                        this.isLoading = true
+                        response = await axios.get('/user/get-all-pdraf')
+                        if(response) {
+                            this.isLoading = false
+                            this.pdrafList = response.data
+                        }
+                    }
+
 
                 } catch(error) {
                     alert(error)
@@ -252,7 +440,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         computed : {
             totalComissionPdraf() {
                 var som = 0
-                this.pdrafListReabo.forEach(r => {
+                this.pdrafListEtatReabo.forEach(r => {
                     som += r.comission
                 })
                 return som
@@ -261,15 +449,52 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 var som = 0
                 var sum = 0
                 var tot = 0
-                this.pdcListReaboByPdraf.forEach(r => {
-                    som += r.total
-                    sum += r.comission
-                    tot += r.marge
-                })
+                if(this.typeUser == 'pdc') {
+
+                    this.pdcListEtatReabo.forEach(r => {
+                        som += r.total
+                        sum += r.comission
+                        tot += r.marge
+                    })
+                }
+                else if(this.typeUser == 'admin' || typeUser == 'commercial') {
+                    this.listForAllbyEtat.forEach(r => {
+                        som += r.total
+                        sum += r.comission
+                        tot += r.marge
+                    })
+                }
                 return {
                     total : som,
                     com : sum ,
                     mar : tot
+                }
+            },
+            listForAllbyEtat() {
+                return this.listForAll.filter((l) => {
+                    if(this.filterEtat == 'confirme') {
+                        return l.confirm_at != null
+                    }
+                    else if(this.filterEtat == 'annule') {
+                        return l.remove_at != null
+                    }
+                    else if(this.filterEtat == 'en_instance') {
+                        return (l.confirm_at == null && l.remove_at == null)
+                    }
+                    else {
+                        return l
+                    }
+                })
+            },
+            listForAll() {
+                if(this.filterPdraf != "") {
+
+                    return this.all.filter((r) => {
+                        return r.pdraf.username == this.filterPdraf
+                    })
+                }
+                else {
+                    return this.all
                 }
             },
             pdcListLast() {
@@ -278,9 +503,41 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             pdcListFirst() {
                 return this.pdcListReaboByPdraf[0]
             },
+            pdcListEtatReabo() {
+                return this.pdcListReaboByPdraf.filter((l) => {
+                    if(this.filterEtat == 'confirme') {
+                        return l.confirm_at != null
+                    }
+                    else if(this.filterEtat == 'annule') {
+                        return l.remove_at != null
+                    }
+                    else if(this.filterEtat == 'en_instance') {
+                        return (l.confirm_at == null && l.remove_at == null)
+                    }
+                    else {
+                        return l
+                    }
+                })
+            },
             pdcListReaboByPdraf() {
                 return this.pdcListReabo.filter((l) => {
                     return l.pdraf.username.match(this.filterPdraf)
+                })
+            },
+            pdrafFirst() {
+                return this.pdrafListEtatReabo[0]
+            },
+            pdrafLast() {
+                return this.pdrafListEtatReabo[this.pdrafListEtatReabo.length - 1]
+            },
+            pdrafListEtatReabo() {
+                return this.pdrafListReabo.filter((l) => {
+                    if(this.filterEtat == 'confirme') {
+                        return (l.confirm_at != null)
+                    }
+                    else {
+                        return l.remove_at != null
+                    }
                 })
             },
             pdrafListReabo() {

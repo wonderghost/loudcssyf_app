@@ -11,8 +11,8 @@
     <nav class="" uk-navbar>
         <div class="uk-navbar-left">
             <ul class="uk-navbar-nav">
-                <li class="uk-active"><router-link to="/admin/objectifs/new">Nouvel Objectif</router-link></li>
-                <li class="uk-active"><router-link to="/admin/objectifs/all">Tous les objectifs</router-link></li>
+                <li class="uk-active"><router-link to="/objectifs/new">Nouvel Objectif</router-link></li>
+                <li class="uk-active"><router-link to="/objectifs/all">Tous les objectifs</router-link></li>
             </ul>
 
         </div>

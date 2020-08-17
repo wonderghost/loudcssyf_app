@@ -11,7 +11,7 @@
         <template v-if="typeUser == 'admin' || typeUser == 'logistique' || typeUser == 'gcga' || typeUser == 'commercial'">
             <div class="uk-grid-small" uk-grid>
 
-                <template  v-if="typeUser == 'admin'">
+                <template  v-if="typeUser == 'admin' || typeUser == 'commercial'">
                     <div class="uk-width-1-4@m uk-card uk-padding-remove uk-margin-remove uk-card-default uk-card-small" style="box-shadow : none;">
                         <div class="uk-card-header" style="border: none !important;">
                             <h5 class="uk-card-title">Utilisateurs</h5>
@@ -23,7 +23,7 @@
 
                 </template>
 
-                <template v-if="typeUser == 'gcga' || typeUser == 'admin'">
+                <template v-if="typeUser == 'gcga' || typeUser == 'admin' || typeUser == 'commercial'">
                     <div class="uk-width-1-4@m uk-card uk-card-default uk-margin-remove uk-padding-remove uk-card-small" style="box-shadow : none;">
                         <div class="uk-card-header" style="border:none !important;">
                             <h5 class="uk-card-title">Commande Credit</h5>
@@ -34,7 +34,7 @@
                     </div>
                 </template>
 
-                <template v-if="typeUser == 'logistique' || typeUser == 'admin'">
+                <template v-if="typeUser == 'logistique' || typeUser == 'admin' || typeUser == 'commercial'">
                     <div class="uk-width-1-4@m uk-card uk-card-default uk-margin-remove uk-padding-remove uk-card-small" style="box-shadow : none;">
                         <div class="uk-card-header" style="border : none;">
                             <h5 class="uk-card-title">Commande Materiel</h5>
@@ -61,7 +61,7 @@
                     </div>
                 </template>
 
-            <template v-if="typeUser == 'admin' || typeUser == 'gcga'">
+            <template v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'">
                 <div class="uk-width-1-2@m uk-card uk-card-default uk-margin-remove uk-padding-remove uk-card-small" style="box-shadow : none;">
                     <div class="uk-card-header" style="border :none !important">
                         <h5 class="uk-card-title">Transactions</h5>
@@ -243,7 +243,7 @@ export default {
         buildChart : async function () {
             try {
                 this.isLoading = true
-                if(this.typeUser == 'admin') {
+                if(this.typeUser == 'admin' || this.typeUser == 'commercial') {
                     let response = await axios.get('/admin/chart/user-stat')
                     this.userData.rows = response.data
 

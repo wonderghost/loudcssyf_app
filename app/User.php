@@ -86,6 +86,14 @@ class User extends Authenticatable
       return RapportVente::select('pay_comission_id')->whereNotNull('pay_comission_id')->where("vendeurs",$this->username)->groupBy('pay_comission_id')->get();
     }
 
+    public function reaboGroupByPayId(Array $pdrafArray) {
+      return ReaboAfrocash::select('pay_comission_id')
+        ->whereNotNull('pay_comission_id')
+        ->whereIn('pdraf_id',$pdrafArray)
+        ->groupBy('pay_comission_id')
+        ->get();
+    }
+
     // details de l'objetif vendeurs
     
     public function objVendeur() {
@@ -109,6 +117,7 @@ class User extends Authenticatable
     // all vente reabo afrocash
 
     public function reaboAfrocash() {
-      return $this->hasMany('App\ReaboAfrocash','pdraf_id','username')->get();
+      return $this->hasMany('App\ReaboAfrocash','pdraf_id','username');
     }
+
 }

@@ -1,10 +1,13 @@
 <template>
-  <div class="">
+  <div class="uk-container uk-container-large">
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
 
+
+    <h3>Tous les Rapports</h3>
+    <hr class="uk-divider-small">
 
     <!-- modal details rapports -->
     <detail-rapport :rapport="rappDetails" :rapport-infos="rappInfos"></detail-rapport>
@@ -147,14 +150,14 @@
               <td>{{rap.paiement_commission}}</td>
               <td>
                 <template v-if="typeUser == 'admin' && rap.paiement_commission == 'non_paye' && rap.state == 'unaborted'" id="">
-                  <button @click="activRapport = rap" uk-toggle="target : #modal-abort-rapport" type="button" class="uk-button uk-button-small uk-border-rounded uk-button-danger uk-text-capitalize">Annuler</button>
+                  <button @click="activRapport = rap" uk-toggle="target : #modal-abort-rapport" type="button" class="uk-button uk-button-small uk-border-rounded uk-button-danger uk-text-capitalize uk-text-small">Annuler</button>
                 </template>
                 <template v-if="rap.state == 'aborted'">
                   <span class="uk-alert-danger">invalide</span>
                 </template>
 
                 <template v-if="rap.state == 'unaborted'">
-                  <button @click="getDetailsRapport(rap)" class="uk-button uk-button-small uk-border-rounded uk-button-default uk-text-capitalize">Details</button>
+                  <button @click="getDetailsRapport(rap)" class="uk-button uk-button-small uk-border-rounded uk-button-default uk-text-capitalize uk-text-small">Details</button>
                 </template>
               </td>
             </tr>

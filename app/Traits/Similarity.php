@@ -33,6 +33,7 @@ use App\Notifications;
 use App\Alert;
 use App\CommandCredit;
 use App\Promo;
+use Illuminate\Support\Facades\Crypt;
 
 
 Trait Similarity {
@@ -452,7 +453,8 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
           'status' =>  $values->status,
           'promo' =>  $_promo ? 'En Promo' : 'Hors Promo',
           'id' => $values->id,
-          'link'  =>  url('user/ravitailler',[$values->id_commande])
+          'link'  =>  url('user/ravitailler',[$values->id_commande]),
+          'id_command'  =>  Crypt::encryptString($values->id_commande)
         ];
     }
     return $all ;
