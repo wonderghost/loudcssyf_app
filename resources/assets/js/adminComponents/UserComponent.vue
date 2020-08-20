@@ -80,10 +80,8 @@
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
     export default {
-      created () {
-        this.isLoading = true
-      },
       mounted() {
+        Object.assign(this.$data,this.$options.data())
         this.listUser()
       },
       data :function () {
@@ -107,6 +105,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       methods : {
         listUser :async function () {
           try {
+            this.isLoading = true
             var tmp = this
             let response = await axios.get('/admin/users/list')
             tmp.$store.state.users = response.data
@@ -127,9 +126,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             admin_password : userPassword,
             user : userId
           }).then(function (response) {
-
               alert("Success !")
-              Object.assign(this.$data,this.$options.data())
+              UIkit.modal($("#reset-modal")).hide()
               this.listUser()
           }).catch(function (error) {
             UIkit.modal($("#reset-modal")).show()

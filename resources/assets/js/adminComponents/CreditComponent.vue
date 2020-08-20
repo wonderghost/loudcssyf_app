@@ -1,9 +1,12 @@
 <template>
-  <div class="">
+  <div class="uk-container uk-container-large">
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+
+        <h3>Commande Credit</h3>
+        <hr class="uk-divider-small">
         <!-- // -->
         <!-- validation commande modal -->
         <template id="" v-if="typeUser == 'gcga'">
@@ -33,11 +36,11 @@
                         <label for="">Confirmez votre mot de passe</label>
                         <input type="password" v-model="validateFormData.password_confirmed" placeholder="Entrez votre mot de passe ici" class="uk-input uk-border-rounded" value="">
                       </div>
-                      <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small" name="button">Validez</button>
+                      <button type="submit" class="uk-button uk-button-small uk-text-capitalize uk-text-small uk-button-primary uk-border-rounded uk-box-shadow-small" name="button">Validez</button>
                     </form>
                   </div>
                   <div class="uk-modal-footer">
-                    <button type="button" class="uk-modal-close uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-danger" name="button">Fermer</button>
+                    <button type="button" class="uk-modal-close uk-button uk-button-small uk-text-capitalize uk-text-small uk-border-rounded uk-box-shadow-small uk-button-danger" name="button">Fermer</button>
                   </div>
               </div>
           </div>
@@ -74,8 +77,8 @@
             <td v-else>{{credit.recu}}</td>
             <td>
               <template id="" v-if="credit.status == 'unvalidated' && typeUser == 'gcga'">
-                <button type="button" @click="commandToValidate = credit" uk-toggle="target : #modal-validation-command" name="button" class="uk-text-capitalize uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small"> validez <span uk-icon="icon : check"></span> </button>
-                <button type="button" @click="abortCommand(credit)" name="button" class="uk-text-capitalize uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small"> annuler <span uk-icon="icon : close"></span> </button>
+                <button type="button" @click="commandToValidate = credit" uk-toggle="target : #modal-validation-command" name="button" class="uk-text-capitalize uk-button uk-button-small uk-button-primary uk-text-small uk-border-rounded uk-box-shadow-small"> validez <span uk-icon="icon : check"></span> </button>
+                <button type="button" @click="abortCommand(credit)" name="button" class="uk-text-capitalize uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small uk-text-small"> annuler <span uk-icon="icon : close"></span> </button>
               </template>
             </td>
 
@@ -97,7 +100,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 
     export default {
         mounted() {
-          this.isLoading = true
           this.getCommandCredit()
         },
         props : {
@@ -129,6 +131,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         methods : {
           getCommandCredit : async function () {
             try {
+              this.isLoading = true
               if(this.theUser == 'admin' || this.theUser == 'commercial') {
                 var response = await axios.get('/admin/commandes/credit-all')
               } else {
@@ -145,17 +148,20 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             this.validateFormData.commande = this.commandToValidate.id
             this.validateFormData._token = this.myToken
             this.validateFormData.type_commande = this.commandToValidate.type
+
+            this.errors = []
+
             try {
               this.isLoading = true
               UIkit.modal($("#modal-validation-command")).hide()
 
               let response = await axios.post("/user/send-afrocash",this.validateFormData)
+
+              Object.assign(this.$data,this.$options.data())
               if(response.data == 'done') {
                 this.isLoading = false
-                UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Un commande valide avec success :-) <span uk-icon='icon : check'></span></div>")
-                  .then(function () {
-                    location.reload()
-                  })
+                alert("Success !")
+                this.getCommandCredit()
               }
             } catch (error) {
               this.isLoading = false
@@ -172,10 +178,13 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           },
           abortCommand : function (credit) {
             var tmp = this
-            UIkit.modal.confirm("<div class='uk-alert-warning' uk-alert><p> <span uk-icon='icon : warning'></span> Etes vous sur de vouloir annuler la commande de : "+credit.vendeurs+ " ? </p></div>")
-              .then(function () {
-                tmp.makeAbortCommand(credit)
-              })
+            var val = confirm("Etes vous sur de vouloir annuler la commande de : "+credit.vendeurs+ " ?")
+            if(val == true) {
+              tmp.makeAbortCommand(credit)
+            }
+            else {  
+              alert("Vous avez annuler l'action !")
+            }
           },
           makeAbortCommand : async function (credit) {
             this.isLoading = true
@@ -186,10 +195,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 })
                 if(response.data == 'done') {
                   this.isLoading = false
-                  UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Une commande annule !</div>")
-                    .then(function () {
-                      location.reload()
-                    })
+                  alert("Success !")
+                  this.getCommandCredit()
                 }
             } catch (e) {
               this.isLoading.false

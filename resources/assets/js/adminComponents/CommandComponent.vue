@@ -81,7 +81,7 @@
       </li>
       <li>
         <template id="">
-          <livraison :the-user="userLocalisation"></livraison>
+          <livraison></livraison>
         </template>
       </li>
       <template id="" v-if="typeUser == 'admin' || typeUser == 'commercial' || typeUser == 'gcga' || typeUser == 'v_da' || typeUser == 'v_standart'">

@@ -1,9 +1,12 @@
 <template>
-  <div class="">
+  <div class="uk-container uk-container-large">
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+        
+        <h3>Livraison Materiel</h3>
+        <hr class="uk-divider-small">
 
         <ul class="uk-tab" uk-switcher="animation : uk-animation-slide-right">
           <li> <a href="#" @click="filterLivraison('non_confirmer')">en attente de validation</a> </li>
@@ -76,8 +79,8 @@
                      <div class="uk-alert-info " uk-alert>
                        <p>Remplissez les champs vides</p>
                      </div>
-                     <div v-for="qte in formData.quantite" class="uk-margin-small">
-                       <input @blur="validSerial(qte-1)" required type="text" class="uk-input uk-border-rounded" v-model="formData.serial_number[qte-1]" :placeholder="'Serial Number '+qte">
+                     <div v-for="qte in formData.quantite" :key="qte" class="uk-margin-small">
+                       <input @blur="validSerial(qte-1)" type="text" class="uk-input uk-border-rounded" v-model="formData.serial_number[qte-1]" :placeholder="'Serial Number '+qte">
                      </div>
                    </template>
                    <template id="" v-else>
@@ -150,10 +153,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       },
       components : {
         Loading
-      },
-      props : {
-        depotCourant : String,
-        theUser : String
       },
         mounted() {
           this.getLivraisonMaterial()
@@ -231,6 +230,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 
           },
           sendLivraison : async function () {
+            this.errors = []
             try {
               this.isLoading = true
               UIkit.modal($("#modal-livraison-send")).hide()
@@ -238,10 +238,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               console.log(response.data)
               this.isLoading = false
               if(response.data == 'done') {
-                UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Une livraison effectuee :-)</div>")
-                  .then(function () {
-                    location.reload()
-                  })
+                alert("Success !")
+                this.getLivraisonMaterial()
               }
             } catch (error) {
               this.isLoading = false
@@ -320,29 +318,22 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         },
         computed : {
           livraisonMaterial () {
-            return  this.livraisonM.filter( (liv) => {
+            return  this.$store.state.livraisonMaterial.filter( (liv) => {
               return liv.validation === this.statusLivraison
             })
           },
-          livraisonM() {
-            if(!this.depotCourant) {
-              return this.$store.state.livraisonMaterial
-            }
-            else {
-              return this.$store.state.livraisonMaterial.filter((liv) => {
-                return liv.depot == this.depotCourant
-              })
-            }
-          },
           livraisonFilter () {
-            if(this.typeUser == 'admin' || this.typeUser == 'logistique' || this.typeUser == 'commercial') {
-              return this.livraisonMaterial
-            }
-            else {
-              return this.livraisonMaterial.filter( (liv) => {
+            return this.livraisonMaterial.filter((liv) => {
+              if(this.typeUser == 'admin' || this.typeUser == 'logistique' || this.typeUser == 'commercial') {
+                return liv
+              }
+              else if(this.typeUser == 'gdepot') {
+                return liv.depot.match(this.userLocalisation)
+              }
+              else if(this.typeUser == 'v_da' || this.typeUser == 'v_standart') {
                 return liv.vendeur.match(this.userLocalisation)
-              })
-            }
+              }
+            })
           }
           ,
           statusLivraison () {

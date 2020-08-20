@@ -363,18 +363,36 @@ class LogistiqueController extends Controller
 // RAVITAILLEMENT VENDEUR
   public function addStock($commande) {
       // recuperer le vendeurs qui a emis la commande
+      // dump($this->CommandChangeStatus($commande,$user->username));
     $user = CommandMaterial::where('id_commande',$commande)->first()->vendeurs()->first();
-    // dump($this->CommandChangeStatus($commande,$user->username));
-    $this->CommandChangeStatus($commande,$user->username);
-
-    
-    
+    $this->CommandChangeStatus($commande,$user->username);    
     // die();
 
     if($this->changeCommandStatusGlobale($commande)) {
       return redirect('/user/commandes');
     };
     return view('logistique.add-ravitaillement')->withCommande($commande);
+  }
+
+  // COMMAND STATE TEST
+
+  public function commandStateTest($commande) {
+    try {
+
+      $user = CommandMaterial::where('id_commande',Crypt::decryptString($commande))->first()->vendeurs()->first();
+      $this->CommandChangeStatus(Crypt::decryptString($commande),$user->username);    
+    // die();
+
+      if($this->changeCommandStatusGlobale(Crypt::decryptString($commande))) {
+        return response()
+          ->json('done');
+      };
+      return response()
+        ->json('fail');
+    } catch(AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
+    }
   }
 
     // TRAITEMENT DE LA REQUETE DE COMMANDE , ENVOI DU RAVITAILLEMENT
@@ -492,7 +510,7 @@ class LogistiqueController extends Controller
           'produit' =>  $ref
           ])->first();
         if($temp) {
-            return $temp;
+          return $temp;
         }
         return false;
     }
@@ -512,11 +530,11 @@ class LogistiqueController extends Controller
           ->orderBy('localisation','asc')
           ->get());
       } catch (AppException $e) {
-        header("Erreur",true,422);
-        die(json_encode($e->getMessage()));
+          header("Erreur",true,422);
+          die(json_encode($e->getMessage()));
       }
-
     }
+    
     public function getListMaterialByVendeurs(Request $request , Exemplaire $sn) {
       try {
         $serials = $sn->whereNotNull('vendeurs')->orderBy('serial_number','asc')->get();
@@ -629,14 +647,6 @@ class LogistiqueController extends Controller
           header("Erreur",true,422);
           die(json_encode($e->getMessage()));
       }
-
-        // Produits::select()->where('reference',$request->input('reference'))->update([
-        //     'libelle' => $request->input('libelle'),
-        //     'prix_initial' => $request->input('prix_initial'),
-        //     'prix_vente' => $request->input('prix_unitaire'),
-        //     'marge' => $request->input('marge')
-        // ]);
-        // return redirect("/admin/edit-material/".$request->input('reference'))->with('success',"Modification reussie!");
     }
 
     //
@@ -653,96 +663,6 @@ class LogistiqueController extends Controller
         }
         return view('logistique.complete-transfert');
     }
-
-    // public function completeTransfertFinal(Request $request) {
-    //     // VERIFIER SI LES NUMEROS DE SERIES EXISTE
-    //     $_serial = [];
-    //     $__serial = [];
-    //     for($i=1;$i <= session('quantite') ; $i++ ) {
-    //         array_push($_serial,$request->input("serial-number-".$i));
-    //     }
-    //     // VERIFIEZ SI S/N EXISTE DANS LE DEPOT
-    //     foreach($_serial as $values) {
-    //         if(!$this->isSNInDepot($values,session('depot'))) {
-    //             return back()->with('_errors',"Ce numero n'existe pas dans le depot choisi ".$values);
-    //         }
-    //     }
-    //     // VERIFIEZ SI S/N N'EST PAS ATTRIBUEZ
-    //     foreach($_serial as $values) {
-    //         if(!$this->isSNToUser($values,session('produit'))) {
-    //             return back()->with('_errors',"Ce numero est deja attribuer ".$values);
-    //         }
-    //     }
-
-    //     //
-    //     $stockVendeurs = new StockVendeur;
-    //     $stockVendeurs->produit = session('produit');
-    //     $stockVendeurs->vendeurs = session('vendeur');
-    //     $stockVendeurs->quantite = session('quantite');
-
-    //     $ravitaillementVendeurs = new RavitaillementVendeur;
-    //     $livraison  = new Livraison;
-
-    //     $ravitaillementVendeurs->id_ravitaillement  = "RA-".time();
-    //     $ravitaillementVendeurs->vendeurs = session('vendeur');
-    //     $ravitaillementVendeurs->commands = session('commande');
-
-
-    //     $livraison->ravitaillement  = $ravitaillementVendeurs->id_ravitaillement;
-    //     $livraison->produits  = session('produit');
-    //     $livraison->quantite  = session('quantite');
-    //     $livraison->depot   = session('depot');
-    //     $livraison->code_livraison  = Str::random(10);
-
-    //     // ATTRIBUTION DES NUMEROS DE SERIES
-
-    //     foreach($_serial as $values) {
-    //         Exemplaire::select()->where('serial_number',$values)->update([
-    //             'vendeurs' => session('vendeur')
-    //         ]);
-    //     }
-
-    //     // // Modification de la quantite dans le depot
-
-    //     $_quantite = StockPrime::select()->where('produit',session('produit'))->where('depot',session('depot'))->first()->quantite - session('quantite');
-    //     StockPrime::select()->where('produit',session('produit'))->where('depot',session('depot'))->update([
-    //         'quantite'=> $_quantite
-    //     ]);
-
-
-    //     if($tmp = $this->vendeurHasStock(session('vendeur'),session('produit'))) {
-    //         $laQuantite = $tmp->quantite + session('quantite');
-    //         StockVendeur::select()->where('vendeurs',session('vendeur'))->where('produit',session('produit'))->update([
-    //             'quantite' => $laQuantite
-    //         ]);
-
-    //     } else {
-    //         $stockVendeurs->save();
-    //     }
-
-    //     $ravitaillementVendeurs->save();
-    //     $livraison->save();
-    //     if(session('compense') > 0) {
-    //         // ENREGISTREMENT DE LA COMPENSE
-    //         $compense = new Compense;
-    //         $compense->vendeurs = session('vendeur');
-    //         $compense->materiel = session('produit');
-    //         $compense->type = 'debit';
-    //         $compense->quantite = session('compense_quantite');
-    //         $compense->save();
-    //     }
-    //     // VERIFICATION POUR LE CHANGEMENT D'ETAT DE LA COMMANDE
-    //     $this->CommandChangeStatus (session('commande'),session('vendeur'));
-    //     // die();
-
-    //     session()->forget(['produit','quantite','depot','vendeur','commande']);
-    //     return redirect('user/commandes')->with('success',"Ravitaillement reussi!");
-    // }
-
-    // public function abortTransfert() {
-    //     session()->forget(['produit','quantite','depot','vendeur']);
-    //     return response()->json('done');
-    // }
 
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     public function allCommandes() {

@@ -64,18 +64,17 @@ Trait Similarity {
     return false;
   }
   // changement de status pour la commande globalement
+  
   public function changeCommandStatusGlobale($command) {
     $flag=0;
     $command_produit = CommandProduit::where('commande',$command)->get();
-    // dd($command);
+    
     foreach ($command_produit as $key => $value) {
       if($value->status_ravitaillement > 0) {
         $flag++;
       }
     }
 
-    //
-    // dd($flag);
     if($flag == $command_produit->count()) {
       // la commande peut etre confirmer globalement
       CommandMaterial::where('id_commande',$command)->update([
@@ -86,6 +85,7 @@ Trait Similarity {
     }
     return false;
   }
+
   //  Verifier si le ravitaillement est possbile
   public function isRavitaillementPossible ($commande,Request $request) {
     $commande = CommandMaterial::where([

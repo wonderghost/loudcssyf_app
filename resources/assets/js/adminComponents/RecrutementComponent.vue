@@ -114,12 +114,11 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 } else {
                     var response = await axios.post('/user/send-rapport/recrutement',this.formData)
                 }
+                
                 if(response.data == 'done') {
+                  Object.assign(this.$data,this.$options.data())
                   this.isLoading = false
-                  UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Operation effectuee avec success !</div>")
-                    .then(function () {
-                      location.reload()
-                    })
+                  alert("Success !")
                 }
             } catch(error) {
                 this.isLoading = false

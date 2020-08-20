@@ -18,14 +18,14 @@
           <label for=""> <span uk-icon="icon : calendar"></span> Au</label>
           <input type="date" class="uk-input uk-border-rounded" v-model="filterData.au">
         </div>
-        <div v-if="typeUser == 'admin'" class="uk-width-1-4@m">
+        <div v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'" class="uk-width-1-4@m">
           <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
           <select class="uk-select uk-border-rounded" v-model="filterData.vendeurs">
             <option value="">-- Selectionnez le vendeur --</option>
             <option :value="u.localisation" v-for="u in users">{{u.localisation}}</option>
           </select>
         </div>
-        <div v-else="" class="uk-width-1-4@m">
+        <div v-else class="uk-width-1-4@m">
           <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
           <span class="uk-input uk-border-rounded">{{userLocalisation}}</span>
         </div>
@@ -132,7 +132,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       },
       transactionsList() {
         return this.transactions.filter((t) =>  {
-          if(this.typeUser == 'admin') {
+          if(this.typeUser == 'admin' || this.typeUser == 'gcga' || this.typeUser == 'commercial') {
             return (t.expediteur.match(this.filterData.vendeurs) || t.destinataire.match(this.filterData.vendeurs))
           }
           else {

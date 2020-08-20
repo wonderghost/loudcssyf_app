@@ -117,18 +117,19 @@ public function inventaireLivraison() {
   }
 
   public function confirmLivraison( Request $request , DeficientMaterial $df) {
-    $validation = $request->validate([
-      'livraison' =>  'required|exists:livraisons,id',
-      'with_serial' =>  'required|exists:produits,with_serial',
-      'confirm_code'  =>  'required|string',
-      'password'  =>  'required|string',
-      "serial_number.*" =>  'string|distinct|exists:exemplaire,serial_number'
-    ],[
-    'distinct' => 'Vous ne pouvez envoyer le meme numero de serie plus d\'une fois :-(',
-    'exists'  =>  ':attribute est Inexistant :-('
-  ]);
     try {
 
+      $validation = $request->validate([
+        'livraison' =>  'required|exists:livraisons,id',
+        'with_serial' =>  'required|exists:produits,with_serial',
+        'confirm_code'  =>  'required|string',
+        'password'  =>  'required|string',
+        'serial_number.*' =>  'string|distinct|exists:exemplaire,serial_number'
+      ],[
+        'distinct' => 'Vous ne pouvez envoyer le meme numero de serie plus d\'une fois :-(',
+        'exists'  =>  ':attribute est Inexistant :-('
+      ]);
+      
       // verifier si le materiel est defectueux ou pas!
 
       foreach($request->input('serial_number') as $value) {
@@ -147,6 +148,16 @@ public function inventaireLivraison() {
             // Verifier si les numeros de series existes
             if($request->input('with_serial') == 1) {
               // Les Numeros de Series existes
+              // verifier que les champs ne sont pas vides !
+              if(count($request->input('serial_number')) <= 0) {
+                throw new AppException("Remplissez les champs vides !");
+              }
+
+              foreach($request->input('serial_number') as $value) {
+                if(trim($value) == "") {
+                  throw new AppException("Remplissez les champs vides !");
+                }
+              }
               // ecriture dans un fichier texte et stockage du dit fichier
               $fileSerial = new LivraisonSerialFile;
               $fileSerial->filename = 'serial_file_'.time().'.txt';

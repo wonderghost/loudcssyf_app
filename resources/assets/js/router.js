@@ -49,7 +49,13 @@ import profile from './userComponents/SettingComponent.vue'
 // LOGISTIQUE
 import ravitaillerDepot from './adminComponents/RavitaillementDepotComponent.vue'
 import ravitaillerVendeur from './userComponents/RavitaillementComponent.vue'
+// 
 
+// GESTIONNAIRE CREDIT
+import commandCredit from './adminComponents/CreditComponent.vue'
+// 
+// GESTIONNAIRE DEPOT
+import livraisonMateriel from './userComponents/LivraisonComponent.vue'
 
 Vue.use(VueRouter);
 
@@ -249,6 +255,14 @@ const router = new VueRouter({
         {
             path : '/ravitailler/vendeur/:id',
             component : ravitaillerVendeur
+        },
+        {
+            path : '/commande-credit/all',
+            component : commandCredit
+        },
+        {
+            path : '/livraison/all',
+            component : livraisonMateriel
         }
     ]
 

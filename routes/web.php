@@ -289,6 +289,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// RAVITAILLEMENT VENDEURS
 	Route::get('/user/ravitailler/{commande}','LogistiqueController@addStock')->middleware('logistique');
 	Route::post('/user/ravitailler/{commande}','LogistiqueController@makeAddStock')->middleware('logistique');
+	Route::get('/user/ravitailler/validate-test/{commande}','LogistiqueController@commandStateTest')->middleware('logistique');
 	#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	Route::get('/logistique/ravitaillement/{slug}/infos','LogistiqueController@getInfosCommande')->middleware('logistique');
 	Route::get("/logistique/ravitaillement/list-depot",'LogistiqueController@depotList')->middleware('logistique');

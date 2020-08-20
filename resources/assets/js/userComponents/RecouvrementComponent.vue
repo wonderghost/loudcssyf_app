@@ -1,5 +1,5 @@
 <template>
-  <div class="uk-container ">
+  <div class="uk-container uk-container-large">
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
@@ -22,28 +22,28 @@
     <ul class="uk-switcher uk-margin">
       <li>
         <template v-if="typeUser == 'coursier'">
-          <form @submit.prevent="sendRecouvrement()" class="uk-width-1-2@m">
+          <form @submit.prevent="sendRecouvrement()" class="uk-width-1-3@m">
           <h3>Enregistrer un recouvrement</h3>
           <div class="uk-margin-small">
-            <label for="">Vendeurs</label>
+            <label for=""><span uk-icon="users"></span> Vendeurs</label>
             <select class="uk-select uk-border-rounded uk-margin-small" @change="checkVendeur()" v-model="recouvrementData.vendeurs">
               <option value="">--Selectionnez un vendeur --</option>
               <option :value="v.username" v-for="v in vStandart">{{ v.localisation }}</option>
             </select>
           </div>
           <div class="uk-margin-small">
-            <label for="">Montant du</label>
+            <label for=""><span uk-icon="credit-card"></span> Montant du</label>
             <span class="uk-input uk-border-rounded">{{recouvrementData.montant_du | numFormat}}</span>
           </div>
           <div class="uk-margin-small">
-            <label for="">Montant</label>
+            <label for=""><span uk-icon="credit-card"></span> Montant</label>
             <input type="number" class="uk-input uk-border-rounded" v-model="recouvrementData.montant">
           </div>
           <div class="uk-margin-small">
-            <label for="">Numero Recu</label>
+            <label for=""> Numero Recu</label>
             <input type="text" class="uk-input uk-border-rounded" v-model="recouvrementData.numero_recu">
           </div>
-          <button type="submit" class="uk-button uk-button-small uk-border-rounded uk-button-primary">Envoyez</button>
+          <button type="submit" class="uk-button uk-text-small uk-text-capitalize uk-button-small uk-border-rounded uk-button-primary">Envoyez</button>
         </form>
         </template>
         <template v-else>
@@ -139,9 +139,6 @@ import 'vue-loading-overlay/dist/vue-loading.css';
     props : {
       theUser : String
     },
-    created() {
-      this.isLoading = true
-    },
     mounted() {
       this.recouvrementData._token = this.myToken
       this.getData()
@@ -169,6 +166,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
     },
     methods : {
       getData : async function () {
+        this.isLoading = true
         if(this.typeUser == 'coursier') {
           let response = await axios.get('/user/all-vendeurs')
           this.vendeurs = response.data
@@ -227,11 +225,11 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         this.isLoading = true
         try {
           let response = await axios.post('/user/recouvrement/add',this.recouvrementData)
+          Object.assign(this.$data,this.$options.data())
           if(response.data == 'done') {
-            UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Recouvrement effectuee!</div>")
-              .then(function () {
-                location.reload()
-              })
+            this.isLoading = false
+            alert("Success !")
+            this.getData()
           }
         } catch (error) {
           this.isLoading = false

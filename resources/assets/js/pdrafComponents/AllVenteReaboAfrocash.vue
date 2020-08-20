@@ -48,13 +48,21 @@
             </div>            
             <!-- // -->
             <!-- ADMIN -->
-            <template v-if="typeUser == 'admin' || typeUser == 'commercial'">
+            <template v-if="typeUser == 'admin' || typeUser == 'commercial' || typeUser == 'gcga'">
                 <div class="uk-grid-small" uk-grid>
                     <div class="uk-width-1-6@m">
                         <label for=""><span uk-icon="users"></span> Utilisateur</label>
                         <select v-model="filterPdraf" class="uk-select uk-border-rounded">
                             <option value="">Tous</option>
                             <option v-for="(p,index) in pdrafList" :key="index" :value="p.user.username">{{p.user.localisation}}</option>
+                        </select>
+                    </div>
+                    <div class="uk-width-1-6@m">
+                        <label for="">Paiement</label>
+                        <select v-model="filterPayStatement" class="uk-select uk-border-rounded">
+                            <option value="">Tous</option>
+                            <option value="payer">payer</option>
+                            <option value="impayer">impayer</option>
                         </select>
                     </div>
                     <div class="uk-width-1-6@m">
@@ -83,11 +91,19 @@
             <!-- // -->
             <template v-if="typeUser == 'pdc'">
                 <div class="uk-grid-small" uk-grid>
-                    <div class="uk-width-1-4@m">
+                    <div class="uk-width-1-6@m">
                         <label for=""><span uk-icon="users"></span> Utilisateur</label>
                         <select v-model="filterPdraf" class="uk-select uk-border-rounded">
                             <option value="">Tous</option>
                             <option v-for="(p,index) in pdrafList" :key="index" :value="p.user.username">{{p.user.localisation}}</option>
+                        </select>
+                    </div>
+                    <div class="uk-width-1-6@m">
+                        <label for="">Paiement</label>
+                        <select v-model="filterPayStatement" class="uk-select uk-border-rounded">
+                            <option value="">Tous</option>
+                            <option value="payer">payer</option>
+                            <option value="impayer">impayer</option>
                         </select>
                     </div>
                     <div class="uk-width-1-6@m">
@@ -123,13 +139,21 @@
                         <span class="uk-input uk-text-center uk-border-rounded">{{totalComissionPdraf | numFormat}}</span>
                     </div>
                     <div class="uk-width-1-6@m">
+                        <label for="">Paiement</label>
+                        <select v-model="filterPayStatement" class="uk-select uk-border-rounded">
+                            <option value="">Tous</option>
+                            <option value="payer">payer</option>
+                            <option value="impayer">impayer</option>
+                        </select>
+                    </div>
+                    <div class="uk-width-1-6@m">
                         <label for="">Etat</label>
                         <select v-model="filterEtat" class="uk-select uk-border-rounded">
                             <option value="confirme">confirme</option>
                             <option value="annule">annule</option>
                         </select>
                         <span v-if="filterEtat == 'confirme'">
-                            <button uk-toggle="target : #modal-pay-comission " class="uk-button uk-text-capitalize uk-button-small uk-button-primary uk-border-rounded">se faire payer</button>
+                            <button uk-toggle="target : #modal-pay-comission " class="uk-button uk-text-capitalize uk-button-small uk-text-small uk-button-primary uk-border-rounded">se faire payer</button>
                         </span>
                     </div>
                 </div>
@@ -163,7 +187,7 @@
                 </thead>
                 <tbody>
                     <template v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'">
-                        <tr v-for="(r,index) in listForAllbyEtat" :key="index">
+                        <tr v-for="(r,index) in listForPayStateReabo" :key="index">
                             <td>{{r.created_at}}</td>
                             <td>{{r.materiel}}</td>
                             <td>{{r.formule}}</td>
@@ -201,7 +225,7 @@
                         </tr>
                     </template>
                     <template v-if="typeUser == 'pdc'">
-                        <tr v-for="(r,index) in pdcListEtatReabo" :key="index">
+                        <tr v-for="(r,index) in pdcListPayStateReabo" :key="index">
                             <td>{{r.created_at}}</td>
                             <td>{{r.materiel}}</td>
                             <td>{{r.formule}}</td>
@@ -235,7 +259,7 @@
                         </tr>
                     </template>
                     <template v-if="typeUser == 'pdraf'">
-                        <tr v-for="(r,index) in pdrafListEtatReabo" :key="index">
+                        <tr v-for="(r,index) in pdrafListPayStateReabo" :key="index">
                             <td>{{r.created_at}}</td>
                             <td>{{r.materiel}}</td>
                             <td>{{r.formule}}</td>
@@ -293,7 +317,8 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 filterPdraf : "",
                 password_confirmation : "",
                 errors : [],
-                filterEtat : "confirme"
+                filterEtat : "confirme",
+                filterPayStatement : "impayer"
             }
         },
         methods : {
@@ -326,6 +351,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 }
             },
             confirmRequestForAdmin : async function (r) {
+                this.errors = []
                 try {
                     if(this.typeUser == 'admin') {
 
@@ -346,7 +372,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                         this.getAllData()
                     }
                 } catch(error) {
-                    this.errors = []
+                    
                     if(error.response.data.errors) {
                         let errorTab = error.response.data.errors
                         for (var prop in errorTab) {
@@ -394,6 +420,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 } catch(error) {
                     UIkit.modal($("#modal-pay-comission")).show()
                     this.isLoading = false
+                    this.errors = []
                     if(error.response.data.errors) {
                         let errorTab = error.response.data.errors
                         for (var prop in errorTab) {
@@ -421,7 +448,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                             this.pdrafList = response.data
                         }
                     }
-                    else if(this.typeUser == 'commercial' || this.typeUser == 'admin') {
+                    else if(this.typeUser == 'commercial' || this.typeUser == 'admin' || this.typeUser == 'gcga') {
                         this.isLoading = true
                         response = await axios.get('/user/get-all-pdraf')
                         if(response) {
@@ -440,7 +467,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         computed : {
             totalComissionPdraf() {
                 var som = 0
-                this.pdrafListEtatReabo.forEach(r => {
+                this.pdrafListPayStateReabo.forEach(r => {
                     som += r.comission
                 })
                 return som
@@ -451,14 +478,14 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 var tot = 0
                 if(this.typeUser == 'pdc') {
 
-                    this.pdcListEtatReabo.forEach(r => {
+                    this.pdcListPayStateReabo.forEach(r => {
                         som += r.total
                         sum += r.comission
                         tot += r.marge
                     })
                 }
-                else if(this.typeUser == 'admin' || typeUser == 'commercial') {
-                    this.listForAllbyEtat.forEach(r => {
+                else if(this.typeUser == 'admin' || this.typeUser == 'commercial' || this.typeUser == 'gcga') {
+                    this.listForPayStateReabo.forEach(r => {
                         som += r.total
                         sum += r.comission
                         tot += r.marge
@@ -469,6 +496,19 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     com : sum ,
                     mar : tot
                 }
+            },
+            listForPayStateReabo() {
+                return this.listForAllbyEtat.filter((l) => {
+                    if(this.filterPayStatement == "") {
+                        return l
+                    }
+                    else if(this.filterPayStatement == "payer") {
+                        return l.pay_at != null
+                    }
+                    else {
+                        return l.pay_at == null
+                    }
+                })
             },
             listForAllbyEtat() {
                 return this.listForAll.filter((l) => {
@@ -503,6 +543,19 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             pdcListFirst() {
                 return this.pdcListReaboByPdraf[0]
             },
+            pdcListPayStateReabo() {
+                return this.pdcListEtatReabo.filter((l) => {
+                    if(this.filterPayStatement == "") {
+                        return l
+                    }
+                    else if(this.filterPayStatement == "payer") {
+                        return l.pay_at != null
+                    }
+                    else {
+                        return l.pay_at == null
+                    }
+                })
+            },
             pdcListEtatReabo() {
                 return this.pdcListReaboByPdraf.filter((l) => {
                     if(this.filterEtat == 'confirme') {
@@ -529,6 +582,19 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             },
             pdrafLast() {
                 return this.pdrafListEtatReabo[this.pdrafListEtatReabo.length - 1]
+            },
+            pdrafListPayStateReabo() {
+                return this.pdrafListEtatReabo.filter((l) => {
+                    if(this.filterPayStatement == "") {
+                        return l
+                    }
+                    else if(this.filterPayStatement == "payer") {
+                        return l.pay_at != null
+                    }
+                    else {
+                        return l.pay_at == null
+                    }
+                })
             },
             pdrafListEtatReabo() {
                 return this.pdrafListReabo.filter((l) => {

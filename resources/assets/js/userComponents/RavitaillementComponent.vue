@@ -76,6 +76,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       },
         mounted() {
           this.getInfosCommande()
+          this.commandStateTest()
         },
         components : {
           Loading
@@ -102,10 +103,26 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           }
         },
         methods : {
+          commandStateTest : async function () {
+            try {
+                let response = await axios.get('/user/ravitailler/validate-test/'+this.$route.params.id)
+                if(response) {
+                  if(response.data == 'done') {
+                    this.$router.push('/command/list')
+                  }
+                  else if(response.data == 'fail') {
+                    this.getInfosCommande()
+                  }
+                }
+            } catch(error) {
+                alert('commanstate')
+                console.log(error)
+            }
+          },
           getInfosCommande : async function () {
             try {
               this.isLoading = true
-              let response = await axios.get("/logistique/ravitaillement/"+this.commande.id+"/infos")
+              let response = await axios.get("/logistique/ravitaillement/"+this.$route.params.id+"/infos")
               this.commande = response.data
               this.formData.compense = this.commande.parabole_du
               response = await axios.get("/logistique/ravitaillement/list-depot")
@@ -113,6 +130,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               this.formData._token = this.myToken
               this.formData.vendeur = this.commande.vendeurs
               this.isLoading = false
+
+              // 
+              
             } catch (e) {
               alert(e)
             }
@@ -122,10 +142,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             try {
               let response = await axios.post("/user/ravitailler/"+this.commande.id,this.formData)
               if(response.data == 'done') {
-                UIkit.modal.alert("<div class='uk-alert-success uk-border-rounded' uk-alert>Ravitaillement Effectue :-)</div>")
-                  .then(function (){
-                    location.reload()
-                  })
+                alert("Success !")
+                this.getInfosCommande()
+                this.commandStateTest()
               }
             }catch (error) {
               this.isLoading = false

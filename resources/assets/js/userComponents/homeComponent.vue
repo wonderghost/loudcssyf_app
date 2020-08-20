@@ -221,8 +221,9 @@
               <li>
                 <router-link to="/setting/formule"><span uk-icon="link"></span> Formule</router-link>
               </li>
-              <!-- <li><a href="/admin/formule"><span uk-icon="icon:check"></span> Formule</a></li>
-              <li><a href="/admin/settings"><span uk-icon="icon:user"></span> Profile</a></li> -->
+              <li>
+                <router-link to="/setting/profile"><span uk-icon="link"></span> Profile</router-link>
+              </li>
               <li><a href="#" uk-toggle="target : #rapport-setting-modal"><span uk-icon="icon : minus"></span> Reglage Rapport de vente</a></li>
               <li>
                   <form action="/logout" method="post">
@@ -298,21 +299,25 @@
             <li class="uk-parent">
                 <a href="#"><span uk-icon="icon:credit-card;ratio:0.9"></span> Credit</a>
                 <ul class="uk-nav-sub">
-
-                    <li><a href="/user/cga-credit"><span uk-icon="icon:arrow-right"></span> Comptes</a></li>
-                    <!-- // -->
+                    <li>
+                      <router-link to="/account"><span uk-icon="link"></span> Compte Credit</router-link>
+                    </li>
                 </ul>
             </li>
             <li class="uk-parent">
               <a href="#" ><span uk-icon="icon:credit-card"></span> Afrocash</a>
               <ul class="uk-nav-sub">
-                <li><a href="/user/afrocash/transactions"><span uk-icon="icon : arrow-right"></span>  Toutes les Transactions</a> </li>
+                <li>
+                  <router-link to="/afrocash/all-transaction"><span uk-icon="link"></span> Toutes les transactions</router-link>
+                </li>
               </ul>
             </li>
             <li class="uk-parent">
                 <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Commandes</a>
                 <ul class="uk-nav-sub">
-                    <li><a href="/user/credit-cga/commandes"><span uk-icon="icon:arrow-right"></span> Toutes les Commandes</a></li>
+                    <li>
+                      <router-link to="/commande-credit/all"><span uk-icon="link"></span> Toutes les Commandes</router-link>
+                    </li>
                 </ul>
             </li>
           </template>
@@ -353,8 +358,12 @@
             <li class="uk-parent">
                 <a href="#"><span uk-icon="icon:cart;ratio:0.9"></span> Rapport Ventes</a>
                 <ul class="uk-nav-sub">
-                    <!-- <li><a href="/user/add-rapport"><span uk-icon="icon:arrow-right"></span> Ajouter</a></li>
-                    <li><a href="/user/all-rapport"><span uk-icon="icon:arrow-right"></span> Toutes les ventes</a></li> -->
+                  <li>
+                    <router-link to="/rapport/add"><span uk-icon="link"></span> Ajouter</router-link>
+                  </li>
+                  <li>
+                    <router-link to="/rapport/list"><span uk-icon="link"></span> Toutes les ventes</router-link>
+                  </li>
                 </ul>
             </li>
           </template>
@@ -362,9 +371,12 @@
             <li class="uk-parent">
                 <a href="#"><span uk-icon="icon:cart;ratio:0.9"></span> Materiels</a>
                 <ul class="uk-nav-sub">
-                    <!-- LOGISTIC ONLY -->
-                    <!-- <li><a href="/user/inventaire-depot"><span uk-icon="icon:arrow-right"></span> Stock</a></li>
-                    <li><a href="/user/livraison"><span uk-icon="icon:arrow-right"></span> Commandes</a></li> -->
+                  <li>
+                    <router-link to="/material/all-material"><span uk-icon="link"></span> Stock</router-link>
+                  </li>
+                  <li>
+                    <router-link to="/livraison/all"><span uk-icon="link"></span> Livraison</router-link>
+                  </li>
                 </ul>
             </li>
           </template>
@@ -373,7 +385,9 @@
             <li class="uk-parent">
                 <a href="#"><span uk-icon="icon:cart;ratio:0.9"></span> Operations</a>
                 <ul class="uk-nav-sub">
-                  <!-- <li><a href="/user/recouvrement"><span uk-icon="icon:arrow-right"></span> Recouvrement</a></li> -->
+                  <li>
+                    <router-link to="/afrocash/recouvrement"><span uk-icon="link"></span> Recouvrement</router-link>
+                  </li>
                 </ul>
             </li>
             <!-- // -->

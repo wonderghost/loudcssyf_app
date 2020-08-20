@@ -139,6 +139,7 @@ export default {
     methods : {
         login : async function () {
             this.isLoading = true
+            this.errors = []
             try {
                 this.formData._token = this.myToken
                 let response = await axios.post('/login',this.formData)

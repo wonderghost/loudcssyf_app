@@ -11,7 +11,7 @@
       <div class="uk-child-width-1-4@m uk-grid-small" uk-grid>
         <template>
           <!-- INVENTAIRE DES MATERIELS -->
-          <div v-for="m in materials"  class="" :key="m.localisation">
+          <div v-for="m in lesMaterials"  class="" :key="m.localisation">
             <div class="uk-card uk-border-rounded uk-box-shadow-hover-small uk-background-muted uk-dark uk-card-body uk-padding-small">
               <h3 class="uk-card-title">{{m.localisation}}</h3>
               <p>
@@ -43,7 +43,7 @@
               <option value="defectueux">Defectueux</option>
             </select>
           </div>
-          <div v-if="typeUser == 'admin' || typeUser == 'logistique'" class="uk-width-1-4@m">
+          <div v-if="typeUser == 'admin' || typeUser == 'logistique' || typeUser == 'commercial'" class="uk-width-1-4@m">
             <label for="">Depots</label>
             <select v-model="filterState" class="uk-select uk-border-rounded">
               <option value="">Tous</option>
@@ -88,14 +88,11 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       components : {
         Loading
       },
-      props : {
-        theUser : String
-      },
       mounted() {
         this.getMaterialsDepot()
         this.getSerialNumberForDepot()
-        if(this.theUser !== "") {
-          this.filterState = this.theUser
+        if(this.typeUser == 'gdepot') {
+          this.filterState = this.userLocalisation
         }
       },
       data () {
@@ -163,6 +160,16 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         },
       },
       computed : {
+        lesMaterials() {
+          return this.materials.filter((m) => {
+            if(this.typeUser == 'gdepot') {
+              return m.localisation.match(this.userLocalisation)
+            }
+            else {
+              return m
+            }
+          })
+        },
         filterListSerials () {
           return this.serials.filter((s) => {
             return s.depot.match(this.filterState)
@@ -175,6 +182,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         },
         typeUser () {
           return this.$store.state.typeUser
+        },
+        userLocalisation() {
+          return this.$store.state.userLocalisation
         }
       }
     }
