@@ -440,7 +440,7 @@ class PdrafController extends Controller
             $all = [];
 
             foreach($data as $key => $value) {
-                $marge = (($value->montant_ttc/1.18) * (1.5/100));
+                $marge = round(($value->montant_ttc/1.18) * (1.5/100),0);
                 $options = "";
                 foreach($value->options() as $_value) {
                     $options .= $_value->id_option.",";
@@ -467,7 +467,8 @@ class PdrafController extends Controller
                     'created_at'    =>  $created_at->toDateTimeString(),
                     'confirm_at'    => $confirm_at ? $confirm_at->toDateTimeString() : null,
                     'remove_at' =>  $remove_at ? $remove_at->toDateTimeString() : null,
-                    'pay_at'    =>  $pay_at ? $pay_at->toDateTimeString() : null
+                    'pay_at'    =>  $pay_at ? $pay_at->toDateTimeString() : null,
+                    'pay_comission_id'  =>  $value->pay_comission_id
                 ];
 
             }
@@ -517,7 +518,7 @@ class PdrafController extends Controller
 
     public function getListCreationPdraf() {
         try {
-            $data = MakePdraf::all();
+            $data = MakePdraf::select()->orderBy('created_at','desc')->get();
             $all = [];
 
             foreach($data as $key => $value) {

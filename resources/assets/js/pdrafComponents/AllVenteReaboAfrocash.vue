@@ -6,7 +6,7 @@
         loader="dots"></loading>
 
        <div class="uk-container uk-container-large">
-           <h3 class="uk-margin-top">Tous les Reabonnements <a @click="getAllData()" class="uk-button" uk-tooltip="Rafraichir la liste"><span uk-icon="refresh"></span></a></h3>
+           <h3 class="uk-margin-top">Tous les Reabonnements ({{pdcListPayStateReabo.length}}) <a @click="getAllData()" class="uk-button" uk-tooltip="Rafraichir la liste"><span uk-icon="refresh"></span></a></h3>
            <hr class="uk-divider-small">
 
             <!-- MODAL CONFIRM PAIEMENT COMISSION -->
@@ -126,7 +126,7 @@
                     <div class="uk-width-1-6@m">
                         <label for=""><span uk-icon="credit-card"></span> Comission Total</label>
                         <span class="uk-input uk-border-rounded uk-text-center">{{ totalCom.total | numFormat }}</span>
-                        <span v-if="filterPdraf == '' && filterEtat == 'confirme'">
+                        <span v-if="filterPdraf == '' && filterEtat == 'confirme' && filterPayStatement == 'impayer'">
                             <button uk-toggle="target : #modal-pay-comission " class="uk-button uk-text-capitalize uk-button-small uk-button-primary uk-border-rounded">se faire payer</button>
                         </span>
                     </div>
@@ -152,7 +152,7 @@
                             <option value="confirme">confirme</option>
                             <option value="annule">annule</option>
                         </select>
-                        <span v-if="filterEtat == 'confirme'">
+                        <span v-if="filterEtat == 'confirme' && filterPayStatement == 'impayer'">
                             <button uk-toggle="target : #modal-pay-comission " class="uk-button uk-text-capitalize uk-button-small uk-text-small uk-button-primary uk-border-rounded">se faire payer</button>
                         </span>
                     </div>
@@ -249,7 +249,7 @@
                                 </template>
                             </td>
                             <td>
-                                <template v-if="r.pay_at">
+                                <template v-if="r.pay_comission_id">
                                     <span class="uk-alert-success" uk-icon="check"></span>
                                 </template>
                                 <template v-else>
@@ -412,6 +412,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                         })
                     }
 
+                    
                     if(response && response.data == 'done') {
                         this.isLoading = false
                         alert("Success !")
@@ -549,10 +550,10 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                         return l
                     }
                     else if(this.filterPayStatement == "payer") {
-                        return l.pay_at != null
+                        return l.pay_comission_id != null
                     }
                     else {
-                        return l.pay_at == null
+                        return l.pay_comission_id == null
                     }
                 })
             },

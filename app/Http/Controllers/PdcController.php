@@ -13,9 +13,12 @@ use App\TransactionAfrocash;
 use App\MakePdraf;
 use App\PayCommission;
 use App\ReaboAfrocash;
+use App\Credit;
 
 use App\Traits\Similarity;
 use App\Traits\Afrocashes;
+
+use Carbon\Carbon;
 
 
 
@@ -29,6 +32,7 @@ public function getCreateRequest(Request $request , MakePdraf $m) {
     try {
         return response()
             ->json($m->where('pdc_user_id',$request->user()->username)
+            ->orderBy('created_at','desc')
             ->get());
     } catch(AppException $e) {
         header("Erreur",true,422);
@@ -419,35 +423,52 @@ public function addNewPdc(Request $request) {
             $reaboAfrocash = ReaboAfrocash::whereIn('pdraf_id',$data_pdraf)
                 ->whereNull('remove_at')
                 ->whereNotNull('confirm_at')
+                ->whereNull('pay_comission_id')
                 ->get();
             
-            $_tmp = $request->user()->reaboGroupByPayId($data_pdraf);
-            $pay_request = PayCommission::whereIn('id',$_tmp)
-                ->where('status','unvalidated')
-                ->get();
             
-
-            if($pay_request->count() > 0) {
-                throw new AppException("Vous avez deja une demande de paiement de comissions en attente de traitement , Veuillez Ressayez plus tard :-)");
-            }
-
-            $pay->id = "pay_comission_".$request->user()->username.time();
-            $tmp = $pay->id;
-
             if($reaboAfrocash->count() <= 0 ) {
                 throw new AppException("Vous n'avez pas de comission !");
             }
-
+            
+            $pay->id = "pay_comission_".$request->user()->username.time();
+            $tmp = $pay->id;
             
             $pay->montant = 0;
 
             foreach($reaboAfrocash as $key => $value) {
-                $pay->montant += $value->comission;
+                $marge = round(($value->montant_ttc/1.18) * (1.5/100),0);
+                $pay->montant += ($value->comission + $marge);
             }
 
             if($pay->montant < 1000000 ) {
                 throw new AppException("Vous devez avoir au moins 1,000,000 GNF !");
             }
+
+            // EFFECTUER LA TRANSACTION
+            $receiver_account = $request->user()->afroCash('semi_grossiste')->first();
+            $sender_account = Credit::find('afrocash');
+
+            $receiver_account->solde += $pay->montant;
+            $sender_account->solde -= $pay->montant;
+
+
+            $trans = new TransactionAfrocash;
+            $trans->compte_credite = $receiver_account->numero_compte;
+            $trans->montant = $pay->montant;
+            $trans->motif = "Comission_Pdc_Afrocash";
+
+            // 
+
+            $pay->pay_at = Carbon::now();
+            $pay->status = 'validated';
+
+
+            $amount = $pay->montant;
+
+            $receiver_account->save();
+            $sender_account->save();
+            $trans->save();
 
             $pay->save();
 
@@ -460,23 +481,17 @@ public function addNewPdc(Request $request) {
 
             $_user = User::where('type','gcga')->get();
             foreach($_user as $value) {
-                $n = $this->sendNotification("Paiement Commission","Il y a une demande de paiement de commission de la part de : ".$request->user()->localisation,$value->username);
+                $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".$request->user()->localisation,$value->username);
                 $n->save();
             }
 
-
-
-            $n = $this->sendNotification("Paiement Commission","Vous avez envoye une demande de paiement de commission!",$request->user()->username);
+            $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".$request->user()->localisation,$request->user()->username);
             $n->save();
 
-            $n = $this->sendNotification("Paiement Commission",
-                "Il y a une demande de paiement de commission de la part de :".$request->user()->localisation,
-                'admin');
+            $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".$request->user()->localisation,'admin');
             $n->save();
 
-            $n = $this->sendNotification("Paiement Commission",
-                "Il y a une demande de paiement de commission de la part de :".$request->user()->localisation,
-                'admin');
+            $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".$request->user()->localisation,'root');
             $n->save();
             
             return response()
