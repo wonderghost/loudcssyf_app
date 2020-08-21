@@ -212,6 +212,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           if(response.data == 'done') {
             alert("Success !")
             Object.assign(this.$data,this.$options.data())
+            this.accountList()
           }
         } catch (error) {
           this.isLoading = false
@@ -235,6 +236,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             this.isLoading = false
             alert("Sucess!")
             Object.assign(this.$data,this.$options.data())
+            this.accountList()
           }
         }
         catch (error) {
