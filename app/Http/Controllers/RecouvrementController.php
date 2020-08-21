@@ -95,7 +95,9 @@ class RecouvrementController extends Controller
       try {
         $users_standarts = User::select('username')->where('type','v_standart')
           ->get();
-        $afrocash_account = Afrocash::select('numero_compte')->whereIn('vendeurs',$users_standarts)->get();
+        $afrocash_account = Afrocash::select('numero_compte')->whereIn('vendeurs',$users_standarts)
+          ->where('type','semi_grossiste')
+          ->get();
         
         $transactions = $ta->whereIn('compte_debite',$afrocash_account)
           ->orderBy('created_at','desc')
@@ -104,7 +106,7 @@ class RecouvrementController extends Controller
         $all = [];
         foreach($transactions as $key => $value) {
           $date = new Carbon($value->created_at);
-          $date->setLocale('fr_FR');
+          $date->setLocale('en_EN');
           $all[$key]  = [
             'date'  =>  $date->toFormattedDateString(),
             'expediteur'  => $value->afrocash()->vendeurs()->localisation,

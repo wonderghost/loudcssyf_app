@@ -91,7 +91,7 @@
             <label for=""> <span uk-icon="icon : users"></span> Vendeurs</label>
             <select class="uk-select uk-border-rounded" v-model="filterVendeurs">
               <option value="">Tous les Vendeurs</option>
-              <option :value="v.localisation" v-for="v in vStandart.slice(start,end)">{{v.localisation}}</option>
+              <option :value="v.localisation" v-for="v in vStandart" :key="v.localisation">{{v.localisation}}</option>
             </select>
           </div>
         </div>
