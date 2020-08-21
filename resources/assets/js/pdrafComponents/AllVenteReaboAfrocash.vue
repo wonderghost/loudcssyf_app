@@ -6,7 +6,7 @@
         loader="dots"></loading>
 
        <div class="uk-container uk-container-large">
-           <h3 class="uk-margin-top">Tous les Reabonnements ({{pdcListPayStateReabo.length}}) <a @click="getAllData()" class="uk-button" uk-tooltip="Rafraichir la liste"><span uk-icon="refresh"></span></a></h3>
+           <h3 class="uk-margin-top">Tous les Reabonnements ({{reaboCount}}) <a @click="getAllData()" class="uk-button" uk-tooltip="Rafraichir la liste"><span uk-icon="refresh"></span></a></h3>
            <hr class="uk-divider-small">
 
             <!-- MODAL CONFIRM PAIEMENT COMISSION -->
@@ -625,7 +625,19 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             },
             myToken() {
                 return this.$store.state.myToken
+            },
+            reaboCount() {
+                if(this.typeUser == 'pdc' ) {
+                    return this.pdcListPayStateReabo.length
+                }
+                else if(this.typeUser == 'pdraf') {
+                    return this.pdrafListPayStateReabo.length
+                }
+                else {
+                    return this.listForPayStateReabo.length
+                }
             }
+
         }
     }
 </script>
