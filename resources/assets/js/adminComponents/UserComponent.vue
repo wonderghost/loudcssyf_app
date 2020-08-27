@@ -36,7 +36,7 @@
             </button> 
           </template>
           <template v-else>
-            <a :href="userEditLink+'/'+user.username" :id="user.username" class="uk-button uk-text-small uk-button-small uk-button-primary uk-border-rounded uk-text-capitalize uk-box-shadow-small">editer <span uk-icon="icon : pencil"></span> </a>
+            <router-link :to="'/user/edit/'+user.username_encrypted" class="uk-button uk-text-small uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-text-capitalize"><span uk-icon="pencil"></span> Editer</router-link>
             <button
               uk-toggle="target : #reset-modal"
               @click="userToReset = user.localisation , userId = user.username"

@@ -22,7 +22,8 @@
 <script>
     export default {
       mounted () {
-
+        this.search("")
+        this.filterUserByType("")
       },
         data () {
           return {

@@ -50,41 +50,53 @@
             <!-- ADMIN -->
             <template v-if="typeUser == 'admin' || typeUser == 'commercial' || typeUser == 'gcga'">
                 <div class="uk-grid-small" uk-grid>
-                    <div class="uk-width-1-6@m">
-                        <label for=""><span uk-icon="users"></span> Utilisateur</label>
-                        <select v-model="filterPdraf" class="uk-select uk-border-rounded">
-                            <option value="">Tous</option>
-                            <option v-for="(p,index) in pdrafList" :key="index" :value="p.user.username">{{p.user.localisation}}</option>
-                        </select>
+                    <div class="uk-grid-small uk-width-1-2@m" uk-grid>
+                        <div class="uk-width-1-4@m">
+                            <label for=""><span uk-icon="users"></span> Utilisateur</label>
+                            <select v-model="filterPdraf" class="uk-select uk-border-rounded">
+                                <option value="">Tous</option>
+                                <option v-for="(p,index) in pdrafList" :key="index" :value="p.user.username">{{p.user.localisation}}</option>
+                            </select>
+                        </div>
+                        <div class="uk-width-1-4@m">
+                            <label for="">Paiement</label>
+                            <select v-model="filterPayStatement" class="uk-select uk-border-rounded">
+                                <option value="">Tous</option>
+                                <option value="payer">payer</option>
+                                <option value="impayer">impayer</option>
+                            </select>
+                        </div>
+                        <div class="uk-width-1-4@m">
+                            <label for="">Etat</label>
+                            <select v-model="filterEtat" class="uk-select uk-border-rounded">
+                                <option value="">Tous</option>
+                                <option value="confirme">confirme</option>
+                                <option value="annule">annule</option>
+                                <option value="en_instance">en instance</option>
+                            </select>
+                        </div>
+                        <div class="uk-width-1-4@m">
+                            <label for="">Marge</label>
+                            <select v-model="filterMargeStatement" class="uk-select uk-border-rounded">
+                                <option value="">Tous</option>
+                                <option value="payer">payer</option>
+                                <option value="impayer">impayer</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="uk-width-1-6@m">
-                        <label for="">Paiement</label>
-                        <select v-model="filterPayStatement" class="uk-select uk-border-rounded">
-                            <option value="">Tous</option>
-                            <option value="payer">payer</option>
-                            <option value="impayer">impayer</option>
-                        </select>
-                    </div>
-                    <div class="uk-width-1-6@m">
-                        <label for="">Etat</label>
-                        <select v-model="filterEtat" class="uk-select uk-border-rounded">
-                            <option value="">Tous</option>
-                            <option value="confirme">confirme</option>
-                            <option value="annule">annule</option>
-                            <option value="en_instance">en instance</option>
-                        </select>
-                    </div>
-                    <div class="uk-width-1-6@m">
-                        <label for="">Total Comission Pdraf</label>
-                        <span class="uk-input uk-border-rounded">{{totalCom.com | numFormat }}</span>
-                    </div>
-                    <div class="uk-width-1-6@m">
-                        <label for="">Total Marge</label>
-                        <span class="uk-input uk-border-rounded">{{totalCom.mar | numFormat }}</span>
-                    </div>
-                    <div class="uk-width-1-6@m">
-                        <label for=""><span uk-icon="credit-card"></span> Comission Total</label>
-                        <span class="uk-input uk-border-rounded uk-text-center">{{ totalCom.total | numFormat }}</span>
+                    <div class="uk-grid-small uk-margin-remove uk-width-1-2@m" uk-grid>
+                        <div class="uk-width-1-4@m">
+                            <label for="">Total Comission Pdraf</label>
+                            <span class="uk-input uk-border-rounded">{{totalCom.com | numFormat }}</span>
+                        </div>
+                        <div class="uk-width-1-4@m">
+                            <label for="">Total Marge</label>
+                            <span class="uk-input uk-border-rounded">{{totalCom.mar | numFormat }}</span>
+                        </div>
+                        <div class="uk-width-1-4@m">
+                            <label for=""><span uk-icon="credit-card"></span> Comission Total</label>
+                            <span class="uk-input uk-border-rounded uk-text-center">{{ totalCom.total | numFormat }}</span>
+                        </div>
                     </div>
                 </div>
             </template>
@@ -149,6 +161,7 @@
                     <div class="uk-width-1-6@m">
                         <label for="">Etat</label>
                         <select v-model="filterEtat" class="uk-select uk-border-rounded">
+                            <option value="">Tous</option>
                             <option value="confirme">confirme</option>
                             <option value="annule">annule</option>
                         </select>
@@ -187,7 +200,7 @@
                 </thead>
                 <tbody>
                     <template v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'">
-                        <tr v-for="(r,index) in listForPayStateReabo" :key="index">
+                        <tr v-for="(r,index) in listForMagePayState" :key="index">
                             <td>{{r.created_at}}</td>
                             <td>{{r.materiel}}</td>
                             <td>{{r.formule}}</td>
@@ -195,7 +208,15 @@
                             <td>{{r.option}}</td>
                             <td>{{r.montant |numFormat}}</td>
                             <td>{{r.pdraf.localisation}}</td>
-                            <td>{{r.marge | numFormat}}</td>
+                            <td>
+                                <template v-if="r.pay_comission_id">
+                                    <span class="uk-alert-success">{{r.marge | numFormat}}</span>
+                                </template>
+                                <template v-else>
+                                    <span class="uk-alert-warning">{{r.marge | numFormat}}</span>
+                                </template>
+
+                            </td>
                             <td>{{r.total | numFormat }}</td>
                             <td>
                                 <template v-if="r.confirm_at">
@@ -317,8 +338,9 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 filterPdraf : "",
                 password_confirmation : "",
                 errors : [],
-                filterEtat : "confirme",
-                filterPayStatement : "impayer"
+                filterEtat : "",
+                filterPayStatement : "",
+                filterMargeStatement : ""
             }
         },
         methods : {
@@ -486,10 +508,14 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     })
                 }
                 else if(this.typeUser == 'admin' || this.typeUser == 'commercial' || this.typeUser == 'gcga') {
-                    this.listForPayStateReabo.forEach(r => {
+                    this.listForMagePayState.forEach(r => {
                         som += r.total
-                        sum += r.comission
+                        // sum += r.comission
                         tot += r.marge
+                    })
+
+                    this.listForPayStateReabo.forEach( r => {
+                        sum += r.comission
                     })
                 }
                 return {
@@ -497,6 +523,19 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     com : sum ,
                     mar : tot
                 }
+            },
+            listForMagePayState() {
+                 return this.listForPayStateReabo.filter((l) => {
+                    if(this.filterMargeStatement == "") {
+                        return l
+                    }
+                    else if(this.filterMargeStatement == "payer") {
+                        return l.pay_comission_id != null
+                    }
+                    else {
+                        return l.pay_comission_id == null
+                    }
+                })
             },
             listForPayStateReabo() {
                 return this.listForAllbyEtat.filter((l) => {
@@ -602,8 +641,11 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     if(this.filterEtat == 'confirme') {
                         return (l.confirm_at != null)
                     }
-                    else {
+                    else if(this.filterEtat == 'annule'){
                         return l.remove_at != null
+                    }
+                    else {
+                        return l
                     }
                 })
             },

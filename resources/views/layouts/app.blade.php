@@ -2,14 +2,14 @@
 <html lang="fr" dir="ltr">
   <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-130660555-4"></script>
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-130660555-4"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
       gtag('config', 'UA-130660555-4');
-    </script>
+    </script> -->
 
     <meta http-equiv="Cache-Control" content="no-cache">
     <meta charset="utf-8">
@@ -39,7 +39,6 @@
     </div>
 
     <script type="application/javascript" src="{{asset('js/jquery-3.4.1.min.js')}}"></script>
-    <script type="application/javascript" src="{{asset('js/jquery-ui.min.js')}}"></script>
     <!-- UIkit JS -->
     <script type="application/javascript" src="{{asset('js/uikit.min.js')}}"></script>
     <script type="application/javascript" src="{{asset('js/uikit-icons.min.js')}}"></script>

@@ -47,6 +47,8 @@ use App\TransfertSerial;
 use App\DeficientMaterial;
 use Illuminate\Support\Facades\DB;
 
+
+
 class AdminController extends Controller
 {
     //
@@ -61,42 +63,42 @@ class AdminController extends Controller
     }
 
     // TABLEAU DE BORD
-    public function dashboard(Request $request , Promo $p) {
-      // VERIFICATION ET DESACTIVATION DE LA PROMO
-      # recuperation de la promo active
-      $promoActive = $p->where('status_promo','actif')->first();
-      if($promoActive) {
-        #verifier la date de fin de la promo
+    // public function dashboard(Request $request , Promo $p) {
+    //   // VERIFICATION ET DESACTIVATION DE LA PROMO
+    //   # recuperation de la promo active
+    //   $promoActive = $p->where('status_promo','actif')->first();
+    //   if($promoActive) {
+    //     #verifier la date de fin de la promo
         
-        $today = Carbon::now();
+    //     $today = Carbon::now();
 
-        $promo_debut_to_carbon_date = new Carbon($promoActive->debut);
+    //     $promo_debut_to_carbon_date = new Carbon($promoActive->debut);
 
-        $promo_fin_to_carbon_date = new Carbon($promoActive->fin);
+    //     $promo_fin_to_carbon_date = new Carbon($promoActive->fin);
 
-        if($promo_fin_to_carbon_date >= $today && $today >= $promo_debut_to_carbon_date) {
-          // la promo n'est pas encore fini
-        } else {
-            // fin de la promo
-            $promoActive->status_promo = 'inactif';
-            $promoActive->save();
-            return redirect('/admin')->withMessage("La promo prends fin maintenant !");
-        }
-      }
+    //     if($promo_fin_to_carbon_date >= $today && $today >= $promo_debut_to_carbon_date) {
+    //       // la promo n'est pas encore fini
+    //     } else {
+    //         // fin de la promo
+    //         $promoActive->status_promo = 'inactif';
+    //         $promoActive->save();
+    //         return redirect('/admin')->withMessage("La promo prends fin maintenant !");
+    //     }
+    //   }
       
-      // dump($today);
-      // dd($promoActive);
-      // 
-      return view('admin.dashboard');
-    }
+    //   // dump($today);
+    //   // dd($promoActive);
+    //   // 
+    //   return view('admin.dashboard');
+    // }
     // RECOUVREMENT 
-    public function recourvementIndex() {
-      return view('recouvrement.operations');
-    }
-    // etat du depot central
-    public function etatDepotCentral() {
-      return view('admin.depot-central');
-    }
+    // public function recourvementIndex() {
+    //   return view('recouvrement.operations');
+    // }
+    // // etat du depot central
+    // public function etatDepotCentral() {
+    //   return view('admin.depot-central');
+    // }
     // recuperation etat du depot Central
     public function getEtatDepotCentral(Request $request , Produits $p) {
       //
@@ -146,21 +148,14 @@ class AdminController extends Controller
         }
     }
 
-    // AJOUTER UN USER
-    public function getFormUser() {
-    	return view('admin.add-user');
-    }
-    // LIST DES USERS
-    public function listUser() {
-    	return view('admin.list-users');
-    }
-
     public function getListUsers(Request $request) {
       try {
         $users = User::where('type','<>','admin')->orderBy('localisation','desc')->get();
         $userCollection = collect([]);
         foreach ($users as $key => $element) {
-          $userCollection->prepend($element->only(['username','type','email','phone','localisation','status']));
+          $_tmp = $element->only(['username','type','email','phone','localisation','status']);
+          $_tmp['username_encrypted'] = Crypt::encryptString($element->username);
+          $userCollection->prepend($_tmp);
         }
         return response()->json($userCollection);
       } catch (AppException $e) {
@@ -263,36 +258,64 @@ class AdminController extends Controller
 
 
     // Edit users
-    public function editUser($username) {
-        $user = User::select()->where('username',$username)->first();
-        $agence = Agence::select()->where('reference',$user->agence)->first();
-        return view('admin.edit-user')->withUtilisateur($user)->withAgence($agence);
+    public function editUser($slug) {
+      try {
+        $user = User::select()->where('username',Crypt::decryptString($slug))->first();
+
+        $agence = $user->agence();
+
+        $user->numdist = $agence->num_dist;
+        $user->societe = $agence->societe;
+        $user->rccm = $agence->rccm;
+        $user->ville = $agence->ville;
+        $user->adresse = $agence->adresse;
+        
+
+        return response()
+          ->json($user);          
+        }
+        catch(AppException $e) {
+          header("Erreur",true,422);
+          die(json_encode($e->getMessage()));
+        }
     }
+    
     // envoi du formulaire de modification
-    public function makeEditUser($username,UserEditRequest $request) {
-        $user = User::select()->where('username',$username)->first();
-        // verifier si l'email n'est pas repete
-        if(!User::where("email",$request->input('email'))->where('username',$username)->first() && User::where('email',$request->input("email"))->first()) {
-          return back()->with("_errors","Adresse email existante!");
+    public function editUserRequest(Request $request) {
+      try {
+        $validation = $request->validate([
+          'email' =>  'required|email',
+          'phone' =>  'required',
+          'localisation'  =>  'required',
+          'password_confirmation' =>  'required'
+        ]);
+
+        if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
+          throw new AppException("Mot de passe invalide!");
         }
-        // verifier si la localisation exist deja
-        if(!User::where('localisation',$request->input("localisation"))->where('username',$username)->first() && User::where("localisation",$request->input('localisation'))->first()) {
-          return back()->with("_errors","Localisation existante!");
-        }
+        $user = User::select()->where('username',$request->input('username'))->first();
+
         $user->email = $request->input('email');
         $user->phone = $request->input('phone');
         $user->localisation = $request->input('localisation');
 
-        Agence::select()->where('reference',$user->agence)->update([
-            'adresse' => $request->input('adresse'),
-            'ville' => $request->input('ville'),
-            'rccm' => $request->input('rccm'),
-            'societe' => $request->input('societe'),
-            'num_dist' => $request->input('num_dist')
-        ]);
+        $agence = $user->agence();
+        $agence->societe = $request->input('societe');
+        $agence->num_dist = $request->input('numdist');
+        $agence->rccm = $request->input('rccm');
+        $agence->ville = $request->input('ville');
+        $agence->adresse = $request->input('adresse');
 
         $user->save();
-        return redirect('/admin/edit-users/'.$username)->with('success',"Modification reussi!");
+        $agence->save();
+        
+        return response()
+          ->json('done');
+      }
+      catch(AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
+      }
     }
 
     public function blockUser(Request $request) {
@@ -319,13 +342,13 @@ class AdminController extends Controller
       }
     }
     // liste de tous les depots
-    public function listDepot() {
-        return view('logistique.list-depot');
-    }
-    //
-    public function formule() {
-        return view('admin.formule');
-    }
+    // public function listDepot() {
+    //     return view('logistique.list-depot');
+    // }
+    // //
+    // public function formule() {
+    //     return view('admin.formule');
+    // }
     public function listFormule(Formule $f,Option $op) {
       try {
           return response()
@@ -387,9 +410,9 @@ class AdminController extends Controller
     }
 
     //
-    public function operationAfrocash() {
-      return view('admin.afrocash-credit');
-    }
+    // public function operationAfrocash() {
+    //   return view('admin.afrocash-credit');
+    // }
 
     public function historiqueApport() {
       try {
@@ -620,9 +643,9 @@ class AdminController extends Controller
 
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
   // Commandes
-  public function allCommandes() {
-    return view('admin.all-commandes');
-  }
+  // public function allCommandes() {
+  //   return view('admin.all-commandes');
+  // }
 
   public function getAllCommandes(Request $request , CommandMaterial $c) {
     try {
@@ -1063,7 +1086,7 @@ class AdminController extends Controller
     }
   }
 
-  public function creationPdraf() {
-    return view('admin.pdraf.list');
-  }
+  // public function creationPdraf() {
+  //   return view('admin.pdraf.list');
+  // }
 }

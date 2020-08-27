@@ -2,19 +2,18 @@
 <html lang="fr" dir="ltr">
   <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-130660555-4"></script>
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-130660555-4"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
       gtag('config', 'UA-130660555-4');
-    </script>
+    </script> -->
     
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{csrf_token()}}">
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <!-- UIkit CSS -->
   <link rel="stylesheet" href="{{asset('css/uikit.min.css')}}">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
@@ -66,7 +65,6 @@
     </div>
 
     <script type="application/javascript" src="{{asset('js/jquery-3.4.1.min.js')}}"></script>
-    <script type="application/javascript" src="{{asset('js/jquery-ui.min.js')}}"></script>
     <!-- UIkit JS -->
     <script type="application/javascript" src="{{asset('js/uikit.min.js')}}"></script>
     <script type="application/javascript" src="{{asset('js/uikit-icons.min.js')}}"></script>

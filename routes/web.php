@@ -140,8 +140,11 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/list-material','LogistiqueController@listMaterial');
 
 	// editer les infos utilisateurs
-	Route::get('/admin/edit-users/{username}','AdminController@editUser');
-	Route::post('/admin/edit-users/{username}','AdminController@makeEditUser');
+	// Route::get('/admin/edit-users/{username}','AdminController@editUser');
+	Route::get('/admin/users/edit/{slug}','AdminController@editUser');
+	Route::post('/admin/users/edit-request','AdminController@editUserRequest');
+	// Route::get('/admin/users/edit/get-infos','AdminController@getInfos');
+	// Route::post('/admin/edit-users/{username}','AdminController@makeEditUser');
 	// bloquer un utilisateur
 	Route::post('/admin/block-user','AdminController@blockUser');
 	Route::post('/admin/unblock-user','AdminController@unblockUser');

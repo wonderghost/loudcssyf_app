@@ -8,4 +8,6 @@ class Agence extends Model
 {
     //
     protected $table = 'agence';
+    protected $keyType = 'string';
+    protected $primaryKey = 'reference';
 }
