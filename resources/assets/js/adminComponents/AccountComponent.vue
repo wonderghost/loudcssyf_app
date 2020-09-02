@@ -3,7 +3,10 @@
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#1e87f0"
+        background-color="#fff"></loading>
 
     <h3>Compte Credit</h3>
     <hr class="uk-divider-small">
@@ -78,10 +81,8 @@
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
     export default {
-      created () {
-        this.isLoading = true
-      },
         mounted() {
+          UIkit.offcanvas($("#side-nav")).hide();
           this.getSolde()
           this.getsoldeVendeurs()
         },
@@ -115,6 +116,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         methods : {
           getSolde : async function () {
             try {
+              this.isLoading = true
+              
               this.soldes.total = 0
               if(this.typeUser == 'admin' || this.typeUser == 'commercial') {
                 var response = await axios.get('/admin/get-global-solde')

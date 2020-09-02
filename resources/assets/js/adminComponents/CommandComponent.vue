@@ -3,7 +3,10 @@
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#1e87f0"
+        background-color="#fff"></loading>
 
     <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
         <li><a @click="start=0 , end=10 , currentPage = 1" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiel</a></li>
@@ -95,17 +98,17 @@
 <script>
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
+import creditComponent from './CreditComponent.vue'
 
     export default {
-      created () {
-        this.isLoading = true
-      },
         mounted() {
+          UIkit.offcanvas($("#side-nav")).hide();
           this.getMaterialCommande()
           this.getSoldeLogistique()
         },
         components : {
-          Loading
+          Loading,
+          'credit-component' : creditComponent
         },
         props : {
           theUser : String
@@ -132,6 +135,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           },
           getMaterialCommande : async function () {
             try {
+              this.isLoading = true
               if(this.typeUser == 'admin' || this.typeUser == 'commercial') {
                 var response = await axios.get('/admin/commandes/all')
               } else if(this.typeUser == 'logistique') {

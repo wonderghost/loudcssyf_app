@@ -3,7 +3,10 @@
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#1e87f0"
+        background-color="#fff"></loading>
 
     <h3 class="uk-margin-top">Visu Objectifs</h3>
     <hr class="uk-divider-small">    
@@ -86,6 +89,7 @@ import VeHistogram from 'v-charts/lib/histogram.common'
             VeHistogram
         },
         mounted() {
+            UIkit.offcanvas($("#side-nav")).hide();
             this.getRecrutementStat()
         },
         data() {
@@ -116,6 +120,7 @@ import VeHistogram from 'v-charts/lib/histogram.common'
         methods : {
             getRecrutementStat : async function () {
                 try {
+                    this.isLoading = true
                     // get Recrutement Stat
                     let response = await axios.get('/admin/objectif/recrutement')
                     // get Reabonnement Stat
@@ -123,8 +128,12 @@ import VeHistogram from 'v-charts/lib/histogram.common'
 
                     response = await axios.get('/admin/objectif/reabonnement')
                     this.reabonnementData.rows = response.data
+
+                    this.isLoading = false
                     
                 } catch(error) {
+                    this.isLoading = false
+                    
                     if(error.response.data.errors) {
                         let errorTab = error.response.data.errors
                         for (var prop in errorTab) {

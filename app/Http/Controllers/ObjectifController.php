@@ -168,6 +168,7 @@ class ObjectifController extends Controller
                 return response()
                     ->json($tmp);
             }
+            throw new AppException("Aucune donnees!");
         } catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));

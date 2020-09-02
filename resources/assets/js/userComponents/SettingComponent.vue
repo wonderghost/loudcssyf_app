@@ -101,6 +101,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             Loading
         },
         mounted() {
+            UIkit.offcanvas($("#side-nav")).hide();
             this.getInfosProfile()
         },
         data () {

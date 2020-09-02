@@ -21,11 +21,11 @@
   <link rel="stylesheet" href="{{asset('css/style.css')}}?<?php echo filemtime('css/style.css') ?>">
   <link rel="icon" href="/img/logo.PNG" type="image/png">
   <script type="text/javascript">
-  function noBack(){window.history.forward()}
-  noBack();
-  window.onload=noBack;
-  window.onpageshow=function(evt){if(evt.persisted)noBack()}
-  window.onunload=function(){void(0)}
+    function noBack(){window.history.forward()}
+    noBack();
+    window.onload=noBack;
+    window.onpageshow=function(evt){if(evt.persisted)noBack()}
+    window.onunload=function(){void(0)}
   </script>
   <title> LOUDCSSYF </title>
   </head>
@@ -37,30 +37,17 @@
     <div id="app">
       <set-rapport-parametre></set-rapport-parametre>
       <serial-search></serial-search>
-      <pay-comission-component></pay-comission-component>
       <deblocage-cga></deblocage-cga>
       <feedback></feedback>
       <home-component></home-component>
       <tools the-user="{{Auth::user()->type}}"></tools>
-      @if(Auth::user()->type == 'v_da' || Auth::user()->type == 'v_standart')
-      <promo the-user="{{Auth::user()->type}}"></promo>
-      @endif
-
       <router-view></router-view>
-      <!-- <div class="uk-margin-bottom">
-        @yield('content')
-      </div> -->
-      <!-- @if(Auth::user()->type == 'v_da' || Auth::user()->type == 'v_standart' || Auth::user()->type == 'admin' || Auth::user()->type == 'commercial') -->
-      <!-- <alert-abonnement></alert-abonnement> -->
-      <!-- @endif -->
-      <!-- FOOTER -->
-      
-      <div class="uk-section uk-section-muted uk-padding-small uk-margin-top">
-        <div class="uk-container uk-container-large">
-          <p class="uk-text-center">
-            &copy; COPYRIGHT/LOUDCSSYF-SARL/{{date('Y')}}/LAYEDIST v2.0
-          </p>
-        </div>
+    </div>
+    <div class="uk-section uk-section-muted uk-padding-small uk-margin-top uk-visible@m ">
+      <div class="uk-container uk-container-large">
+        <p class="uk-text-center">
+          &copy; COPYRIGHT/LOUDCSSYF-SARL/{{date('Y')}}/LAYEDIST v2.0
+        </p>
       </div>
     </div>
 

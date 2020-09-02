@@ -69,10 +69,7 @@ class LogistiqueController extends Controller
         'serial' => $serials]);
     }
     // ravitailler un depot
-    // public function ravitaillerDepot() {
-    //   return view('logistique.ravitailler-depot');
-    // }
-
+    
     // Ravitaillement des depot par le responsable logistique
 
     public function sendRavitaillementDepot(Request $request) {
@@ -222,24 +219,6 @@ class LogistiqueController extends Controller
       return response()->json('fail');
     }
 
-    // public function makeDepot() {
-    // 	$depots = Depots::all();
-    //   $gestDepot = User::where('type','gdepot')->get();
-    // 	return view('logistique.add-depot')->withDepots($depots)->withUserdepot($gestDepot);
-    // }
-
-    // public function addDepot(DepotRequest $request) {
-    // 	$depot = new Depots;
-    // 	$depot->localisation = $request->input('localisation');
-    //   $depot->vendeurs = $request->input('vendeurs');
-    //   if(Depots::where('vendeurs',$depot->vendeurs)->first()) {
-    //     // CE VENDEURS EXISTE DEJA POUR UN DEPOT
-    //     return redirect('/admin/add-depot')->with('_errors',"Utilisateur deja associe a un depot existant!");
-    //   }
-    // 	$depot->save();
-    // 	return redirect('/admin/add-depot')->with('success',"Nouveau depot ajouté!");
-    // }
-
     // ajout d'un material dans le depot central
     public function addMaterial(MaterialRequest $request) {
       try {
@@ -279,20 +258,6 @@ class LogistiqueController extends Controller
       }
     }
 
-    // public function completeRegistration() {
-    //     if(!session('produit')) {
-    //         return redirect('/admin/add-depot')->with('_errors',"Enregistrement incomplete, Ressayez !");
-    //     }
-    //     return view('logistique.complete-registration');
-    // }
-
-    // public function completRegistrationFinal(Request $request) {
-
-    // }
-
-
-
-
     public function findMaterial(Request $request) {
         if($temp = $this->isExisteMaterialName($request->input('wordSearch'))) {
             return response()->json($temp);
@@ -308,11 +273,6 @@ class LogistiqueController extends Controller
         return response()->json('done');
     }
     // LISTE DES MATERIELS
-
-    // public function listMaterial() {
-    //     $depots = Depots::all();
-    //     return view('logistique.list-material')->withDepots($depots);
-    // }
 
     public function getListMaterial(Request $request) {
         $produit = [];
@@ -342,10 +302,6 @@ class LogistiqueController extends Controller
     }
 
     // historique de ravitaillement du depot
-    // public function historyDepot() {
-    //     $depot = Depots::all();
-    //     return view('logistique.history-depot')->withDepots($depot);
-    // }
 
     //
     public function getHistoryDepot(Request $request) {
@@ -361,20 +317,6 @@ class LogistiqueController extends Controller
         return response()->json($all);
     }
 // RAVITAILLEMENT VENDEUR
-  // public function addStock($commande) {
-  //     // recuperer le vendeurs qui a emis la commande
-  //     // dump($this->CommandChangeStatus($commande,$user->username));
-  //   $user = CommandMaterial::where('id_commande',$commande)->first()->vendeurs()->first();
-  //   $this->CommandChangeStatus($commande,$user->username);    
-  //   // die();
-
-  //   if($this->changeCommandStatusGlobale($commande)) {
-  //     return redirect('/user/commandes');
-  //   };
-  //   return view('logistique.add-ravitaillement')->withCommande($commande);
-  // }
-
-  // COMMAND STATE TEST
 
   public function commandStateTest($commande) {
     try {
@@ -519,9 +461,7 @@ class LogistiqueController extends Controller
         return User::select()->where('type','v_da')->orWhere('type','v_standart')->get();
     }
 
-    // public function inventory() {
-    //   return view('logistique.inventory');
-    // }
+    
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     public function allVendeurs(User $u) {
       try {
@@ -608,9 +548,7 @@ class LogistiqueController extends Controller
       return $all;
     }
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    // public function inventoryVendeur() {
-    //   return view('logistique.my-inventory');
-    // }
+
 
     //
     public function makeEditMaterial(Request $request , Produits $p) {
@@ -657,17 +595,7 @@ class LogistiqueController extends Controller
     }
     //
 
-    // public function completeTransfert() {
-    //     if(!session('vendeur')) {
-    //         return back()->with('_errors',"Operation annulée, Ressayez!");
-    //     }
-    //     return view('logistique.complete-transfert');
-    // }
-
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    // public function allCommandes() {
-    //   return view('logistique.list-commandes');
-    // }
 
 
     public function getParaboleDu($vendeur) {

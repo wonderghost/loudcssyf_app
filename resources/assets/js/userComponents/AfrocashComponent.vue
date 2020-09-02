@@ -3,7 +3,10 @@
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#1e87f0"
+        background-color="#fff"></loading>
 
         <h3>Operation</h3>
         <hr class="uk-divider-small">
@@ -120,11 +123,9 @@ import 'vue-loading-overlay/dist/vue-loading.css';
     components : {
       Loading
     },
-    created () {
-      this.isLoading = true
-    },
     mounted() {
       //
+      UIkit.offcanvas($("#side-nav")).hide();
       this.accountList()
     },
     data () {
@@ -195,10 +196,13 @@ import 'vue-loading-overlay/dist/vue-loading.css';
       },
       accountList : async function () {
         try {
+          this.isLoading = true
           let response = await axios.get('/user/afrocash/get-account-list')
-          this.accounts = response.data.account_da
-          this.pdcList = response.data.account_pdc
-          this.isLoading = false
+          if(response && response.data) {
+            this.accounts = response.data.account_da
+            this.pdcList = response.data.account_pdc
+            this.isLoading = false
+          }
         } catch (e) {
             alert(e)
         }

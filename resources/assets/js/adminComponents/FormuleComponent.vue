@@ -58,12 +58,15 @@
 <script>
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
+import addFormule from './addFormuleComponent.vue'
 
     export default {
         components : {
-            Loading
+            Loading,
+            'add-formule-component' : addFormule
         },
         mounted() {
+            UIkit.offcanvas($("#side-nav")).hide();
             this.getAllFormule()
         },
         data() {

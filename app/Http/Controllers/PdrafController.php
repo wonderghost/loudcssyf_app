@@ -435,8 +435,10 @@ class PdrafController extends Controller
 
     public function getAllReaboAfrocash(Request $request) {
         try {
-            // $data = $request->user()->reaboAfrocash();
-            $data = ReaboAfrocash::select()->orderBy('created_at','desc')->get();
+            // list reabonnement afrocash
+            $data = ReaboAfrocash::select()
+                // ->whereMonth('created_at',Date('m'))
+                ->orderBy('created_at','desc')->get();
             $all = [];
 
             foreach($data as $key => $value) {
@@ -480,6 +482,24 @@ class PdrafController extends Controller
             die(json_encode($e->getMessage()));
         }
     }
+
+
+    // HISTORIQUE DE PAIEMENT DE COMISSION POUR PDRAF
+
+    public function getAllPayComission(Request $request , ReaboAfrocash $ra) {
+        try {
+            $reaboAfrocashGroupByPayDate = $ra->whereNotNull('pay_at')->get();
+            
+            return response()
+                ->json($reaboAfrocashGroupByPayDate);
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    // ##############
 
     public function getAllPdraf() {
         try {

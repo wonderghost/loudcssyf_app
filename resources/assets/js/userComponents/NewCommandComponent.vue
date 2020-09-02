@@ -3,7 +3,10 @@
   <loading :active.sync="isLoading"
       :can-cancel="false"
       :is-full-page="fullPage"
-      loader="dots"></loading>
+      loader="bars"
+      :opacity="1"
+      color="#fff"
+      background-color="#083050"></loading>
 
       <h3>Nouvel Commande</h3>
       <hr class="uk-divider-small">
@@ -310,22 +313,23 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               this.formData._token = this.myToken
               this.formData.reference_material = this.material.reference
               let response = await axios.post('/user/new-command/material',this.formData)
-              if(response.data == 'done') {
+
+              if(response && response.data == 'done') {
                 
+                Object.assign(this.$data,this.$options.all())
                 this.isLoading = false
                 alert("Success !")
-                Object.assign(this.$data,this.$options.all())
               }
             } catch (error) {
-              this.isLoading = false
-              if(error.response.data.errors) {
-                let errorTab = error.response.data.errors
-                for (var prop in errorTab) {
-                  this.errors.push(errorTab[prop][0])
+                this.isLoading = false
+                if(error.response.data.errors) {
+                  let errorTab = error.response.data.errors
+                  for (var prop in errorTab) {
+                    this.errors.push(errorTab[prop][0])
+                  }
+                } else {
+                    this.errors.push(error.response.data)
                 }
-              } else {
-                  this.errors.push(error.response.data)
-              }
             }
           },
           sendCommandCga : async function () {

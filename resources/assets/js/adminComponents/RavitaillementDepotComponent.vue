@@ -3,7 +3,10 @@
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#fff"
+        background-color="#083050"></loading>
 
         <h3>Ravitaillement Depot</h3>
         <hr class="uk-divider-small">
@@ -71,6 +74,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       this.isLoading = true
     },
     mounted() {
+      UIkit.offcanvas($("#side-nav")).hide();
       this.getInfos()
     },
     components : {

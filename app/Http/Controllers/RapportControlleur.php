@@ -180,7 +180,9 @@ public function PayCommissionListForVendeurs(Request $request) {
     try {
       $result = $pay->select()
         ->whereIn('status',['unvalidated','validated'])
-        ->orderBy('created_at','desc')->get();
+        ->orderBy('created_at','desc')
+        ->paginate(100);
+        
       $all = [];
       
       foreach ($result as $key => $value) {
@@ -202,7 +204,16 @@ public function PayCommissionListForVendeurs(Request $request) {
       }
 
       return response()
-        ->json($all);
+        ->json([  
+          'data'  =>  $all,
+          'next_url'  =>  $result->nextPageUrl(),
+          'last_url'  =>  $result->previousPageUrl(),
+          'per_page'  =>  $result->perPage(),
+          'current_page'  =>  $result->currentPage(),
+          'first_page'  =>  $result->url(1),
+          'first_item'  =>  $result->firstItem(),
+          'total' =>  $result->total()
+        ]);
 
     } catch (AppException $e) {
       header("Erreur!",true,422);

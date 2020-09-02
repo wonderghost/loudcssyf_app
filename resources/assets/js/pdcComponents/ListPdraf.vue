@@ -3,7 +3,10 @@
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#fff"
+        background-color="#083050"></loading>
 
         <div class="uk-container uk-container-large">
             <h3 class="uk-margin-top">Tous les Pdraf</h3>
@@ -15,12 +18,15 @@
 <script>
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
+import UserList from '../userComponents/UserListComponent.vue'
 
 export default {
     components : {
-        Loading
+        Loading,
+        'users-list' : UserList
     },
     mounted() {
+        UIkit.offcanvas($("#side-nav")).hide();
         this.getList()
     },
     data() {

@@ -3,7 +3,10 @@
        <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#fff"
+        background-color="#083050"></loading>
 
        <div class="uk-container uk-container-large">
            <h3 class="uk-margin-top">Retour Afrocash</h3>
@@ -57,6 +60,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             Loading
         },
         mounted() {
+            UIkit.offcanvas($("#side-nav")).hide();
             this.getInfos()
         },
         data() {

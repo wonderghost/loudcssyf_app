@@ -9,9 +9,13 @@
 </template>
 
 <script>
+import TransactionAfrocash from '../userComponents/TransactionAfrocashComponent.vue'
     export default {
+        components : {
+            'transaction-afrocash' : TransactionAfrocash
+        },
         mounted() {
-            
+          UIkit.offcanvas($("#side-nav")).hide();  
         },
         computed : {
             typeUser() {

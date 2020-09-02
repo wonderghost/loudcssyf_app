@@ -55,7 +55,8 @@
         </span>
       </template>
     <template v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'" id="">
-      <a class="uk-button uk-button-small border-button button-pay-comission" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a>
+      <router-link to="/pay-comission" class="uk-button uk-button-small border-button button-pay-comission"><i class="material-icons">monetization_on</i></router-link>
+      <!-- <a class="uk-button uk-button-small border-button button-pay-comission" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a> -->
       <!-- <a class="uk-margin-left" uk-toggle uk-tooltip="Reabonnement Afrocash" href="#modal-reabo-afrocash-list"><span uk-icon="grid"></span></a> -->
       <span class="" uk-tooltip="Reabonnement Afrocash">
         <router-link to="/all-ventes-pdraf"><span uk-icon="grid"></span></router-link>
@@ -72,13 +73,30 @@
         <button class="uk-button uk-button-small uk-button-link uk-margin-right border-button" type="submit" uk-tooltip="Deconnexion"><i class="material-icons">power_settings_new</i></button>
     </form>
     </div>
-    <div class="uk-hidden@m uk-navbar-right">
-      <a class="uk-button uk-button-small border-button" href="/" uk-tooltip="Tableau de bord"><i class="material-icons">home</i></a>
-      <a class="uk-button uk-button-small border-button" uk-tooltip="Recherche" uk-toggle="target : #modal-search-serial"><i class="material-icons">search</i></a>
-      <a v-if="typeUser == 'admin' || typeUser == 'gcga'" class="uk-button uk-button-small border-button" uk-tooltip="Paiement Comission" uk-toggle="target : #modal-commission"><i class="material-icons">monetization_on</i></a>
-      <a v-if="typeUser == 'v_da' || typeUser == 'v_standart'" class="uk-button uk-button-small border-button" href="#modal-remboursement" uk-toggle uk-tooltip="Paiement Remboursement"><i class="material-icons">payment</i></a>
+    <div class="uk-hidden@m uk-text-center bottom-content uk-box-shadow-small">
+      <span uk-tooltip="Tableau de bord" class="uk-margin-right">
+        <router-link to="/dashboard"><i class="material-icons">dashboard</i></router-link>
+      </span>
+      <span v-if="typeUser == 'admin' || typeUser == 'commercial'" uk-tooltip="Performances" class="uk-margin-right">
+        <router-link to="/performances"><i class="material-icons">timeline</i></router-link>
+      </span>
+      <span v-if="typeUser == 'admin' || typeUser == 'commercial'" uk-tooltip="Objectifs" class="uk-margin-right">
+        <router-link to="/objectifs/visu"><i class="material-icons">track_changes</i></router-link>
+      </span>
+      <span v-if="typeUser == 'v_da' || typeUser == 'v_standart'" uk-tooltip="Objectifs" class="uk-margin-right">
+        <router-link to="/objectifs-user"><i class="material-icons">track_changes</i></router-link>
+      </span>
       <a class="uk-button uk-button-small border-button" href="#all-notification" uk-toggle uk-tooltip="Notifications"><i class="material-icons">notifications</i><span class="">{{unreadNotifications.length}}</span> </a>
-      <a class="uk-button uk-button-small border-button" uk-tooltip="Alertes" uk-toggle="target : #modal-alert-abonnement"><span>{{alertCount}}</span> <i class="material-icons">alarm</i> <span style="color : red !important">{{alertInactifCount}}</span></a>
+      <span uk-tooltip="Promo">
+        <router-link to="/promo"><span class="uk-button uk-button-primary uk-border-rounded uk-text-small uk-button-small">PROMO</span></router-link>
+      </span>
+      <template v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'" id="">
+        <router-link to="/pay-comission" class="uk-button uk-button-small border-button button-pay-comission"><i class="material-icons">monetization_on</i></router-link>
+        <span class="" uk-tooltip="Reabonnement Afrocash">
+          <router-link to="/all-ventes-pdraf"><i class="material-icons">apps</i></router-link>
+        </span>
+      </template>
+      <a class="uk-button uk-button-small border-button" uk-tooltip="Recherche" uk-toggle="target : #modal-search-serial"><i class="material-icons">search</i></a>
     </div>
   </div>
 
@@ -447,7 +465,7 @@
                 </li>
               </ul>
             </li>
-            <li>
+            <li class="uk-parent">
               <a href="#"><span uk-icon="cart"></span> Ventes</a>
               <ul class="uk-nav-sub">
                 <li class="">

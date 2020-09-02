@@ -3,7 +3,10 @@
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#1e87f0"
+        background-color="#fff"></loading>
 
     <h3 class="uk-margin-top">Performances Vente</h3>
     <hr class="uk-divider-small">
@@ -80,6 +83,7 @@ import VeHistogram from 'v-charts/lib/histogram.common'
             this.isLoading = true
         },
         mounted() {
+            UIkit.offcanvas($("#side-nav")).hide();
             if(!this.filterState) {
                 this.getRecrutementStat()
             }

@@ -3,7 +3,10 @@
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#fff"
+        background-color="#083050"></loading>
 
         <template v-if="theUser == 'v_da' || theUser == 'v_standart'">
             <div class="uk-visible@m uk-margin-top" style="margin-left : 10% !important">
@@ -201,7 +204,7 @@
                                 <h4>Toutes les promos</h4>
                                 <hr class="uk-divider-small">
                                 <!-- // -->
-                                <table class="uk-table uk-table-small uk-table-striped uk-table-hover uk-table-divider">
+                                <table class="uk-table uk-table-small uk-table-striped uk-table-hover uk-table-divider uk-table-responsive">
                                     <thead>
                                         <tr>
                                             <th>Libelle</th>
@@ -239,7 +242,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <table class="uk-table uk-table-striped uk-table-hover uk-table-small uk-table-divider">
+                                <table class="uk-table uk-table-striped uk-table-hover uk-table-small uk-table-divider uk-table-responsive">
                                     <thead>
                                         <tr>
                                             <th>Vendeurs</th>
@@ -298,6 +301,7 @@ export default {
         theUser : String
     },  
     mounted() {
+        UIkit.offcanvas($("#side-nav")).hide();
         this.getInfosPromo()
         if(this.theUser == 'admin') {
             this.getRemboursementForUsers()
@@ -466,6 +470,7 @@ export default {
         },
         getInfosPromo : async function() {
             try {
+                this.isLoading = true
                 if(this.theUser == 'admin') {
                     var response = await axios.get('/admin/promo/list')
                 } else {
@@ -482,6 +487,7 @@ export default {
                     this.formState = 'edit'
                 }
                 this.getAllPromo()
+                this.isLoading = false
             } catch(error) {
                 alert(error)
             }

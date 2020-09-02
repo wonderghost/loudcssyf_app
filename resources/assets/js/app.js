@@ -14,63 +14,17 @@ window.axios = require('axios')
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('user-component',require('./adminComponents/UserComponent.vue').default)
 Vue.component('filter-user-component',require('./adminComponents/FilterComponentUser.vue').default)
-Vue.component('account',require('./adminComponents/AccountComponent.vue').default)
-Vue.component('command',require('./adminComponents/CommandComponent.vue').default)
-Vue.component('credit-component',require('./adminComponents/CreditComponent.vue').default)
 Vue.component('home-component',require('./userComponents/homeComponent.vue').default)
-Vue.component('add-user-component',require('./adminComponents/AddUserComponent.vue').default)
-Vue.component('rapport-component',require('./userComponents/RapportComponent.vue').default)
-Vue.component('pay-comission-component',require('./userComponents/PayComissionComponent.vue').default)
-Vue.component('inventory',require('./userComponents/InventoryComponent.vue').default)
-Vue.component('new-command',require('./userComponents/NewCommandComponent.vue').default)
-Vue.component('ravitaillement-command',require('./userComponents/RavitaillementComponent.vue').default)
 Vue.component('livraison',require('./userComponents/LivraisonComponent.vue').default)
-Vue.component('inventory-depot',require('./userComponents/InventoryDepotComponent.vue').default)
-Vue.component('add-rapport',require('./adminComponents/AddRapportComponent.vue').default)
-Vue.component('afrocash',require('./userComponents/AfrocashComponent.vue').default)
-Vue.component('ravitaillement-depot',require('./adminComponents/RavitaillementDepotComponent.vue').default)
-Vue.component('transaction-afrocash',require('./userComponents/TransactionAfrocashComponent.vue').default)
-Vue.component('recouvrement',require('./userComponents/RecouvrementComponent.vue').default)
 Vue.component('serial-search',require('./userComponents/SerialSearchComponent.vue').default)
-Vue.component('dashboard',require('./adminComponents/DashboardComponent.vue').default)
 Vue.component('tools',require('./userComponents/ToolsComponent.vue').default)
 Vue.component('login',require('./userComponents/LoginComponent.vue').default)
-Vue.component('promo',require('./adminComponents/PromoComponent.vue').default)
-Vue.component('entrepot',require('./adminComponents/EntrepotComponent.vue').default)
-Vue.component('afrocash-central',require('./adminComponents/AfrocashCentral.vue').default)
 Vue.component('setting-view',require('./userComponents/SettingComponent.vue').default)
-Vue.component('perform-objectif',require('./adminComponents/PerformObjectifComponent.vue').default)
-Vue.component('historique-ravitaillement-depot',require('./adminComponents/HistoriqueRavitaillementDepot.vue').default)
-Vue.component('objectif-component',require('./adminComponents/ObjectifComponent.vue').default)
-Vue.component('transfert-material-depot',require('./adminComponents/TransfertMaterielDepot.vue').default)
-Vue.component('all-objectif',require('./adminComponents/AllObjectifComponents.vue').default)
-Vue.component('visual-objectif',require('./adminComponents/VisualObjectifComponent.vue').default)
 Vue.component('deblocage-cga',require('./adminComponents/DeblocageCgaComponent.vue').default)
 Vue.component('feedback',require('./userComponents/FeedBackComponent.vue').default)
-Vue.component('objectif-user',require('./userComponents/ObjectifUserComponent.vue').default)
-Vue.component('formule-component',require('./adminComponents/FormuleComponent.vue').default)
-Vue.component('add-formule-component',require('./adminComponents/addFormuleComponent.vue').default)
-Vue.component('recrutement-component',require('./adminComponents/RecrutementComponent.vue').default)
-Vue.component('reabonnement-component',require('./adminComponents/ReabonnementComponent.vue').default)
 Vue.component('detail-rapport',require('./userComponents/DetailRapportComponent.vue').default)
-Vue.component('alert-abonnement',require('./userComponents/AlertComponent.vue').default)
-Vue.component('add-contact',require('./userComponents/AddContactComponent.vue').default)
-Vue.component('affectation-materiel',require('./adminComponents/AffectationMaterielComponent.vue').default)
-Vue.component('view-contact',require('./userComponents/ContactComponent.vue').default)
 Vue.component('set-rapport-parametre',require('./adminComponents/SetRapportParametre.vue').default)
-Vue.component('users-list',require('./userComponents/UserListComponent.vue').default)
-Vue.component('creation-pdraf',require('./adminComponents/CreationPdraf.vue').default)
-Vue.component('reabo-afrocash-list',require('./adminComponents/ReaboAfrocashList.vue').default)
-// RESEAUX PDC
-
-Vue.component('afrocash-operation',require('./pdcComponents/AfrocashOperation.vue').default)
-Vue.component('pdc-home',require('./pdcComponents/PdcHome.vue').default)
-Vue.component('pdc-transactions',require('./pdcComponents/PdcTransaction.vue').default)
-Vue.component('inventaire-pdraf',require('./pdcComponents/InventairePdraf.vue').default)
-Vue.component('all-vente-reabo-afrocash',require('./pdrafComponents/AllVenteReaboAfrocash.vue').default)
-Vue.component('pdraf-home',require('./pdrafComponents/pdrafHome.vue').default)
 
 
 // 
@@ -78,16 +32,12 @@ Vue.component('pdraf-home',require('./pdrafComponents/pdrafHome.vue').default)
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
-import Vuikit from 'vuikit'
 import numeral from 'numeral';
 import numFormat from 'vue-filter-number-format'
 import store from './store'
 import Router from './router.js'
 
-// import AfrocashOperation from './pdcComponents/AfrocashOperation.vue'
-// import PdcHome from './pdcComponents/PdcHome.vue'
 
-Vue.use(Vuikit)
 Vue.use(Vuex)
 Vue.filter('numFormat', numFormat(numeral))
 Vue.use(VueRouter)

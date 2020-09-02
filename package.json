@@ -26,8 +26,6 @@
         "laravel-echo": "^1.6.1",
         "numeral": "^2.0.6",
         "pusher-js": "^5.0.3",
-        "uikit": "^3.3.0",
-        "uikit-icons": "^0.5.0",
         "v-charts": "^1.19.0",
         "vue": "^2.6.11",
         "vue-date-picker": "^2.5.0",
@@ -41,7 +39,6 @@
         "vue-stepper-component": "^1.0.0",
         "vue-trix": "^1.1.9",
         "vue2-editor": "^2.10.2",
-        "vuex": "^3.1.2",
-        "vuikit": "^0.8.10"
+        "vuex": "^3.1.2"
     }
 }

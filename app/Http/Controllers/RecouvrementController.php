@@ -18,10 +18,6 @@ class RecouvrementController extends Controller
     //
     use Similarity;
 
-    public function operations() {
-      return view('recouvrements.operations');
-    }
-
     public function addRecouvrement(Request $request , TransactionAfrocash $ta) {
       $validation = $request->validate([
         'vendeurs'  =>  'required|exists:users,username',
@@ -93,15 +89,18 @@ class RecouvrementController extends Controller
 
     public function allTransactions(Request $request , TransactionAfrocash $ta) {
       try {
+        $thisMonth = Date('m');
         $users_standarts = User::select('username')->where('type','v_standart')
           ->get();
+
         $afrocash_account = Afrocash::select('numero_compte')->whereIn('vendeurs',$users_standarts)
           ->where('type','semi_grossiste')
           ->get();
         
         $transactions = $ta->whereIn('compte_debite',$afrocash_account)
           ->orderBy('created_at','desc')
-          ->get();
+          ->paginate(100);
+          
         
         $all = [];
         foreach($transactions as $key => $value) {
@@ -118,7 +117,16 @@ class RecouvrementController extends Controller
           ];
 
         }
-        return response()->json($all);
+        return response()->json([
+          'all' => $all,
+          'next_url'	=> $transactions->nextPageUrl(),
+					'last_url'	=> $transactions->previousPageUrl(),
+					'per_page'	=>	$transactions->perPage(),
+					'current_page'	=>	$transactions->currentPage(),
+					'first_page'	=>	$transactions->url(1),
+					'first_item'	=>	$transactions->firstItem(),
+					'total'	=>	$transactions->total()
+        ]);
       } catch (AppException $e) {
         header("Erreur!", true,422);
         die(json_encode($e->getMessage()));
@@ -145,7 +153,13 @@ class RecouvrementController extends Controller
     public function allRecouvrement(Recouvrement $r) {
       try {
         $all=[];
-        foreach($r->select()->orderBy('created_at','desc')->get() as $key=>$value) {
+
+        $thisMonth = Date('m');
+
+        $recouvrements = $r->select()->orderBy('created_at','desc')
+          ->paginate(100);
+          
+        foreach($recouvrements as $key=>$value) {
           $date = new Carbon($value->created_at);
           $date->setLocale('fr_FR');
           $all[$key]  = [
@@ -156,7 +170,16 @@ class RecouvrementController extends Controller
             'numero_recu' =>  $value->numero_recu
           ];
         }
-        return response()->json($all);
+        return response()->json([
+          'all' =>  $all,
+          'next_url'	=> $recouvrements->nextPageUrl(),
+					'last_url'	=> $recouvrements->previousPageUrl(),
+					'per_page'	=>	$recouvrements->perPage(),
+					'current_page'	=>	$recouvrements->currentPage(),
+					'first_page'	=>	$recouvrements->url(1),
+					'first_item'	=>	$recouvrements->firstItem(),
+					'total'	=>	$recouvrements->total()
+        ]);
       } catch (AppException $e) {
         header("Erreur!",true,422);
         die(json_encode($e->getMessage()));

@@ -205,6 +205,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/pdraf/get-reabo-afrocash','PdrafController@getAllReaboAfrocash');
 	Route::post('/user/pdraf/pay-comission-request','PdrafController@sendPayComissionRequest')->middleware('pdraf');
 
+	Route::get('/admin/pay-comission/pdraf/all','PdrafController@getAllPayComission');
+
 
 	
 	#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -396,9 +398,9 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// RECOUVREMENTS
 	Route::get('user/recouvrement','RecouvrementController@operations')->middleware('coursier');
 	Route::post('/user/recouvrement/add','RecouvrementController@addRecouvrement')->middleware('coursier');
-	Route::get('/user/recouvrement/all-transactions','RecouvrementController@allTransactions')->middleware('coursier');
+	Route::get('/user/recouvrement/all-transactions','RecouvrementController@allTransactions');//->middleware('coursier');
 	Route::get('/user/recouvrement/get-montant-du/{vendeur}','RecouvrementController@getMontantDuRecouvrement')->middleware('coursier');
-	Route::get('/user/recouvrement/all-recouvrement','RecouvrementController@allRecouvrement')->middleware('coursier');
+	Route::get('/user/recouvrement/all-recouvrement','RecouvrementController@allRecouvrement');//->middleware('coursier');
 
 	// ENVOI DE LA DEMANDE DE PAIEMENT DE COMMISSION
 	Route::post('/user/rapport-ventes/pay-commission','RapportControlleur@payCommission')->middleware('vendeur');

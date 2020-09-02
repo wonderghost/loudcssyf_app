@@ -3,7 +3,10 @@
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#1e87f0"
+        background-color="#fff"></loading>
 
     <h3 class="uk-margin-top">Creation Pdraf</h3>
     <hr class="uk-divider-small">
@@ -66,7 +69,7 @@
         <!-- // -->
 
 
-        <table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover">
+        <table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover uk-table-responsive">
             <thead>
                 <tr>
                     <th>Email</th>
@@ -108,6 +111,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             Loading
         } ,
         mounted () {
+            UIkit.offcanvas($("#side-nav")).hide();
             this.getList()
         },
         data() {
@@ -163,8 +167,10 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             },
             getList : async function () {
                 try {
+                    this.isLoading = true
                     let response = await axios.get('/admin/pdraf/get-list')
-                    if(response) {
+                    if(response && response.data) {
+                        this.isLoading = false
                         this.listCreation = response.data
                     }
                 } catch(error) {

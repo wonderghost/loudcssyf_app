@@ -3,7 +3,10 @@
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#fff"
+        background-color="#083050"></loading>
 
         <h3>Nouveau Contact</h3>
         <hr class="uk-divider-small">

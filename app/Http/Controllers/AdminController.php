@@ -62,43 +62,6 @@ class AdminController extends Controller
       return view('emails.annulation-saisie');
     }
 
-    // TABLEAU DE BORD
-    // public function dashboard(Request $request , Promo $p) {
-    //   // VERIFICATION ET DESACTIVATION DE LA PROMO
-    //   # recuperation de la promo active
-    //   $promoActive = $p->where('status_promo','actif')->first();
-    //   if($promoActive) {
-    //     #verifier la date de fin de la promo
-        
-    //     $today = Carbon::now();
-
-    //     $promo_debut_to_carbon_date = new Carbon($promoActive->debut);
-
-    //     $promo_fin_to_carbon_date = new Carbon($promoActive->fin);
-
-    //     if($promo_fin_to_carbon_date >= $today && $today >= $promo_debut_to_carbon_date) {
-    //       // la promo n'est pas encore fini
-    //     } else {
-    //         // fin de la promo
-    //         $promoActive->status_promo = 'inactif';
-    //         $promoActive->save();
-    //         return redirect('/admin')->withMessage("La promo prends fin maintenant !");
-    //     }
-    //   }
-      
-    //   // dump($today);
-    //   // dd($promoActive);
-    //   // 
-    //   return view('admin.dashboard');
-    // }
-    // RECOUVREMENT 
-    // public function recourvementIndex() {
-    //   return view('recouvrement.operations');
-    // }
-    // // etat du depot central
-    // public function etatDepotCentral() {
-    //   return view('admin.depot-central');
-    // }
     // recuperation etat du depot Central
     public function getEtatDepotCentral(Request $request , Produits $p) {
       //
@@ -341,14 +304,7 @@ class AdminController extends Controller
         die(json_encode($e->getMessage()));
       }
     }
-    // liste de tous les depots
-    // public function listDepot() {
-    //     return view('logistique.list-depot');
-    // }
-    // //
-    // public function formule() {
-    //     return view('admin.formule');
-    // }
+    
     public function listFormule(Formule $f,Option $op) {
       try {
           return response()
@@ -410,9 +366,6 @@ class AdminController extends Controller
     }
 
     //
-    // public function operationAfrocash() {
-    //   return view('admin.afrocash-credit');
-    // }
 
     public function historiqueApport() {
       try {
@@ -642,14 +595,13 @@ class AdminController extends Controller
   }
 
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-  // Commandes
-  // public function allCommandes() {
-  //   return view('admin.all-commandes');
-  // }
+
 
   public function getAllCommandes(Request $request , CommandMaterial $c) {
     try {
-      $commands= $c->select()->orderBy('created_at','desc')->get();
+      $commands= $c->select()
+        ->whereMonth('created_at','=',Date('m'))
+        ->orderBy('created_at','desc')->get();
       $all =  $this->organizeCommandList($commands);
 
       return response()->json($all);
@@ -1086,7 +1038,4 @@ class AdminController extends Controller
     }
   }
 
-  // public function creationPdraf() {
-  //   return view('admin.pdraf.list');
-  // }
 }

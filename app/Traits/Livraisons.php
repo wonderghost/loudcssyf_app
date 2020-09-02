@@ -279,6 +279,7 @@ public function inventaireLivraison() {
   public function livraisonRequest(Livraison $l) {
     return $l->whereIn('produits',Produits::select('reference')
               ->get())
+              ->whereMonth('created_at','=',Date('m'))
               ->orderBy('created_at','desc')
               ->get();
   }

@@ -3,7 +3,10 @@
   <loading :active.sync="isLoading"
       :can-cancel="false"
       :is-full-page="fullPage"
-      loader="dots"></loading>
+      loader="bars"
+      :opacity="1"
+      color="#1e87f0"
+      background-color="#fff"></loading>
 
   <h3 class="uk-margin-top">Tous les Utilisateurs</h3>
   <hr class="uk-divider-small">
@@ -83,6 +86,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       mounted() {
         Object.assign(this.$data,this.$options.data())
         this.listUser()
+        UIkit.offcanvas($("#side-nav")).hide();
       },
       data :function () {
         return {
@@ -108,7 +112,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             this.isLoading = true
             var tmp = this
             let response = await axios.get('/admin/users/list')
-            tmp.$store.state.users = response.data
+            if(response && response.data) {
+              tmp.$store.state.users = response.data
+            }
             this.isLoading = false;
           }
           catch (e) {
@@ -122,20 +128,22 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           let userPassword = this.userPassword
           let userId = this.userId
 
+          var relance = this
+
           axios.post(link,{
             admin_password : userPassword,
             user : userId
           }).then(function (response) {
-              alert("Success !")
               UIkit.modal($("#reset-modal")).hide()
-              this.listUser()
-          }).catch(function (error) {
-            UIkit.modal($("#reset-modal")).show()
-            UIkit.notification({
-              message : error.response.data,
-              status : 'danger',
-              pos : 'top-center'
-            })
+              alert("Success !")
+              relance.listUser()
+          },(error) => {
+              UIkit.modal($("#reset-modal")).show()
+              UIkit.notification({
+                message : error.response.data,
+                status : 'danger',
+                pos : 'top-center'
+              })
           })
         }
         ,

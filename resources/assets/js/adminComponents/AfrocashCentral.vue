@@ -3,7 +3,10 @@
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#1e87f0"
+        background-color="#fff"></loading>
 
 
         <h3>Operation Afrocash</h3>
@@ -52,7 +55,7 @@
                 <!-- // -->
                 <hr class="uk-divider-small">
                 <h3>Historique des apports</h3>
-                <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+                <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small uk-table-responsive">
                     <thead>
                     <tr>
                         <th>Date</th>
@@ -129,7 +132,7 @@
                 </div>
                 <hr class="uk-divider-small">
                 <h3>Historique des depenses</h3>
-                <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+                <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small uk-table-responsive">
                     <thead>
                     <tr>
                         <th>Date</th>
@@ -163,11 +166,10 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         components : {
             Loading
         },
-        created() {
-        },
         mounted() {
-        this.historiqueApport()
-        this.historiqueDepense()
+            UIkit.offcanvas($("#side-nav")).hide();    
+            this.historiqueApport()
+            this.historiqueDepense()
         },
         data() {
             return {

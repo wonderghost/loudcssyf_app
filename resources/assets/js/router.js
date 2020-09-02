@@ -37,6 +37,7 @@ import addRapport from './adminComponents/AddRapportComponent.vue'
 import listRapport from './userComponents/RapportComponent.vue'
 import formule from './adminComponents/FormuleComponent.vue'
 import editUser from './adminComponents/EditUserComponent.vue'
+import payComission from './userComponents/PayComissionComponent.vue'
 // VENDEURS
 import objectifUser from './userComponents/ObjectifUserComponent.vue'
 import addContact from './userComponents/AddContactComponent.vue'
@@ -267,6 +268,10 @@ const router = new VueRouter({
         {
             path : '/user/edit/:id',
             component : editUser
+        },
+        {
+            path : '/pay-comission',
+            component : payComission
         }
     ]
 

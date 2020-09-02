@@ -3,11 +3,15 @@
        <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#fff"
+        background-color="#083050"></loading>
 
        <div class="uk-container uk-container-large">
            <h3 class="uk-margin-top">Tous les Reabonnements ({{reaboCount}}) <a @click="getAllData()" class="uk-button" uk-tooltip="Rafraichir la liste"><span uk-icon="refresh"></span></a></h3>
            <hr class="uk-divider-small">
+           
 
             <!-- MODAL CONFIRM PAIEMENT COMISSION -->
             <div id="modal-pay-comission" uk-modal="esc-close : false ; bg-close : false">
@@ -97,6 +101,7 @@
                             <label for=""><span uk-icon="credit-card"></span> Comission Total</label>
                             <span class="uk-input uk-border-rounded uk-text-center">{{ totalCom.total | numFormat }}</span>
                         </div>
+                        
                     </div>
                 </div>
             </template>
@@ -327,6 +332,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             Loading
         },
         mounted () {
+            UIkit.offcanvas($("#side-nav")).hide();
             this.getAllData()
         },
         data() {

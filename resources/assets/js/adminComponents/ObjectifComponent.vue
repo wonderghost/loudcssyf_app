@@ -3,7 +3,10 @@
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#fff"
+        background-color="#083050"></loading>
 
 
         <h3 class="uk-margin-top"><router-link to="/objectifs/visu"><button class="uk-button uk-button-default uk-button-small uk-border-rounded" uk-tooltip="Visu Objectif"><span uk-icon="arrow-left"></span></button></router-link> Nouvel Objectif</h3>
@@ -179,7 +182,7 @@ import { VStepper } from 'vue-stepper-component'
             Loading
         },
         mounted() {
-                    
+            UIkit.offcanvas($("#side-nav")).hide();     
         },
         data () {
             return {

@@ -3,7 +3,10 @@
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#1e87f0"
+        background-color="#fff"></loading>
 
     <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-fade">
       <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Nouveau Recouvrement</a></li>
@@ -53,6 +56,22 @@
         </template>
       </li>
       <li>
+        <!-- paginate -->
+        <div class="uk-width-1-4@m">
+          <span class="">{{recouvrement.firstItem}} - {{recouvrement.firstItem + recouvrement.perPage}} sur {{recouvrement.total}}</span>
+          <a v-if="recouvrement.currentPage > 1" @click="paginateFunction(recouvrement.firstPage,recouvrement)" uk-tooltip="aller a la premiere page" class="uk-button-default uk-border-rounded uk-button-small uk-text-small"><span>1</span></a>
+          <template v-if="recouvrement.lastUrl">
+            <button @click="paginateFunction(recouvrement.lastUrl,recouvrement)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Precedent">
+              <span uk-icon="chevron-left"></span>
+            </button>
+          </template>
+          <template v-if="recouvrement.nextUrl">
+            <button @click="paginateFunction(recouvrement.nextUrl,recouvrement)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize u-t uk-text-small" uk-tooltip="Suivant">
+              <span uk-icon="chevron-right"></span>
+            </button>
+          </template>
+        </div>
+        <!-- // -->
         <table class="uk-table uk-table-small uk-table-divider uk-table-hover uk-table-striped uk-table-responsive">
           <thead>
             <tr>
@@ -64,7 +83,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="r in recouvrements">
+            <tr v-for="(r,index) in recouvrement.list" :key="index">
               <td>{{r.date}}</td>
               <td>{{r.vendeurs}}</td>
               <td>{{r.montant}}</td>
@@ -79,21 +98,37 @@
       <li>
         <!-- TRANSACTIONS -->
         <div class="uk-grid" uk-grid>
-          <div class="uk-width-1-3@m">
+          <div class="uk-width-1-4@m">
             <label for=""> <span uk-icon="icon : calendar"></span> Du</label>
             <input type="date" class="uk-input uk-border-rounded" value="">
           </div>
-          <div class="uk-width-1-3@m">
+          <div class="uk-width-1-4@m">
             <label for=""><span uk-icon="icon : calendar"></span> Au</label>
             <input type="date" class="uk-input uk-border-rounded" value="">
           </div>
-          <div class="uk-width-1-3@m">
+          <div class="uk-width-1-4@m">
             <label for=""> <span uk-icon="icon : users"></span> Vendeurs</label>
             <select class="uk-select uk-border-rounded" v-model="filterVendeurs">
               <option value="">Tous les Vendeurs</option>
               <option :value="v.localisation" v-for="v in vStandart" :key="v.localisation">{{v.localisation}}</option>
             </select>
           </div>
+           <!-- paginate -->
+        <div class="uk-width-1-4@m">
+          <span class="">{{transaction.firstItem}} - {{transaction.firstItem + transaction.perPage}} sur {{transaction.total}}</span>
+          <a v-if="transaction.currentPage > 1" @click="paginateFunction(transaction.firstPage,recouvrement)" uk-tooltip="aller a la premiere page" class="uk-button-default uk-border-rounded uk-button-small uk-text-small"><span>1</span></a>
+          <template v-if="transaction.lastUrl">
+            <button @click="paginateFunction(transaction.lastUrl,transaction)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Precedent">
+              <span uk-icon="chevron-left"></span>
+            </button>
+          </template>
+          <template v-if="transaction.nextUrl">
+            <button @click="paginateFunction(transaction.nextUrl,transaction)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize u-t uk-text-small" uk-tooltip="Suivant">
+              <span uk-icon="chevron-right"></span>
+            </button>
+          </template>
+        </div>
+        <!-- // -->
         </div>
         <table class="uk-table uk-table-striped uk-table-small uk-table-hover uk-table-divider uk-table-responsive">
           <thead>
@@ -108,7 +143,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="t in TransactionFiltree.slice(start,end)">
+            <tr v-for="t in TransactionFiltree">
               <td>{{t.date}}</td>
               <td>{{t.expediteur}}</td>
               <td>{{t.destinataire}}</td>
@@ -119,11 +154,7 @@
             </tr>
           </tbody>
         </table>
-        <ul class="uk-pagination uk-flex uk-flex-center" uk-margin>
-          <li> <span> Page active : {{currentPage}} </span> </li>
-          <li> <button @click="previousPage()" type="button" class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small" name="button"> <span uk-pagination-previous></span> Precedent </button> </li>
-          <li> <button @click="nextPage()" type="button" class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small" name="button"> Suivant <span uk-pagination-next></span>  </button> </li>
-        </ul>
+        
       </li>
     </ul>
   </div>
@@ -140,11 +171,36 @@ import 'vue-loading-overlay/dist/vue-loading.css';
       theUser : String
     },
     mounted() {
+      UIkit.offcanvas($("#side-nav")).hide();
       this.recouvrementData._token = this.myToken
       this.getData()
     },
     data() {
       return {
+        recouvrement : {
+  // paginate
+          nextUrl : "",
+          lastUrl : "",
+          perPage : "",
+          currentPage : 1,
+          firstPage : "",
+          firstItem : 1,
+          total : 0,
+          list : []
+  // #####                          
+        },
+        transaction : {
+  // paginate
+          nextUrl : "",
+          lastUrl : "",
+          perPage : "",
+          currentPage : 1,
+          firstPage : "",
+          firstItem : 1,
+          total : 0,
+          list : []
+  // #####                          
+        },
         isLoading : false,
         fullPage : true,
         recouvrementData : {
@@ -155,8 +211,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           vendeurs : ""
         },
         vendeurs : [],
-        recouvrements : [],
-        transactions : [],
+        
         filterVendeurs : "",
         start : 0,
         end : 15,
@@ -165,45 +220,59 @@ import 'vue-loading-overlay/dist/vue-loading.css';
       }
     },
     methods : {
+      paginateFunction : async function (url,pagVar) {
+        try {
+          
+          let response = await axios.get(url)
+          if(response && response.data) {
+            
+            pagVar.list = response.data.all
+
+            pagVar.nextUrl = response.data.next_url
+            pagVar.lastUrl = response.data.last_url
+            pagVar.currentPage = response.data.current_page
+            pagVar.firstPage = response.data.first_page
+            pagVar.firstItem = response.data.first_item,
+            pagVar.total = response.data.total
+          }
+        }
+        catch(error) {
+          alert("Erreur!")
+          console.log(error)
+        }
+      },
       getData : async function () {
         this.isLoading = true
-        if(this.typeUser == 'coursier') {
-          let response = await axios.get('/user/all-vendeurs')
-          this.vendeurs = response.data
+        
+        let response = await axios.get('/user/all-vendeurs')
+        this.vendeurs = response.data
 
-          response = await axios.get('/user/recouvrement/all-recouvrement')
-          this.recouvrements = response.data
+        response = await axios.get('/user/recouvrement/all-recouvrement')
 
-          response = await axios.get('/user/recouvrement/all-transactions')
-          this.transactions = response.data
-        } 
-        else {
-          let response = await axios.get('/admin/all-vendeurs')
-          this.vendeurs = response.data
+        if(response) {
+          this.recouvrement.list = response.data.all
 
-          response = await axios.get('/admin/recouvrement/all-recouvrement')
-          this.recouvrements = response.data
+          this.recouvrement.nextUrl = response.data.next_url
+          this.recouvrement.lastUrl = response.data.last_url
+          this.recouvrement.currentPage = response.data.current_page
+          this.recouvrement.firstPage = response.data.first_page
+          this.recouvrement.firstItem = response.data.first_item,
+          this.recouvrement.total = response.data.total
+          this.recouvrement.perPage = response.data.per_page
+        }        
 
-          response = await axios.get('/admin/recouvrement/all-transactions')
-          this.transactions = response.data
-        }
+        response = await axios.get('/user/recouvrement/all-transactions')
+        this.transaction.list = response.data.all
+
+        this.transaction.nextUrl = response.data.next_url
+        this.transaction.lastUrl = response.data.last_url
+        this.transaction.currentPage = response.data.current_page
+        this.transaction.firstPage = response.data.first_page
+        this.transaction.firstItem = response.data.first_item,
+        this.transaction.total = response.data.total
+        this.transaction.perPage = response.data.per_page
+        
         this.isLoading = false
-      },
-      nextPage : function () {
-        if(this.TransactionFiltree.length > this.end) {
-          let ecart = this.end - this.start
-          this.start = this.end
-          this.end += ecart
-          this.currentPage++
-        }
-      },
-      previousPage : function () {
-        if(this.start > 0) {
-          let ecart = this.end - this.start
-          this.start -= ecart
-          this.end -= ecart
-          this.currentPage--
-        }
       },
       checkVendeur : async function () {
         try {
@@ -257,7 +326,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         })
       },
       TransactionFiltree() {
-        return this.transactions.filter( (t) => {
+        return this.transaction.list.filter( (t) => {
           return t.expediteur.match(this.filterVendeurs)
         })
       }

@@ -324,10 +324,6 @@ Trait Afrocashes {
 	}
 	// OPERATIONS AFROCASH
 
-	public function afrocashOperation() {
-		$afrocash_compte = Afrocash::where('type','courant')->whereIn('vendeurs',User::select('username')->whereIn('type',['v_da','v_standart']))->get();
-		return view('afrocash.operations')->withComptes($afrocash_compte);
-	}
 
 	#@@@ get account list
 	public function getAccountList(Afrocash $a,User $u) {
@@ -552,14 +548,27 @@ Trait Afrocashes {
 			return false;
 	}
 	// Toutes les transaction afrocash
-	public function allTransactionAfrocash() {
-		return view('afrocash.transactions');
-	}
-
-	public function getAllTransaction(TransactionAfrocash $t) {
+	
+	public function getAllTransaction(TransactionAfrocash $t , Request $request) {
 		try {
 			$all = [];
-			foreach($t->select()->orderBy('created_at','desc')->get() as $key	=>	$value) {
+			$thisMonth = Date('m');
+			
+			if($request->user()->type !== 'admin' && $request->user()->type !== 'commercial' && $request->user()->type !== 'gcga') {
+
+				$afrocashAccount = $request->user()->type == 'v_standart' ? $request->user()->afroCash('semi_grossiste')->first() : $request->user()->afroCash('courant')->first();
+
+				$trans = $t->select()->orderBy('created_at','desc')
+					->where('compte_debite',$afrocashAccount->numero_compte)
+					->orWhere('compte_credite',$afrocashAccount->numero_compte)
+					->paginate(100);
+			}
+			else {
+				$trans = $t->select()->orderBy('created_at','desc')
+					->paginate(100);
+			}
+
+			foreach($trans as $key	=>	$value) {
 				$c = new Carbon($value->created_at);
 				$all[$key] = [
 					'date'	=>	$c->toDateTimeString(),
@@ -570,22 +579,20 @@ Trait Afrocashes {
 				];
 			}
 			return response()
-				->json($all);
+				->json([
+					'all'	=>	$all,
+					'next_url'	=> $trans->nextPageUrl(),
+					'last_url'	=> $trans->previousPageUrl(),
+					'per_page'	=>	$trans->perPage(),
+					'current_page'	=>	$trans->currentPage(),
+					'first_page'	=>	$trans->url(1),
+					'first_item'	=>	$trans->firstItem(),
+					'total'	=>	$trans->total()
+				]);
 		} catch (AppException $e) {
 			header("Erreur",true,422);
 			die(json_encode($e->getMessage()));
 		}
-	}
-
-
-	public function allTransactionAfrocashVendeur(Afrocash $a , TransactionAfrocash $t) {
-		$transactions = $t->where([
-			'compte_debite'	=>	$a->where('vendeurs',Auth::user()->username)->first()->numero_compte
-			])->orWhere([
-				'compte_credite'	=>	$a->where('vendeurs',Auth::user()->username)->first()->numero_compte
-			])->orderBy('created_at','desc')->get();
-
-		return view('afrocash.transactions')->withTransac($transactions);
 	}
 
 

@@ -3,7 +3,10 @@
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#1e87f0"
+        background-color="#fff"></loading>
 
         <h3>Nouveau Rapport</h3>
         <hr class="uk-divider-small">
@@ -108,14 +111,17 @@
 <script>
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
+import recrutementComp from './RecrutementComponent.vue'
+import reabo from './ReabonnementComponent.vue'
+
   export default {
     components : {
-      Loading
-    },
-    created (){
-      
+      Loading,
+      'recrutement-component' : recrutementComp,
+      'reabonnement-component' : reabo
     },
     mounted() {
+      UIkit.offcanvas($("#side-nav")).hide();
       this.getUsers()
       // 
     },

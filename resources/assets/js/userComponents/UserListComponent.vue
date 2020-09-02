@@ -1,5 +1,13 @@
 <template>
     <div>
+        <div class="uk-grid-small" uk-grid>
+            <div class="uk-width-1-3@m"></div>
+            <div class="uk-width-1-3@m">
+                <label for=""><span uk-icon="search"></span> Recherche</label>
+                <input v-model="searchText" type="search" class="uk-input uk-border-rounded" placeholder="Tapez une recherche ... ">
+            </div>
+            <div class="uk-width-1-3@m"></div>
+        </div>
         <table  class="uk-table uk-table-divider uk-table-striped uk-table-small uk-table-hover uk-table-responsive">
             <thead>
             <tr>
@@ -8,7 +16,7 @@
             </tr>
             </thead>
             <tbody>
-                <tr v-for="user in list" :key="user.username">
+                <tr v-for="user in listFilterText" :key="user.username">
                     
                     <td>{{user.username}}</td>
                     <td>{{user.type}}</td>
@@ -68,11 +76,18 @@ export default {
             userToReset : "",
             userId : "",
             userPassword : "",
+
+            searchText : ""
         }
     },
     computed : {
         typeUser() {
             return this.$store.state.typeUser
+        },
+        listFilterText() {
+            return this.list.filter((l) => {
+                return (l.localisation.toUpperCase().match(this.searchText.toUpperCase()) || l.phone.match(this.searchText))
+            })
         }
     }
 }

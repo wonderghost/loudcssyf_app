@@ -11,7 +11,7 @@
                     </h4>
                 </div>
                 <div class="uk-modal-body">
-                    <table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover">
+                    <table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover uk-table-responsive">
                         <thead>
                             <tr>
                                 <th>Materiel</th>

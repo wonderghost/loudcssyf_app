@@ -3,7 +3,10 @@
          <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#1e87f0"
+        background-color="#fff"></loading>
 
         <h3>Entrepot</h3>
         <hr class="uk-divider-sma">
@@ -153,6 +156,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 
 export default {
     mounted() {
+        UIkit.offcanvas($("#side-nav")).hide();
         this.etatEntrepot()
     },
     components : {

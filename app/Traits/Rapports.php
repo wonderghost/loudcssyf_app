@@ -52,12 +52,6 @@ Trait Rapports {
 	  return false;
 	}
 
-	// AJOUTER UN RAPPORT
-
-	public function addRapport() {
-		return view('admin.add-rapport-vente');
-	}
-
 	// 
 	// Trouver l'abonnement actif
 	public function checkAbonnementActif($abonnements) {
@@ -808,10 +802,6 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 			'status'	=>	'inactif'
 		])
 		->first();
-	}
-	// LIST DES RAPPORTS
-	public function listRapport() {
-		return view('admin.list-rapport-vente');
 	}
 
 // HISTORIQUE DE RAPPORT POUR L'ADMINISTRATEUR

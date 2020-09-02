@@ -1,16 +1,18 @@
 <template>
-
 <div class="uk-container uk-container-large">
   <loading :active.sync="isLoading"
       :can-cancel="false"
       :is-full-page="fullPage"
-      loader="dots"></loading>
+      loader="bars"
+      :opacity="1"
+      color="#1e87f0"
+        background-color="#fff"></loading>
 
   <h3 class="uk-margin-top">Ajoutez un Utilisateur</h3>
   <hr class="uk-divider-small">
 <!-- Erreor block -->
       <template v-if="errors.length" v-for="error in errors">
-        <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+        <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-3@m" uk-alert>
           <a href="#" class="uk-alert-close" uk-close></a>
           <p>{{error}}</p>
         </div>
@@ -97,6 +99,7 @@ import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
     export default {
         mounted() {
+          UIkit.offcanvas($("#side-nav")).hide();
           this.allPdc()
         },
         components : {

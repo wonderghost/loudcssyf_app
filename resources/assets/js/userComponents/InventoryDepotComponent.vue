@@ -3,7 +3,10 @@
     <loading :active.sync="isLoading"
         :can-cancel="true"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#1e87f0"
+        background-color="#fff"></loading>
 
         <h3>Tous les materiels</h3>
         <hr class="uk-divider-small">
@@ -89,6 +92,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         Loading
       },
       mounted() {
+        UIkit.offcanvas($("#side-nav")).hide();
         this.getMaterialsDepot()
         this.getSerialNumberForDepot()
         if(this.typeUser == 'gdepot') {

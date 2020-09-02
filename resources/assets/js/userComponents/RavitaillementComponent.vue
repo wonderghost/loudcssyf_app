@@ -75,6 +75,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         this.isLoading = true
       },
         mounted() {
+          UIkit.offcanvas($("#side-nav")).hide();
           this.getInfosCommande()
           this.commandStateTest()
         },
