@@ -51,10 +51,10 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('admin/search/{slug}','AdminController@SearchText');
 	// COMMANDES
 	Route::get('/admin/commandes','AdminController@allCommandes');
-	Route::get('/admin/commandes/all','AdminController@getAllCommandes');
+	// Route::get('/admin/commandes/all','AdminController@getAllCommandes');
 	Route::get('/admin/commandes/livraison','AdminController@getAllLivraison');
 	// Route::get('/admin/commandes/validated','AdminController@getValidatedCommandesMaterial');
-	Route::get('/admin/commandes/credit-all','CreditController@getAllCommandes');
+	// Route::get('/admin/commandes/credit-all','CreditController@getAllCommandes');
 	// DASHBOARD DATA
 	Route::get('/admin/chart/user-stat','ChartController@userStat');
 	Route::get('/admin/chart/command-stat','ChartController@commandStat');
@@ -104,7 +104,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/rapport/remove-rapport','AdminController@removeRapport');
 	Route::get('/admin/pay-comissions/all','RapportControlleur@payComissionList');
 
-	Route::get('/admin/rapport/all','AdminController@getAllRapport');
+	// Route::get('/admin/rapport/all','AdminController@getAllRapport');
 	Route::get('/admin/rapport/commission-total','AdminController@totalCommission');
 	// OPTION DE FORMULES
 	// FORMULES
@@ -229,18 +229,18 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/rapport/check-upgrade','RapportControlleur@checkSerialOnUpgradeState');
 
 	Route::get('/user/all-rapport','RapportControlleur@listRapport')->middleware('controleur');
-	Route::get('/user/rapport/all','AdminController@getAllRapport')->middleware('controleur');
-	Route::get('user/rapport/commission-total','RapportControlleur@totalCommission')->middleware('controleur');
+	Route::get('/user/rapport/all','AdminController@getAllRapport');//->middleware('controleur');
+	Route::get('user/rapport/commission-total','RapportControlleur@totalCommission');//->middleware('controleur');
 	#listing promo
 	Route::get('/user/promo/listing','AdminController@getListingPromo');
 	# CHECK SERIAL FOR GET DEBUT DATE
 	Route::post('/user/rapport/check-serial-debut-date','RapportControlleur@checkSerialForGetDebutDate');
 
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	Route::get('/user/rapport-ventes','RapportControlleur@getRapportByVendeurs')->middleware("vendeur");
-	Route::get('/user/rapport-ventes/all','RapportControlleur@getAllRapportForVendeur')->middleware('vendeur');
+	// Route::get('/user/rapport-ventes','RapportControlleur@getRapportByVendeurs')->middleware("vendeur");
+	// Route::get('/user/rapport-ventes/all','RapportControlleur@getAllRapportForVendeur')->middleware('vendeur');
 
-	Route::get("/user/rapport/total-commission",'RapportControlleur@totalCommissionVendeur')->middleware('vendeur');
+	// Route::get("/user/rapport/total-commission",'RapportControlleur@totalCommissionVendeur')->middleware('vendeur');
 
 	// voir les details d'un rapport
 	Route::post('/user/rapport-ventes/get-details','RapportControlleur@getDetailsForRapport');
@@ -281,7 +281,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// 	LISTE DES COMMANDES
 	Route::get('/user/commandes','LogistiqueController@allCommandes')->middleware('logistique');
 	Route::get('/user/logistique/afrocash-solde','LogistiqueController@getSoldeLogistique')->middleware('logistique');	//Recuperation du solde afrocash de la logistique
-	Route::get('/logistique/commandes/all','AdminController@getAllCommandes')->middleware('logistique');
+	// Route::get('/logistique/commandes/all','AdminController@getAllCommandes')->middleware('logistique');
 	Route::get('/logistique/commandes/livraison','AdminController@getAllLivraison')->middleware('logistique');
 	Route::post('/logistique/commandes/abort','AdminController@abortCommandMaterial')->middleware('logistique');
 	Route::get('/user/commandes/livraison','AdminController@getAllLivraison');
@@ -321,7 +321,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 
 	// ========= LISTE DES COMMANDES
 	Route::get('/user/list-command','CommandController@getList')->middleware('vendeur');
-	Route::get('/user/commandes/all','AdminController@getAllCommandes')->middleware('vendeur');
+	Route::get('/user/commandes/all','AdminController@getAllCommandes');//->middleware('vendeur');
 	// DETAILS COMMANDES
 
 	Route::get('/user/details-command/{id}','CommandController@DetailsCommand')->middleware('vendeur');

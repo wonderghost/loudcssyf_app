@@ -457,7 +457,16 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
           'id_command'  =>  Crypt::encryptString($values->id_commande)
         ];
     }
-    return $all ;
+    return [
+      'all' =>  $all,
+      'next_url'	=> $commands->nextPageUrl(),
+      'last_url'	=> $commands->previousPageUrl(),
+      'per_page'	=>	$commands->perPage(),
+      'current_page'	=>	$commands->currentPage(),
+      'first_page'	=>	$commands->url(1),
+      'first_item'	=>	$commands->firstItem(),
+      'total'	=>	$commands->total()
+    ] ;
   }
 
   public function isDisponibleInDepot($depot,$produit,$quantite) {

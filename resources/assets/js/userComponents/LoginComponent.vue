@@ -5,8 +5,8 @@
         :is-full-page="fullPage"
         loader="bars"
         :opacity="1"
-        color="#fff"
-        background-color="#083050"></loading>
+        color="#1e87f0"
+        background-color="#fff"></loading>
 
         <div class="uk-visible@s">
             <img src="img/background.jpg" class="img-bg" alt="">

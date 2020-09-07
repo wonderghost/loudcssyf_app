@@ -167,10 +167,29 @@ class CreditController extends Controller
 
 	// RECUPERATION DE LA LISTE DE TOUTES LES COMMANES , POUR L'ADMINISTRATEUR
 	public function getAllCommandes(Request $request , CommandCredit $c) {
-		$all = $c->select()
-			->whereMonth('created_at','=',Date('m'))
-			->orderBy('created_at','desc')->get();
-		return response()->json($this->organizeCommandGcga($all));
+		if($request->user()->type != 'v_da' && $request->user()->type = 'v_standart') {
+
+			$all = $c->select()
+				->orderBy('created_at','desc')
+				->paginate(100);
+		}
+		else {
+			$all = $c->select()
+				->where('vendeurs',$request->user()->username)
+				->orderBy('created_at','desc')
+				->paginate(100);
+		}
+
+		return response()->json([
+			'all'	=>	$this->organizeCommandGcga($all),
+			'next_url'	=> $all->nextPageUrl(),
+			'last_url'	=> $all->previousPageUrl(),
+			'per_page'	=>	$all->perPage(),
+			'current_page'	=>	$all->currentPage(),
+			'first_page'	=>	$all->url(1),
+			'first_item'	=>	$all->firstItem(),
+			'total'	=>	$all->total()
+		]);
 	}
 
 	// ANNULATION D'UN COMMANDE CHEZ LA GESTIONNAIRE DE CREDIT CGA

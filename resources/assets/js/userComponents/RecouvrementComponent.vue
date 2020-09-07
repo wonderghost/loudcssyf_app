@@ -116,7 +116,7 @@
            <!-- paginate -->
         <div class="uk-width-1-4@m">
           <span class="">{{transaction.firstItem}} - {{transaction.firstItem + transaction.perPage}} sur {{transaction.total}}</span>
-          <a v-if="transaction.currentPage > 1" @click="paginateFunction(transaction.firstPage,recouvrement)" uk-tooltip="aller a la premiere page" class="uk-button-default uk-border-rounded uk-button-small uk-text-small"><span>1</span></a>
+          <a v-if="transaction.currentPage > 1" @click="paginateFunction(transaction.firstPage,transaction)" uk-tooltip="aller a la premiere page" class="uk-button-default uk-border-rounded uk-button-small uk-text-small"><span>1</span></a>
           <template v-if="transaction.lastUrl">
             <button @click="paginateFunction(transaction.lastUrl,transaction)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Precedent">
               <span uk-icon="chevron-left"></span>

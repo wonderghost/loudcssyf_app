@@ -805,12 +805,30 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 	}
 
 // HISTORIQUE DE RAPPORT POUR L'ADMINISTRATEUR
-		public function getAllRapport(RapportVente $r) {
+		public function getAllRapport(RapportVente $r,Request $request) {
 			try {
-				$all = $r->select()
-					->orderBy('date_rapport','desc')->get();
+				if($request->user()->type != 'v_da' && $request->user()->type != 'v_standart') {
+					$all = $r->select()
+						->orderBy('date_rapport','desc')
+						->paginate(100);
+				}
+				else {
+					$all = $r->where('vendeurs',$request->user()->username)
+						->orderBy('date_rapport','desc')
+						->paginate(100);
+				}
+
 				return response()
-					->json($this->organizeRapport($all));
+					->json([
+						'all'	=>	$this->organizeRapport($all),
+						'next_url'	=> $all->nextPageUrl(),
+						'last_url'	=> $all->previousPageUrl(),
+						'per_page'	=>	$all->perPage(),
+						'current_page'	=>	$all->currentPage(),
+						'first_page'	=>	$all->url(1),
+						'first_item'	=>	$all->firstItem(),
+						'total'	=>	$all->total()
+					]);
 			} catch (AppException $e) {
 				header("Erreur!",true,$e);
 				die(json_encode($e->getMessage()));
@@ -842,12 +860,22 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 		return $all;
 	}
 // cumulee total des comissions de tous les rapports
-public function totalCommission(RapportVente $r) {
+public function totalCommission(RapportVente $r , Request $request) {
 	try {
-		$commission = $r->whereIn('type',['recrutement','reabonnement'])
-			->where('state','unaborted')
-			->whereNull('pay_comission_id')
-			->sum('commission');
+		if($request->user()->type != 'v_da' && $request->user()->type != 'v_standart') {
+
+			$commission = $r->whereIn('type',['recrutement','reabonnement'])
+				->where('state','unaborted')
+				->whereNull('pay_comission_id')
+				->sum('commission');
+		}
+		else {
+			$commission = $r->whereIn('type',['recrutement','reabonnement'])
+				->where('state','unaborted')
+				->whereNull('pay_comission_id')
+				->where('vendeurs',$request->user()->username)
+				->sum('commission');
+		}
 		return response()->json($commission);
 	} catch (AppException $e) {
 		header("Erreur!",true,422);

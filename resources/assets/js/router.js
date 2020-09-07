@@ -57,6 +57,7 @@ import commandCredit from './adminComponents/CreditComponent.vue'
 // 
 // GESTIONNAIRE DEPOT
 import livraisonMateriel from './userComponents/LivraisonComponent.vue'
+import store from './store.js'
 
 Vue.use(VueRouter);
 
@@ -65,12 +66,23 @@ const router = new VueRouter({
     routes:[
         {
             path : '*',
-            redirect : '/dashboard'
+            redirect : '/dashboard',
         },
         // GESTION DES UTILISATEURS
         {
             path : '/user/add',
-            component : addUser
+            component : addUser,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'admin') {
+                    next({
+                        path : '/',
+                        query : {redirect : to.fullPath}
+                    })
+                }
+                else {
+                    next()
+                }
+            }
         },
         {
             path : '/user/list',
@@ -123,7 +135,7 @@ const router = new VueRouter({
         },
         {
             path : '/afrocash/recouvrement',
-            component : recouvrement
+            component : recouvrement,
         },
         {
             path : "/material/entrepot",

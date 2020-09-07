@@ -67,6 +67,9 @@
         </tr>
       </tbody>
     </table>
+    <div class="uk-flex uk-flex-center">
+      <button class="uk-button uk-button-small uk-border-rounded" uk-scroll uk-tooltip="revenir en haut"><span uk-icon="triangle-up"></span></button>
+    </div>
   </div>
 </template>
 <script>

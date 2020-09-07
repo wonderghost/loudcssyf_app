@@ -16,13 +16,13 @@
     <detail-rapport :rapport="rappDetails" :rapport-infos="rappInfos"></detail-rapport>
 
     <template id="">
-    <div class="uk-grid-small" uk-grid>
-      <div class="uk-width-1-6@m">
-        <label for="">Comission Totale</label>
-        <input type="text" name="" :value="commission | numFormat" class="uk-input uk-border-rounded uk-text-center uk-text-lead" disabled>
+      <div class="uk-grid-small" uk-grid>
+        <div class="uk-width-1-6@m">
+          <label for="">Comission Totale</label>
+          <input type="text" name="" :value="commission | numFormat" class="uk-input uk-border-rounded uk-text-center uk-text-lead" disabled>
+        </div>
       </div>
-    </div>
-  </template>
+    </template>
 
   <template v-if="typeUser == 'admin'" id="">
     <div id="modal-abort-rapport" uk-modal="esc-close : false ; bg-close : false;">
@@ -59,120 +59,123 @@
   </div>
   </template>
 
-    <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
-        <li><a @click="typeRapp = 'recrutement' , payComission = false"  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-hover-small" href="#">Recrutement</a></li>
-        <li><a @click="typeRapp = 'reabonnement', payComission = false"  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-hover-small" href="#">Reabonnement</a></li>
-        <li><a @click="typeRapp = 'migration' , payComission = false" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-hover-small" href="#">Migration</a></li>
-        <li><a @click="payComission = true" v-if="typeUser == 'v_da'" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-hover-small" href="#">Paiement Comission</a></li>
-    </ul>
+    
+  <template v-if="!payComission" id="">
 
-    <template v-if="!payComission" id="">
+    <template id="">
+      <div class="uk-grid-small" uk-grid>
 
-      <template id="">
-        <div class="uk-grid-small" uk-grid>
-          <div class="uk-width-1-4@m">
-            <label for="">Commission Cumulee</label>
-            <span class="uk-input uk-text-center uk-text-bold uk-border-rounded">{{comissionCummule | numFormat}}</span>
-          </div>
+        <div class="uk-width-1-6@m">
+          <label for=""> <span uk-icon="icon : info"></span> Etat</label>
+          <select class="uk-select uk-border-rounded" v-model="stateRapp">
+            <option value="">Tous</option>
+            <option value="unaborted">valide</option>
+            <option value="aborted">invalide</option>
+          </select>
         </div>
-        <div class="uk-grid-small" uk-grid>
-
-          <div class="uk-width-1-6@m">
-            <label for=""> <span uk-icon="icon : info"></span> Etat</label>
-            <select class="uk-select uk-border-rounded" v-model="stateRapp">
-              <option value="">Tous</option>
-              <option value="unaborted">valide</option>
-              <option value="aborted">invalide</option>
-            </select>
-          </div>
-          <div class="uk-width-1-6@m">
-            <label for=""><span uk-icon="icon : tag"></span> Promo</label>
-            <select class="uk-select uk-border-rounded">
-              <option value="">Tous</option>
-              <option value="">Hors Promo</option>
-              <option value="">En Promo</option>
-            </select>
-          </div>
-          <div class="uk-width-1-6@m">
-            <label for=""><span uk-icon="icon : credit-card"></span> Paiement</label>
-            <select class="uk-select uk-border-rounded" v-model="payFilter">
-              <option value="">Tous</option>
-              <option value="paye">Paye</option>
-              <option value="non_paye">Impaye</option>
-            </select>
-          </div>
-          <div class="uk-width-1-3@m">
-            <div class="uk-grid-small" uk-grid>
-              <div class="uk-width-1-2@m">
-                <label for=""><span uk-icon="icon : calendar"></span> Du</label>
-                <input type="date" class="uk-input uk-border-rounded" v-model="filterDate.debut">
-              </div>
-              <div class="uk-width-1-2@m">
-                <label for=""><span uk-icon="icon : calendar"></span> Au</label>
-                <input type="date" class="uk-input uk-border-rounded" v-model="filterDate.fin">
-              </div>
+        <div class="uk-width-1-6@m">
+          <label for=""><span uk-icon="icon : tag"></span> Promo</label>
+          <select class="uk-select uk-border-rounded">
+            <option value="">Tous</option>
+            <option value="">Hors Promo</option>
+            <option value="">En Promo</option>
+          </select>
+        </div>
+        <div class="uk-width-1-6@m">
+          <label for=""><span uk-icon="icon : credit-card"></span> Paiement</label>
+          <select class="uk-select uk-border-rounded" v-model="payFilter">
+            <option value="">Tous</option>
+            <option value="paye">Paye</option>
+            <option value="non_paye">Impaye</option>
+          </select>
+        </div>
+        <!-- <div class="uk-width-1-3@m">
+          <div class="uk-grid-small" uk-grid>
+            <div class="uk-width-1-2@m">
+              <label for=""><span uk-icon="icon : calendar"></span> Du</label>
+              <input type="date" class="uk-input uk-border-rounded" v-model="filterDate.debut">
+            </div>
+            <div class="uk-width-1-2@m">
+              <label for=""><span uk-icon="icon : calendar"></span> Au</label>
+              <input type="date" class="uk-input uk-border-rounded" v-model="filterDate.fin">
             </div>
           </div>
+        </div> -->
 
-          <div v-if="typeUser == 'admin' || typeUser == 'controleur' || typeUser == 'commercial'" class="uk-width-1-6@m">
-            <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
-            <select class="uk-select uk-border-rounded" v-model="filterUser">
-              <option value="">Tous les vendeurs</option>
-              <option v-for="u in users" :key="u.username" :value="u.localisation"> {{u.localisation}} </option>
-            </select>
-          </div>
+        <div v-if="typeUser == 'admin' || typeUser == 'controleur' || typeUser == 'commercial'" class="uk-width-1-6@m">
+          <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
+          <select class="uk-select uk-border-rounded" v-model="filterUser">
+            <option value="">Tous les vendeurs</option>
+            <option v-for="u in users" :key="u.username" :value="u.localisation"> {{u.localisation}} </option>
+          </select>
         </div>
-      </template>
-
-      <div class="">
-        <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small uk-table-responsive">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Vendeur</th>
-              <th>Type</th>
-              <th>Credit</th>
-              <th>Quantite</th>
-              <th>Ttc</th>
-              <th>Commission</th>
-              <th>Promo</th>
-              <th>Paiement Commission</th>
-              <th>-</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="rap in rappWithDate.slice(start,end)" :key="rap.id_rapport">
-              <td>{{rap.date}}</td>
-              <td :uk-tooltip="rap.vendeurs">{{rap.vendeurs.substring(0,40)}}...</td>
-              <td>{{rap.type}}</td>
-              <td>{{rap.credit}}</td>
-              <td>{{rap.quantite}}</td>
-              <td>{{rap.montant_ttc| numFormat}}</td>
-              <td>{{rap.commission | numFormat}}</td>
-              <td>{{rap.promo}}</td>
-              <td>{{rap.paiement_commission}}</td>
-              <td>
-                <template v-if="typeUser == 'admin' && rap.paiement_commission == 'non_paye' && rap.state == 'unaborted'" id="">
-                  <button @click="activRapport = rap" uk-toggle="target : #modal-abort-rapport" type="button" class="uk-button uk-button-small uk-border-rounded uk-button-danger uk-text-capitalize uk-text-small">Annuler</button>
-                </template>
-                <template v-if="rap.state == 'aborted'">
-                  <span class="uk-alert-danger">invalide</span>
-                </template>
-
-                <template v-if="rap.state == 'unaborted'">
-                  <button @click="getDetailsRapport(rap)" class="uk-button uk-button-small uk-border-rounded uk-button-default uk-text-capitalize uk-text-small">Details</button>
-                </template>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <ul class="uk-pagination uk-flex uk-flex-center">
-          <li> <span> Page : {{currentPage}} </span> </li>
-          <li> <button type="button" @click="previousPage()" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-default" name="button"> <span uk-pagination-previous></span> Previous</button> </li>
-          <li> <button type="button" @click="nextPage()" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-default" name="button"> Suivant <span uk-pagination-next></span> </button> </li>
-        </ul>
+         <!-- paginate component -->
+        <div class="uk-width-1-3@m uk-margin-top">
+          <span class="">{{firstItem}} - {{firstItem + perPage}} sur {{total}}</span>
+          <a v-if="currentPage > 1" @click="paginateFunction(firstPage)" uk-tooltip="aller a la premiere page" class="uk-button-default uk-border-rounded uk-button-small uk-text-small"><span>1</span></a>
+          <button @click="getRapportVente()" class="uk-button-small uk-button uk-border-rounded uk-text-small" uk-tooltip="actualiser"><span uk-icon="refresh"></span></button>
+          <template v-if="lastUrl">
+            <button @click="paginateFunction(lastUrl)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Precedent">
+              <span uk-icon="chevron-left"></span>
+            </button>
+          </template>
+          <template v-if="nextUrl">
+            <button @click="paginateFunction(nextUrl)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize u-t uk-text-small" uk-tooltip="Suivant">
+              <span uk-icon="chevron-right"></span>
+            </button>
+          </template>
+        </div>
+        <!-- // -->
       </div>
     </template>
+
+    <div class="">
+      <table class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small uk-table-responsive">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Vendeur</th>
+            <th>Type</th>
+            <th>Credit</th>
+            <th>Quantite</th>
+            <th>Ttc</th>
+            <th>Commission</th>
+            <th>Promo</th>
+            <th>Paiement Commission</th>
+            <th>-</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="rap in rapportList" :key="rap.id_rapport">
+            <td>{{rap.date}}</td>
+            <td :uk-tooltip="rap.vendeurs">{{rap.vendeurs.substring(0,40)}}...</td>
+            <td>{{rap.type}}</td>
+            <td>{{rap.credit}}</td>
+            <td>{{rap.quantite}}</td>
+            <td>{{rap.montant_ttc| numFormat}}</td>
+            <td>{{rap.commission | numFormat}}</td>
+            <td>{{rap.promo}}</td>
+            <td>{{rap.paiement_commission}}</td>
+            <td>
+              <template v-if="typeUser == 'admin' && rap.paiement_commission == 'non_paye' && rap.state == 'unaborted'" id="">
+                <button @click="activRapport = rap" uk-toggle="target : #modal-abort-rapport" type="button" class="uk-button uk-button-small uk-border-rounded uk-button-danger uk-text-capitalize uk-text-small">Annuler</button>
+              </template>
+              <template v-if="rap.state == 'aborted'">
+                <span class="uk-alert-danger">invalide</span>
+              </template>
+
+              <template v-if="rap.state == 'unaborted'">
+                <button @click="getDetailsRapport(rap)" class="uk-button uk-button-small uk-border-rounded uk-button-default uk-text-capitalize uk-text-small">Details</button>
+              </template>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="uk-flex uk-flex-center">
+        <button class="uk-button uk-button-small uk-border-rounded" uk-scroll uk-tooltip="revenir en haut"><span uk-icon="triangle-up"></span></button>
+      </div>
+    </div>
+  </template>
     <template v-if="typeUser == 'v_da'" id="">
       <div v-if="payComission" class="uk-grid-small uk-grid-divider" uk-grid>
         <div  class="uk-width-1-3@m">
@@ -242,9 +245,6 @@ import 'vue-loading-overlay/dist/vue-loading.css';
 import datepicker from 'vue-date-picker'
 
     export default {
-      created () {
-        this.isLoading = true
-      },
         mounted() {
           UIkit.offcanvas($("#side-nav")).hide();
           this.getRapportVente()
@@ -264,12 +264,21 @@ import datepicker from 'vue-date-picker'
         },
         data () {
           return {
+             // paginate
+            nextUrl : "",
+            lastUrl : "",
+            perPage : "",
+            currentPage : 1,
+            firstPage : "",
+            firstItem : 1,
+            total : 0,
+    // #####       
             isLoading : false,
             fullPage : true,
             typeRapp : 'recrutement',
-            start : 0,
-            end : 10,
-            currentPage : 1,
+
+            rapportList : [],
+            
             commission : 0,
             passwordConfirm : "",
             errors : [],
@@ -294,6 +303,27 @@ import datepicker from 'vue-date-picker'
           }
         },
         methods : {
+          paginateFunction : async function (url) {
+            try {
+              
+              let response = await axios.get(url)
+              if(response && response.data) {
+                
+                this.rapportList = response.data.all
+
+                this.nextUrl = response.data.next_url
+                this.lastUrl = response.data.last_url
+                this.currentPage = response.data.current_page
+                this.firstPage = response.data.first_page
+                this.firstItem = response.data.first_item,
+                this.total = response.data.total
+              }
+            }
+            catch(error) {
+              alert("Erreur!")
+              console.log(error)
+            }
+          },
           getDetailsRapport : async function (rap) {
             try {
               UIkit.modal("#modal-detail-rapport").show()
@@ -344,19 +374,24 @@ import datepicker from 'vue-date-picker'
           },
           getRapportVente : async function () {
             try {
-              if(this.typeUser == 'admin' || this.typeUser == 'commercial') {
-                var response = await axios.get('/admin/rapport/all')
-                var responseCom = await axios.get('/admin/rapport/commission-total')
-              }else if(this.typeUser == 'controleur'){
-                var response = await axios.get('/user/rapport/all')
-                var responseCom = await axios.get('/user/rapport/commission-total')
-              }else {
-                var response = await axios.get('/user/rapport-ventes/all')
-                var responseCom = await axios.get('/user/rapport/total-commission')
+              this.isLoading = true
+
+              var response = await axios.get('/user/rapport/all')
+              var responseCom = await axios.get('/user/rapport/commission-total')
+              
+              if(response && responseCom) {
+
+                this.isLoading = false
+                this.commission = responseCom.data
+                this.rapportList = response.data.all
+
+                this.nextUrl = response.data.next_url
+                this.lastUrl = response.data.last_url
+                this.perPage = response.data.per_page
+                this.firstItem = response.data.first_item
+                this.total = response.data.total
+              
               }
-              this.isLoading = false
-              this.commission = responseCom.data
-              this.$store.commit('setRapportVente',response.data)
             } catch (error) {
               alert(error)
             }
@@ -367,23 +402,6 @@ import datepicker from 'vue-date-picker'
               this.$store.commit('setPayComissionList',response.data)
             } catch (error) {
               alert(error)
-            }
-          }
-          ,
-          nextPage : function () {
-            if(this.rappWithDate.length > this.end) {
-              let ecart = this.end - this.start
-              this.start = this.end
-              this.end += ecart
-              this.currentPage++
-            }
-          },
-          previousPage : function () {
-            if(this.start > 0) {
-              let ecart = this.end - this.start
-              this.start -= ecart
-              this.end -= ecart
-              this.currentPage--
             }
           },
           sendPayComission : async function () {

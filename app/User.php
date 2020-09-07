@@ -120,4 +120,10 @@ class User extends Authenticatable
       return $this->hasMany('App\ReaboAfrocash','pdraf_id','username');
     }
 
+    // ravitaillement vendeurs
+
+    public function ravitaillementVendeur() {
+      return $this->hasMany('App\RavitaillementVendeur','vendeurs','username');
+    }
+
 }

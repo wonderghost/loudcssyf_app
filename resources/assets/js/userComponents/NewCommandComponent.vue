@@ -5,8 +5,8 @@
       :is-full-page="fullPage"
       loader="bars"
       :opacity="1"
-      color="#fff"
-      background-color="#083050"></loading>
+      color="#1e87f0"
+      background-color="#fff"></loading>
 
       <h3>Nouvel Commande</h3>
       <hr class="uk-divider-small">
@@ -196,8 +196,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         
       },
         mounted() {
-          this.getInfosMaterial()
-          
+          UIkit.offcanvas($("#side-nav")).hide();
+          this.getInfosMaterial()          
         },
         data () {
           return {
@@ -236,9 +236,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           testRemboursementAfterPromo : async function () {
             try {
                 let response = await axios.get('/user/promo/infos-remboursement')
-                // console.log(response.data)
-                // return 0
-                // if(response.data.pay_at == null && response.data.montant !== 0) {
+                
                 if(response.data == false) {
                     this.remboursementPromoState = true
                 } else {
@@ -314,9 +312,10 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               this.formData.reference_material = this.material.reference
               let response = await axios.post('/user/new-command/material',this.formData)
 
+              // Object.assign(this.$data,this.$options.all())
+
               if(response && response.data == 'done') {
-                
-                Object.assign(this.$data,this.$options.all())
+                this.formData.quantite = ""
                 this.isLoading = false
                 alert("Success !")
               }

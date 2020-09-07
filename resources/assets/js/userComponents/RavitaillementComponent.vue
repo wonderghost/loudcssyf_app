@@ -3,7 +3,9 @@
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        color="#1e87f0"
+        background-color="#fff"></loading>
         <h3><router-link to="/command/list"><button class="uk-button uk-button-default uk-button-small uk-border-rounded" uk-tooltip="Retour"><span uk-icon="arrow-left"></span></button></router-link> Ravitailler un vendeur</h3>
         <hr class="uk-divider-small">
         <!-- Erreor block -->

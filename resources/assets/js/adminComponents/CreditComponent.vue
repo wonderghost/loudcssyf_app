@@ -5,10 +5,10 @@
         :is-full-page="fullPage"
         loader="bars"
         :opacity="1"
-        color="#fff"
-        background-color="#083050"></loading>
+        color="#1e87f0"
+        background-color="#fff"></loading>
 
-        <h3>Commande Credit</h3>
+        <h3><router-link class="uk-button uk-button-small uk-border-rounded uk-button-default uk-text-small" uk-tooltip="Retour" to="/commandes"><span uk-icon="arrow-left"></span></router-link> Commande Credit</h3>
         <hr class="uk-divider-small">
         <!-- // -->
         <!-- validation commande modal -->
@@ -24,8 +24,8 @@
                   </div>
                   <div class="uk-modal-body">
                     <!-- Erreor block -->
-                      <template v-if="errors.length" v-for="error in errors">
-                      <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+                      <template v-if="errors.length">
+                      <div v-for="(error,index) in errors" :key="index" class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
                         <a href="#" class="uk-alert-close" uk-close></a>
                         <p>{{error}}</p>
                       </div>
@@ -49,21 +49,47 @@
           </div>
         </template>
         <!-- // -->
-
-    <ul class="uk-tab" uk-switcher="animation : uk-animation-slide-bottom">
-      <li> <a @click="filterCommandCredit('unvalidated')" href="#">En attente de validation</a> </li>
-      <li> <a @click="filterCommandCredit('validated')" href="#">Deja validee</a> </li>
-      <li> <a @click="filterCommandCredit('aborted')" href="#">commandes annullee</a> </li>
-    </ul>
     <div class="">
+      <div class="uk-grid-small uk-margin-top uk-flex uk-flex-right" uk-grid>
+        <div class="uk-width-1-6@m">
+          <label for=""><span uk-icon=""></span>  Status</label>
+          <select class="uk-select uk-border-rounded">
+            <option value="">Tous</option>
+            <option value="unconfirmed">en attente</option>
+            <option value="confirmed">confirmer</option>
+            <option value="aborted">annuler</option>
+          </select>
+        </div>
+        <div v-if="typeUser != 'v_da' && typeUser != 'v_standart'" class="uk-width-1-4@m">
+          <label for="">Recherche</label>
+          <input type="text" class="uk-input uk-border-rounded" placeholder="Recherche ...">
+        </div>
+        <!-- paginate component -->
+        <div class="uk-width-1-3@m uk-margin-top">
+          <span class="">{{firstItem}} - {{firstItem + perPage}} sur {{total}}</span>
+          <a v-if="currentPage > 1" @click="paginateFunction(firstPage)" uk-tooltip="aller a la premiere page" class="uk-button-default uk-border-rounded uk-button-small uk-text-small"><span>1</span></a>
+          <button @click="getCommandCredit()" class="uk-button-small uk-button uk-border-rounded uk-text-small" uk-tooltip="actualiser"><span uk-icon="refresh"></span></button>
+          <template v-if="lastUrl">
+            <button @click="paginateFunction(lastUrl)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Precedent">
+              <span uk-icon="chevron-left"></span>
+            </button>
+          </template>
+          <template v-if="nextUrl">
+            <button @click="paginateFunction(nextUrl)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize u-t uk-text-small" uk-tooltip="Suivant">
+              <span uk-icon="chevron-right"></span>
+            </button>
+          </template>
+        </div>
+        <!-- // -->
+      </div>
       <table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover uk-table-responsive">
         <thead>
           <tr>
-            <th v-for="head in tableHead">{{head}}</th>
+            <th v-for="(head,index) in tableHead" :key="index">{{head}}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="credit in filterCommandeCredit.slice(start,end)">
+          <tr v-for="(credit,index) in commandList" :key="index">
             <td>{{credit.date}}</td>
             <td>{{credit.vendeurs}}</td>
             <td>{{credit.type}}</td>
@@ -84,15 +110,12 @@
                 <button type="button" @click="abortCommand(credit)" name="button" class="uk-text-capitalize uk-button uk-button-small uk-button-danger uk-border-rounded uk-box-shadow-small uk-text-small"> annuler <span uk-icon="icon : close"></span> </button>
               </template>
             </td>
-
           </tr>
         </tbody>
       </table>
-      <ul class="uk-pagination uk-flex uk-flex-center" uk-margin>
-        <li> <span> Page active : {{currentPage}} </span> </li>
-        <li> <button @click="previousPage()" type="button" class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small" name="button"> <span uk-pagination-previous></span> Precedent </button> </li>
-        <li> <button @click="nextPage()" type="button" class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small" name="button"> Suivant <span uk-pagination-next></span>  </button> </li>
-      </ul>
+      <div class="uk-flex uk-flex-center">
+        <button class="uk-button uk-button-small uk-border-rounded" uk-scroll uk-tooltip="revenir en haut"><span uk-icon="triangle-up"></span></button>
+      </div>
     </div>
   </div>
 </template>
@@ -103,6 +126,10 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 
     export default {
         mounted() {
+          if(this.typeUser != 'gcga' && this.typeUser != 'admin' && this.typeUser != 'v_da' && this.typeUser != 'v_standart') {
+            alert("action non autorise !")
+            this.$router.go(-1)
+          }
           this.getCommandCredit()
         },
         props : {
@@ -110,10 +137,19 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         },
         data () {
           return {
+// paginate
+            nextUrl : "",
+            lastUrl : "",
+            perPage : "",
+            currentPage : 1,
+            firstPage : "",
+            firstItem : 1,
+            total : 0,
+    // #####
+
+            commandList : [],
             tableHead : ['date','vendeurs','type','montant','status','numero recu','recu'],
-            currentPage: 1,
-            start : 0,
-            end  : 10,
+            
             isLoading : false,
             fullPage : true,
             commandToValidate : {},
@@ -132,16 +168,42 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         }
         ,
         methods : {
+          paginateFunction : async function (url) {
+            try {
+              
+              let response = await axios.get(url)
+              if(response && response.data) {
+                
+                this.commandList = response.data.all
+
+                this.nextUrl = response.data.next_url
+                this.lastUrl = response.data.last_url
+                this.currentPage = response.data.current_page
+                this.firstPage = response.data.first_page
+                this.firstItem = response.data.first_item,
+                this.total = response.data.total
+              }
+            }
+            catch(error) {
+              alert("Erreur!")
+              console.log(error)
+            }
+          },
           getCommandCredit : async function () {
             try {
               this.isLoading = true
-              if(this.theUser == 'admin' || this.theUser == 'commercial') {
-                var response = await axios.get('/admin/commandes/credit-all')
-              } else {
-                var response = await axios.get('/user/commandes/credit-all')
+              var response = await axios.get('/user/commandes/credit-all')
+              if(response && response.data) {
+                this.commandList = response.data.all
+
+                this.nextUrl = response.data.next_url
+                this.lastUrl = response.data.last_url
+                this.perPage = response.data.per_page
+                this.firstItem = response.data.first_item
+                this.total = response.data.total
+                
+                this.isLoading=false
               }
-              this.$store.commit('setCommandCredit',response.data)
-              this.isLoading=false
             }
             catch (e) {
               alert(e)
@@ -209,52 +271,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 })
             }
           }
-          ,
-          filterCommandCredit (status) {
-            this.currentPage = 1
-            this.start = 0
-            this.end = 10
-            this.$store.commit('setStatusCommandCredit',status)
-          },
-          nextPage : function () {
-            if(this.commandCredit.length > this.end) {
-              let ecart = this.end - this.start
-              this.start = this.end
-              this.end += ecart
-              this.currentPage++
-            }
-          },
-          previousPage : function () {
-            if(this.start > 0) {
-              let ecart = this.end - this.start
-              this.start -= ecart
-              this.end -= ecart
-              this.currentPage--
-            }
-          }
         },
         computed : {
-          commandCredit () {
-            return this.commandC.filter( (credit)  => {
-                return credit.status === this.statusCommandCredit
-            })
-          },
-          filterCommandeCredit () {
-            if(this.typeUser == 'v_da' || this.typeUser == 'v_standart') {
-              return this.commandCredit.filter((credit) => {
-                return credit.vendeurs.match(this.theUser)
-              })
-            }
-            else {
-              return this.commandCredit
-            }
-          },
-          commandC () {
-            return this.$store.state.commandCredit
-          },
-          statusCommandCredit () {
-            return this.$store.state.statusCommandCredit
-          },
           typeUser () {
             return this.$store.state.typeUser
           },

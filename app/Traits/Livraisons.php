@@ -252,7 +252,16 @@ public function inventaireLivraison() {
         'with_serial' =>  $value->produits()->with_serial
       ];
     }
-    return response()->json($all);
+    return response()->json([
+      'all' =>  $all,
+      'next_url'	=> $livraison->nextPageUrl(),
+      'last_url'	=> $livraison->previousPageUrl(),
+      'per_page'	=>	$livraison->perPage(),
+      'current_page'	=>	$livraison->currentPage(),
+      'first_page'	=>	$livraison->url(1),
+      'first_item'	=>	$livraison->firstItem(),
+      'total'	=>	$livraison->total()
+    ]);
   }
 
   public function getListLivraisonValidee(Request $request) {
@@ -276,12 +285,27 @@ public function inventaireLivraison() {
     }
   }
 
-  public function livraisonRequest(Livraison $l) {
+  public function livraisonRequest(Livraison $l , Request $request) {
+    $user = $request->user();
+    if($user->type != 'v_standart' && $user->type != 'v_da') {
+      
+      return $l->whereIn('produits',Produits::select('reference')
+        ->get())
+        ->orderBy('created_at','desc')
+        ->paginate(100);
+    }
+
+    $ravitaillement = $user->ravitaillementVendeur()
+      ->select('id_ravitaillement')
+      ->groupBy('id_ravitaillement')
+      ->get();
+    
     return $l->whereIn('produits',Produits::select('reference')
-              ->get())
-              ->whereMonth('created_at','=',Date('m'))
-              ->orderBy('created_at','desc')
-              ->get();
+      ->get())
+      ->whereIn('ravitaillement',$ravitaillement)
+      ->orderBy('created_at','desc')
+      ->paginate(100);
+              
   }
 
   public function getSerialInFileText($filename) {

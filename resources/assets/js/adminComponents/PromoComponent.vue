@@ -8,10 +8,10 @@
         color="#fff"
         background-color="#083050"></loading>
 
-        <template v-if="theUser == 'v_da' || theUser == 'v_standart'">
+        <template v-if="typeUser == 'v_da' || typeUser == 'v_standart'">
             <div class="uk-visible@m uk-margin-top" style="margin-left : 10% !important">
                 <div class="uk-grid-small" uk-grid>
-                    <template v-if="theUser == 'v_da' && compensePromo.remboursement !== 0">
+                    <template v-if="typeUser == 'v_da' && compensePromo.remboursement !== 0">
                         <template v-if="promoStatus">
                             <div class="uk-width-1-6@m">
                                 <label for=""><span uk-icon="icon : settings"></span> Kits Promo</label>
@@ -67,12 +67,11 @@
             </div>
 
             <!-- MODAL REMBOURSEMENT FORM -->
-            <div id="modal-remboursement" class="uk-modal-container" uk-modal>
-                <div class="uk-modal-dialog">
-                    <div class="uk-modal-header">
-                        <h2 class="uk-modal-title">Remboursement promo</h2>
-                    </div>
-                    <div class="uk-modal-body">
+            <div>
+                <div class="">
+                    <h3>Remboursement Promo</h3>
+                    <hr class="uk-divider-small">
+                    <div class="">
                         <table class="uk-table uk-table-small uk-table-hover uk-table-striped uk-table-divider uk-table-responsive">
                             <thead>
                                 <tr>
@@ -85,7 +84,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="r in histoRemboursement">
+                                <tr v-for="(r,index) in histoRemboursement" :key="index">
                                     <td>{{r.kits}}</td>
                                     <td>{{r.montant | numFormat}}</td>
                                     <td>{{r.pay_at}}</td>
@@ -303,10 +302,10 @@ export default {
     mounted() {
         UIkit.offcanvas($("#side-nav")).hide();
         this.getInfosPromo()
-        if(this.theUser == 'admin') {
+        if(this.typeUser == 'admin') {
             this.getRemboursementForUsers()
         }
-        if(this.theUser == 'v_da' || this.theUser == 'v_standart') {
+        if(this.typeUser == 'v_da' || this.typeUser == 'v_standart') {
             this.getCompensePromoInfos()
             this.getRemboursementListring()
         }
@@ -471,7 +470,7 @@ export default {
         getInfosPromo : async function() {
             try {
                 this.isLoading = true
-                if(this.theUser == 'admin') {
+                if(this.typeUser == 'admin') {
                     var response = await axios.get('/admin/promo/list')
                 } else {
                     var response = await axios.get('/user/promo/list')

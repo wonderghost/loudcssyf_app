@@ -63,7 +63,8 @@
       </span>
     </template>
       <a class="uk-button uk-button-small border-button" uk-tooltip="Recherche" uk-toggle="target : #modal-search-serial"><i class="material-icons">search</i></a>
-      <a v-if="typeUser == 'v_da'" class="uk-button uk-button-small border-button" href="#modal-remboursement" uk-toggle uk-tooltip="Paiement Remboursement"><i class="material-icons">payment</i></a>
+      <!-- <a v-if="typeUser == 'v_da'" class="uk-button uk-button-small border-button" href="#modal-remboursement" uk-toggle uk-tooltip="Paiement Remboursement"><i class="material-icons">payment</i></a> -->
+      <router-link v-if="typeUser == 'v_da'" to="/promo"><i class="material-icons">payment</i></router-link>
       <a class="uk-button uk-button-small border-button" uk-toggle href="#modal-deblocage" uk-tooltip="Deblocage Cga"><i class="material-icons">lock_open</i><span v-if="typeUser !=='v_da' && typeUser !== 'v_standart'">{{deblocageCount}}</span> </a>
     </div>
     <div class="uk-navbar-right uk-visible@m">

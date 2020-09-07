@@ -50,24 +50,6 @@ class RapportControlleur extends Controller
     use Rapports;
     use Abonnements;
 
-    public function getRapportByVendeurs() {
-      return view('simple-users.rapport-vente');
-    }
-
-  // @@@@@
-
-  public function getAllRapportForVendeur(Request $request , RapportVente $r) {
-    try {
-      $result = $r->where('vendeurs',$request->user()->username)
-        ->orderBy('date_rapport','desc')->get();
-      return response()
-        ->json($this->organizeRapport($result));
-    } catch (AppException $e) {
-      header("Erreur!",true,422);
-      die(json_encode($e->getMessage()));
-    }
-  }
-
 
   public function totalCommissionVendeur(Request $request , RapportVente $r) {
     try {

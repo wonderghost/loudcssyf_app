@@ -5,25 +5,53 @@
         :is-full-page="fullPage"
         loader="bars"
         :opacity="1"
-        color="#fff"
-        background-color="#083050"></loading>
+        color="#1e87f0"
+        background-color="#fff"></loading>
         
-        <h3>Livraison Materiel</h3>
+        <h3><router-link class="uk-button uk-button-small uk-border-rounded uk-button-default uk-text-small" uk-tooltip="Retour" to="/commandes"><span uk-icon="arrow-left"></span></router-link> Livraison Materiel</h3>
         <hr class="uk-divider-small">
 
-        <ul class="uk-tab" uk-switcher="animation : uk-animation-slide-right">
-          <li> <a href="#" @click="filterLivraison('non_confirmer')">en attente de validation</a> </li>
-          <li> <a href="#" @click="filterLivraison('confirmer')">deja validee</a> </li>
-        </ul>
         <div class="">
+          <div class="uk-grid-small uk-margin-top uk-flex uk-flex-right" uk-grid>
+            <div class="uk-width-1-6@m">
+              <label for=""><span uk-icon=""></span>  Status</label>
+              <select class="uk-select uk-border-rounded">
+                <option value="">Tous</option>
+                <option value="unconfirmed">en attente</option>
+                <option value="confirmed">confirmer</option>
+                <option value="aborted">annuler</option>
+              </select>
+            </div>
+            <div v-if="typeUser != 'v_da' && typeUser != 'v_standart'" class="uk-width-1-4@m">
+              <label for="">Recherche</label>
+              <input type="text" class="uk-input uk-border-rounded" placeholder="Recherche ...">
+            </div>
+            <!-- paginate component -->
+            <div class="uk-width-1-3@m uk-margin-top">
+              <span class="">{{firstItem}} - {{firstItem + perPage}} sur {{total}}</span>
+              <a v-if="currentPage > 1" @click="paginateFunction(firstPage)" uk-tooltip="aller a la premiere page" class="uk-button-default uk-border-rounded uk-button-small uk-text-small"><span>1</span></a>
+              <button @click="getLivraisonMaterial()" class="uk-button-small uk-button uk-border-rounded uk-text-small" uk-tooltip="actualiser"><span uk-icon="refresh"></span></button>
+              <template v-if="lastUrl">
+                <button @click="paginateFunction(lastUrl)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Precedent">
+                  <span uk-icon="chevron-left"></span>
+                </button>
+              </template>
+              <template v-if="nextUrl">
+                <button @click="paginateFunction(nextUrl)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize u-t uk-text-small" uk-tooltip="Suivant">
+                  <span uk-icon="chevron-right"></span>
+                </button>
+              </template>
+            </div>
+            <!-- // -->
+          </div>
           <table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover uk-table-responsive">
             <thead>
               <tr>
-                <th v-for="head in livraison">{{head}}</th>
+                <th v-for="(head,index) in livraison" :key="index">{{head}}</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="livraison in livraisonFilter.slice(start,end)">
+              <tr v-for="(livraison,index) in livraisonList" :key="index">
                 <td>{{livraison.date}}</td>
                 <td>{{livraison.vendeur}}</td>
                 <td>{{livraison.produit}}</td>
@@ -56,11 +84,9 @@
               </tr>
             </tbody>
           </table>
-          <ul class="uk-pagination uk-flex uk-flex-center">
-            <li> <span> Page : {{currentPage}} </span> </li>
-            <li> <button @click="previousPage()" type="button" class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small" name="button"> <span uk-pagination-previous></span> Precedent</button> </li>
-            <li> <button @click="nextPage()" type="button" class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small" name="button"> Suivant <span uk-pagination-next></span> </button> </li>
-          </ul>
+          <div class="uk-flex uk-flex-center">
+            <button class="uk-button uk-button-small uk-border-rounded" uk-scroll uk-tooltip="revenir en haut"><span uk-icon="triangle-up"></span></button>
+          </div>
         </div>
     <template id="" v-if="typeUser == 'gdepot'">
       <div id="modal-livraison-send" uk-modal="esc-close:false;bg-close : false">
@@ -151,23 +177,32 @@
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
     export default {
-      created () {
-        this.isLoading = true
-      },
       components : {
         Loading
       },
         mounted() {
+          if(this.typeUser != 'gdepot' && this.typeUser != 'v_da' && this.typeUser != 'v_standart' && this.typeUser != 'admin' && this.typeUser != 'logistique') {
+            alert('action non autorise !')
+            this.$router.push('/')
+          }
+          UIkit.offcanvas($("#side-nav")).hide();
           this.getLivraisonMaterial()
         },
         data () {
           return {
+// paginate
+            nextUrl : "",
+            lastUrl : "",
+            perPage : "",
+            currentPage : 1,
+            firstPage : "",
+            firstItem : 1,
+            total : 0,
+    // #####                      
             isLoading : false,
             fullPage : true,
             livraison : ['date','vendeurs','designation','commande','quantite','status','validation','depot'],
-            start : 0,
-            end : 10,
-            currentPage : 1,
+            livraisonList : [],
             depot : "",
             formData : {
               _token : "",
@@ -187,8 +222,32 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           }
         },
         methods : {
+          paginateFunction : async function (url) {
+            try {
+              
+              let response = await axios.get(url)
+              if(response && response.data) {
+                
+                this.livraisonList = response.data.original.all
+
+                this.nextUrl = response.data.original.next_url
+                this.lastUrl = response.data.original.last_url
+                this.currentPage = response.data.original.current_page
+                this.firstPage = response.data.original.first_page
+                this.firstItem = response.data.original.first_item,
+                this.total = response.data.original.total
+              }
+            }
+            catch(error) {
+              alert("Erreur!")
+              console.log(error)
+            }
+          },
           getLivraisonMaterial : async function () {
             try {
+
+              this.isLoading = true
+
               if(this.typeUser == 'admin') {
 
                 var response = await axios.get('/admin/commandes/livraison')
@@ -197,7 +256,16 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               } else {
                 var response = await axios.get('/user/commandes/livraison')
               }
-              this.$store.commit('setLivraisonMaterial',response.data.original)
+              this.livraisonList = response.data.original.all
+
+              this.nextUrl = response.data.original.next_url
+              this.lastUrl = response.data.original.last_url
+              this.perPage = response.data.original.per_page
+              this.firstItem = response.data.original.first_item
+              this.total = response.data.original.total
+
+
+              this.$store.commit('setLivraisonMaterial',response.data.original.all)
               this.isLoading = false
             } catch (e) {
               alert(e)
@@ -208,22 +276,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             this.start = 0
             this.end = 10
             this.$store.commit('setStateLivraison',status)
-          },
-          nextPage : function () {
-            if(this.livraisonFilter.length > this.end) {
-              let ecart = this.end - this.start
-              this.start = this.end
-              this.end += ecart
-              this.currentPage++
-            }
-          },
-          previousPage : function () {
-            if(this.start > 0) {
-              let ecart = this.end - this.start
-              this.start -= ecart
-              this.end -= ecart
-              this.currentPage--
-            }
           },
           makeLivraison : function (id,quantite ,withSerial) {
             this.formData._token = this.myToken
@@ -299,10 +351,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               })
               if(response.data == 'done') {
                 this.isLoading = false
-                UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Commande validee avec success :-)</div>")
-                  .then(function () {
-                    location.reload()
-                  })
+                alert("Success !")
+                this.getLivraisonMaterial()
               }
             }
             catch (error) {
@@ -337,8 +387,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 return liv.vendeur.match(this.userLocalisation)
               }
             })
-          }
-          ,
+          },
           statusLivraison () {
             return this.$store.state.statusLivraison
           },

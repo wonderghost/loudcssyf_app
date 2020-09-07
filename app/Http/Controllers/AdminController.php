@@ -599,9 +599,18 @@ class AdminController extends Controller
 
   public function getAllCommandes(Request $request , CommandMaterial $c) {
     try {
-      $commands= $c->select()
-        ->whereMonth('created_at','=',Date('m'))
-        ->orderBy('created_at','desc')->get();
+      if($request->user()->type != 'v_da' && $request->user()->type != 'v_standart') {
+
+        $commands= $c->select()
+          ->orderBy('created_at','desc')
+          ->paginate(100);
+      }
+      else {
+        $commands = $c->select()
+          ->where('vendeurs',$request->user()->username)
+          ->orderBy('created_at','desc')
+          ->paginate(100);
+      }
       $all =  $this->organizeCommandList($commands);
 
       return response()->json($all);
@@ -614,7 +623,7 @@ class AdminController extends Controller
   public function getAllLivraison(Request $request) {
     try {
       return response()
-        ->json($this->organizeLivraison($this->livraisonRequest(new Livraison)));
+        ->json($this->organizeLivraison($this->livraisonRequest(new Livraison,$request)));
     } catch (AppException $e) {
       header("Erreur!",true,422);
       die(json_encode($e->getMessage()));
