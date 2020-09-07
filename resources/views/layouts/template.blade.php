@@ -46,7 +46,7 @@
     <div class="uk-section uk-section-muted uk-padding-small uk-margin-top uk-visible@m ">
       <div class="uk-container uk-container-large">
         <p class="uk-text-center">
-          &copy; COPYRIGHT/LOUDCSSYF-SARL/{{date('Y')}}/LAYEDIST v2.0
+          &copy; COPYRIGHT/LOUDCSSYF-SARL/{{date('Y')}}/LAYEDIST v2.1
         </p>
       </div>
     </div>
