@@ -98,7 +98,6 @@
                   </form>
                 </div>
                 <div class="uk-modal-footer uk-text-right">
-                  <button uk-toggle="target : #modal-commission" class="uk-button uk-button-default uk-border-rounded uk-box-shadow-small uk-button-small" type="button"> <span uk-icon="icon : arrow-left"></span> Retour</button>
                   <button class="uk-button uk-button-danger uk-modal-close uk-border-rounded uk-box-shadow-small uk-button-small" type="button">Fermer</button>
                 </div>
             </div>
@@ -253,9 +252,8 @@ import 'vue-loading-overlay/dist/vue-loading.css';
 
           if(response.data == 'done') {
             this.isLoading = false
-            UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Vous avez paye une commission :-)</div>").then(function () {
-              location.reload()
-            })
+            alert("Success !")
+            this.getPayComissionList()
           }
         } catch (error) {
           this.isLoading = false
@@ -281,10 +279,8 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             })
             if(response.data) {
               this.isLoading = false
-              UIkit.modal.alert("<div class='uk-alert-sucess' uk-alert>Operation effectue avec success !</div>")
-                .then(function () {
-                  location.reload()
-                })
+              alert("Success !")
+              this.getPayComissionList()
             }
         } catch(error) {
             this.isLoading = false

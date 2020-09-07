@@ -110,6 +110,10 @@ class User extends Authenticatable
       return $this->hasMany('App\ReseauxPdc','id_pdc','username')->get();
     }
 
+    public function pdrafUsersForList() {
+      return $this->hasMany('App\ReseauxPdc','id_pdc','username');
+    }
+
     public function pdcUser() {
       return $this->hasOne('App\ReseauxPdc','id_pdraf','username')->first();
     }

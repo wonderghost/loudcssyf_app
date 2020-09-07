@@ -126,10 +126,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 
     export default {
         mounted() {
-          if(this.typeUser != 'gcga' && this.typeUser != 'admin' && this.typeUser != 'v_da' && this.typeUser != 'v_standart') {
-            alert("action non autorise !")
-            this.$router.go(-1)
-          }
+          UIkit.offcanvas($("#side-nav")).hide();
           this.getCommandCredit()
         },
         props : {

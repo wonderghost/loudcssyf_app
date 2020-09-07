@@ -181,10 +181,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         Loading
       },
         mounted() {
-          if(this.typeUser != 'gdepot' && this.typeUser != 'v_da' && this.typeUser != 'v_standart' && this.typeUser != 'admin' && this.typeUser != 'logistique') {
-            alert('action non autorise !')
-            this.$router.push('/')
-          }
           UIkit.offcanvas($("#side-nav")).hide();
           this.getLivraisonMaterial()
         },

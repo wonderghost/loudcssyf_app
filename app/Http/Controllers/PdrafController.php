@@ -435,10 +435,25 @@ class PdrafController extends Controller
 
     public function getAllReaboAfrocash(Request $request) {
         try {
-            // list reabonnement afrocash
-            $data = ReaboAfrocash::select()
-                // ->whereMonth('created_at',Date('m'))
-                ->orderBy('created_at','desc')->get();
+            if($request->user()->type == 'admin' || $request->user()->type == 'gcga' || $request->user()->type == 'commercial') {
+
+                // list reabonnement afrocash
+                $data = ReaboAfrocash::select()
+                    ->orderBy('created_at','desc')
+                    ->paginate(100);
+            }
+            else if($request->user()->type == 'pdraf') {
+                $data = ReaboAfrocash::select()
+                    ->where('pdraf_id',$request->user()->username)
+                    ->paginate(100);
+            }
+            else if($request->user()->type == 'pdc') {
+                
+                $pdraf_users = $request->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
+                $data = ReaboAfrocash::select()
+                    ->whereIn('pdraf_id',$pdraf_users)
+                    ->paginate(100);
+            }
             $all = [];
 
             foreach($data as $key => $value) {
@@ -476,7 +491,16 @@ class PdrafController extends Controller
             }
 
             return response()
-                ->json($all);
+                ->json([
+                    'all'   =>  $all,
+                    'next_url'	=> $data->nextPageUrl(),
+					'last_url'	=> $data->previousPageUrl(),
+					'per_page'	=>	$data->perPage(),
+					'current_page'	=>	$data->currentPage(),
+					'first_page'	=>	$data->url(1),
+					'first_item'	=>	$data->firstItem(),
+					'total'	=>	$data->total()
+                ]);
         } catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));

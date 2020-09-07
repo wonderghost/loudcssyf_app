@@ -4,6 +4,34 @@
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="dots"></loading>
+        <!-- MODAL ACTIVATE SERIAL NUMBER -->
+      <div id="modal-activate-serial" uk-modal>
+        <div class="uk-modal-dialog">
+          <button class="uk-modal-close-default" type="button" uk-close></button>
+          <div class="uk-modal-header">
+            <h2 class="uk-modal-title">Activer un Materiel</h2>
+          </div>
+          <div class="uk-modal-body">
+            <p>
+              Vous etes sur le point d'activer un materiel directement , entrez votre mot de passe pour continuer 
+            </p>
+            <form @submit.prevent="makeActiveNumber()">
+              <div class="uk-margin-small">
+                <label for="">Confirmez le mot de passe</label>
+                <input v-model="activeSerialData.password" type="password" class="uk-input uk-border-rounded">
+              </div>
+              <button type="submit" class="uk-button uk-button-primary uk-text-small uk-button-small uk-border-rounded">Envoyez</button>
+            </form>
+          </div>
+          <div class="uk-modal-footer uk-text-right">
+            <button class="uk-button uk-button-small uk-text-small uk-border-rounded uk-button-default" type="button" uk-toggle="target : #modal-search-serial">
+              <span uk-icon="arrow-left"></span> Retour
+            </button>
+            <button class="uk-button uk-button-small uk-text-small uk-border-rounded uk-button-danger uk-modal-close" type="button"> fermer</button>
+          </div>
+        </div>
+      </div>
+        <!-- // -->
 <!-- MODAL RECHERCHE FOR SERIAL NUMBER -->
     <div id="modal-search-serial" class="uk-modal-container" uk-modal="esc-close : false ; bg-close : false">
       <div class="uk-modal-dialog">
@@ -30,8 +58,14 @@
               <div class="uk-width-1-3@m">
                 <!-- Infos Materiel -->
                 <h4>Infos Materiel</h4>
+                <template v-if="typeUser == 'admin' && serialNumber.rapport_vente == null">
+                  <button uk-toggle="target : #modal-activate-serial" class="uk-button uk-button-primary uk-border-rounded uk-button-small uk-text-capitalize uk-text-small">activer ce materiel</button>
+                </template>
                 <ul class="uk-list uk-list-divider">
-                  <li><span>Numero Materiel</span> : <span>{{serialNumber.serial}} <sup v-if="serialNumber.etat && serialNumber.etat != '-'" class="uk-badge">{{serialNumber.etat}}</sup> </span></li>
+                  <li>
+                    <span>Numero Materiel</span> : 
+                    <span>{{serialNumber.serial}} <sup v-if="serialNumber.etat && serialNumber.etat != '-'" class="uk-badge">{{serialNumber.etat}}</sup> </span>
+                  </li>
                   <li>
                     <span>Status</span> : 
                     <span v-if="serialNumber.status == 'inactif'" class="uk-alert-danger">{{serialNumber.status}}</span>
@@ -154,7 +188,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           dataSearch : ""
         },
         serialNumber : {},
-        infoAbonnRappId : ""
+        infoAbonnRappId : "",
+        activeSerialData : {
+          _token : "",
+          serial : "",
+          password : "",
+        }
       }
     },
     methods : {
@@ -184,9 +223,21 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 UIkit.modal($("#modal-search-serial")).show()
               })
         }
+      },
+      makeActiveNumber : async function () {
+        try {
+          
+        }
+        catch(error) {
+          alert("Erreur!")
+          console.log(error)
+        }
       }
     },
     computed : {
+      typeUser () {
+        return this.$store.state.typeUser
+      },
       myToken() {
         return this.$store.state.myToken
       }

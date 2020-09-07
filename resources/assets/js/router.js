@@ -45,6 +45,7 @@ import listContact from './userComponents/ContactComponent.vue'
 import afrocashOperationUser from './userComponents/AfrocashComponent.vue'
 import newCommand from './userComponents/NewCommandComponent.vue'
 import profile from './userComponents/SettingComponent.vue'
+
 // 
 
 // LOGISTIQUE
@@ -58,6 +59,7 @@ import commandCredit from './adminComponents/CreditComponent.vue'
 // GESTIONNAIRE DEPOT
 import livraisonMateriel from './userComponents/LivraisonComponent.vue'
 import store from './store.js'
+import { some } from 'lodash'
 
 Vue.use(VueRouter);
 
@@ -74,10 +76,8 @@ const router = new VueRouter({
             component : addUser,
             beforeEnter : (to,from , next) => {
                 if(store.state.typeUser != 'admin') {
-                    next({
-                        path : '/',
-                        query : {redirect : to.fullPath}
-                    })
+                    alert("action non autorise !")
+                    next('/')
                 }
                 else {
                     next()
@@ -86,7 +86,16 @@ const router = new VueRouter({
         },
         {
             path : '/user/list',
-            component : listUser
+            component : listUser,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'admin' && store.state.typeUser != 'commercial') {
+                    alert('action non autorise !')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
         },
         {
             path : '/pdraf/list',
@@ -117,17 +126,44 @@ const router = new VueRouter({
         // PROMO 
         {
             path : '/promo',
-            component : promo
+            component : promo,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'admin' && store.state.typeUser != 'commercial') {
+                    alert('action non autorise !')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
         },
         //compte credit
         {
             path : '/account',
-            component : account
+            component : account,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'admin' && store.state.typeUser != 'commercial' && store.state.typeUser != 'gcga') {
+                    alert('action non autorise !')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
         },
         //AFROCASH ADMIN
         {
             path : '/afrocash/operation',
-            component : afrocashOperationAdmin
+            component : afrocashOperationAdmin,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'admin') {
+                    alert('action  non autorise !')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
         },
         {
             path : '/afrocash/all-transaction',
@@ -136,6 +172,15 @@ const router = new VueRouter({
         {
             path : '/afrocash/recouvrement',
             component : recouvrement,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'admin' && store.state.typeUser != 'coursier') {
+                    alert('action non autorise !')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
         },
         {
             path : "/material/entrepot",
@@ -152,12 +197,32 @@ const router = new VueRouter({
         //COMMANDES
         {
             path : '/commandes',
-            component : commande
+            component : commande,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'admin' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart' && store.state.typeUser != 'logistique' &&
+                  store.state.typeUser != 'commercial') {
+                    alert('action non autorise !')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
+            
         },
         // RAPPORT DE VENTE
         {
             path : '/rapport/add',
-            component : addRapport            
+            component : addRapport,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'admin' && store.state.typeUser != 'controleur') {
+                    alert('action non autorise')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
         },
         {
             path : '/rapport/list',
@@ -246,11 +311,29 @@ const router = new VueRouter({
         // NEW COMMANDE 
         {
             path : '/command/new',
-            component : newCommand
+            component : newCommand,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart') {
+                    alert('action non autorise !')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
         },
         {
             path : '/command/list',
-            component : commande
+            component : commande,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'admin' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart' && store.state.typeUser != 'logistique') {
+                    alert('action non autorise !')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
         },
         // PARAMETERS
         {
@@ -259,31 +342,96 @@ const router = new VueRouter({
         },
         {
             path : '/setting/formule',
-            component : formule
+            component : formule,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'admin') {
+                    alert('action non autorise !')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
         },
         {
             path : '/depot/ravitailler',
-            component : ravitaillerDepot
+            component : ravitaillerDepot,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'logistique') {
+                    alert('action non autorise !')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
         },
         {
             path : '/ravitailler/vendeur/:id',
-            component : ravitaillerVendeur
+            component : ravitaillerVendeur,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'logistique') {
+                    alert('action non autorise !')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
         },
         {
             path : '/commande-credit/all',
-            component : commandCredit
+            component : commandCredit,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'admin' && store.state.typeUser != 'gcga' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart' &&
+                    store.state.typeUser != 'commercial') {
+                        alert('action non autorise !')
+                        next('/')
+                }
+                else {
+                    next()
+                }
+            }
         },  
         {
             path : '/livraison/all',
-            component : livraisonMateriel
+            component : livraisonMateriel,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'gdepot' && store.state.typeUser != 'v_da' && store.state.typeUser != 'admin' 
+                    && store.state.typeUser != 'logistique') {
+                        alert('action non autorise !')
+                        next('/')
+                }
+                else {
+                    next()
+                }
+            }
         },
         {
             path : '/user/edit/:id',
-            component : editUser
+            component : editUser,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'admin') {
+                    alert('action non autorise !')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
         },
         {
             path : '/pay-comission',
-            component : payComission
+            component : payComission,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'admin' && store.state.typeUser != 'gcga') {
+                    alert('action non autorise !')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
         }
     ]
 

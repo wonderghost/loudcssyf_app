@@ -126,10 +126,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 
     export default {
         mounted() {
-          if(this.typeUser != 'logistique' && this.typeUser != 'v_da' && this.typeUser != 'v_standart' && this.typeUser != 'admin') {
-            alert("action non autorise !")
-            this.$router.push('/')
-          }
           UIkit.offcanvas($("#side-nav")).hide();
           this.getMaterialCommande()
           this.getSoldeLogistique()

@@ -12,6 +12,81 @@
     <h3>Tous les Rapports</h3>
     <hr class="uk-divider-small">
 
+    <!-- paiement comission for user -->
+    <template v-if="typeUser == 'v_da'">
+      <ul uk-accordion>
+        <li>
+            <!-- <a class="uk-accordion-title" href="#">Paiement Comission</a> -->
+            <button class="uk-accordion-title uk-button uk-button-small uk-border-rounded uk-text-capitalize">Se faire payer</button>
+            <div class="uk-accordion-content uk-section-muted uk-section uk-padding-small">
+                
+                  <div class="uk-grid-small uk-grid-divider" uk-grid>
+                    <div  class="uk-width-1-3@m">
+                      <h3 class="">Demandez un paiement de comission</h3>
+                      <!-- Erreor block -->
+                      <template v-if="errors.length">
+                        <div v-for="(error,index) in errors" :key="index" class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+                          <a href="#" class="uk-alert-close" uk-close></a>
+                          <p>{{error}}</p>
+                        </div>
+                      </template>
+
+                      <template id="" v-if="success">
+                        <div class="uk-alert-success uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+                          <a href="#" class="uk-alert-close" uk-close></a>
+                          <p>Demande de comission envoyee :-)</p>
+                        </div>
+                      </template>
+                      <p class="uk-text-right">
+                        <form>
+                          <div class="uk-alert-info uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+                            <p>Confirmez en tapant votre mot de passe pour envoyer la demande de paiement !</p>
+                          </div>
+                          <div class="uk-margin-small">
+                            <label for="">Le montant total de votre comission est de :</label>
+                            <input type="text" name="" :value="commission | numFormat" disabled class="uk-input uk-border-rounded uk-text-center uk-text-lead">
+                          </div>
+                          <div class="uk-margin-small">
+                            <label for="">Confirmez le mot de passe</label>
+                            <input v-model="passwordConfirm" type="password" name="" value="" class="uk-input uk-border-rounded" autofocus placeholder="Entrez votre mot de passe ici ...">
+                          </div>
+                          <button @click="sendPayComission()" type="button" name="button" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-text-capitalize">Envoyez <span uk-icon="icon : check"></span> </button>
+                        </form>
+                      </p>
+                    </div>
+                    <div class="uk-width-2-3@m">
+                      <h3>Toutes les demandes</h3>
+                      <table class="uk-table uk-table-small uk-table-hover uk-table-striped uk-table-divider uk-table-responsive">
+                        <thead>
+                          <tr>
+                            <th>Du</th>
+                            <th>Au</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Vendeurs</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="(pay,index) in payComissionList" :key="index">
+                            <td>{{pay.du}}</td>
+                            <td>{{pay.au}}</td>
+                            <td>{{pay.total}}</td>
+                            <td class="uk-text-danger" v-if="pay.status == 'unvalidated'">{{pay.status}}</td>
+                            <td class="uk-text-success" v-else>{{pay.status}}</td>
+                            <td>{{pay.vendeurs}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                
+            </div>
+        </li>
+      </ul>
+    </template>
+
+    
+
     <!-- modal details rapports -->
     <detail-rapport :rapport="rappDetails" :rapport-infos="rappInfos"></detail-rapport>
 
@@ -89,19 +164,7 @@
             <option value="non_paye">Impaye</option>
           </select>
         </div>
-        <!-- <div class="uk-width-1-3@m">
-          <div class="uk-grid-small" uk-grid>
-            <div class="uk-width-1-2@m">
-              <label for=""><span uk-icon="icon : calendar"></span> Du</label>
-              <input type="date" class="uk-input uk-border-rounded" v-model="filterDate.debut">
-            </div>
-            <div class="uk-width-1-2@m">
-              <label for=""><span uk-icon="icon : calendar"></span> Au</label>
-              <input type="date" class="uk-input uk-border-rounded" v-model="filterDate.fin">
-            </div>
-          </div>
-        </div> -->
-
+        
         <div v-if="typeUser == 'admin' || typeUser == 'controleur' || typeUser == 'commercial'" class="uk-width-1-6@m">
           <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
           <select class="uk-select uk-border-rounded" v-model="filterUser">
@@ -416,6 +479,7 @@ import datepicker from 'vue-date-picker'
                 this.isLoading = false
                 this.success = true
                 this.getRapportVente()
+                this.getPayComissionListForVendeur()
               }
             } catch (error) {
               this.isLoading = false
