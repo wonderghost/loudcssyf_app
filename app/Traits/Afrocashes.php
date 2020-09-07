@@ -556,7 +556,7 @@ Trait Afrocashes {
 			
 			if($request->user()->type !== 'admin' && $request->user()->type !== 'commercial' && $request->user()->type !== 'gcga') {
 
-				$afrocashAccount = $request->user()->type == 'v_standart' ? $request->user()->afroCash('semi_grossiste')->first() : $request->user()->afroCash('courant')->first();
+				$afrocashAccount = $request->user()->type == 'v_standart' || $request->user()->type == 'pdc' ? $request->user()->afroCash('semi_grossiste')->first() : $request->user()->afroCash('courant')->first();
 
 				$trans = $t->select()->orderBy('created_at','desc')
 					->where('compte_debite',$afrocashAccount->numero_compte)

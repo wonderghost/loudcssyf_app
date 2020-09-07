@@ -455,6 +455,7 @@ class PdrafController extends Controller
                     ->paginate(100);
             }
             $all = [];
+            
 
             foreach($data as $key => $value) {
                 $marge = round(($value->montant_ttc/1.18) * (1.5/100),0);
@@ -467,7 +468,7 @@ class PdrafController extends Controller
                 $confirm_at = $value->confirm_at ? new Carbon($value->confirm_at) : null;
                 $remove_at = $value->remove_at ? new Carbon($value->remove_at) : null;
                 $pay_at = $value->pay_at ? new Carbon($value->pay_at) : null;
-
+                
                 $all[$key] = [
                     'id'    =>  $value->id,
                     'materiel'  =>  $value->serial_number,
@@ -502,6 +503,74 @@ class PdrafController extends Controller
 					'total'	=>	$data->total()
                 ]);
         } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function getComissionToPay(Request $request) {
+        try {
+            $comission = 0;
+            $marge = 0;
+            $total = 0;
+
+            $data_comission = [];
+            $data_marge = [];
+
+            if($request->user()->type == 'admin' || $request->user()->type == 'gcga' || $request->user()->type == 'commercial') {
+                // list reabonnement afrocash
+                $data_comission = ReaboAfrocash::whereNull('pay_at')
+                    ->whereNotNull('confirm_at')
+                    ->whereNull('remove_at')
+                    ->get();
+
+                $data_marge = ReaboAfrocash::whereNotNull('confirm_at')
+                    ->whereNull('pay_comission_id')
+                    ->get();
+
+                
+            }
+            else if($request->user()->type == 'pdraf') {
+                $data_comission = ReaboAfrocash::whereNull('pay_at')
+                    ->whereNotNull('confirm_at')
+                    ->whereNull('remove_at')
+                    ->where('pdraf_id',$request->user()->username)
+                    ->get();
+            }
+            else if($request->user()->type == 'pdc') {
+                
+                $pdraf_users = $request->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
+
+                $data_comission = ReaboAfrocash::whereNull('pay_at')
+                    ->whereNotNull('confirm_at')
+                    ->whereNull('remove_at')
+                    ->whereIn('pdraf_id',$pdraf_users)
+                    ->get();
+                
+                $data_marge = ReaboAfrocash::whereNotNull('confirm_at')
+                ->whereNull('pay_comission_id')
+                ->whereIn('pdraf_id',$pdraf_users)
+                ->get();
+                
+            }
+
+            foreach($data_comission as $value) {
+                $comission += $value->comission;
+            }
+
+            foreach($data_marge as $value) {
+                $tmp = round(($value->montant_ttc/1.18) * (1.5/100),0);
+                $marge += $tmp;
+            }
+
+            return response()
+                ->json([
+                    'comission' =>  $comission,
+                    'marge' =>  $marge,
+                    'total' =>  $total
+                ]);
+        }
+        catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));
         }

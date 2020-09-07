@@ -180,6 +180,7 @@ Auth::routes();
 Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/get-all-pdraf','PdrafController@getAllPdraf');
 	// Reseaux pdc / pdraf
+	Route::get('/user/reabo-afrocash/get-comission','PdrafController@getComissionToPay');
 	######################################  PDC #########################$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	Route::post('/user/afrocash/depot-pdc/','PdcController@depotDepot')->middleware('vendeur');
 	Route::get('/user/pdc/','PdcController@operation')->middleware('pdc');

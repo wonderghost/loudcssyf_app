@@ -5,8 +5,8 @@
         :is-full-page="fullPage"
         loader="bars"
         :opacity="1"
-        color="#fff"
-        background-color="#083050"></loading>
+        color="#1e87f0"
+        background-color="#fff"></loading>
 
        <div class="uk-container uk-container-large">
            <h3 class="uk-margin-top">Inventaire des PDRAF</h3>

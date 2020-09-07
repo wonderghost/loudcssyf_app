@@ -52,19 +52,19 @@
             </div>             -->
             <!-- // -->
             <!-- ADMIN -->
-            <!-- <template v-if="typeUser == 'admin' || typeUser == 'commercial' || typeUser == 'gcga'">
+            <template v-if="typeUser == 'admin' || typeUser == 'commercial' || typeUser == 'gcga' || typeUser == 'pdc'">
                 <div class="uk-grid-small" uk-grid>
                     <div class="uk-grid-small uk-width-1-2@m" uk-grid>
                         <div class="uk-width-1-4@m">
                             <label for=""><span uk-icon="users"></span> Utilisateur</label>
-                            <select v-model="filterPdraf" class="uk-select uk-border-rounded">
+                            <select class="uk-select uk-border-rounded">
                                 <option value="">Tous</option>
                                 <option v-for="(p,index) in pdrafList" :key="index" :value="p.user.username">{{p.user.localisation}}</option>
                             </select>
                         </div>
                         <div class="uk-width-1-4@m">
                             <label for="">Paiement</label>
-                            <select v-model="filterPayStatement" class="uk-select uk-border-rounded">
+                            <select class="uk-select uk-border-rounded">
                                 <option value="">Tous</option>
                                 <option value="payer">payer</option>
                                 <option value="impayer">impayer</option>
@@ -72,7 +72,7 @@
                         </div>
                         <div class="uk-width-1-4@m">
                             <label for="">Etat</label>
-                            <select v-model="filterEtat" class="uk-select uk-border-rounded">
+                            <select class="uk-select uk-border-rounded">
                                 <option value="">Tous</option>
                                 <option value="confirme">confirme</option>
                                 <option value="annule">annule</option>
@@ -81,7 +81,7 @@
                         </div>
                         <div class="uk-width-1-4@m">
                             <label for="">Marge</label>
-                            <select v-model="filterMargeStatement" class="uk-select uk-border-rounded">
+                            <select class="uk-select uk-border-rounded">
                                 <option value="">Tous</option>
                                 <option value="payer">payer</option>
                                 <option value="impayer">impayer</option>
@@ -91,20 +91,20 @@
                     <div class="uk-grid-small uk-margin-remove uk-width-1-2@m" uk-grid>
                         <div class="uk-width-1-4@m">
                             <label for="">Total Comission Pdraf</label>
-                            <span class="uk-input uk-border-rounded">{{totalCom.com | numFormat }}</span>
+                            <span class="uk-input uk-text-center uk-border-rounded">{{comission | numFormat}}</span>
                         </div>
                         <div class="uk-width-1-4@m">
                             <label for="">Total Marge</label>
-                            <span class="uk-input uk-border-rounded">{{totalCom.mar | numFormat }}</span>
+                            <span class="uk-input uk-text-center uk-border-rounded">{{marge | numFormat}}</span>
                         </div>
                         <div class="uk-width-1-4@m">
                             <label for=""><span uk-icon="credit-card"></span> Comission Total</label>
-                            <span class="uk-input uk-border-rounded uk-text-center">{{ totalCom.total | numFormat }}</span>
+                            <span class="uk-input uk-border-rounded uk-text-center">{{comission + marge | numFormat}}</span>
                         </div>
                         
                     </div>
                 </div>
-            </template> -->
+            </template>
             <!-- // -->
             <!-- <template v-if="typeUser == 'pdc'">
                 <div class="uk-grid-small" uk-grid>
@@ -149,15 +149,15 @@
                     </div>
                 </div>
             </template> -->
-            <!-- <template v-if="typeUser == 'pdraf'">
+            <template v-if="typeUser == 'pdraf'">
                 <div class="uk-grid-small" uk-grid>
                     <div class="uk-width-1-6@m">
                         <label for="">Comission Total (GNF)</label>
-                        <span class="uk-input uk-text-center uk-border-rounded">{{totalComissionPdraf | numFormat}}</span>
+                        <span class="uk-input uk-border-rounded uk-text-center">{{comission | numFormat}}</span>
                     </div>
                     <div class="uk-width-1-6@m">
                         <label for="">Paiement</label>
-                        <select v-model="filterPayStatement" class="uk-select uk-border-rounded">
+                        <select class="uk-select uk-border-rounded">
                             <option value="">Tous</option>
                             <option value="payer">payer</option>
                             <option value="impayer">impayer</option>
@@ -165,17 +165,14 @@
                     </div>
                     <div class="uk-width-1-6@m">
                         <label for="">Etat</label>
-                        <select v-model="filterEtat" class="uk-select uk-border-rounded">
+                        <select class="uk-select uk-border-rounded">
                             <option value="">Tous</option>
                             <option value="confirme">confirme</option>
                             <option value="annule">annule</option>
                         </select>
-                        <span v-if="filterEtat == 'confirme' && filterPayStatement == 'impayer'">
-                            <button uk-toggle="target : #modal-pay-comission " class="uk-button uk-text-capitalize uk-button-small uk-text-small uk-button-primary uk-border-rounded">se faire payer</button>
-                        </span>
                     </div>
                 </div>
-            </template> -->
+            </template>
             <div class="uk-grid-small uk-flex uk-flex-right" uk-grid>
                 <!-- paginate component -->
                 <div class="uk-width-1-3@m uk-margin-top">
@@ -335,7 +332,9 @@
                     </template>
                 </tbody>
             </table>
-
+            <div class="uk-flex uk-flex-center">
+                <button class="uk-button uk-button-small uk-border-rounded" uk-scroll uk-tooltip="revenir en haut"><span uk-icon="triangle-up"></span></button>
+            </div>
 
        </div>
    </div>
@@ -364,6 +363,11 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 total : 0,
         // #####                
                 all : [],
+
+                comission : 0,
+                marge : 0,
+                totalComission : 0,
+
                 isLoading : false,
                 fullPage : true,
                 pdrafList : [],
@@ -509,7 +513,9 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 try {
                     this.isLoading = true
                     var response = await axios.get('/user/pdraf/get-reabo-afrocash')
-                    if(response) {
+                    var theResponse = await axios.get('/user/reabo-afrocash/get-comission')
+
+                    if(response && theResponse) {
                         this.isLoading = false
                         this.all = response.data.all
                         
@@ -518,6 +524,9 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                         this.perPage = response.data.per_page
                         this.firstItem = response.data.first_item
                         this.total = response.data.total
+
+                        this.comission = theResponse.data.comission
+                        this.marge = theResponse.data.marge
 
                     }
                     if(this.typeUser == 'pdc') {
