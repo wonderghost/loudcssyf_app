@@ -1,5 +1,5 @@
 <template>
-  <div class="uk-container uk-container-large">
+  <div class="uk-container uk-container-large uk-margin-large-bottom">
     <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
@@ -46,7 +46,7 @@
             <label for=""> Numero Recu</label>
             <input type="text" class="uk-input uk-border-rounded" v-model="recouvrementData.numero_recu">
           </div>
-          <button type="submit" class="uk-button uk-text-small uk-text-capitalize uk-button-small uk-border-rounded uk-button-primary">Envoyez</button>
+          <button type="submit" class="uk-button uk-width-1-1@s uk-width-1-6@m uk-text-capitalize uk-button-small uk-border-rounded uk-button-primary">Envoyez</button>
         </form>
         </template>
         <template v-else>
@@ -94,6 +94,9 @@
             </tr>
           </tbody>
         </table>
+        <div class="uk-flex uk-flex-center">
+          <button class="uk-button uk-button-small uk-border-rounded" uk-scroll uk-tooltip="revenir en haut"><span uk-icon="triangle-up"></span></button>
+        </div>
       </li>
       <li>
         <!-- TRANSACTIONS -->
@@ -154,7 +157,9 @@
             </tr>
           </tbody>
         </table>
-        
+        <div class="uk-flex uk-flex-center">
+          <button class="uk-button uk-button-small uk-border-rounded" uk-scroll uk-tooltip="revenir en haut"><span uk-icon="triangle-up"></span></button>
+        </div>
       </li>
     </ul>
   </div>

@@ -12,13 +12,19 @@
             <h2 class="uk-modal-title">Activer un Materiel</h2>
           </div>
           <div class="uk-modal-body">
+            <template v-if="errors">
+              <div class="uk-alert-danger" uk-alert v-for="(err,index) in errors" :key="index">
+                <a class="uk-alert-close" uk-close></a>
+                <p>{{err}}</p>
+              </div>
+            </template>
             <p>
               Vous etes sur le point d'activer un materiel directement , entrez votre mot de passe pour continuer 
             </p>
             <form @submit.prevent="makeActiveNumber()">
               <div class="uk-margin-small">
                 <label for="">Confirmez le mot de passe</label>
-                <input v-model="activeSerialData.password" type="password" class="uk-input uk-border-rounded">
+                <input v-model="password_confirmation" type="password" class="uk-input uk-border-rounded">
               </div>
               <button type="submit" class="uk-button uk-button-primary uk-text-small uk-button-small uk-border-rounded">Envoyez</button>
             </form>
@@ -189,11 +195,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         },
         serialNumber : {},
         infoAbonnRappId : "",
-        activeSerialData : {
-          _token : "",
-          serial : "",
-          password : "",
-        }
+        password_confirmation : "",
+        errors : []
       }
     },
     methods : {
@@ -226,15 +229,39 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       },
       makeActiveNumber : async function () {
         try {
-          
+          this.isLoading = true
+          UIkit.modal($("#modal-activate-serial")).hide()
+          let response = await axios.post('/admin/serial-number/actived',{
+            _token : this.myToken,
+            serial : this.serialNumber.serial,
+            password_confirmation : this.password_confirmation
+          })
+
+          if(response && response.data == 'done') {
+            alert('Success !')
+            this.serialSearch()
+            UIkit.modal($("#modal-search-serial")).show()
+          }
         }
         catch(error) {
-          alert("Erreur!")
-          console.log(error)
+          UIkit.modal($("#modal-activate-serial")).show()
+          this.isLoading = false
+          this.errors = []
+          if(error.response.data.errors) {
+            let errorTab = error.response.data.errors
+            for (var prop in errorTab) {
+              this.errors.push(errorTab[prop][0])
+            }
+          } else {
+              this.errors.push(error.response.data)
+          }
         }
       }
     },
     computed : {
+      myToken () {
+        return this.$store.state.myToken
+      },
       typeUser () {
         return this.$store.state.typeUser
       },

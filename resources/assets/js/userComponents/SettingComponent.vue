@@ -1,5 +1,5 @@
 <template>
-   <div class="uk-container uk-container-large">
+   <div class="uk-container uk-container-large uk-margin-large-bottom">
 
        <loading :active.sync="isLoading"
         :can-cancel="false"
@@ -28,7 +28,7 @@
                                     <p>{{error}}</p>
                                 </div>
                             </template>
-                            <div class="uk-width-1-1@">
+                            <div class="uk-width-1-1@m">
                                 <label for="">Ancien Mot de passe</label>
                                 <input v-model="formPasswordData.old_password" type="password" class="uk-input uk-border-rounded">
                             </div>
@@ -41,7 +41,7 @@
                                 <input v-model="formPasswordData.new_password_confirmation" type="password" class="uk-input uk-border-rounded">
                             </div>
                             <div>
-                                <button class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
+                                <button class="uk-button uk-button-small uk-width-1-1@s uk-width-1-6@m uk-button-primary uk-border-rounded">Envoyez</button>
                             </div>
                         </form>
                     </div>

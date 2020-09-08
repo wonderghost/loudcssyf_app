@@ -803,4 +803,32 @@ class LogistiqueController extends Controller
         die(json_encode($e->getMessage()));
     }
   }
+
+  // CHANGEMENT DE STATUS D'UN MATERIEL DIRECTEMENT
+  public function makeActivedSerial(Request $request) {
+    try {
+      $validation = $request->validate([
+        'serial'  =>  'required|exists:exemplaire,serial_number',
+        'password_confirmation' =>  'required'
+      ]);
+      
+      if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
+        throw new AppException("Mot de passe invalide !");
+      }
+      
+      $serial = Exemplaire::find($request->input('serial'));
+      if($serial->status == 'actif') {
+        throw new AppException("Materiel deja actif !");
+      }
+      $serial->status = 'actif';
+      $serial->save();
+
+      return response()
+        ->json('done');
+    }
+    catch(AppException $e) {
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
 }

@@ -131,10 +131,10 @@ ul.dash-li > li a , ul.obj-li > li a {
   position : fixed;
   bottom : 0;
   width : 100% !important;
-  padding : 2% ;
+  padding : 0 !important;
   background : #eef !important;
 }
 
 #app {
-  margin-bottom : 7% !important;
+  margin-bottom : 2% !important;
 }

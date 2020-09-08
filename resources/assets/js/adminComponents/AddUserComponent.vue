@@ -1,5 +1,5 @@
 <template>
-<div class="uk-container uk-container-large">
+<div class="uk-container uk-container-large uk-margin-large-bottom">
   <loading :active.sync="isLoading"
       :can-cancel="false"
       :is-full-page="fullPage"
@@ -79,7 +79,7 @@
           </div>
         </div>
         <div class="uk-margin-small">
-          <button @click="addUser()" type="button" name="button" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-sall">
+          <button @click="addUser()" type="button" name="button" class="uk-button uk-width-1-1@s uk-width-1-6@m uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-sall">
             validez
             <span uk-icon="icon : check"></span>
           </button>

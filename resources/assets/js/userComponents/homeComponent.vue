@@ -75,21 +75,21 @@
     </form>
     </div>
     <div class="uk-hidden@m uk-text-center bottom-content uk-box-shadow-small">
-      <span uk-tooltip="Tableau de bord" class="uk-margin-right">
-        <router-link to="/dashboard"><i class="material-icons">dashboard</i></router-link>
+      <span>
+        <router-link to="/dashboard" class="uk-margin-small"><i class="material-icons">dashboard</i></router-link>
       </span>
-      <span v-if="typeUser == 'admin' || typeUser == 'commercial'" uk-tooltip="Performances" class="uk-margin-right">
-        <router-link to="/performances"><i class="material-icons">timeline</i></router-link>
+      <span v-if="typeUser == 'admin' || typeUser == 'commercial'" class="">
+        <router-link to="/performances" class="uk-margin-small"><i class="material-icons">timeline</i></router-link>
       </span>
-      <span v-if="typeUser == 'admin' || typeUser == 'commercial'" uk-tooltip="Objectifs" class="uk-margin-right">
-        <router-link to="/objectifs/visu"><i class="material-icons">track_changes</i></router-link>
+      <span v-if="typeUser == 'admin' || typeUser == 'commercial'" class="">
+        <router-link to="/objectifs/visu" class="uk-margin-small"><i class="material-icons">track_changes</i></router-link>
       </span>
-      <span v-if="typeUser == 'v_da' || typeUser == 'v_standart'" uk-tooltip="Objectifs" class="uk-margin-right">
-        <router-link to="/objectifs-user"><i class="material-icons">track_changes</i></router-link>
+      <span v-if="typeUser == 'v_da' || typeUser == 'v_standart'" class="">
+        <router-link to="/objectifs-user" class="uk-margin-small"><i class="material-icons">track_changes</i></router-link>
       </span>
       <a class="uk-button uk-button-small border-button" href="#all-notification" uk-toggle uk-tooltip="Notifications"><i class="material-icons">notifications</i><span class="">{{unreadNotifications.length}}</span> </a>
-      <span uk-tooltip="Promo">
-        <router-link to="/promo"><span class="uk-button uk-button-primary uk-border-rounded uk-text-small uk-button-small">PROMO</span></router-link>
+      <span>
+        <router-link to="/promo" class="uk-margin-small"><i class="material-icons">card_giftcard</i></router-link>
       </span>
       <template v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'" id="">
         <router-link to="/pay-comission" class="uk-button uk-button-small border-button button-pay-comission"><i class="material-icons">monetization_on</i></router-link>

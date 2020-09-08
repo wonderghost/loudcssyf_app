@@ -12,6 +12,7 @@
 */
 
 Route::middleware(['auth','admin'])->group(function () {
+	Route::post('/admin/serial-number/actived','LogistiqueController@makeActivedSerial');
 	// RESEAUX DES PDC ET PDRAF
 	Route::get('/admin/pdc/list','PdcController@getList');
 
