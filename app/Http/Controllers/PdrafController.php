@@ -471,7 +471,9 @@ class PdrafController extends Controller
                     $filterData->whereNull('pay_comission_id');
                 }
 
-                $data = $filterData->paginate(100);
+                $data = $filterData
+                    ->orderBy('created_at','desc')
+                    ->paginate(100);
             }
 
             if(count($data) <= 0) {
