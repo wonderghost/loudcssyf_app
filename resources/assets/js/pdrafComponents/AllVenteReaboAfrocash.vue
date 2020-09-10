@@ -89,7 +89,7 @@
                             <label for=""><span uk-icon="credit-card"></span> Comission Total</label>
                             <span class="uk-input uk-border-rounded uk-text-center">{{comission + marge | numFormat}}</span>
                             <template v-if="typeUser == 'pdc'">
-                                <button uk-toggle="target : #modal-pay-comission" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-button-primary uk-margin-small">se faire payer</button>
+                                <!-- <button uk-toggle="target : #modal-pay-comission" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-button-primary uk-margin-small">se faire payer</button> -->
                             </template>
                         </div>
                         
@@ -97,55 +97,13 @@
                 </div>
             </template>
             <!-- // -->
-            <!-- <template v-if="typeUser == 'pdc'">
-                <div class="uk-grid-small" uk-grid>
-                    <div class="uk-width-1-6@m">
-                        <label for=""><span uk-icon="users"></span> Utilisateur</label>
-                        <select v-model="filterPdraf" class="uk-select uk-border-rounded">
-                            <option value="">Tous</option>
-                            <option v-for="(p,index) in pdrafList" :key="index" :value="p.user.username">{{p.user.localisation}}</option>
-                        </select>
-                    </div>
-                    <div class="uk-width-1-6@m">
-                        <label for="">Paiement</label>
-                        <select v-model="filterPayStatement" class="uk-select uk-border-rounded">
-                            <option value="">Tous</option>
-                            <option value="payer">payer</option>
-                            <option value="impayer">impayer</option>
-                        </select>
-                    </div>
-                    <div class="uk-width-1-6@m">
-                        <label for="">Etat</label>
-                        <select v-model="filterEtat" class="uk-select uk-border-rounded">
-                            <option value="">Tous</option>
-                            <option value="confirme">confirme</option>
-                            <option value="annule">annule</option>
-                            <option value="en_instance">en instance</option>
-                        </select>
-                    </div>
-                    <div class="uk-width-1-6@m">
-                        <label for="">Total Comission Pdraf</label>
-                        <span class="uk-input uk-border-rounded">{{totalCom.com | numFormat }}</span>
-                    </div>
-                    <div class="uk-width-1-6@m">
-                        <label for="">Total Marge</label>
-                        <span class="uk-input uk-border-rounded">{{totalCom.mar | numFormat }}</span>
-                    </div>
-                    <div class="uk-width-1-6@m">
-                        <label for=""><span uk-icon="credit-card"></span> Comission Total</label>
-                        <span class="uk-input uk-border-rounded uk-text-center">{{ totalCom.total | numFormat }}</span>
-                        <span v-if="filterPdraf == '' && filterEtat == 'confirme' && filterPayStatement == 'impayer'">
-                            <button uk-toggle="target : #modal-pay-comission " class="uk-button uk-text-capitalize uk-button-small uk-button-primary uk-border-rounded">se faire payer</button>
-                        </span>
-                    </div>
-                </div>
-            </template> -->
+           
             <template v-if="typeUser == 'pdraf'">
                 <div class="uk-grid-small" uk-grid>
                     <div class="uk-width-1-6@m">
                         <label for="">Comission Total (GNF)</label>
                         <span class="uk-input uk-border-rounded uk-text-center">{{comission | numFormat}}</span>
-                        <button uk-toggle="target : #modal-pay-comission" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-button-primary uk-margin-small">se faire payer</button>
+                        <!-- <button uk-toggle="target : #modal-pay-comission" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-button-primary uk-margin-small">se faire payer</button> -->
                     </div>
                     <div class="uk-width-1-6@m">
                         <label for="">Paiement</label>
@@ -481,7 +439,6 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                             montant : Math.round(this.comission),
                         })
                     }
-
                     
                     if(response && response.data == 'done') {
                         this.isLoading = false
@@ -504,15 +461,9 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             },
             filterRequest : async function () {
                 try {
+                    this.isLoading = true
                     this.filterData._token = this.myToken
-                    // filterData : {
-                    //     filterState : true,
-                    //     _token : "" , 
-                    //     user : "",
-                    //     payState : "",
-                    //     state : "",
-                    //     margeState : ""
-                    // }
+
                     let response = await axios
                         .get('/user/pdraf/filter-reabo-afrocash/'+this.filterData.user+'/'+this.filterData.payState+'/'+this.filterData.state+'/'+this.filterData.margeState)
 
@@ -524,6 +475,8 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                         this.perPage = response.data.per_page
                         this.firstItem = response.data.first_item
                         this.total = response.data.total
+
+                        this.isLoading = false
 
                     }
                 }
@@ -569,7 +522,6 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                             this.pdrafList = response.data
                         }
                     }
-
 
                 } catch(error) {
                     alert(error)

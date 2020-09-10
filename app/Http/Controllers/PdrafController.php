@@ -435,11 +435,17 @@ class PdrafController extends Controller
 
     public function filterReaboAfrocash(Request $request , $user,$payState , $state,$margeState) {
         try {
+            $data = [];
 
             if($user != "all" || $payState != "all" || $state != "all" || $margeState != "all") {
 
                 $filterData = $user != "all" ? ReaboAfrocash::select()
                     ->where('pdraf_id',$user) : ReaboAfrocash::select();
+
+                if($request->user()->type == 'pdc') {
+                    $pdraf_users = $request->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
+                    $filterData->whereIn('pdraf_id',$pdraf_users);
+                }
 
                 if($payState == 'payer') {
                     $filterData->whereNotNull('pay_at');
@@ -447,7 +453,6 @@ class PdrafController extends Controller
                 else if($payState ==  'impayer') {
                     $filterData->whereNull('pay_at');
                 }
-
                 if($state == 'confirme') {
                     $filterData->whereNotNull('confirm_at');
                 }
@@ -468,6 +473,11 @@ class PdrafController extends Controller
 
                 $data = $filterData->paginate(100);
             }
+
+            if(count($data) <= 0) {
+                return $this->getAllReaboAfrocash($request);
+            }
+            
 
             $all = [];
             
@@ -545,38 +555,6 @@ class PdrafController extends Controller
                     ->whereIn('pdraf_id',$pdraf_users)
                     ->paginate(100);
             }
-
-            // if($user != "all" || $payState != "all" || $state != "all" || $margeState != "all") {
-            //     $filterData = $request->input('user') != "all" ? ReaboAfrocash::select()
-            //         ->where('pdraf_id',$request->input('user')) : ReaboAfrocash::select();
-
-            //     if($payState == 'payer') {
-            //         $filterData->whereNotNull('pay_at');
-            //     }
-            //     else if($payState ==  'impayer') {
-            //         $filterData->whereNull('pay_at');
-            //     }
-
-            //     if($state == 'confirme') {
-            //         $filterData->whereNotNull('confirm_at');
-            //     }
-            //     else if($state == 'annule') {
-            //         $filterData->whereNotNull('remove_at');
-            //     }
-            //     else if($state == 'en_instance') {
-            //         $filterData->whereNull('confirm_at')
-            //             ->whereNull('remove_at');
-            //     }
-
-            //     if($margeState == 'payer') {
-            //         $filterData->whereNotNull('pay_comission_id');
-            //     }
-            //     else if($margeState == 'impayer') {
-            //         $filterData->whereNull('pay_comission_id');
-            //     }
-
-            //     $data = $filterData->paginate(100);
-            // }
 
             $all = [];
             

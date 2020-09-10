@@ -399,7 +399,7 @@ public function addNewPdc(Request $request) {
     public function sendPayComissionRequest(Request $request  , PayCommission $pay) {
         try {
             $validation = $request->validate([
-                'montant'   =>  'required|numeric|min : 1000000',
+                'montant'   =>  'required|numeric|min : 10000',
                 'password_confirmation'  => 'required|string',
             ],[
                 'required'  =>  '`:attribute` requis !',
@@ -433,8 +433,8 @@ public function addNewPdc(Request $request) {
                 $pay->montant += ($value->comission + $marge);
             }
 
-            if($pay->montant < 1000000 ) {
-                throw new AppException("Vous devez avoir au moins 1,000,000 GNF !");
+            if($pay->montant < 10000 ) {
+                throw new AppException("Vous devez avoir au moins 10,000 GNF !");
             }
 
             // EFFECTUER LA TRANSACTION
