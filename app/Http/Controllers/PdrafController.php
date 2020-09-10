@@ -437,50 +437,732 @@ class PdrafController extends Controller
         try {
             $data = [];
 
-            if($user != "all" || $payState != "all" || $state != "all" || $margeState != "all") {
-
-                $filterData = $user != "all" ? ReaboAfrocash::select()
-                    ->where('pdraf_id',$user) : ReaboAfrocash::select();
-
+            if($user && $payState && $state && $margeState) {
                 if($request->user()->type == 'pdc') {
                     $pdraf_users = $request->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
-                    $filterData->whereIn('pdraf_id',$pdraf_users);
                 }
+                else {
+                    $pdraf_users = User::where('type','pdraf')->get();
+                }
+                
 
-                if($payState == 'payer') {
-                    $filterData->whereNotNull('pay_at');
-                }
-                else if($payState ==  'impayer') {
-                    $filterData->whereNull('pay_at');
-                }
-                if($state == 'confirme') {
-                    $filterData->whereNotNull('confirm_at');
-                }
-                else if($state == 'annule') {
-                    $filterData->whereNotNull('remove_at');
-                }
-                else if($state == 'en_instance') {
-                    $filterData->whereNull('confirm_at')
-                        ->whereNull('remove_at');
-                }
+                switch ($user) {
+                    case 'all':
+                        switch ($state) {
+                            case 'all' : 
+                                switch ($payState) {
+                                    case 'all' : 
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+    
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+    
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+    
+                                            break;
+                                        }
+                                    break;
+                                    case 'payer':
+                                        switch ($margeState) {
+                                            case 'all' : 
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+    
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+    
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+    
+                                            break;
+                                        }
+                                    break;
+                                    case 'impayer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                        }
+                                    break;
+                                }  
+                            break;
+                            case 'confirme':
+                                switch ($payState) {
+                                    case 'all' : 
+                                        switch ($margeState) {
+                                            case 'all' : 
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+    
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+    
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+    
+                                            break;
+                                        }
+                                    break;
+                                    case 'payer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+    
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+    
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+    
+                                            break;
+                                        }
+                                    break;
+                                    case 'impayer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                        }
+                                    break;
+                                }  
+                            break;
+                            case 'annule' :
+                                switch ($payState) {
+                                    case 'all':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                        }
+                                    break;
+                                    case 'payer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                        }
+                                    break;
+                                    case 'impayer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                        }
+                                    break;
+                                }
+                            break;
+                            case 'en_instance':
+                                switch ($payState) {
+                                    case 'all':
+                                        switch ($margeState) {
+                                            case 'all' : 
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                        }
+                                    break;
+                                    case 'payer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                        }
+                                    break;
+                                    case 'impayer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                        }
+                                    break;
+                                }
+                            break;
+                        }       
+                    break;
+                    default:
+                        switch ($state) {
+                            case 'all' : 
+                                switch ($payState) {
+                                    case 'all' : 
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+    
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+    
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+    
+                                            break;
+                                        }
+                                    break;
+                                    case 'payer':
+                                        switch ($margeState) {
+                                            case 'all' : 
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+    
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+    
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+    
+                                            break;
+                                        }
+                                    break;
+                                    case 'impayer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                        }
+                                    break;
+                                }  
+                            break;
+                            case 'confirme':
+                                switch ($payState) {
+                                    case 'all' : 
+                                        switch ($margeState) {
+                                            case 'all' : 
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+    
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+    
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+    
+                                            break;
+                                        }
+                                    break;
+                                    case 'payer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+    
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+    
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+    
+                                            break;
+                                        }
+                                    break;
+                                    case 'impayer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                        }
+                                    break;
+                                }  
+                            break;
+                            case 'annule' :
+                                switch ($payState) {
+                                    case 'all':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                        }
+                                    break;
+                                    case 'payer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                        }
+                                    break;
+                                    case 'impayer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                        }
+                                    break;
+                                }
+                            break;
+                            case 'en_instance':
+                                switch ($payState) {
+                                    case 'all':
+                                        switch ($margeState) {
+                                            case 'all' : 
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                        }
+                                    break;
+                                    case 'payer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                        }
+                                    break;
+                                    case 'impayer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'payer':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                            break;
+                                        }
+                                    break;
+                                }
+                            break;
+                        }
+                        break;
+                    }
 
-                if($margeState == 'payer') {
-                    $filterData->whereNotNull('pay_comission_id');
-                }
-                else if($margeState == 'impayer') {
-                    $filterData->whereNull('pay_comission_id');
-                }
-
-                $data = $filterData
-                    ->orderBy('created_at','desc')
-                    ->paginate(100);
+                $data = $filterData;
             }
-
-            if(count($data) <= 0) {
-                return $this->getAllReaboAfrocash($request);
-            }
-            
-
             $all = [];
             
 
