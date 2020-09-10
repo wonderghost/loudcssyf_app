@@ -1329,7 +1329,7 @@ class PdrafController extends Controller
 
             foreach($data as $value) {
                 $comission += $value->comission;
-                $marge = round(($value->montant_ttc/1.18) * (1.5/100),0);
+                $marge += round(($value->montant_ttc/1.18) * (1.5/100),0);
             }
 
             return response()
