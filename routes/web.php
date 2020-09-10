@@ -206,6 +206,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/pdraf/send-reabo-afrocash','PdrafController@sendReaboAfrocash')->middleware('pdraf');
 	Route::get('/user/pdraf/get-reabo-afrocash','PdrafController@getAllReaboAfrocash');
 	Route::post('/user/pdraf/pay-comission-request','PdrafController@sendPayComissionRequest')->middleware('pdraf');
+	Route::get('/user/pdraf/filter-reabo-afrocash/{user}/{payState}/{state}/{margeState}','PdrafController@filterReaboAfrocash');
 
 	Route::get('/admin/pay-comission/pdraf/all','PdrafController@getAllPayComission');
 

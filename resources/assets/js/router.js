@@ -398,7 +398,7 @@ const router = new VueRouter({
             component : livraisonMateriel,
             beforeEnter : (to,from , next) => {
                 if(store.state.typeUser != 'gdepot' && store.state.typeUser != 'v_da' && store.state.typeUser != 'admin' 
-                    && store.state.typeUser != 'logistique') {
+                    && store.state.typeUser != 'logistique' && store.state.typeUser != 'v_standart') {
                         alert('action non autorise !')
                         next('/')
                 }

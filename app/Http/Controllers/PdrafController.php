@@ -433,6 +433,97 @@ class PdrafController extends Controller
 
     // get Reabo Afrocash by pdc
 
+    public function filterReaboAfrocash(Request $request , $user,$payState , $state,$margeState) {
+        try {
+
+            if($user != "all" || $payState != "all" || $state != "all" || $margeState != "all") {
+
+                $filterData = $user != "all" ? ReaboAfrocash::select()
+                    ->where('pdraf_id',$user) : ReaboAfrocash::select();
+
+                if($payState == 'payer') {
+                    $filterData->whereNotNull('pay_at');
+                }
+                else if($payState ==  'impayer') {
+                    $filterData->whereNull('pay_at');
+                }
+
+                if($state == 'confirme') {
+                    $filterData->whereNotNull('confirm_at');
+                }
+                else if($state == 'annule') {
+                    $filterData->whereNotNull('remove_at');
+                }
+                else if($state == 'en_instance') {
+                    $filterData->whereNull('confirm_at')
+                        ->whereNull('remove_at');
+                }
+
+                if($margeState == 'payer') {
+                    $filterData->whereNotNull('pay_comission_id');
+                }
+                else if($margeState == 'impayer') {
+                    $filterData->whereNull('pay_comission_id');
+                }
+
+                $data = $filterData->paginate(100);
+            }
+
+            $all = [];
+            
+
+            foreach($data as $key => $value) {
+                $marge = round(($value->montant_ttc/1.18) * (1.5/100),0);
+                $options = "";
+                foreach($value->options() as $_value) {
+                    $options .= $_value->id_option.",";
+                }
+
+                $created_at = new Carbon($value->created_at);
+                $confirm_at = $value->confirm_at ? new Carbon($value->confirm_at) : null;
+                $remove_at = $value->remove_at ? new Carbon($value->remove_at) : null;
+                $pay_at = $value->pay_at ? new Carbon($value->pay_at) : null;
+                
+                $all[$key] = [
+                    'id'    =>  $value->id,
+                    'materiel'  =>  $value->serial_number,
+                    'formule'   =>  $value->formule_name,
+                    'duree' =>  $value->duree,
+                    'option'    =>  $options,
+                    'montant'   =>  $value->montant_ttc,
+                    'comission' =>  $value->comission,
+                    'telephone_client'  =>  $value->telephone_client,
+                    'pdraf' =>  $value->pdrafUser()->only('localisation','username'),
+                    'pdc_hote'  =>  $value->pdrafUser()->pdcUser()->usersPdc()->only('localisation','username'),
+                    'marge' =>  $marge,
+                    'total' =>  $marge + $value->comission,
+                    'created_at'    =>  $created_at->toDateTimeString(),
+                    'confirm_at'    => $confirm_at ? $confirm_at->toDateTimeString() : null,
+                    'remove_at' =>  $remove_at ? $remove_at->toDateTimeString() : null,
+                    'pay_at'    =>  $pay_at ? $pay_at->toDateTimeString() : null,
+                    'pay_comission_id'  =>  $value->pay_comission_id
+                ];
+
+            }
+
+            return response()
+                ->json([
+                    'all'   =>  $all,
+                    'next_url'	=> $data->nextPageUrl(),
+					'last_url'	=> $data->previousPageUrl(),
+					'per_page'	=>	$data->perPage(),
+					'current_page'	=>	$data->currentPage(),
+					'first_page'	=>	$data->url(1),
+					'first_item'	=>	$data->firstItem(),
+					'total'	=>	$data->total()
+                ]);
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
     public function getAllReaboAfrocash(Request $request) {
         try {
             if($request->user()->type == 'admin' || $request->user()->type == 'gcga' || $request->user()->type == 'commercial') {
@@ -454,9 +545,41 @@ class PdrafController extends Controller
                     ->whereIn('pdraf_id',$pdraf_users)
                     ->paginate(100);
             }
+
+            // if($user != "all" || $payState != "all" || $state != "all" || $margeState != "all") {
+            //     $filterData = $request->input('user') != "all" ? ReaboAfrocash::select()
+            //         ->where('pdraf_id',$request->input('user')) : ReaboAfrocash::select();
+
+            //     if($payState == 'payer') {
+            //         $filterData->whereNotNull('pay_at');
+            //     }
+            //     else if($payState ==  'impayer') {
+            //         $filterData->whereNull('pay_at');
+            //     }
+
+            //     if($state == 'confirme') {
+            //         $filterData->whereNotNull('confirm_at');
+            //     }
+            //     else if($state == 'annule') {
+            //         $filterData->whereNotNull('remove_at');
+            //     }
+            //     else if($state == 'en_instance') {
+            //         $filterData->whereNull('confirm_at')
+            //             ->whereNull('remove_at');
+            //     }
+
+            //     if($margeState == 'payer') {
+            //         $filterData->whereNotNull('pay_comission_id');
+            //     }
+            //     else if($margeState == 'impayer') {
+            //         $filterData->whereNull('pay_comission_id');
+            //     }
+
+            //     $data = $filterData->paginate(100);
+            // }
+
             $all = [];
             
-
             foreach($data as $key => $value) {
                 $marge = round(($value->montant_ttc/1.18) * (1.5/100),0);
                 $options = "";
@@ -519,48 +642,32 @@ class PdrafController extends Controller
 
             if($request->user()->type == 'admin' || $request->user()->type == 'gcga' || $request->user()->type == 'commercial') {
                 // list reabonnement afrocash
-                $data_comission = ReaboAfrocash::whereNull('pay_at')
-                    ->whereNotNull('confirm_at')
-                    ->whereNull('remove_at')
-                    ->get();
 
-                $data_marge = ReaboAfrocash::whereNotNull('confirm_at')
+                $data = ReaboAfrocash::whereNotNull('confirm_at')
                     ->whereNull('pay_comission_id')
                     ->get();
-
                 
             }
             else if($request->user()->type == 'pdraf') {
-                $data_comission = ReaboAfrocash::whereNull('pay_at')
+                $data = ReaboAfrocash::whereNull('pay_at')
                     ->whereNotNull('confirm_at')
-                    ->whereNull('remove_at')
                     ->where('pdraf_id',$request->user()->username)
                     ->get();
             }
             else if($request->user()->type == 'pdc') {
                 
                 $pdraf_users = $request->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
-
-                $data_comission = ReaboAfrocash::whereNull('pay_at')
+                
+                $data = ReaboAfrocash::whereIn('pdraf_id',$pdraf_users)
                     ->whereNotNull('confirm_at')
-                    ->whereNull('remove_at')
-                    ->whereIn('pdraf_id',$pdraf_users)
+                    ->whereNull('pay_comission_id')
                     ->get();
                 
-                $data_marge = ReaboAfrocash::whereNotNull('confirm_at')
-                ->whereNull('pay_comission_id')
-                ->whereIn('pdraf_id',$pdraf_users)
-                ->get();
-                
             }
 
-            foreach($data_comission as $value) {
+            foreach($data as $value) {
                 $comission += $value->comission;
-            }
-
-            foreach($data_marge as $value) {
-                $tmp = round(($value->montant_ttc/1.18) * (1.5/100),0);
-                $marge += $tmp;
+                $marge = round(($value->montant_ttc/1.18) * (1.5/100),0);
             }
 
             return response()

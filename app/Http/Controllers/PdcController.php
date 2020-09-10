@@ -411,17 +411,9 @@ public function addNewPdc(Request $request) {
             }
 
             // get all reabo afrocash
-            $pdraf = $request->user()->pdrafUsers();
-            $data_pdraf = [];
-
-            foreach($pdraf as $key => $value) {
-                $data_pdraf[$key] = [
-                    'username'  =>  $value->usersPdraf()->username
-                ];
-            }
+            $data_pdraf = $request->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
 
             $reaboAfrocash = ReaboAfrocash::whereIn('pdraf_id',$data_pdraf)
-                ->whereNull('remove_at')
                 ->whereNotNull('confirm_at')
                 ->whereNull('pay_comission_id')
                 ->get();

@@ -41,7 +41,7 @@
                                 <input v-model="formPasswordData.new_password_confirmation" type="password" class="uk-input uk-border-rounded">
                             </div>
                             <div>
-                                <button class="uk-button uk-button-small uk-width-1-1@s uk-width-1-6@m uk-button-primary uk-border-rounded">Envoyez</button>
+                                <button class="uk-button uk-button-small uk-width-1-1@s uk-width-1-1@m uk-button-primary uk-border-rounded">Envoyez</button>
                             </div>
                         </form>
                     </div>

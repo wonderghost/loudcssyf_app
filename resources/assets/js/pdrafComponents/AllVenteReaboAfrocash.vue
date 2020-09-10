@@ -14,7 +14,7 @@
            
 
             <!-- MODAL CONFIRM PAIEMENT COMISSION -->
-            <!-- <div id="modal-pay-comission" uk-modal="esc-close : false ; bg-close : false">
+            <div id="modal-pay-comission" uk-modal="esc-close : false ; bg-close : false">
                 <div class="uk-modal-dialog">
                     <div class="uk-modal-header">
                         <h2 class="uk-modal-title">Paiement Comission</h2>
@@ -24,19 +24,7 @@
                             <a class="uk-alert-close" uk-close></a>
                             <p>{{err}}</p>
                         </div>
-                        <p class="">
-                            La Comission allant du : 
-                            <span v-if="typeUser == 'pdc' && pdcListFirst" class="uk-text-bold">{{pdcListFirst.created_at}}</span>
-                            <span v-if="typeUser == 'pdraf' && pdrafFirst" class="uk-text-bold">{{pdrafFirst.created_at}}</span>
-                             , 
-                            au : 
-                            <span v-if="typeUser == 'pdc' && pdcListLast" class="uk-text-bold">{{pdcListLast.created_at}}</span>
-                            <span v-if="typeUser == 'pdraf' && pdrafLast" class="uk-text-bold">{{pdrafLast.created_at}}</span>
-                             ,
-                             d'un montant de :
-                            <span v-if="typeUser == 'pdc'" class="uk-text-bold">{{totalCom.total | numFormat}} GNF</span> 
-                            <span v-if="typeUser == 'pdraf'" class="uk-text-bold">{{totalComissionPdraf | numFormat}} GNF</span>
-                        </p>
+                        <p class=""></p>
                         <form @submit.prevent="sendPayComissionRequest()">
                             <div class="uk-margin-small">
                                 <label for="">Confirmez votre mot de passe</label>
@@ -49,7 +37,7 @@
                         <button class="uk-button uk-button-danger uk-border-rounded uk-modal-close uk-button-small" type="button">Cancel</button>
                     </div>
                 </div>
-            </div>             -->
+            </div>            
             <!-- // -->
             <!-- ADMIN -->
             <template v-if="typeUser == 'admin' || typeUser == 'commercial' || typeUser == 'gcga' || typeUser == 'pdc'">
@@ -57,23 +45,23 @@
                     <div class="uk-grid-small uk-width-1-2@m" uk-grid>
                         <div class="uk-width-1-4@m">
                             <label for=""><span uk-icon="users"></span> Utilisateur</label>
-                            <select class="uk-select uk-border-rounded">
-                                <option value="">Tous</option>
+                            <select @change="filterRequest()" v-model="filterData.user" class="uk-select uk-border-rounded">
+                                <option value="all">Tous</option>
                                 <option v-for="(p,index) in pdrafList" :key="index" :value="p.user.username">{{p.user.localisation}}</option>
                             </select>
                         </div>
                         <div class="uk-width-1-4@m">
                             <label for="">Paiement</label>
-                            <select class="uk-select uk-border-rounded">
-                                <option value="">Tous</option>
+                            <select @change="filterRequest()" v-model="filterData.payState" class="uk-select uk-border-rounded">
+                                <option value="all">Tous</option>
                                 <option value="payer">payer</option>
                                 <option value="impayer">impayer</option>
                             </select>
                         </div>
                         <div class="uk-width-1-4@m">
                             <label for="">Etat</label>
-                            <select class="uk-select uk-border-rounded">
-                                <option value="">Tous</option>
+                            <select @change="filterRequest()" v-model="filterData.state" class="uk-select uk-border-rounded">
+                                <option value="all">Tous</option>
                                 <option value="confirme">confirme</option>
                                 <option value="annule">annule</option>
                                 <option value="en_instance">en instance</option>
@@ -81,8 +69,8 @@
                         </div>
                         <div class="uk-width-1-4@m">
                             <label for="">Marge</label>
-                            <select class="uk-select uk-border-rounded">
-                                <option value="">Tous</option>
+                            <select @change="filterRequest()" v-model="filterData.margeState" class="uk-select uk-border-rounded">
+                                <option value="all">Tous</option>
                                 <option value="payer">payer</option>
                                 <option value="impayer">impayer</option>
                             </select>
@@ -100,6 +88,9 @@
                         <div class="uk-width-1-4@m">
                             <label for=""><span uk-icon="credit-card"></span> Comission Total</label>
                             <span class="uk-input uk-border-rounded uk-text-center">{{comission + marge | numFormat}}</span>
+                            <template v-if="typeUser == 'pdc'">
+                                <button uk-toggle="target : #modal-pay-comission" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-button-primary uk-margin-small">se faire payer</button>
+                            </template>
                         </div>
                         
                     </div>
@@ -154,6 +145,7 @@
                     <div class="uk-width-1-6@m">
                         <label for="">Comission Total (GNF)</label>
                         <span class="uk-input uk-border-rounded uk-text-center">{{comission | numFormat}}</span>
+                        <button uk-toggle="target : #modal-pay-comission" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-button-primary uk-margin-small">se faire payer</button>
                     </div>
                     <div class="uk-width-1-6@m">
                         <label for="">Paiement</label>
@@ -371,12 +363,16 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 isLoading : false,
                 fullPage : true,
                 pdrafList : [],
-                filterPdraf : "",
                 password_confirmation : "",
                 errors : [],
-                filterEtat : "",
-                filterPayStatement : "",
-                filterMargeStatement : ""
+                filterData : {
+                    filterState : true,
+                    _token : "" , 
+                    user : "all",
+                    payState : "all",
+                    state : "all",
+                    margeState : "all"
+                }
             }
         },
         methods : {
@@ -461,6 +457,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 }
             },
             sendPayComissionRequest : async function () {
+                this.errors = []
                 try {
 
                     UIkit.modal($("#modal-pay-comission")).hide()
@@ -473,9 +470,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                         var response = await axios.post(url,{
                             _token : this.myToken,
                             password_confirmation : this.password_confirmation,
-                            montant : Math.round(this.totalCom.total),
-                            debut : this.pdcListFirst.created_at,
-                            fin : this.pdcListLast.created_at,
+                            montant : Math.round(this.marge + this.comission),
                         })
                     } 
                     else if(this.typeUser == 'pdraf') {
@@ -483,9 +478,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                         var response = await axios.post(url,{
                             _token : this.myToken,
                             password_confirmation : this.password_confirmation,
-                            montant : Math.round(this.totalComissionPdraf),
-                            debut : this.pdrafFirst.created_at,
-                            fin : this.pdrafLast.created_at,
+                            montant : Math.round(this.comission),
                         })
                     }
 
@@ -498,7 +491,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 } catch(error) {
                     UIkit.modal($("#modal-pay-comission")).show()
                     this.isLoading = false
-                    this.errors = []
+                    
                     if(error.response.data.errors) {
                         let errorTab = error.response.data.errors
                         for (var prop in errorTab) {
@@ -507,6 +500,36 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     } else {
                         this.errors.push(error.response.data)
                     }
+                }
+            },
+            filterRequest : async function () {
+                try {
+                    this.filterData._token = this.myToken
+                    // filterData : {
+                    //     filterState : true,
+                    //     _token : "" , 
+                    //     user : "",
+                    //     payState : "",
+                    //     state : "",
+                    //     margeState : ""
+                    // }
+                    let response = await axios
+                        .get('/user/pdraf/filter-reabo-afrocash/'+this.filterData.user+'/'+this.filterData.payState+'/'+this.filterData.state+'/'+this.filterData.margeState)
+
+                    if(response) {
+                        
+                        this.all = response.data.all                        
+                        this.nextUrl = response.data.next_url
+                        this.lastUrl = response.data.last_url
+                        this.perPage = response.data.per_page
+                        this.firstItem = response.data.first_item
+                        this.total = response.data.total
+
+                    }
+                }
+                catch(error) {
+                    alert("Erreur")
+                    console.log(error)
                 }
             },
             getAllData : async function () {
@@ -555,177 +578,6 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             }
         },
         computed : {
-            // totalComissionPdraf() {
-            //     var som = 0
-            //     this.pdrafListPayStateReabo.forEach(r => {
-            //         som += r.comission
-            //     })
-            //     return som
-            // },
-            // totalCom() {
-            //     var som = 0
-            //     var sum = 0
-            //     var tot = 0
-            //     if(this.typeUser == 'pdc') {
-
-            //         this.pdcListPayStateReabo.forEach(r => {
-            //             som += r.total
-            //             sum += r.comission
-            //             tot += r.marge
-            //         })
-            //     }
-            //     else if(this.typeUser == 'admin' || this.typeUser == 'commercial' || this.typeUser == 'gcga') {
-            //         this.listForMagePayState.forEach(r => {
-            //             som += r.total
-            //             // sum += r.comission
-            //             tot += r.marge
-            //         })
-
-            //         this.listForPayStateReabo.forEach( r => {
-            //             sum += r.comission
-            //         })
-            //     }
-            //     return {
-            //         total : som,
-            //         com : sum ,
-            //         mar : tot
-            //     }
-            // },
-            // listForMagePayState() {
-            //      return this.listForPayStateReabo.filter((l) => {
-            //         if(this.filterMargeStatement == "") {
-            //             return l
-            //         }
-            //         else if(this.filterMargeStatement == "payer") {
-            //             return l.pay_comission_id != null
-            //         }
-            //         else {
-            //             return l.pay_comission_id == null
-            //         }
-            //     })
-            // },
-            // listForPayStateReabo() {
-            //     return this.listForAllbyEtat.filter((l) => {
-            //         if(this.filterPayStatement == "") {
-            //             return l
-            //         }
-            //         else if(this.filterPayStatement == "payer") {
-            //             return l.pay_at != null
-            //         }
-            //         else {
-            //             return l.pay_at == null
-            //         }
-            //     })
-            // },
-            // listForAllbyEtat() {
-            //     return this.listForAll.filter((l) => {
-            //         if(this.filterEtat == 'confirme') {
-            //             return l.confirm_at != null
-            //         }
-            //         else if(this.filterEtat == 'annule') {
-            //             return l.remove_at != null
-            //         }
-            //         else if(this.filterEtat == 'en_instance') {
-            //             return (l.confirm_at == null && l.remove_at == null)
-            //         }
-            //         else {
-            //             return l
-            //         }
-            //     })
-            // },
-            // listForAll() {
-            //     if(this.filterPdraf != "") {
-
-            //         return this.all.filter((r) => {
-            //             return r.pdraf.username == this.filterPdraf
-            //         })
-            //     }
-            //     else {
-            //         return this.all
-            //     }
-            // },
-            // pdcListLast() {
-            //     return this.pdcListReaboByPdraf[this.pdcListReaboByPdraf.length - 1]
-            // },
-            // pdcListFirst() {
-            //     return this.pdcListReaboByPdraf[0]
-            // },
-            // pdcListPayStateReabo() {
-            //     return this.pdcListEtatReabo.filter((l) => {
-            //         if(this.filterPayStatement == "") {
-            //             return l
-            //         }
-            //         else if(this.filterPayStatement == "payer") {
-            //             return l.pay_comission_id != null
-            //         }
-            //         else {
-            //             return l.pay_comission_id == null
-            //         }
-            //     })
-            // },
-            // pdcListEtatReabo() {
-            //     return this.pdcListReaboByPdraf.filter((l) => {
-            //         if(this.filterEtat == 'confirme') {
-            //             return l.confirm_at != null
-            //         }
-            //         else if(this.filterEtat == 'annule') {
-            //             return l.remove_at != null
-            //         }
-            //         else if(this.filterEtat == 'en_instance') {
-            //             return (l.confirm_at == null && l.remove_at == null)
-            //         }
-            //         else {
-            //             return l
-            //         }
-            //     })
-            // },
-            // pdcListReaboByPdraf() {
-            //     return this.pdcListReabo.filter((l) => {
-            //         return l.pdraf.username.match(this.filterPdraf)
-            //     })
-            // },
-            // pdrafFirst() {
-            //     return this.pdrafListEtatReabo[0]
-            // },
-            // pdrafLast() {
-            //     return this.pdrafListEtatReabo[this.pdrafListEtatReabo.length - 1]
-            // },
-            // pdrafListPayStateReabo() {
-            //     return this.pdrafListEtatReabo.filter((l) => {
-            //         if(this.filterPayStatement == "") {
-            //             return l
-            //         }
-            //         else if(this.filterPayStatement == "payer") {
-            //             return l.pay_at != null
-            //         }
-            //         else {
-            //             return l.pay_at == null
-            //         }
-            //     })
-            // },
-            // pdrafListEtatReabo() {
-            //     return this.pdrafListReabo.filter((l) => {
-            //         if(this.filterEtat == 'confirme') {
-            //             return (l.confirm_at != null)
-            //         }
-            //         else if(this.filterEtat == 'annule'){
-            //             return l.remove_at != null
-            //         }
-            //         else {
-            //             return l
-            //         }
-            //     })
-            // },
-            // pdrafListReabo() {
-            //     return this.all.filter((l) => {
-            //         return l.pdraf.username == this.userName
-            //     })
-            // },
-            // pdcListReabo() {
-            //     return this.all.filter((l) => {
-            //         return l.pdc_hote.username == this.userName
-            //     })
-            // },
             typeUser() {
                 return this.$store.state.typeUser
             },
@@ -735,18 +587,6 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             myToken() {
                 return this.$store.state.myToken
             },
-            // reaboCount() {
-            //     if(this.typeUser == 'pdc' ) {
-            //         return this.pdcListPayStateReabo.length
-            //     }
-            //     else if(this.typeUser == 'pdraf') {
-            //         return this.pdrafListPayStateReabo.length
-            //     }
-            //     else {
-            //         return this.listForPayStateReabo.length
-            //     }
-            // }
-
         }
     }
 </script>
