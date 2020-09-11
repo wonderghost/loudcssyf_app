@@ -433,16 +433,38 @@ class PdrafController extends Controller
 
     // get Reabo Afrocash by pdc
 
-    public function filterReaboAfrocash(Request $request , $user,$payState , $state,$margeState) {
+    public function filterReaboAfrocash(Request $request ,$pdc, $user,$payState , $state,$margeState) {
         try {
             $data = [];
+            $pdraf_users = [];
 
-            if($user && $payState && $state && $margeState) {
+            $comission = 0;
+            $total_ttc = 0;
+            $total_marge = 0;
+
+            if($pdc && $user && $payState && $state && $margeState) {
+
                 if($request->user()->type == 'pdc') {
-                    $pdraf_users = $request->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
+                    
+                    $pdraf_users = $request->user()
+                        ->pdrafUsersForList()
+                        ->select('id_pdraf')
+                        ->groupBy('id_pdraf')
+                        ->get();
+                }
+                else if($request->user()->type == 'pdraf') {
+                    $user = $request->user()->username;
                 }
                 else {
-                    $pdraf_users = User::where('type','pdraf')->get();
+                    if($pdc != 'all') {
+                        $theUser = User::where('username',$pdc)->first();
+                        $pdraf_users = $theUser->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
+                    }
+                    else {
+                        $pdraf_users = User::select('username')->where('type','pdraf')
+                            ->groupBy('username')
+                            ->get();
+                    }
                 }
                 
 
@@ -454,26 +476,55 @@ class PdrafController extends Controller
                                     case 'all' : 
                                         switch ($margeState) {
                                             case 'all':
+
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->sum('comission');
+
+                                                $total_ttc = ReaboAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
     
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
-                                                    ->whereNotNull('confirm_at')
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
     
                                             break;
                                             case 'impayer':
                                                 
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
-                                                    ->whereNotNull('confirm_at')
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
     
                                             break;
                                         }
@@ -482,29 +533,70 @@ class PdrafController extends Controller
                                         switch ($margeState) {
                                             case 'all' : 
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
-                                                    ->whereNotNull('confirm_at')
                                                     ->whereNotNull('pay_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+                                                
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                                
                                             break;
                                             case 'payer':
     
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
-                                                    ->whereNotNull('confirm_at')
                                                     ->whereNotNull('pay_at')
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+                                                
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                    
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
     
                                             break;
                                             case 'impayer':
                                                 
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
-                                                    ->whereNotNull('confirm_at')
                                                     ->whereNotNull('pay_at')
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+
+                                                    $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
     
                                             break;
                                         }
@@ -513,26 +605,62 @@ class PdrafController extends Controller
                                         switch ($margeState) {
                                             case 'all':
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
-                                                    ->whereNotNull('confirm_at')
                                                     ->whereNull('pay_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
-                                                    ->whereNotNull('confirm_at')
                                                     ->whereNull('pay_at')
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+                                                    $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'impayer':
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
-                                                    ->whereNotNull('confirm_at')
                                                     ->whereNull('pay_at')
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                         }
                                     break;
@@ -547,6 +675,19 @@ class PdrafController extends Controller
                                                     ->whereNotNull('confirm_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('confirm_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('confirm_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+
                                             break;
                                             case 'payer':
     
@@ -555,6 +696,20 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
     
                                             break;
                                             case 'impayer':
@@ -564,6 +719,19 @@ class PdrafController extends Controller
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
     
                                             break;
                                         }
@@ -576,6 +744,20 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
     
@@ -585,6 +767,21 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
     
                                             break;
                                             case 'impayer':
@@ -595,7 +792,22 @@ class PdrafController extends Controller
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
-    
+
+                                                    $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                         }
                                     break;
@@ -607,6 +819,20 @@ class PdrafController extends Controller
                                                     ->whereNull('pay_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+                                                
+                                                    $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
@@ -615,6 +841,22 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'impayer':
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
@@ -623,6 +865,22 @@ class PdrafController extends Controller
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNull('pay_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                         }
                                     break;
@@ -637,6 +895,19 @@ class PdrafController extends Controller
                                                     ->whereNotNull('remove_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
@@ -644,6 +915,21 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+                                                
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'impayer':
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
@@ -651,6 +937,22 @@ class PdrafController extends Controller
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                         }
                                     break;
@@ -662,6 +964,21 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNotNull('pay_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNotNull('pay_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
@@ -670,6 +987,23 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'impayer':
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
@@ -678,6 +1012,22 @@ class PdrafController extends Controller
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                         }
                                     break;
@@ -685,26 +1035,72 @@ class PdrafController extends Controller
                                         switch ($margeState) {
                                             case 'all':
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
-                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('remove_at')
                                                     ->whereNull('pay_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
-                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('remove_at')
                                                     ->whereNull('pay_at')
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'impayer':
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
-                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('remove_at')
                                                     ->whereNull('pay_at')
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+                                                
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                         }
                                     break;
@@ -720,6 +1116,21 @@ class PdrafController extends Controller
                                                     ->whereNull('remove_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
@@ -728,6 +1139,23 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);  
                                             break;
                                             case 'impayer':
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
@@ -736,6 +1164,23 @@ class PdrafController extends Controller
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                         }
                                     break;
@@ -748,6 +1193,22 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
@@ -757,6 +1218,24 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'impayer':
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
@@ -766,6 +1245,25 @@ class PdrafController extends Controller
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                         }
                                     break;
@@ -778,6 +1276,23 @@ class PdrafController extends Controller
                                                     ->whereNull('pay_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
@@ -787,6 +1302,25 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+
+                                                $total_comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'impayer':
                                                 $filterData = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
@@ -796,6 +1330,25 @@ class PdrafController extends Controller
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+                                                
+                                                    $comission = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                         }
                                     break;
@@ -813,6 +1366,16 @@ class PdrafController extends Controller
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+                                                
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
     
@@ -821,6 +1384,21 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
     
                                             break;
                                             case 'impayer':
@@ -830,6 +1408,23 @@ class PdrafController extends Controller
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+
+
+                                                $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+
+                                                $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
     
                                             break;
                                         }
@@ -842,6 +1437,20 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
     
@@ -851,6 +1460,23 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
     
                                             break;
                                             case 'impayer':
@@ -861,6 +1487,23 @@ class PdrafController extends Controller
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
     
                                             break;
                                         }
@@ -873,6 +1516,20 @@ class PdrafController extends Controller
                                                     ->whereNull('pay_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+                                                
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
@@ -881,6 +1538,23 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+
                                             break;
                                             case 'impayer':
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
@@ -889,6 +1563,22 @@ class PdrafController extends Controller
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                         }
                                     break;
@@ -903,6 +1593,18 @@ class PdrafController extends Controller
                                                     ->whereNotNull('confirm_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
     
@@ -911,6 +1613,20 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
     
                                             break;
                                             case 'impayer':
@@ -920,6 +1636,20 @@ class PdrafController extends Controller
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
     
                                             break;
                                         }
@@ -932,6 +1662,21 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
     
@@ -941,6 +1686,22 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
     
                                             break;
                                             case 'impayer':
@@ -951,6 +1712,22 @@ class PdrafController extends Controller
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
     
                                             break;
                                         }
@@ -958,27 +1735,52 @@ class PdrafController extends Controller
                                     case 'impayer':
                                         switch ($margeState) {
                                             case 'all':
+                                                
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->whereNotNull('confirm_at')
                                                     ->whereNull('pay_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+
+
                                             break;
                                             case 'payer':
+                                                
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->whereNotNull('confirm_at')
                                                     ->whereNull('pay_at')
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'impayer':
+                                                
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->whereNotNull('confirm_at')
                                                     ->whereNull('pay_at')
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                         }
                                     break;
@@ -989,78 +1791,220 @@ class PdrafController extends Controller
                                     case 'all':
                                         switch ($margeState) {
                                             case 'all':
+                                                
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->whereNotNull('remove_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
+                                                
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->whereNotNull('remove_at')
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'impayer':
+                                                
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->whereNotNull('remove_at')
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                         }
                                     break;
                                     case 'payer':
                                         switch ($margeState) {
                                             case 'all':
+                                                
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->whereNotNull('remove_at')
                                                     ->whereNotNull('pay_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
+                                                
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->whereNotNull('remove_at')
                                                     ->whereNotNull('pay_at')
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'impayer':
+                                                
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->whereNotNull('remove_at')
                                                     ->whereNotNull('pay_at')
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                         }
                                     break;
                                     case 'impayer':
                                         switch ($margeState) {
                                             case 'all':
+                                                
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
-                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('remove_at')
                                                     ->whereNull('pay_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
+                                                
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
-                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('remove_at')
                                                     ->whereNull('pay_at')
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'impayer':
+
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
-                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('remove_at')
                                                     ->whereNull('pay_at')
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                         }
                                     break;
@@ -1071,41 +2015,109 @@ class PdrafController extends Controller
                                     case 'all':
                                         switch ($margeState) {
                                             case 'all' : 
+
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->whereNull('confirm_at')
                                                     ->whereNull('remove_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comissionm = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
+
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->whereNull('confirm_at')
                                                     ->whereNull('remove_at')
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comissionm = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'impayer':
+
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->whereNull('confirm_at')
                                                     ->whereNull('remove_at')
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comissionm = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                         }
                                     break;
                                     case 'payer':
                                         switch ($margeState) {
                                             case 'all':
+                                                
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->whereNull('confirm_at')
                                                     ->whereNull('remove_at')
                                                     ->whereNotNull('pay_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
+                                                
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->whereNull('confirm_at')
                                                     ->whereNull('remove_at')
@@ -1113,8 +2125,27 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+                                                    
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'impayer':
+                                                
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->whereNull('confirm_at')
                                                     ->whereNull('remove_at')
@@ -1122,20 +2153,57 @@ class PdrafController extends Controller
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+                                                    
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                         }
                                     break;
                                     case 'impayer':
                                         switch ($margeState) {
                                             case 'all':
+                                                
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->whereNull('confirm_at')
                                                     ->whereNull('remove_at')
                                                     ->whereNull('pay_at')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'payer':
+                                                
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->whereNull('confirm_at')
                                                     ->whereNull('remove_at')
@@ -1143,8 +2211,27 @@ class PdrafController extends Controller
                                                     ->whereNotNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                             case 'impayer':
+                                                
                                                 $filterData = ReaboAFrocash::where('pdraf_id',$user)
                                                     ->whereNull('confirm_at')
                                                     ->whereNull('remove_at')
@@ -1152,6 +2239,24 @@ class PdrafController extends Controller
                                                     ->whereNull('pay_comission_id')
                                                     ->orderBy('created_at','desc')
                                                     ->paginate(100);
+
+                                                    $comission = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = ReaboAFrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
                                             break;
                                         }
                                     break;
@@ -1163,12 +2268,12 @@ class PdrafController extends Controller
 
                 $data = $filterData;
             }
-            $all = [];
-            
+            $all = [];            
 
             foreach($data as $key => $value) {
                 $marge = round(($value->montant_ttc/1.18) * (1.5/100),0);
                 $options = "";
+
                 foreach($value->options() as $_value) {
                     $options .= $_value->id_option.",";
                 }
@@ -1191,7 +2296,8 @@ class PdrafController extends Controller
                     'pdc_hote'  =>  $value->pdrafUser()->pdcUser()->usersPdc()->only('localisation','username'),
                     'marge' =>  $marge,
                     'total' =>  $marge + $value->comission,
-                    'created_at'    =>  $created_at->toDateTimeString(),
+                    'created_at'    =>  $created_at->toDateString(),
+                    'hour'  =>  $created_at->toTimeString(),
                     'confirm_at'    => $confirm_at ? $confirm_at->toDateTimeString() : null,
                     'remove_at' =>  $remove_at ? $remove_at->toDateTimeString() : null,
                     'pay_at'    =>  $pay_at ? $pay_at->toDateTimeString() : null,
@@ -1203,6 +2309,8 @@ class PdrafController extends Controller
             return response()
                 ->json([
                     'all'   =>  $all,
+                    'comission' =>  $comission,
+                    'marge' =>  $total_marge,
                     'next_url'	=> $data->nextPageUrl(),
 					'last_url'	=> $data->previousPageUrl(),
 					'per_page'	=>	$data->perPage(),
@@ -1228,15 +2336,20 @@ class PdrafController extends Controller
                     ->paginate(100);
             }
             else if($request->user()->type == 'pdraf') {
-                $data = ReaboAfrocash::select()
-                    ->where('pdraf_id',$request->user()->username)
+                $data = ReaboAfrocash::where('pdraf_id',$request->user()->username)
+                    ->orderBy('created_at','desc')
                     ->paginate(100);
             }
             else if($request->user()->type == 'pdc') {
                 
-                $pdraf_users = $request->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
-                $data = ReaboAfrocash::select()
-                    ->whereIn('pdraf_id',$pdraf_users)
+                $pdraf_users = $request->user()
+                    ->pdrafUsersForList()
+                    ->select('id_pdraf')
+                    ->groupBy('id_pdraf')
+                    ->get();
+                
+                $data = ReaboAfrocash::whereIn('pdraf_id',$pdraf_users)
+                    ->orderBy('created_at','desc')
                     ->paginate(100);
             }
 
@@ -1267,7 +2380,8 @@ class PdrafController extends Controller
                     'pdc_hote'  =>  $value->pdrafUser()->pdcUser()->usersPdc()->only('localisation','username'),
                     'marge' =>  $marge,
                     'total' =>  $marge + $value->comission,
-                    'created_at'    =>  $created_at->toDateTimeString(),
+                    'created_at'    =>  $created_at->toDateString(),
+                    'hour'  =>  $created_at->toTimeString(),
                     'confirm_at'    => $confirm_at ? $confirm_at->toDateTimeString() : null,
                     'remove_at' =>  $remove_at ? $remove_at->toDateTimeString() : null,
                     'pay_at'    =>  $pay_at ? $pay_at->toDateTimeString() : null,
@@ -1305,32 +2419,51 @@ class PdrafController extends Controller
             if($request->user()->type == 'admin' || $request->user()->type == 'gcga' || $request->user()->type == 'commercial') {
                 // list reabonnement afrocash
 
-                $data = ReaboAfrocash::whereNotNull('confirm_at')
+                $comission = ReaboAfrocash::whereNotNull('confirm_at')
                     ->whereNull('pay_comission_id')
-                    ->get();
-                
+                    ->sum('comission');
+
+                $total_ttc = ReaboAfrocash::whereNotNull('confirm_at')
+                ->whereNull('pay_comission_id')
+                ->sum('montant_ttc');
             }
             else if($request->user()->type == 'pdraf') {
-                $data = ReaboAfrocash::whereNull('pay_at')
+
+                $comission = ReaboAfrocash::whereNull('pay_at')
                     ->whereNotNull('confirm_at')
                     ->where('pdraf_id',$request->user()->username)
-                    ->get();
+                    ->sum('comission');
+
+                $total_ttc = ReaboAfrocash::whereNull('pay_at')
+                ->whereNotNull('confirm_at')
+                ->where('pdraf_id',$request->user()->username)
+                ->sum('montant_ttc');
+
+                
             }
             else if($request->user()->type == 'pdc') {
                 
                 $pdraf_users = $request->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
                 
-                $data = ReaboAfrocash::whereIn('pdraf_id',$pdraf_users)
+                $comission = ReaboAfrocash::whereIn('pdraf_id',$pdraf_users)
                     ->whereNotNull('confirm_at')
                     ->whereNull('pay_comission_id')
-                    ->get();
+                    ->sum('comission');
+
+                $total_ttc = ReaboAfrocash::whereIn('pdraf_id',$pdraf_users)
+                    ->whereNotNull('confirm_at')
+                    ->whereNull('pay_comission_id')
+                    ->sum('montant_ttc');
+
                 
             }
 
-            foreach($data as $value) {
-                $comission += $value->comission;
-                $marge += round(($value->montant_ttc/1.18) * (1.5/100),0);
-            }
+            $marge = round(($total_ttc/1.18) * (1.5/100),0);
+
+            // foreach($data as $value) {
+            //     $comission += $value->comission;
+            //     $marge += round(($value->montant_ttc/1.18) * (1.5/100),0);
+            // }
 
             return response()
                 ->json([

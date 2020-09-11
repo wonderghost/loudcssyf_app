@@ -493,4 +493,22 @@ public function addNewPdc(Request $request) {
             die(json_encode($e->getMessage()));
         }
     }
+
+    public function getAllPdc() {
+        try {
+            $pdc_users = User::where('type','pdc')->get();
+            $data = [];
+            foreach($pdc_users as $key => $value) {
+                $data[$key] = [
+                    'user'  =>  $value
+                ];
+            }
+            return response()
+                ->json($data);
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
 }

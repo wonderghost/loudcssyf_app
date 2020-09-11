@@ -43,6 +43,15 @@
             <template v-if="typeUser == 'admin' || typeUser == 'commercial' || typeUser == 'gcga' || typeUser == 'pdc'">
                 <div class="uk-grid-small" uk-grid>
                     <div class="uk-grid-small uk-width-1-2@m" uk-grid>
+                        <template v-if="typeUser != 'pdc'">
+                            <div class="uk-width-1-4@m">
+                                <label for="">PDC</label>
+                                <select @change="filterRequest()" v-model="filterData.pdc" class="uk-select uk-border-rounded">
+                                    <option value="all">Tous</option>
+                                    <option v-for="(p,index) in pdcList" :key="index" :value="p.user.username">{{p.user.localisation}}</option>
+                                </select>
+                            </div>
+                        </template>
                         <div class="uk-width-1-4@m">
                             <label for=""><span uk-icon="users"></span> Utilisateur</label>
                             <select @change="filterRequest()" v-model="filterData.user" class="uk-select uk-border-rounded">
@@ -89,7 +98,7 @@
                             <label for=""><span uk-icon="credit-card"></span> Comission Total</label>
                             <span class="uk-input uk-border-rounded uk-text-center">{{comission + marge | numFormat}}</span>
                             <template v-if="typeUser == 'pdc'">
-                                <!-- <button uk-toggle="target : #modal-pay-comission" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-button-primary uk-margin-small">se faire payer</button> -->
+                                <button uk-toggle="target : #modal-pay-comission" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-button-primary uk-margin-small">se faire payer</button>
                             </template>
                         </div>
                         
@@ -103,20 +112,20 @@
                     <div class="uk-width-1-6@m">
                         <label for="">Comission Total (GNF)</label>
                         <span class="uk-input uk-border-rounded uk-text-center">{{comission | numFormat}}</span>
-                        <!-- <button uk-toggle="target : #modal-pay-comission" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-button-primary uk-margin-small">se faire payer</button> -->
+                        <button uk-toggle="target : #modal-pay-comission" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-button-primary uk-margin-small">se faire payer</button>
                     </div>
                     <div class="uk-width-1-6@m">
                         <label for="">Paiement</label>
-                        <select class="uk-select uk-border-rounded">
-                            <option value="">Tous</option>
+                        <select @change="filterRequest()" v-model="filterData.payState" class="uk-select uk-border-rounded">
+                            <option value="all">Tous</option>
                             <option value="payer">payer</option>
                             <option value="impayer">impayer</option>
                         </select>
                     </div>
                     <div class="uk-width-1-6@m">
                         <label for="">Etat</label>
-                        <select class="uk-select uk-border-rounded">
-                            <option value="">Tous</option>
+                        <select @change="filterRequest()" v-model="filterData.state" class="uk-select uk-border-rounded">
+                            <option value="all">Tous</option>
                             <option value="confirme">confirme</option>
                             <option value="annule">annule</option>
                         </select>
@@ -146,6 +155,7 @@
                 <thead>
                     <tr>
                         <th>Date</th>
+                        <th>Heure</th>
                         <th>Materiel</th>
                         <th>Formule</th>
                         <th>Duree</th>
@@ -171,6 +181,7 @@
                     <template v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'">
                         <tr v-for="(r,index) in all" :key="index">
                             <td>{{r.created_at}}</td>
+                            <td>{{r.hour}}</td>
                             <td>{{r.materiel}}</td>
                             <td>{{r.formule}}</td>
                             <td>{{r.duree}}</td>
@@ -195,7 +206,7 @@
                                     <span class="uk-alert-danger">annule</span>
                                 </template>
                                 <template v-else>
-                                    <span class="uk-alert-primary">en instance</span>
+                                    <span class="uk-alert-primary">instance</span>
                                 </template>
                             </td>
                             <td>
@@ -208,8 +219,8 @@
                             </td>
                             <td>
                                 <template v-if="!r.confirm_at && !r.remove_at">
-                                    <button @click="confirmRequestForAdmin(r)" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-text-small uk-text-capitalize">confirmer</button>
-                                    <button @click="removeRequestForAdmin(r)" class="uk-button uk-button-small uk-button-danger uk-border-rounded uk-text-small uk-text-capitalize">annuler</button>
+                                    <button @click="confirmRequestForAdmin(r)" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-text-small uk-text-capitalize" uk-tooltip="Confirmer"><span uk-icon="check"></span></button>
+                                    <button @click="removeRequestForAdmin(r)" class="uk-button uk-button-small uk-button-danger uk-border-rounded uk-text-small uk-text-capitalize" uk-tooltip="Annuler"><span uk-icon="close"></span></button>
                                 </template>
                             </td>
                         </tr>
@@ -217,6 +228,7 @@
                     <template v-if="typeUser == 'pdc'">
                         <tr v-for="(r,index) in all" :key="index">
                             <td>{{r.created_at}}</td>
+                            <td>{{r.hour}}</td>
                             <td>{{r.materiel}}</td>
                             <td>{{r.formule}}</td>
                             <td>{{r.duree}}</td>
@@ -235,7 +247,7 @@
                                     <span class="uk-alert-danger">annule</span>
                                 </template>
                                 <template v-else>
-                                    <span class="uk-alert-primary">en instance</span>
+                                    <span class="uk-alert-primary">instance</span>
                                 </template>
                             </td>
                             <td>
@@ -251,6 +263,7 @@
                     <template v-if="typeUser == 'pdraf'">
                         <tr v-for="(r,index) in all" :key="index">
                             <td>{{r.created_at}}</td>
+                            <td>{{r.hour}}</td>
                             <td>{{r.materiel}}</td>
                             <td>{{r.formule}}</td>
                             <td>{{r.duree}}</td>
@@ -267,7 +280,7 @@
                                     <span class="uk-alert-danger">annule</span>
                                 </template>
                                 <template v-else>
-                                    <span class="uk-alert-primary">en instance</span>
+                                    <span class="uk-alert-primary">instance</span>
                                 </template>
                             </td>
                             <td>
@@ -313,6 +326,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 total : 0,
         // #####                
                 all : [],
+                pdcList : [],
 
                 comission : 0,
                 marge : 0,
@@ -326,6 +340,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 filterData : {
                     filterState : true,
                     _token : "" , 
+                    pdc : "all",
                     user : "all",
                     payState : "all",
                     state : "all",
@@ -355,6 +370,10 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             },
             removeRequestForAdmin : async function(r) {
                 try {
+                    var conf = confirm("Vous etes sur de vouloir annuler ?")
+                    if(!conf) {
+                        return 0
+                    }
                     this.isLoading = true
                     if(this.typeUser == 'admin') {
                         var response = await axios.post('/admin/pdraf/remove-reabo-afrocash',{
@@ -384,6 +403,12 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             confirmRequestForAdmin : async function (r) {
                 this.errors = []
                 try {
+
+                    var conf = confirm("Vous etes sur de vouloir confirmer ?")
+                    if(!conf) {
+                        return 0
+                    }
+                    
                     if(this.typeUser == 'admin') {
 
                         var response = await axios.post('/admin/pdraf/confirm-reabo-afrocash',{
@@ -465,7 +490,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     this.filterData._token = this.myToken
 
                     let response = await axios
-                        .get('/user/pdraf/filter-reabo-afrocash/'+this.filterData.user+'/'+this.filterData.payState+'/'+this.filterData.state+'/'+this.filterData.margeState)
+                        .get('/user/pdraf/filter-reabo-afrocash/'+this.filterData.pdc+'/'+this.filterData.user+'/'+this.filterData.payState+'/'+this.filterData.state+'/'+this.filterData.margeState)
 
                     if(response) {
                         
@@ -475,6 +500,9 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                         this.perPage = response.data.per_page
                         this.firstItem = response.data.first_item
                         this.total = response.data.total
+
+                        this.comission = response.data.comission
+                        this.marge = response.data.marge
 
                         this.isLoading = false
 
@@ -487,6 +515,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             },
             getAllData : async function () {
                 try {
+                    Object.assign(this.$data,this.$options.data())
                     this.isLoading = true
                     var response = await axios.get('/user/pdraf/get-reabo-afrocash')
                     var theResponse = await axios.get('/user/reabo-afrocash/get-comission')
@@ -517,9 +546,13 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     else if(this.typeUser == 'commercial' || this.typeUser == 'admin' || this.typeUser == 'gcga') {
                         this.isLoading = true
                         response = await axios.get('/user/get-all-pdraf')
-                        if(response) {
+                        var myResponse = await axios.get('/user/get-all-pdc')
+
+                        if(response && myResponse) {
                             this.isLoading = false
                             this.pdrafList = response.data
+                            this.pdcList = myResponse.data
+
                         }
                     }
 

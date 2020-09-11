@@ -180,6 +180,7 @@ Auth::routes();
 
 Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/get-all-pdraf','PdrafController@getAllPdraf');
+	Route::get('/user/get-all-pdc','PdcController@getAllPdc');
 	// Reseaux pdc / pdraf
 	Route::get('/user/reabo-afrocash/get-comission','PdrafController@getComissionToPay');
 	######################################  PDC #########################$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -206,7 +207,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/pdraf/send-reabo-afrocash','PdrafController@sendReaboAfrocash')->middleware('pdraf');
 	Route::get('/user/pdraf/get-reabo-afrocash','PdrafController@getAllReaboAfrocash');
 	Route::post('/user/pdraf/pay-comission-request','PdrafController@sendPayComissionRequest')->middleware('pdraf');
-	Route::get('/user/pdraf/filter-reabo-afrocash/{user}/{payState}/{state}/{margeState}','PdrafController@filterReaboAfrocash');
+	Route::get('/user/pdraf/filter-reabo-afrocash/{pdc}/{user}/{payState}/{state}/{margeState}','PdrafController@filterReaboAfrocash');
 
 	Route::get('/admin/pay-comission/pdraf/all','PdrafController@getAllPayComission');
 
