@@ -804,6 +804,396 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 		->first();
 	}
 
+
+	// FILTRE DES RAPPORTS
+
+	public function filterRapportRequest(Request $request , $type,$state,$promo,$payState,$user) {
+		try {
+			$promoStateValue = [
+				'en_promo'	=>	1,
+				'hors_promo'	=>	0
+			];
+
+			$all = [];
+			$comission = 0;
+
+			if($request->user()->type == 'v_da' || $request->user()->type == 'v_standart') {
+				$user = $request->user()->username;
+			}
+
+
+			if($type && $state && $promo && $payState && $user) {
+				if($user != 'all') {
+					if($type != 'all') {
+						if($state != 'all') {
+							if($promo != 'all') {
+								if($payState == 'paye') {
+									// paye
+									$r = RapportVente::where('type',$type)
+										->where('state',$state)
+										->where('promo',$promoStateValue[$promo])
+										->whereNotNull('pay_comission_id')
+										->where('vendeurs',$user);
+								}
+								else if($payState == 'non_paye') {
+									// impaye
+									$r = RapportVente::where('type',$type)
+										->where('state',$state)
+										->where('promo',$promoStateValue[$promo])
+										->whereNull('pay_comission_id')
+										->where('vendeurs',$user);
+								}
+								else {
+									// tous les status de paiements
+									$r = RapportVente::where('type',$type)
+										->where('state',$state)
+										->where('promo',$promoStateValue[$promo])
+										->where('vendeurs',$user);
+								}
+							}
+							else {
+								// promo / hors promo
+								if($payState == 'paye') {
+									// paye
+									$r = RapportVente::where('type',$type)
+										->where('state',$state)
+										->whereNotNull('pay_comission_id')
+										->where('vendeurs',$user);
+								}
+								else if($payState == 'non_paye') {
+									// impaye
+									$r = RapportVente::where('type',$type)
+										->where('state',$state)
+										->whereNull('pay_comission_id')
+										->where('vendeurs',$user);
+								}
+								else {
+									// tous les status de paiements
+									$r = RapportVente::where('type',$type)
+										->where('state',$state)
+										->where('vendeurs',$user);
+								}
+							}
+						}
+						else {
+							// tous les status
+							if($promo != 'all') {
+								if($payState == 'paye') {
+									// paye
+									$r = RapportVente::where('type',$type)
+										->where('promo',$promoStateValue[$promo])
+										->whereNotNull('pay_comission_id')
+										->where('vendeurs',$user);
+								}
+								else if($payState == 'non_paye') {
+									// impaye
+									$r = RapportVente::where('type',$type)
+										->where('promo',$promoStateValue[$promo])
+										->whereNull('pay_comission_id')
+										->where('vendeurs',$user);
+								}
+								else {
+									// tous les status de paiements
+									$r = RapportVente::where('type',$type)
+										->where('promo',$promoStateValue[$promo])
+										->where('vendeurs',$user);
+								}
+							}
+							else {
+								// promo / hors promo
+								if($payState == 'paye') {
+									// paye
+									$r = RapportVente::where('type',$type)
+										->whereNotNull('pay_comission_id')
+										->where('vendeurs',$user);
+								}
+								else if($payState == 'non_paye') {
+									// impaye
+									$r = RapportVente::where('type',$type)
+										->whereNull('pay_comission_id')
+										->where('vendeurs',$user);
+								}
+								else {
+									// tous les status de paiements
+									$r = RapportVente::where('type',$type)
+									->where('vendeurs',$user);
+								}
+							}
+						}
+					}	
+					else {
+						// tous les types de rapport
+						if($state != 'all') {
+							if($promo != 'all') {
+								if($payState == 'paye') {
+									// paye
+									$r = RapportVente::where('state',$state)
+										->where('promo',$promoStateValue[$promo])
+										->whereNotNull('pay_comission_id')
+										->where('vendeurs',$user);
+								}
+								else if($payState == 'non_paye') {
+									// impaye
+									$r = RapportVente::where('state',$state)
+										->where('promo',$promoStateValue[$promo])
+										->whereNull('pay_comission_id')
+										->where('vendeurs',$user);
+								}
+								else {
+									// tous les status de paiements
+									$r = RapportVente::where('state',$state)
+										->where('promo',$promoStateValue[$promo])
+										->where('vendeurs',$user);
+								}
+							}
+							else {
+								// promo / hors promo
+								if($payState == 'paye') {
+									// paye
+									$r = RapportVente::where('state',$state)
+										->whereNotNull('pay_comission_id')
+										->where('vendeurs',$user);
+								}
+								else if($payState == 'non_paye') {
+									// impaye
+									$r = RapportVente::where('state',$state)
+										->whereNull('pay_comission_id')
+										->where('vendeurs',$user);
+								}
+								else {
+									// tous les status de paiements
+									$r = RapportVente::where('state',$state)
+										->where('vendeurs',$user);
+								}
+							}
+						}
+						else {
+							// tous les status
+							if($promo != 'all') {
+								if($payState == 'paye') {
+									// paye
+									$r = RapportVente::where('promo',$promoStateValue[$promo])
+										->whereNotNull('pay_comission_id')
+										->where('vendeurs',$user);
+								}
+								else if($payState == 'non_paye') {
+									// impaye
+									$r = RapportVente::where('promo',$promoStateValue[$promo])
+										->whereNull('pay_comission_id')
+										->where('vendeurs',$user);
+								}
+								else {
+									// tous les status de paiements
+									$r = RapportVente::where('promo',$promoStateValue[$promo])
+										->where('vendeurs',$user);
+								}
+							}
+							else {
+								// promo / hors promo
+								if($payState == 'paye') {
+									// paye
+									$r = RapportVente::whereNotNull('pay_comission_id')
+										->where('vendeurs',$user);
+								}
+								else if($payState == 'non_paye') {
+									// impaye
+									$r = RapportVente::whereNull('pay_comission_id')
+										->where('vendeurs',$user);
+								}
+								else {
+									// tous les status de paiements
+									$r = RapportVente::where('vendeurs',$user);
+								}
+							}
+						}
+					}
+				}
+				else {
+					// all users
+					if($type != 'all') {
+						if($state != 'all') {
+							if($promo != 'all') {
+								if($payState == 'paye') {
+									// paye
+									$r = RapportVente::where('type',$type)
+										->where('state',$state)
+										->where('promo',$promoStateValue[$promo])
+										->whereNotNull('pay_comission_id');
+								}
+								else if($payState == 'non_paye') {
+									// impaye
+									$r = RapportVente::where('type',$type)
+										->where('state',$state)
+										->where('promo',$promoStateValue[$promo])
+										->whereNull('pay_comission_id');
+								}
+								else {
+									// tous les status de paiements
+									$r = RapportVente::where('type',$type)
+										->where('state',$state)
+										->where('promo',$promoStateValue[$promo]);
+								}
+							}
+							else {
+								// promo / hors promo
+								if($payState == 'paye') {
+									// paye
+									$r = RapportVente::where('type',$type)
+										->where('state',$state)
+										->whereNotNull('pay_comission_id');
+								}
+								else if($payState == 'non_paye') {
+									// impaye
+									$r = RapportVente::where('type',$type)
+										->where('state',$state)
+										->whereNull('pay_comission_id');
+								}
+								else {
+									// tous les status de paiements
+									$r = RapportVente::where('type',$type)
+										->where('state',$state);
+								}
+							}
+						}
+						else {
+							// tous les status
+							if($promo != 'all') {
+								if($payState == 'paye') {
+									// paye
+									$r = RapportVente::where('type',$type)
+										->where('promo',$promoStateValue[$promo])
+										->whereNotNull('pay_comission_id');
+								}
+								else if($payState == 'non_paye') {
+									// impaye
+									$r = RapportVente::where('type',$type)
+										->where('promo',$promoStateValue[$promo])
+										->whereNull('pay_comission_id');
+								}
+								else {
+									// tous les status de paiements
+									$r = RapportVente::where('type',$type)
+										->where('promo',$promoStateValue[$promo]);
+								}
+							}
+							else {
+								// promo / hors promo
+								if($payState == 'paye') {
+									// paye
+									$r = RapportVente::where('type',$type)
+										->whereNotNull('pay_comission_id');
+								}
+								else if($payState == 'non_paye') {
+									// impaye
+									$r = RapportVente::where('type',$type)
+										->whereNull('pay_comission_id');
+								}
+								else {
+									// tous les status de paiements
+									$r = RapportVente::where('type',$type);
+								}
+							}
+						}
+					}	
+					else {
+						// tous les types de rapport
+						if($state != 'all') {
+							if($promo != 'all') {
+								if($payState == 'paye') {
+									// paye
+									$r = RapportVente::where('state',$state)
+										->where('promo',$promoStateValue[$promo])
+										->whereNotNull('pay_comission_id');
+								}
+								else if($payState == 'non_paye') {
+									// impaye
+									$r = RapportVente::where('state',$state)
+										->where('promo',$promoStateValue[$promo])
+										->whereNull('pay_comission_id');
+								}
+								else {
+									// tous les status de paiements
+									$r = RapportVente::where('state',$state)
+										->where('promo',$promoStateValue[$promo]);
+								}
+							}
+							else {
+								// promo / hors promo
+								if($payState == 'paye') {
+									// paye
+									$r = RapportVente::where('state',$state)
+										->whereNotNull('pay_comission_id');
+								}
+								else if($payState == 'non_paye') {
+									// impaye
+									$r = RapportVente::where('state',$state)
+										->whereNull('pay_comission_id');
+								}
+								else {
+									// tous les status de paiements
+									$r = RapportVente::where('state',$state);
+								}
+							}
+						}
+						else {
+							// tous les status
+							if($promo != 'all') {
+								if($payState == 'paye') {
+									// paye
+									$r = RapportVente::where('promo',$promoStateValue[$promo])
+										->whereNotNull('pay_comission_id');
+								}
+								else if($payState == 'non_paye') {
+									// impaye
+									$r = RapportVente::where('promo',$promoStateValue[$promo])
+										->whereNull('pay_comission_id');
+								}
+								else {
+									// tous les status de paiements
+									$r = RapportVente::where('promo',$promoStateValue[$promo]);
+								}
+							}
+							else {
+								// promo / hors promo
+								if($payState == 'paye') {
+									// paye
+									$r = RapportVente::whereNotNull('pay_comission_id');
+								}
+								else if($payState == 'non_paye') {
+									// impaye
+									$r = RapportVente::whereNull('pay_comission_id');
+								}
+								else {
+									// tous les status de paiements
+									$r = RapportVente::select();
+								}
+							}
+						}
+					}
+				}
+			}
+			$result = $r->paginate(100);
+			$comission = $r->sum('commission');
+
+			return response()
+				->json([
+					'all'	=>	$this->organizeRapport($result),
+					'next_url'	=> $result->nextPageUrl(),
+					'last_url'	=> $result->previousPageUrl(),
+					'per_page'	=>	$result->perPage(),
+					'current_page'	=>	$result->currentPage(),
+					'first_page'	=>	$result->url(1),
+					'first_item'	=>	$result->firstItem(),
+					'total'	=>	$result->total(),
+					'comission'	=>	$comission
+				]);
+		}
+		catch(AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
+
 // HISTORIQUE DE RAPPORT POUR L'ADMINISTRATEUR
 		public function getAllRapport(RapportVente $r,Request $request) {
 			try {

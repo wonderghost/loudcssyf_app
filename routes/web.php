@@ -232,7 +232,9 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	
 	Route::post('/user/rapport/check-upgrade','RapportControlleur@checkSerialOnUpgradeState');
 
-	Route::get('/user/all-rapport','RapportControlleur@listRapport')->middleware('controleur');
+	// Route::get('/user/all-rapport','RapportControlleur@listRapport')->middleware('controleur');
+	
+	Route::get('/user/rapport/filter/{type}/{state}/{promo}/{payState}/{user}','AdminController@filterRapportRequest');
 	Route::get('/user/rapport/all','AdminController@getAllRapport');//->middleware('controleur');
 	Route::get('user/rapport/commission-total','RapportControlleur@totalCommission');//->middleware('controleur');
 	#listing promo

@@ -139,27 +139,35 @@
 
     <template id="">
       <div class="uk-grid-small" uk-grid>
-
+        <div class="uk-width-1-6@m">
+          <label for="">Type</label>
+          <select @change="filterRequest()" v-model="filterData.type" class="uk-select uk-border-rounded">
+            <option value="all">Tous</option>
+            <option value="recrutement">Recrutement</option>
+            <option value="reabonnement">Reabonnement</option>
+            <option value="migration">Migration</option>
+          </select>
+        </div>
         <div class="uk-width-1-6@m">
           <label for=""> <span uk-icon="icon : info"></span> Etat</label>
-          <select class="uk-select uk-border-rounded" v-model="stateRapp">
-            <option value="">Tous</option>
+          <select @change="filterRequest()" v-model="filterData.state" class="uk-select uk-border-rounded">
+            <option value="all">Tous</option>
             <option value="unaborted">valide</option>
             <option value="aborted">invalide</option>
           </select>
         </div>
         <div class="uk-width-1-6@m">
           <label for=""><span uk-icon="icon : tag"></span> Promo</label>
-          <select class="uk-select uk-border-rounded">
-            <option value="">Tous</option>
-            <option value="">Hors Promo</option>
-            <option value="">En Promo</option>
+          <select @change="filterRequest()" v-model="filterData.promoState" class="uk-select uk-border-rounded">
+            <option value="all">Tous</option>
+            <option value="hors_promo">Hors Promo</option>
+            <option value="en_promo">En Promo</option>
           </select>
         </div>
         <div class="uk-width-1-6@m">
           <label for=""><span uk-icon="icon : credit-card"></span> Paiement</label>
-          <select class="uk-select uk-border-rounded" v-model="payFilter">
-            <option value="">Tous</option>
+          <select @change="filterRequest()" v-model="filterData.payState" class="uk-select uk-border-rounded">
+            <option value="all">Tous</option>
             <option value="paye">Paye</option>
             <option value="non_paye">Impaye</option>
           </select>
@@ -167,13 +175,13 @@
         
         <div v-if="typeUser == 'admin' || typeUser == 'controleur' || typeUser == 'commercial'" class="uk-width-1-6@m">
           <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
-          <select class="uk-select uk-border-rounded" v-model="filterUser">
-            <option value="">Tous les vendeurs</option>
-            <option v-for="u in users" :key="u.username" :value="u.localisation"> {{u.localisation}} </option>
+          <select @change="filterRequest()" v-model="filterData.user" class="uk-select uk-border-rounded">
+            <option value="all">Tous les vendeurs</option>
+            <option v-for="u in users" :key="u.username" :value="u.username"> {{u.localisation}} </option>
           </select>
         </div>
          <!-- paginate component -->
-        <div class="uk-width-1-3@m uk-margin-top">
+        <div class="uk-width-1-6@m uk-margin-top">
           <span class="">{{firstItem}} - {{firstItem + perPage}} sur {{total}}</span>
           <a v-if="currentPage > 1" @click="paginateFunction(firstPage)" uk-tooltip="aller a la premiere page" class="uk-button-default uk-border-rounded uk-button-small uk-text-small"><span>1</span></a>
           <button @click="getRapportVente()" class="uk-button-small uk-button uk-border-rounded uk-text-small" uk-tooltip="actualiser"><span uk-icon="refresh"></span></button>
@@ -287,7 +295,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="pay in payComissionList">
+              <tr v-for="(pay,index) in payComissionList" :key="index">
                 <td>{{pay.du}}</td>
                 <td>{{pay.au}}</td>
                 <td>{{pay.total}}</td>
@@ -311,14 +319,8 @@ import datepicker from 'vue-date-picker'
         mounted() {
           UIkit.offcanvas($("#side-nav")).hide();
           this.getRapportVente()
-          this.showRapport = this.rappWithUser
-          if(this.typeUser == 'admin' || this.typeUser == 'commercial' || this.typeUser == 'controleur') {
-            this.allUsers()
-          }
-
-          if(this.typeUser == 'v_da') {
-            this.getPayComissionListForVendeur()
-          }
+          // this.showRapport = this.rappWithUser
+          
           //
         },
         components : {
@@ -327,6 +329,13 @@ import datepicker from 'vue-date-picker'
         },
         data () {
           return {
+            filterData : {
+              type : "all",
+              state : "all",
+              promoState : "all",
+              payState : "all",
+              user : "all"
+            },
              // paginate
             nextUrl : "",
             lastUrl : "",
@@ -338,8 +347,6 @@ import datepicker from 'vue-date-picker'
     // #####       
             isLoading : false,
             fullPage : true,
-            typeRapp : 'recrutement',
-
             rapportList : [],
             
             commission : 0,
@@ -353,14 +360,7 @@ import datepicker from 'vue-date-picker'
               password_confirmation : "",
               id_rapport : ""
             },
-            stateRapp : "",
-            filterUser : "",
             users : [],
-            filterDate : {
-              debut : "",
-              fin : ""
-            },
-            payFilter : "",
             rappDetails : [],
             rappInfos : {}
           }
@@ -435,8 +435,32 @@ import datepicker from 'vue-date-picker'
               }
             }
           },
+          filterRequest : async function () {
+            try {
+              this.isLoading = true
+              let response = await axios
+                .get('/user/rapport/filter/'+this.filterData.type+'/'+this.filterData.state+'/'+this.filterData.promoState+'/'+this.filterData.payState+'/'+this.filterData.user)
+              if(response) {
+                this.rapportList = response.data.all
+                this.commission = response.data.comission
+
+                this.nextUrl = response.data.next_url
+                this.lastUrl = response.data.last_url
+                this.perPage = response.data.per_page
+                this.firstItem = response.data.first_item
+                this.total = response.data.total
+                
+                this.isLoading = false
+              }
+            }
+            catch(error) {
+              alert("Erreur!")
+              console.log(error)
+            }
+          },
           getRapportVente : async function () {
             try {
+              Object.assign(this.$data,this.$options.data())
               this.isLoading = true
 
               var response = await axios.get('/user/rapport/all')
@@ -454,6 +478,13 @@ import datepicker from 'vue-date-picker'
                 this.firstItem = response.data.first_item
                 this.total = response.data.total
               
+              }
+              if(this.typeUser == 'admin' || this.typeUser == 'commercial' || this.typeUser == 'controleur') {
+                this.allUsers()
+              }
+
+              if(this.typeUser == 'v_da') {
+                this.getPayComissionListForVendeur()
               }
             } catch (error) {
               alert(error)
@@ -495,58 +526,6 @@ import datepicker from 'vue-date-picker'
           }
         },
         computed : {
-          comissionCummule() {
-            var som = 0
-            this.rappWithDate.forEach( r => {
-              som = som + r.commission
-            })
-            return som
-          },
-          rappWithDate() {
-            return this.rappWithPay.filter( (rapport) => {
-              if(this.filterDate.debut !== "" && this.filterDate.fin !== "") {
-                let debut = new Date(this.filterDate.debut)
-                let fin = new Date(this.filterDate.fin)
-                let rappDate = new Date(rapport.date)
-                return (rappDate >= debut && rappDate <= fin)
-              }
-              else {
-                return true
-              }
-            })
-          },
-          rappWithPay() {
-            return this.rappWithUser.filter( (rapport) => {
-              if(this.payFilter == "") {
-                return true
-              }
-              else {
-                return rapport.paiement_commission == this.payFilter
-              }
-            })
-          }
-          ,
-          rappWithUser () {
-            return this.stateRapportVentes.filter( (rapport) => {
-              return rapport.vendeurs.match(this.filterUser) 
-            })
-          }
-          ,
-          rapportVentes () {
-            return this.$store.state.rapportVentes.filter( (rapport) => {
-              return rapport.type === this.typeRapp
-            })
-          },
-          stateRapportVentes () {
-            return this.rapportVentes.filter( (rapport) => {
-              if(this.stateRapp == "") {
-                return true
-              }
-              else {
-                return rapport.state === this.stateRapp
-              } 
-            })
-          },
           typeUser () {
             return this.$store.state.typeUser
           },
