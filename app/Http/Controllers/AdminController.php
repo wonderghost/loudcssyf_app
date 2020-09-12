@@ -595,26 +595,81 @@ class AdminController extends Controller
   }
 
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+###########################FILTER REQUEST COMMANDES 3#############
+  public function filterRequestCommande(Request $request , $user , $state,$promo) {
+    try {
+      if($user && $state && $promo) {
+        if($user != "all") {
+          if($promo == 'en_promo') {
+            // pendant la promo
+            $result = CommandMaterial::where('vendeurs',$user)
+              ->whereNotNull('promos_id')
+              ->where('status',$state);
+          }
+          else if($promo == 'hors_promo') {
+            // hors de la promo
+            $result = CommandMaterial::where('vendeurs',$user)
+              ->whereNull('promos_id')
+              ->where('status',$state);
+          }
+          else {
+            // en promo / hors promo
+            $result = CommandMaterial::where('vendeurs',$user)
+              ->where('status',$state);
+          }
+        }
+        else {
+          // tous les utilisateurs
+          if($promo == 'en_promo') {
+            // pendant la promo
+            $result = CommandMaterial::whereNotNull('promos_id')
+              ->where('status',$state);
+          }
+          else if($promo == 'hors_promo') {
+            // hors de la promo
+            $result = CommandMaterial::whereNull('promos_id')
+              ->where('status',$state);
+          }
+          else {
+            // en promo / hors promo
+            $result = CommandMaterial::where('status',$state);
+          }
+        }
+      }
 
+      $all = $this->organizeCommandList($result->orderBy('created_at','desc')->paginate(100));
 
+      return response()
+        ->json($all);
+    }
+    catch(AppException $e) {
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+// 
   public function getAllCommandes(Request $request , CommandMaterial $c) {
     try {
       if($request->user()->type != 'v_da' && $request->user()->type != 'v_standart') {
 
-        $commands= $c->select()
+        $commands= $c::where('status','unconfirmed')
           ->orderBy('created_at','desc')
           ->paginate(100);
       }
       else {
+
         $commands = $c->select()
           ->where('vendeurs',$request->user()->username)
           ->orderBy('created_at','desc')
           ->paginate(100);
-      }
-      $all =  $this->organizeCommandList($commands);
 
+      }
+
+      $all =  $this->organizeCommandList($commands);
       return response()->json($all);
-    } catch (AppException $e) {
+
+    }
+    catch (AppException $e) {
       header("Erreur",true,422);
       die(json_encode($e->getMessage()));
     }

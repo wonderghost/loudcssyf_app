@@ -53,16 +53,18 @@
       <div class="uk-grid-small uk-margin-top uk-flex uk-flex-right" uk-grid>
         <div class="uk-width-1-6@m">
           <label for=""><span uk-icon=""></span>  Status</label>
-          <select class="uk-select uk-border-rounded">
-            <option value="">Tous</option>
-            <option value="unconfirmed">en attente</option>
-            <option value="confirmed">confirmer</option>
+          <select @change="filterRequest()" v-model="filterData.state" class="uk-select uk-border-rounded">
+            <option value="unvalidated">en attente</option>
+            <option value="validated">confirmer</option>
             <option value="aborted">annuler</option>
           </select>
         </div>
         <div v-if="typeUser != 'v_da' && typeUser != 'v_standart'" class="uk-width-1-4@m">
-          <label for="">Recherche</label>
-          <input type="text" class="uk-input uk-border-rounded" placeholder="Recherche ...">
+          <label for=""><span uk-icon="users"></span> Vendeurs</label>
+          <select @change="filterRequest()" v-model="filterData.user" class="uk-select uk-border-rounded">
+            <option value="all">Tous</option>
+            <option v-for="(u,index) in userList" :key="index" :value="u.username">{{u.localisation}}</option>
+          </select>
         </div>
         <!-- paginate component -->
         <div class="uk-width-1-3@m uk-margin-top">
@@ -134,6 +136,11 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         },
         data () {
           return {
+            userList : [],
+            filterData : {
+              state : "unvalidated",
+              user : "all"
+            },
 // paginate
             nextUrl : "",
             lastUrl : "",
@@ -186,12 +193,37 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               console.log(error)
             }
           },
+          filterRequest : async function () {
+            try {
+              let response = await axios
+                .get('/user/commandes/credit/filter/'+this.filterData.state+'/'+this.filterData.user)
+
+                if(response) {
+
+                  this.commandList = response.data.all
+
+                  this.nextUrl = response.data.next_url
+                  this.lastUrl = response.data.last_url
+                  this.perPage = response.data.per_page
+                  this.firstItem = response.data.first_item
+                  this.total = response.data.total
+                }
+            }
+            catch(error) {
+              alert("Erreur")
+              console.log(error)
+            }
+          },
           getCommandCredit : async function () {
             try {
+              Object.assign(this.$data,this.$options.data())
               this.isLoading = true
               var response = await axios.get('/user/commandes/credit-all')
-              if(response && response.data) {
+              var userResponse = await axios.get('/user/all-vendeurs')
+              if(response && userResponse) {
                 this.commandList = response.data.all
+
+                this.userList = userResponse.data
 
                 this.nextUrl = response.data.next_url
                 this.lastUrl = response.data.last_url

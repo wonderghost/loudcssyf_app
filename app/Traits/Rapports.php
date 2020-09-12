@@ -1172,7 +1172,9 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 					}
 				}
 			}
-			$result = $r->paginate(100);
+			$result = $r->orderBy('created_at','desc')
+				->paginate(100);
+				
 			$comission = $r->sum('commission');
 
 			return response()

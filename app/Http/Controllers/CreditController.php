@@ -165,17 +165,57 @@ class CreditController extends Controller
 			return $temp;
 		}
 
+
+		// ######### FILTER REQUEST COMMAND CREDIT #################
+
+	public function filterRequestCommandCredit(Request $request , $state, $user) {
+		try {
+
+			if($user && $state) {
+				if($user != 'all') {
+					// specifique user
+					$result = CommandCredit::where('vendeurs',$user)
+						->where('status',$state);
+				}
+				else {
+					// all users
+					$result = CommandCredit::where('status',$state);
+				}
+			}
+
+			$all = $result->orderBy('created_at','desc')
+				->paginate(100);
+			
+			return response()
+				->json([
+					'all'	=>	$this->organizeCommandGcga($all),
+					'next_url'	=> $all->nextPageUrl(),
+					'last_url'	=> $all->previousPageUrl(),
+					'per_page'	=>	$all->perPage(),
+					'current_page'	=>	$all->currentPage(),
+					'first_page'	=>	$all->url(1),
+					'first_item'	=>	$all->firstItem(),
+					'total'	=>	$all->total()
+				]);
+		}
+		catch(AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
+
 	// RECUPERATION DE LA LISTE DE TOUTES LES COMMANES , POUR L'ADMINISTRATEUR
 	public function getAllCommandes(Request $request , CommandCredit $c) {
 		if($request->user()->type != 'v_da' && $request->user()->type = 'v_standart') {
 
-			$all = $c->select()
+			$all = $c::where('status','unvalidated')
 				->orderBy('created_at','desc')
 				->paginate(100);
 		}
 		else {
 			$all = $c->select()
 				->where('vendeurs',$request->user()->username)
+				->where('status','unvalidated')
 				->orderBy('created_at','desc')
 				->paginate(100);
 		}

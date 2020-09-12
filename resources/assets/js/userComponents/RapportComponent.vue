@@ -350,6 +350,7 @@ import datepicker from 'vue-date-picker'
             rapportList : [],
             
             commission : 0,
+            staticComission : 0,
             passwordConfirm : "",
             errors : [],
             success : false,

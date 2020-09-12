@@ -326,7 +326,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/new-command/get-infos-material','CommandController@infoMaterial')->middleware('vendeur');
 
 	// ========= LISTE DES COMMANDES
-	Route::get('/user/list-command','CommandController@getList')->middleware('vendeur');
+	Route::get('/user/command/filter/{user}/{state}/{promo}','AdminController@filterRequestCommande');
 	Route::get('/user/commandes/all','AdminController@getAllCommandes');//->middleware('vendeur');
 	// DETAILS COMMANDES
 
@@ -353,6 +353,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/cga-credit/','CreditController@crediterVendeur')->middleware('cga');
 	Route::get('/user/credit-cga/commandes','CreditController@commandCredit')->middleware('cga');
 
+	Route::get('/user/commandes/credit/filter/{state}/{user}','CreditController@filterRequestCommandCredit');
 	Route::get('/user/commandes/credit-all','CreditController@getAllCommandes');
 	Route::get('/user/get-soldes','CreditController@getSoldesVendeurs')->middleware('cga');
 	Route::get('user/get-global-solde','CreditController@getGlobalSolde')->middleware('cga');

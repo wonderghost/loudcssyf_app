@@ -11,6 +11,7 @@
     <h3>Commande Materiel</h3>
     <hr class="uk-divider-small">
 
+
     <template v-if="typeUser == 'logistique' || typeUser == 'admin' || typeUser == 'v_da' || typeUser == 'v_standart'">
       <router-link to="/livraison/all" style="color : #000 !important"><button class="uk-button uk-button-small uk-border-rounded">Livraison</button></router-link>
     </template>
@@ -51,25 +52,27 @@
     <div class="">
       <div class="uk-grid-small uk-margin-top uk-flex uk-flex-right" uk-grid>
         <div class="uk-width-1-6@m">
-          <label for="">Promo</label>
-          <select class="uk-select uk-border-rounded">
-            <option value="">Tous</option>
-            <option value="">En promo</option>
-            <option value="">Hors promo</option>
-          </select>
-        </div>
-        <div class="uk-width-1-6@m">
           <label for=""><span uk-icon=""></span>  Status</label>
-          <select class="uk-select uk-border-rounded">
-            <option value="">Tous</option>
+          <select @change="filterRequest()" v-model="filterData.state" class="uk-select uk-border-rounded">
             <option value="unconfirmed">en attente</option>
             <option value="confirmed">confirmer</option>
             <option value="aborted">annuler</option>
           </select>
         </div>
+        <div class="uk-width-1-6@m">
+          <label for="">Promo</label>
+          <select @change="filterRequest()" v-model="filterData.promoState" class="uk-select uk-border-rounded">
+            <option value="all">Tous</option>
+            <option value="en_promo">En promo</option>
+            <option value="hors_promo">Hors promo</option>
+          </select>
+        </div>
         <div v-if="typeUser != 'v_da' && typeUser != 'v_standart'" class="uk-width-1-4@m">
-          <label for="">Recherche</label>
-          <input type="text" class="uk-input uk-border-rounded" placeholder="Recherche ...">
+          <label for=""><span uk-icon="users"></span> Vendeurs</label>
+          <select @change="filterRequest()" v-model="filterData.user" class="uk-select uk-border-rounded">
+            <option value="all">Tous</option>
+            <option v-for="(u,index) in userList" :key="index" :value="u.username">{{u.localisation}}</option>
+          </select>
         </div>
         <!-- paginate component -->
         <div class="uk-width-1-3@m uk-margin-top">
@@ -138,6 +141,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         },
         data () {
           return {
+            userList : [],
+            filterData : {
+              state : "unconfirmed",
+              promoState : 'all',
+              user : "all"
+            },
     // paginate
             nextUrl : "",
             lastUrl : "",
@@ -184,11 +193,35 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 alert(e)
             }
           },
-          getMaterialCommande : async function () {
+          filterRequest : async function () {
             try {
               this.isLoading = true
+              let response = await axios
+                .get('/user/command/filter/'+this.filterData.user+'/'+this.filterData.state+'/'+this.filterData.promoState+'')
+
+                if(response) {
+
+                  this.commandList = response.data.all
+                  this.nextUrl = response.data.next_url
+                  this.lastUrl = response.data.last_url
+                  this.perPage = response.data.per_page
+                  this.firstItem = response.data.first_item
+                  this.total = response.data.total
+
+                  this.isLoading = false
+                }
+            }
+            catch(error) {
+              alert("Erreur!")
+            }
+          },
+          getMaterialCommande : async function () {
+            try {
+              Object.assign(this.$data,this.$options.data())
+              this.isLoading = true
               var response = await axios.get('/user/commandes/all')
-              if(response && response.data.all.length) {
+              var userResponse = await axios.get('/user/all-vendeurs')
+              if(response && response.data.all.length && userResponse) {
 
                 this.commandList = response.data.all
 
@@ -197,6 +230,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 this.perPage = response.data.per_page
                 this.firstItem = response.data.first_item
                 this.total = response.data.total
+
+                this.userList = userResponse.data
 
                 this.isLoading = false
               }

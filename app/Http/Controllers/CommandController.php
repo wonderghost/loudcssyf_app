@@ -182,12 +182,7 @@ class CommandController extends Controller
 			die(json_encode($e->getMessage()));
 		}
 	}
-
-
-	public function getList() {
-		return view('command.list-command');
-	}
-
+	
 // LIST COMMANDES CHEZ LE VENDEURS
 	public function getRequestList(Request $request) {
 		$commands= CommandMaterial::where('vendeurs',Auth::user()->username)->get();
