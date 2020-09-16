@@ -73,6 +73,10 @@ class User extends Authenticatable
       return $this->hasMany("App\RapportVente",'vendeurs','username')->get();
     }
 
+    public function rapportVente() {
+      return $this->hasMany('App\RapportVente','vendeurs','username');
+    }
+
     // rapport ayant deja recu une demande de paiement
     public function rapportPayNotNull() {
       return $this->hasMany("App\RapportVente",'vendeurs','username')->where('state','unaborted')->whereNotNull('pay_comission_id')->get();

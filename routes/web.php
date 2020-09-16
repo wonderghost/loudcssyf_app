@@ -39,7 +39,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	#listing de tous les objectifs sauvegarde
 	Route::get('/admin/objectifs/list-all','ObjectifController@AllObjectifs');
 
-	// Route::post('/admin/objectifs/first-step-validation','ObjectifController@firstStepValidation');
+	
 	// recouvrement coursier
 	Route::get('/admin/recouvrement/operations','RecouvrementController@operations');
 	Route::get('/admin/recouvrement/all-transactions','RecouvrementController@allTransactions');
@@ -52,10 +52,8 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('admin/search/{slug}','AdminController@SearchText');
 	// COMMANDES
 	Route::get('/admin/commandes','AdminController@allCommandes');
-	// Route::get('/admin/commandes/all','AdminController@getAllCommandes');
+	
 	Route::get('/admin/commandes/livraison','AdminController@getAllLivraison');
-	// Route::get('/admin/commandes/validated','AdminController@getValidatedCommandesMaterial');
-	// Route::get('/admin/commandes/credit-all','CreditController@getAllCommandes');
 	// DASHBOARD DATA
 	Route::get('/admin/chart/user-stat','ChartController@userStat');
 	Route::get('/admin/chart/command-stat','ChartController@commandStat');
@@ -141,11 +139,9 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/list-material','LogistiqueController@listMaterial');
 
 	// editer les infos utilisateurs
-	// Route::get('/admin/edit-users/{username}','AdminController@editUser');
+	
 	Route::get('/admin/users/edit/{slug}','AdminController@editUser');
 	Route::post('/admin/users/edit-request','AdminController@editUserRequest');
-	// Route::get('/admin/users/edit/get-infos','AdminController@getInfos');
-	// Route::post('/admin/edit-users/{username}','AdminController@makeEditUser');
 	// bloquer un utilisateur
 	Route::post('/admin/block-user','AdminController@blockUser');
 	Route::post('/admin/unblock-user','AdminController@unblockUser');
@@ -181,7 +177,7 @@ Auth::routes();
 Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/get-all-pdraf','PdrafController@getAllPdraf');
 	Route::get('/user/get-all-pdc','PdcController@getAllPdc');
-	// Reseaux pdc / pdraf
+	
 	Route::get('/user/reabo-afrocash/get-comission','PdrafController@getComissionToPay');
 	######################################  PDC #########################$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	Route::post('/user/afrocash/depot-pdc/','PdcController@depotDepot')->middleware('vendeur');
@@ -216,7 +212,6 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	# ALERTES ABONNEMENTS
 	Route::get('/{slug}/alert-abonnement/all','RapportControlleur@getAlertAbonnementForAllUsers');
-	Route::get('/{slug}/alert-abonnement/count','RapportControlleur@countAlertAbonnement');
 	
 	Route::get('/{slug}/all-vendeurs','LogistiqueController@allVendeurs');
 	Route::get('/{slug}/all-produits','LogistiqueController@allProduits');
@@ -228,25 +223,19 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('user/add-rapport','RapportControlleur@addRapport')->middleware('controleur');
 	Route::post('/user/send-rapport/{slug}','RapportControlleur@sendRapport')->middleware('controleur');
 	Route::post('/user/rapport/check-serial','RapportControlleur@checkSerial')->middleware('controleur');
-	Route::get('/user/formule/list','AdminController@listFormule');//->middleware('controleur');
+	Route::get('/user/formule/list','AdminController@listFormule');
 	
 	Route::post('/user/rapport/check-upgrade','RapportControlleur@checkSerialOnUpgradeState');
-
-	// Route::get('/user/all-rapport','RapportControlleur@listRapport')->middleware('controleur');
 	
 	Route::get('/user/rapport/filter/{type}/{state}/{promo}/{payState}/{user}','AdminController@filterRapportRequest');
-	Route::get('/user/rapport/all','AdminController@getAllRapport');//->middleware('controleur');
-	Route::get('user/rapport/commission-total','RapportControlleur@totalCommission');//->middleware('controleur');
+	Route::get('/user/rapport/all','AdminController@getAllRapport');
+	Route::get('user/rapport/commission-total','RapportControlleur@totalCommission');
 	#listing promo
 	Route::get('/user/promo/listing','AdminController@getListingPromo');
 	# CHECK SERIAL FOR GET DEBUT DATE
 	Route::post('/user/rapport/check-serial-debut-date','RapportControlleur@checkSerialForGetDebutDate');
 
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	// Route::get('/user/rapport-ventes','RapportControlleur@getRapportByVendeurs')->middleware("vendeur");
-	// Route::get('/user/rapport-ventes/all','RapportControlleur@getAllRapportForVendeur')->middleware('vendeur');
-
-	// Route::get("/user/rapport/total-commission",'RapportControlleur@totalCommissionVendeur')->middleware('vendeur');
 
 	// voir les details d'un rapport
 	Route::post('/user/rapport-ventes/get-details','RapportControlleur@getDetailsForRapport');
@@ -254,7 +243,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// ravitailler un depot
 	Route::get('/user/ravitailler-depot','LogistiqueController@ravitaillerDepot')->middleware('logistique');
 	Route::get('/user/depot/historique-depot','LogistiqueController@historiqueRavitaillementDepot')->middleware('logistique');
-	// Route::get('')
+	
 	Route::get('{slug}/logistique/get-materiel','LogistiqueController@getMateriel');
 	Route::post('/user/ravitailler-depot','LogistiqueController@sendRavitaillementDepot')->middleware('logistique');
 	Route::post('user/ravitailler-depot/get-mat-dispo','LogistiqueController@getMaterialDispo')->middleware('logistique');
@@ -275,9 +264,9 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/settings','Settings@indexUser');
 	Route::get('/user/get-profile-infos','Settings@profileInfos');
 	Route::post('/user/change-password','Settings@changePasswordUser');
-	// Route::get('/user/profile/','')
+	
 	// ==
-	// Route::get('/user','UtilisateurSimple@dashboard');
+	
 	Route::get('/user',function () {
 		return view('layouts.template');
 	});
@@ -287,7 +276,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	// 	LISTE DES COMMANDES
 	Route::get('/user/commandes','LogistiqueController@allCommandes')->middleware('logistique');
 	Route::get('/user/logistique/afrocash-solde','LogistiqueController@getSoldeLogistique')->middleware('logistique');	//Recuperation du solde afrocash de la logistique
-	// Route::get('/logistique/commandes/all','AdminController@getAllCommandes')->middleware('logistique');
+	
 	Route::get('/logistique/commandes/livraison','AdminController@getAllLivraison')->middleware('logistique');
 	Route::post('/logistique/commandes/abort','AdminController@abortCommandMaterial')->middleware('logistique');
 	Route::get('/user/commandes/livraison','AdminController@getAllLivraison');
@@ -398,16 +387,16 @@ Route::middleware(['auth','unblocked'])->group(function () {
 
 	Route::get('/user/afrocash/transactions','CreditController@allTransactionAfrocash')->middleware('cga');
 	Route::get('/user/afrocash/all-transactions','CreditController@allTransactionAfrocashVendeur')->middleware('vendeur');
-	// Route::post("/user/afrocash/all-transactions",'CreditController@getAllTransactionAfrocashVendeur')->middleware('vendeur');
+	
 	Route::get('/{slug}/afrocash/get-transactions','CreditController@getAllTransaction');
 	Route::post('/user/afrocash/filter-transactions','CreditController@filterTransactionAfrocash')->middleware('vendeur');
 
 	// RECOUVREMENTS
 	Route::get('user/recouvrement','RecouvrementController@operations')->middleware('coursier');
 	Route::post('/user/recouvrement/add','RecouvrementController@addRecouvrement')->middleware('coursier');
-	Route::get('/user/recouvrement/all-transactions','RecouvrementController@allTransactions');//->middleware('coursier');
+	Route::get('/user/recouvrement/all-transactions','RecouvrementController@allTransactions');
 	Route::get('/user/recouvrement/get-montant-du/{vendeur}','RecouvrementController@getMontantDuRecouvrement')->middleware('coursier');
-	Route::get('/user/recouvrement/all-recouvrement','RecouvrementController@allRecouvrement');//->middleware('coursier');
+	Route::get('/user/recouvrement/all-recouvrement','RecouvrementController@allRecouvrement');
 
 	// ENVOI DE LA DEMANDE DE PAIEMENT DE COMMISSION
 	Route::post('/user/rapport-ventes/pay-commission','RapportControlleur@payCommission')->middleware('vendeur');
@@ -429,7 +418,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/deblocage/get-infos','ToolsController@getInfos');
 	Route::get('/user/deblocage/list','ToolsController@getDeblocageList');
 	Route::post('/user/deblocage/confirm-state','ToolsController@ConfirmStateDeblocage');
-	// Route::get('tmp','AdminController@emailTest');
+	
 	// SEND ANNULATION DE SAISIE FORM
 	Route::post('/user/tools/annulation-saisie','ToolsController@annulationSaisi');
 	// 
@@ -454,9 +443,6 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/chart/command-stat','ChartController@commandStat')->middleware('cga');
 	Route::get('/user/chart/command-material-stat','ChartController@commandMaterialStat')->middleware('logistique');
 	Route::get('/user/chart/livraison-stat','ChartController@livraisonMaterialStat')->middleware('logistique');
-	
-	// 
-
 
 });
 

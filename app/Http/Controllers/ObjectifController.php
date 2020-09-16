@@ -398,10 +398,12 @@ class ObjectifController extends Controller
                 ];
                 // Calcul de la moyenne
                 $dataObjectif = [];
-                $i = 0;
+
                 foreach($userObjectifClassify as $key   =>  $value) {
                     $som = 0;
                     $atteint = 0;
+                    $tmp = [];
+                    
                     foreach($value as $_value) {
                         $som += $_value->plafond_recrutement;
                         $rapp = $rp->whereYear('date_rapport',2020)
@@ -412,22 +414,17 @@ class ObjectifController extends Controller
                             ->sum('quantite');
                             
                         $atteint += $rapp;
-                        $dataObjectif[$i] = [  
+                        
+                        $tmp = [  
                             'plafond'   =>  $som,
                             'realise'   =>  $atteint,
                             'pourcent'  =>  $atteint/$som,
                             'class' =>  $_value->classe_recrutement
                         ];
                     }
-                    $i++;
+                    // 
+                    array_push($dataObjectif,$tmp);
                 }
-    
-                
-    
-                $dataClassA = [];
-                $dataClassB = [];
-                $dataClassC = [];
-                
     
                 return response()
                     ->json($dataObjectif);

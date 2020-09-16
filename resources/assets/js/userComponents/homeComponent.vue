@@ -46,7 +46,12 @@
         </div>
       </div>
       <a class="uk-button uk-button-small border-button" uk-tooltip="Conversations"><i class="material-icons">message</i></a>
-      <a v-if="typeUser == 'v_da' || typeUser == 'v_standart' || typeUser == 'admin' || typeUser == 'commercial'" class="uk-button uk-button-small border-button" uk-tooltip="Alertes" uk-toggle="target : #modal-alert-abonnement"><span>{{alertCount}}</span> <i class="material-icons">alarm</i> <span style="color : red !important">{{alertInactifCount}}</span></a>
+      <span uk-tooltip="Alertes" v-if="typeUser == 'v_da' || typeUser == 'v_standart' || typeUser == 'admin' || typeUser == 'commercial'" class="uk-button uk-button-small border-button">
+        <router-link to="/alertes/abonnement"><i class="material-icons">alarm</i></router-link>
+      </span>
+      <!-- <a v-if="typeUser == 'v_da' || typeUser == 'v_standart' || typeUser == 'admin' || typeUser == 'commercial'" class="uk-button uk-button-small border-button" uk-tooltip="Alertes">
+        <span></span> <i class="material-icons">alarm</i> <span style="color : red !important"></span>
+      </a> -->
       <!-- <a class="uk-button uk-button-small border-button" uk-tooltip="Alertes"><i class="material-icons" style="color : red !important;">alarm</i></a> -->
       <template v-if="typeUser == 'admin' || typeUser == 'commercial'" id="">
       	<!-- <a class="uk-button uk-button-small uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span>  PROMO</a> -->
@@ -520,14 +525,19 @@
         ,
         data () {
           return {
-            notifications : []
+            notifications : [],
+            alerts : [],
           }
         },
         methods : {
           getAllNotifications : async function () {
             try {
               let response = await axios.get('/user/notification/getlist')
-              this.notifications = response.data
+              // let alertResponse = await axios.get('/admin/alert-abonnement/count')
+              if(response) {
+                // this.alerts = alertResponse.data
+                this.notifications = response.data
+              }
             } catch (e) {
                 alert(e)
             }
@@ -547,12 +557,6 @@
           }
         },
         computed : {
-          alertInactifCount() {
-            return this.$store.state.alertInactifCount
-          },
-          alertCount() {
-            return this.$store.state.alertCount
-          },
           deblocageCount() {
             return this.$store.state.deblocageCount
           },

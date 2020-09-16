@@ -19,8 +19,6 @@ use Illuminate\Support\Facades\DB;
 
 Trait Abonnements {
 
-
-
 	public function countAlertAbonnement(Abonnement $a) {
 		try {
 			$now = Carbon::now();
@@ -37,11 +35,31 @@ Trait Abonnements {
 		}
 	}
 
-	public function filterAlertAbonnement(Abonnement $a , $now) {
-		$serialGroup = DB::table('abonnements')
-			->select('serial_number')
-			->groupBy('serial_number')
-			->get();
+	public function filterAlertAbonnement(Request $request,Abonnement $a , $now) {
+		
+		if($request->user()->type != 'v_da' && $request->user()->type != 'v_standart') {
+
+			$serialGroup = DB::table('abonnements')
+				->select('serial_number')
+				->groupBy('serial_number')
+				->paginate(100);
+				
+		}
+		else {
+
+			$rapportId = $request->user()
+				->rapportVente()
+				->select('id_rapport')
+				->groupBy('id_rapport')
+				->get();
+
+			$serialGroup = Abonnement::select('serial_number')
+				->whereIn('rapport_id',$rapportId)
+				->groupBy('serial_number')
+				->paginate();
+			
+		}
+		
 		
 		$all_datas = [];
 
@@ -117,16 +135,17 @@ Trait Abonnements {
 		}
 		return [
 			'relance'	=>	$thisMonthAbonnementEnd,
-			'inactif'	=>	$thisMonthAbonnementInactif
+			'inactif'	=>	$thisMonthAbonnementInactif,
+			'data'	=>	$serialGroup
 		];
 	}
 	
-	public function getAlertAbonnementForAllUsers(Abonnement $a) {
+	public function getAlertAbonnementForAllUsers(Request $request,Abonnement $a) {
 		try {
 			$now = Carbon::now();
 			$data =[];
 			$data_inactif = [];
-			foreach($this->filterAlertAbonnement($a,$now)['relance'] as $key => $value) {
+			foreach($this->filterAlertAbonnement($request,$a,$now)['relance'] as $key => $value) {
 				$fin = new Carbon($value->debut);
 				$fin->addMonths($value->duree)
 					->subDay()
@@ -146,7 +165,7 @@ Trait Abonnements {
 				];
 			}
 			
-			foreach($this->filterAlertAbonnement($a,$now)['inactif'] as $key => $value) {
+			foreach($this->filterAlertAbonnement($request,$a,$now)['inactif'] as $key => $value) {
 				$fin = new Carbon($value->debut);
 				$fin->addMonths($value->duree)
 					->subDay()
@@ -169,7 +188,14 @@ Trait Abonnements {
 			return response()
 				->json([
 					'relance'	=>	$data,
-					'inactif'	=>	$data_inactif
+					'inactif'	=>	$data_inactif,
+					'next_url'	=> $this->filterAlertAbonnement($request,$a,$now)['data']->nextPageUrl(),
+					'last_url'	=> $this->filterAlertAbonnement($request,$a,$now)['data']->previousPageUrl(),
+					'per_page'	=>	$this->filterAlertAbonnement($request,$a,$now)['data']->perPage(),
+					'current_page'	=>	$this->filterAlertAbonnement($request,$a,$now)['data']->currentPage(),
+					'first_page'	=>	$this->filterAlertAbonnement($request,$a,$now)['data']->url(1),
+					'first_item'	=>	$this->filterAlertAbonnement($request,$a,$now)['data']->firstItem(),
+					'total'	=>	$this->filterAlertAbonnement($request,$a,$now)['data']->total(),
 					]);
 
 		} catch(AppException $e) {

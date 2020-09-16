@@ -22,10 +22,10 @@
     </nav>    
 
         <!-- Erreor block -->
-        <template v-if="errors.length" v-for="error in errors">
-            <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
-            <a href="#" class="uk-alert-close" uk-close></a>
-            <p>{{error}}</p>
+        <template v-if="errors.length" >
+            <div v-for="(error,index) in errors" :key="index" class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+                <a href="#" class="uk-alert-close" uk-close></a>
+                <p>{{error}}</p>
             </div>
         </template>
 
@@ -137,7 +137,7 @@ import VeHistogram from 'v-charts/lib/histogram.common'
                     if(error.response.data.errors) {
                         let errorTab = error.response.data.errors
                         for (var prop in errorTab) {
-                        this.errors.push(errorTab[prop][0])
+                            this.errors.push(errorTab[prop][0])
                         }
                     } else {
                         this.errors.push(error.response.data)

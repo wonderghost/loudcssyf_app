@@ -1172,7 +1172,7 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 					}
 				}
 			}
-			$result = $r->orderBy('created_at','desc')
+			$result = $r->orderBy('date_rapport','desc')
 				->paginate(100);
 				
 			$comission = $r->sum('commission');
@@ -1196,7 +1196,7 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 		}
 	}
 
-// HISTORIQUE DE RAPPORT POUR L'ADMINISTRATEUR
+// HISTORIQUE DE RAPPORTS DE VENTE
 		public function getAllRapport(RapportVente $r,Request $request) {
 			try {
 				if($request->user()->type != 'v_da' && $request->user()->type != 'v_standart') {
@@ -1205,7 +1205,7 @@ public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 						->paginate(100);
 				}
 				else {
-					$all = $r->where('vendeurs',$request->user()->username)
+					$all = $request->user()->rapportVente()
 						->orderBy('date_rapport','desc')
 						->paginate(100);
 				}

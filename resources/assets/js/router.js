@@ -59,7 +59,9 @@ import commandCredit from './adminComponents/CreditComponent.vue'
 // GESTIONNAIRE DEPOT
 import livraisonMateriel from './userComponents/LivraisonComponent.vue'
 import store from './store.js'
-import { some } from 'lodash'
+// import { some } from 'lodash'
+
+import alertAbonnement from './userComponents/AlertComponent.vue'
 
 Vue.use(VueRouter);
 
@@ -128,7 +130,7 @@ const router = new VueRouter({
             path : '/promo',
             component : promo,
             beforeEnter : (to,from , next) => {
-                if(store.state.typeUser != 'admin' && store.state.typeUser != 'commercial') {
+                if(store.state.typeUser != 'admin' && store.state.typeUser != 'commercial' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart') {
                     alert('action non autorise !')
                     next('/')
                 }
@@ -427,6 +429,20 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'admin' && store.state.typeUser != 'gcga') {
                     alert('action non autorise !')
                     next('/')
+                }
+                else {
+                    next()
+                }
+            }
+        },
+        {
+            path : '/alertes/abonnement',
+            component : alertAbonnement,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'admin' && store.state.typeUser != 'commercial' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart') {
+                    alert('action non autorise !')
+                    console.log(from)
+                    // next(from)
                 }
                 else {
                     next()
