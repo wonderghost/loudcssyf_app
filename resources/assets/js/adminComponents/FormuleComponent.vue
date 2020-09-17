@@ -3,7 +3,10 @@
         <loading :active.sync="isLoading"
             :can-cancel="false"
             :is-full-page="fullPage"
-            loader="dots"></loading>        
+            loader="bars"
+            :opacity="1"
+            color="#1e87f0"
+            background-color="#fff"></loading>        
 
             <h3>Formule</h3>
             <hr class="uk-divider-small">
@@ -80,12 +83,18 @@ import addFormule from './addFormuleComponent.vue'
         methods : {
             getAllFormule : async function () {
                 try {
+                    this.isLoading  = true
                     let response = await axios.get('/admin/formule/list')
-                    this.formules = response.data.formules
-                    this.options = response.data.options
-                    console.log(response.data)
+                    if(response) {
+
+                        this.formules = response.data.formules
+                        this.options = response.data.options
+
+                        this.isLoading = false
+                    }
+                    
                 } catch(error) {
-                    alert(error)
+                    alert("Data Error !")
                 }
             }
         },

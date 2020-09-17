@@ -3,7 +3,10 @@
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#1e87f0"
+        background-color="#fff"></loading>
         <!-- BONUS BUTTON -->
         <div v-if="typeUser == 'v_da' || typeUser == 'v_standart'" class="bonus-view uk-position-fixed uk-position-z-index" uk-toggle="target : #modal-pay-bonus">
             <button class="uk-button uk-button-small uk-button-primary uk-border-rounded"  uk-tooltip="Bonus"> 

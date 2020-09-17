@@ -19,18 +19,12 @@ use Illuminate\Support\Facades\DB;
 
 Trait Abonnements {
 
-	public function countAlertAbonnement(Abonnement $a) {
+	public function getAlertAbonnementCount() {
 		try {
-			$now = Carbon::now();
 
-			return response()
-				->json([
-					'relance_count'	=>	count($this->filterAlertAbonnement($a,$now)['relance']),
-					'inactif_count'	=>	count($this->filterAlertAbonnement($a,$now)['inactif'])
-				]);
-
-		} catch(AppException $e) {
-			header("Erreur",true,422);
+		}
+		catch(AppException $e) {
+			header("Erreur!",true,422);
 			die(json_encode($e->getMessage()));
 		}
 	}

@@ -2,14 +2,14 @@
 <html lang="fr" dir="ltr">
   <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-130660555-4"></script>
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-130660555-4"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
       gtag('config', 'UA-130660555-4');
-    </script>
+    </script> -->
     
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -46,7 +46,7 @@
     <div class="uk-section uk-section-muted uk-padding-small uk-margin-top uk-visible@m ">
       <div class="uk-container uk-container-large">
         <p class="uk-text-center">
-          &copy; COPYRIGHT/LOUDCSSYF-SARL/{{date('Y')}}/LAYEDIST v2.1
+          &copy; Copyright {{date('Y')}} | Loudcssyf-Sarl | Layedist | v2.1
         </p>
       </div>
     </div>

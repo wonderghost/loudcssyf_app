@@ -212,6 +212,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	# ALERTES ABONNEMENTS
 	Route::get('/{slug}/alert-abonnement/all','RapportControlleur@getAlertAbonnementForAllUsers');
+	Route::get('{slug}/alert-abonnement/count','RapportControlleur@getAlertAbonnementCount');
 	
 	Route::get('/{slug}/all-vendeurs','LogistiqueController@allVendeurs');
 	Route::get('/{slug}/all-produits','LogistiqueController@allProduits');

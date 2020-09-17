@@ -3,7 +3,10 @@
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#1e87f0"
+        background-color="#fff"></loading>
 
         <div class="uk-grid-small" uk-grid>
             <!-- <div class="uk-width-1-4@m"></div> -->
@@ -13,8 +16,8 @@
                     <hr class="uk-divider-small">
                     <form @submit.prevent="addFormule()" class="uk-grid-small" uk-grid>
                         <!-- Erreor block -->
-                        <template v-if="errors.length" v-for="error in errors">
-                            <div class="uk-alert-danger uk-border-rounded uk-width-1-1@m uk-width-1-1@s" uk-alert>
+                        <template v-if="errors.length">
+                            <div v-for="(error,index) in errors" :key="index" class="uk-alert-danger uk-border-rounded uk-width-1-1@m uk-width-1-1@s" uk-alert>
                                 <a href="#" class="uk-alert-close" uk-close></a>
                                 <p>{{error}}</p>
                             </div>
@@ -32,13 +35,13 @@
                         </div>
                     </form>
                 </template>
-                <template v-else>
+                <template v-else-if="type == 'option'">
                     <h3>Ajoutez une options</h3>
                     <hr class="uk-divider-small">
                     <form @submit.prevent="addOption()" class="uk-grid-small" uk-grid>
                         <!-- Erreor block -->
-                        <template v-if="errors.length" v-for="error in errors">
-                            <div class="uk-alert-danger uk-border-rounded uk-width-1-1@m uk-width-1-1@s" uk-alert>
+                        <template v-if="errors.length">
+                            <div class="uk-alert-danger uk-border-rounded uk-width-1-1@m uk-width-1-1@s" uk-alert v-for="(error,index) in errors" :key="index">
                                 <a href="#" class="uk-alert-close" uk-close></a>
                                 <p>{{error}}</p>
                             </div>
@@ -57,6 +60,13 @@
                             </button>
                         </div>
                     </form>
+                </template>
+                <template v-if="type == 'edit-formule'">
+                    <!-- edit formule -->
+                    
+                </template>
+                <template v-else>
+                    <!-- edit options -->
                 </template>
             </div>
             <div class="uk-width-1-4@m"></div>

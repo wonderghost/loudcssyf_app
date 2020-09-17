@@ -1,5 +1,5 @@
 <template>
-    <div class="uk-container uk-container-large">
+    <div class="uk-container uk-container-large uk-margin-large-bottom">
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
