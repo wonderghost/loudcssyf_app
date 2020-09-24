@@ -233,8 +233,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 
                 this.userList = userResponse.data
 
-                this.isLoading = false
               }
+              this.isLoading = false
+              
             } catch (e) {
               alert(e)
             }

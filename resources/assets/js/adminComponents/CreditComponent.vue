@@ -195,6 +195,11 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           },
           filterRequest : async function () {
             try {
+              if(this.typeUser != 'admin' && this.typeUser != 'gcga' && this.typeUser != 'commercial') {
+                this.filterData.user = this.userName
+              }
+
+
               let response = await axios
                 .get('/user/commandes/credit/filter/'+this.filterData.state+'/'+this.filterData.user)
 
@@ -302,6 +307,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           }
         },
         computed : {
+          userName() {
+            return this.$store.state.userName
+          },
           typeUser () {
             return this.$store.state.typeUser
           },
