@@ -660,6 +660,7 @@ class AdminController extends Controller
 
         $commands = $c->select()
           ->where('vendeurs',$request->user()->username)
+          ->where('status','unconfirmed')
           ->orderBy('created_at','desc')
           ->paginate(100);
 

@@ -196,6 +196,11 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           filterRequest : async function () {
             try {
               this.isLoading = true
+
+              if(this.typeUser == 'v_da' || this.typeUser == 'v_standart') {
+                this.filterData.user = this.userName
+              }
+
               let response = await axios
                 .get('/user/command/filter/'+this.filterData.user+'/'+this.filterData.state+'/'+this.filterData.promoState+'')
 
@@ -264,6 +269,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           }
         },
         computed : {
+          userName() {
+            return this.$store.state.userName
+          },
           userLocalisation() {
             return this.$store.state.userLocalisation
           },
