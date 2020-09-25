@@ -206,7 +206,7 @@ class CreditController extends Controller
 
 	// RECUPERATION DE LA LISTE DE TOUTES LES COMMANES , POUR L'ADMINISTRATEUR
 	public function getAllCommandes(Request $request , CommandCredit $c) {
-		if($request->user()->type != 'v_da' && $request->user()->type = 'v_standart') {
+		if($request->user()->type != 'v_da' && $request->user()->type != 'v_standart') {
 
 			$all = $c::where('status','unvalidated')
 				->orderBy('created_at','desc')
