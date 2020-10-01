@@ -201,6 +201,9 @@
                     <li>
                       <router-link to="/material/all-material"><span uk-icon="link"></span> Tous les materiels</router-link>
                     </li>
+                    <li>
+                      <router-link to="/material/affectation"><span uk-icon="link"></span> Affectation Materiel</router-link>
+                    </li>
                     <!-- <li><a href="/admin/depot-central"><span uk-icon="icon:arrow-right"></span> Entrepot</a></li> -->
                     <!-- <li><a href="/admin/list-material"><span uk-icon="icon:arrow-right"></span> Tous les materiels</a></li> -->
                     <!-- <li><a href="/admin/history-depot"><span uk-icon="icon:arrow-right"></span> Historique </a></li> -->

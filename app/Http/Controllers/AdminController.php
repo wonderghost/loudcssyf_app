@@ -1103,4 +1103,57 @@ class AdminController extends Controller
     }
   }
 
+  public function affectationDepotVendeur(Request $request , Exemplaire $e) {
+    try {
+
+      $validation = $request->validate([
+        'depot' =>  'required|exists:depots,localisation',
+        'vendeur'  =>  'required|exists:users,username',
+        'serial_number' =>  'required|exists:exemplaire,serial_number',
+        'password_confirmation' =>  'required|string'
+      ],
+    [
+      'required'  =>  '`:attribute` requi(s) !',
+      'exists'  =>  '`:attribute` n\'existe pas dans le systeme'
+    ]);
+
+    // password validation 
+
+      if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
+        throw new AppException("Mot de passe invalide !");
+      }
+      
+      // verification de l 'existence du materiel dans le depot
+      $serialNumber = $e->find($request->input('serial_number'));
+      $depotForSerial = $serialNumber->depot() ? $serialNumber->depot()->depot : null;
+
+      if(is_null($depotForSerial) || $depotForSerial != $request->input('depot')) {
+        throw new AppException("Materiel introuvable dans le depot specifie !");
+      }
+
+      // verifier si le materiel n'est pas deja affecte a un vendeur
+      if(!is_null($serialNumber->vendeurs)) {
+        throw new AppException("Ce materiel est deja attribue a un vendeur !");
+      }
+
+      // verifier si le materiel n'est pas deja actif
+
+      if($serialNumber->status == 'actif') {
+        throw new AppException("Ce materiel est deja actif !");
+      }
+
+      // Traitement des operations
+
+      $serialNumber->vendeurs = $request->input('vendeur');
+      $serialNumber->save();
+
+      return response()
+        ->json('done');
+    }
+    catch(AppException $e) {
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+
 }

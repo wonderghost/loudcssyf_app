@@ -1,9 +1,42 @@
 <template>
-    <div>
+    <div class="uk-container uk-container-large">
+
+        
         <loading :active.sync="isLoading"
             :can-cancel="false"
             :is-full-page="fullPage"
-            loader="dots"></loading>
+            loader="bars"
+            :opacity="1"
+            color="#1e87f0"
+            background-color="#fff"></loading>
+
+
+        <ul class="uk-breadcrumb">
+            <li><router-link to="/dashboard"><span uk-icon="home"></span></router-link></li>
+            <li><span>Affectation Materiel</span></li>
+        </ul>
+
+        <h3 class="uk-margin-top">Affectation Materiel</h3>
+        <hr class="uk-divider-small">
+
+        <nav class="" uk-navbar>
+            <div class="uk-navbar-left">
+                <ul class="uk-navbar-nav">
+                    <li class=""><router-link to="/material/affectation/depot-vendeur">Depot -> Vendeur</router-link></li>
+                    <li class=""><router-link to="/material/affectation/vendeur-vendeur">Vendeur -> Vendeur</router-link></li>
+                </ul>
+
+            </div>
+        </nav>    
+
+        <!-- infos block -->
+        <div class="uk-width-1-2@m uk-border-rounded uk-alert-info" uk-alert>
+            <p>
+                <span uk-icon="info"></span> Affectation des materiels qui n'ont pas de depot initial !
+            </p>
+        </div>
+        <!-- // -->
+
         <!-- Erreor block -->
         <template v-if="errors.length" v-for="error in errors">
             <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert>
@@ -53,6 +86,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             Loading
         },
         mounted() {
+            UIkit.offcanvas($("#side-nav")).hide();
             this.getInfosAffectation()
         },
         data() {

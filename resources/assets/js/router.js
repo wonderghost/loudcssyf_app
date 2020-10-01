@@ -38,6 +38,8 @@ import listRapport from './userComponents/RapportComponent.vue'
 import formule from './adminComponents/FormuleComponent.vue'
 import editUser from './adminComponents/EditUserComponent.vue'
 import payComission from './userComponents/PayComissionComponent.vue'
+import affectationMateriel from './adminComponents/AffectationMaterielComponent.vue'
+import affectationDepotVendeur from './adminComponents/AffectationDepotVendeur.vue'
 // VENDEURS
 import objectifUser from './userComponents/ObjectifUserComponent.vue'
 import addContact from './userComponents/AddContactComponent.vue'
@@ -441,8 +443,33 @@ const router = new VueRouter({
             beforeEnter : (to,from , next) => {
                 if(store.state.typeUser != 'admin' && store.state.typeUser != 'commercial' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart') {
                     alert('action non autorise !')
-                    console.log(from)
-                    // next(from)
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
+        },
+        {
+            path : '/material/affectation',
+            component : affectationMateriel,
+            beforeEnter : (to,from ,next) => {
+                if(store.state.typeUser != 'admin') {
+                    alert('action non autorise !')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
+        },
+        {
+            path : '/material/affectation/depot-vendeur',
+            component : affectationDepotVendeur,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'admin') {
+                    alert('action non autorise !')
+                    next('/')
                 }
                 else {
                     next()
