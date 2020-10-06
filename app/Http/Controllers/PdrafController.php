@@ -18,7 +18,7 @@ use App\ReaboAfrocashSetting;
 use App\OptionReaboAfrocash;
 use App\MakePdraf;
 use App\PayCommission;
-
+use App\Credit;
 use Carbon\Carbon;
 
 class PdrafController extends Controller
@@ -36,6 +36,38 @@ class PdrafController extends Controller
         return $_id;
     }
 
+    public function listPdraf(User $u) {
+        try {
+            $data_pdraf = $u->where('type','pdraf')
+                ->get();
+            
+            $data_pdc = $u->where('type','pdc')
+                ->get();
+
+            $pdarf_list = [];
+
+            foreach($data_pdraf as $key => $value) {
+                $pdraf_list[$key] = [
+                    'username'  =>  $value->username,
+                    'localisation'  =>  $value->localisation,
+                    'pdc'   =>  [
+                        'username'  =>  $value->pdcUser()->usersPdc()->username,
+                        'localisation'  =>  $value->pdcUser()->usersPdc()->localisation,
+                    ]
+                ];
+            }
+
+            return response()
+                ->json([
+                    'pdraf_list' => $pdraf_list,
+                    'pdc_list'  =>  $data_pdc
+                ]);
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
 
     public function addNewPdraf(Request $request) {
         try {
@@ -2718,6 +2750,173 @@ class PdrafController extends Controller
             return response()
                 ->json('done');
         } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function sendRequestPdrafAffectation(Request $request,User $u,ReseauxPdc $rpdc , PayCommission $pay) {
+        try {
+            $validation = $request->validate([
+                'pdraf_id'  =>  'required|exists:users,username',
+                'pdc_origine'   =>  'required|exists:users,username',
+                'pdc_destination'   =>  'required|exists:users,username',
+                'password'  =>  'required|string'
+            ],[
+                'required'  =>  'champ(s) `:attribute` requis!'
+            ]);
+
+            // validite du mot de passe
+            if(!Hash::check($request->input('password'),$request->user()->password)) {
+                throw new AppException("Mot de passe invalide !");
+            }
+
+            $pdraf_user = $u->where('username',$request->input('pdraf_id'))->first();
+            $pdc_destination = $u->where('username',$request->input('pdc_destination'))->first();
+
+            $reabo_afrocash = $pdraf_user->reaboAfrocash()
+                ->whereNull('remove_at')
+                ->whereNull('pay_at')
+                ->whereNotNull('confirm_at');
+
+
+            $reseaux_pdc = $rpdc->where('id_pdc',$request->input('pdc_origine'))
+                ->where('id_pdraf',$request->input('pdraf_id'))
+                ->first();
+
+            if(!$reseaux_pdc) {
+                // le pdraf n'appartient pas au pdc
+                throw new AppException("Erreur de correspondance !");
+            }
+            
+            $reseaux_pdc->id_pdc = $request->input('pdc_destination');
+
+            if($reabo_afrocash->get()->count() > 0) {
+                
+                // il y a des commission a se faire payer pour le pdraf
+
+                $comission = $reabo_afrocash->sum('comission');
+
+                $receiver_account = $pdraf_user->afroCash()->first();
+
+                $sender_user = $pdraf_user->pdcUser()->usersPdc();
+                $sender_account = $sender_user->afroCash('semi_grossiste')->first();
+
+                $receiver_account->solde += $comission;
+                $sender_account->solde -= $comission;
+
+                $trans = new TransactionAfrocash;
+                $trans->compte_debite = $sender_account->numero_compte;
+                $trans->compte_credite = $receiver_account->numero_compte;
+                $trans->montant = $comission;
+                $trans->motif = "Paiement_Comission";
+
+                $sender_account->save();
+                $receiver_account->save();
+                $trans->save();
+
+                foreach($reabo_afrocash->get() as $value) {
+                    $value->pay_at = Carbon::now();
+                    $value->save();
+                }
+
+                $n = $this->sendNotification(
+                    "Paiement Comission" ,
+                    "Reception de ".number_format($comission)." GNF de la part de ".$sender_user->localisation,
+                    $pdraf_user->username
+                    );
+                $n->save();
+
+                $n = $this->sendNotification(
+                    "Paiement Comission" ,
+                    "Envoi de ".number_format($comission)." GNF a :".$pdraf_user->localisation,
+                    $sender_user->username
+                    );
+                $n->save();
+
+                $n = $this->sendNotification(
+                    "Paiement Comission" ,
+                    "Envoi de : ".number_format($comission)." GNF de la part de ".$sender_user->localisation.", a : ".$pdraf_user->localisation,
+                    'admin'
+                    );
+                $n->save();
+            }
+
+            // get all reabo afrocash
+            $pdc_origine = $u->where('username',$request->input('pdc_origine'))->first();
+
+            $reaboAfrocash = ReaboAfrocash::where('pdraf_id',$pdraf_user->username)
+                ->whereNotNull('confirm_at')
+                ->whereNull('pay_comission_id');
+            
+            if($reaboAfrocash->get()->count() > 0) {
+                // il ya des comission a se faire payer par le pdc
+
+                $pay->id = "pay_comission_".$pdc_origine->username.time();
+                $tmp = $pay->id;
+                
+                $pay->montant = 0;
+
+                $marge = round(($reaboAfrocash->sum('montant_ttc')/1.18) * (1.5/100),0);
+                $pay->montant = $reaboAfrocash->sum('comission') + $marge;
+
+                // EFFECTUER LA TRANSACTION
+                $_receiver_account = $pdc_origine->afroCash('semi_grossiste')->first();
+                $_sender_account = Credit::find('afrocash');
+    
+                $_receiver_account->solde += $pay->montant;
+                $_sender_account->solde -= $pay->montant;
+    
+    
+                $_trans = new TransactionAfrocash;
+                $_trans->compte_credite = $_receiver_account->numero_compte;
+                $_trans->montant = $pay->montant;
+                $_trans->motif = "Comission_Pdc_Afrocash";
+    
+                // 
+    
+                $pay->pay_at = Carbon::now();
+                $pay->status = 'validated';
+    
+                $amount = $pay->montant;
+    
+                $_receiver_account->save();
+                $_sender_account->save();
+                $_trans->save();
+    
+                $pay->save();
+    
+                foreach($reaboAfrocash->get() as $value) {
+                    $value->pay_comission_id = $tmp;
+                    $value->save();
+                }
+
+                $_user = User::where('type','gcga')->get();
+                foreach($_user as $value) {
+                    $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".$pdc_origine->localisation,$value->username);
+                    $n->save();
+                }
+    
+                $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".$pdc_origine->localisation,$pdc_origine->username);
+                $n->save();
+    
+                $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".$pdc_origine->localisation,'admin');
+                $n->save();
+    
+                $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".$pdc_origine->localisation,'root');
+                $n->save();
+            }
+            
+            ReseauxPdc::where('id_pdc',$request->input('pdc_origine'))
+                ->where('id_pdraf',$request->input('pdraf_id'))
+                ->update([
+                    'id_pdc'    =>  $request->input('pdc_destination')
+                ]);
+            
+            return response()
+                ->json('done');
+        }
+        catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));
         }

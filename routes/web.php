@@ -24,6 +24,14 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/pdraf/confirm-reabo-afrocash','PdrafController@confirmReaboAfrocash');
 	Route::post('/admin/pdraf/remove-reabo-afrocash','PdrafController@removeReaboAfrocash');
 
+	# affectation de pdraf a un pdc
+
+	// get list all pdraf
+	Route::get('/admin/pdraf/all','PdrafController@listPdraf');
+	Route::post('/admin/pdraf/affectation/send-request','PdrafController@sendRequestPdrafAffectation');
+	
+	
+
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// traitement parametre rapport vente
 	Route::post('/admin/set-rapport-parameters','AdminController@setRapportParameters');
