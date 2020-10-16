@@ -391,9 +391,7 @@ class ChartController extends Controller
                     $rest = $_value - 1;
                     for($k = 0 ;$k < $rest ; $k++) {
                         if(($key+$k+1) < 12) {
-
                             $statByMonth[$key + $k+1]['acte_reabo'] = $statByMonth[$key + $k+1]['acte_reabo'] + 1;
-                            $statByMonth[$key + $k+1]['line'] = $statByMonth[$key + $k+1]['line'] + 1;
                         }
                     }
                 }

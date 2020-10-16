@@ -17,9 +17,27 @@
         <h3 class="uk-margin-top">Acte de reabonnement</h3>
         <hr class="uk-divider-small">
 
-        <div class="uk-width-1-2@m">
-            <ve-histogram :data="acteReabo" :settings="chartSetting"></ve-histogram>
+        <div class="uk-grid-small" uk-grid>
+            <div class="uk-width-1-4@m">
+                <label for=""><span uk-icon="users"></span> Vendeurs</label>
+                <select name="" id="" class="uk-select uk-border-rounded"></select>
+            </div>
+            <div class="uk-width-1-4@m">
+                <label for=""><span uk-icon="calendar"></span> Du</label>
+                <input type="date" class="uk-input uk-border-rounded" placeholder="Debut">
+            </div>
+            <div class="uk-width-1-4@m">
+                <label for=""><span uk-icon="calendar"></span> Au</label>
+                <input type="date" class="uk-input uk-border-rounded" placeholder="Fin">
+            </div>
         </div>
+
+        <div class="uk-grid-small" uk-grid>
+            <div class="uk-width-1-2@m">
+                <ve-histogram :data="acteReabo" :settings="chartSetting"></ve-histogram>
+            </div>
+        </div>
+
 
     </div>
 </template>
@@ -41,8 +59,7 @@ import VeHistogram from 'v-charts/lib/histogram.common'
                 isLoading : false,
                 fullPage : true,
                 chartSetting : {
-                    metrics : ['acte_reabo','line'],
-                    showLine : ['line']
+                    metrics : ['acte_reabo'],
                 },
                 acteReabo : {
                     columns : ['date','acte_reabo'],
@@ -53,10 +70,11 @@ import VeHistogram from 'v-charts/lib/histogram.common'
         methods : {
             getData : async function () {
                 try {
+                    this.isLoading = true
                     let response = await axios.get('/admin/performance/acte-reabonnement')
                     if(response) {
-                        console.log(response.data)
                         this.acteReabo.rows = response.data
+                        this.isLoading = false
                     }
                 }
                 catch(error) {

@@ -163,8 +163,8 @@
                         <th>Montant Ttc</th>
                         <template v-if="typeUser != 'admin' && typeUser != 'gcga' && typeUser != 'commercial'">
                             <th>Comission</th>
-                            <th>Telephone Client</th>
                         </template>
+                        <th>Telephone Client</th>
                         <th>Pdraf</th>
                         <template v-if="typeUser == 'pdc' || typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'">
                             <th>Marge</th>
@@ -187,6 +187,7 @@
                             <td>{{r.duree}}</td>
                             <td>{{r.option}}</td>
                             <td>{{r.montant |numFormat}}</td>
+                            <td>{{r.telephone_client}}</td>
                             <td>{{r.pdraf.localisation}}</td>
                             <td>
                                 <template v-if="r.pay_comission_id">
