@@ -11,6 +11,16 @@
     <h3 class="uk-margin-top">Performances Vente</h3>
     <hr class="uk-divider-small">
 
+    <nav class="" uk-navbar>
+        <div class="uk-navbar-left">
+            <ul class="uk-navbar-nav">
+                <li class=""><router-link to="/performances/acte-reabonnement">Acte de Reabonnement</router-link></li>
+                <!-- <li class=""><router-link to="/objectifs/all">Tous les objectifs</router-link></li> -->
+            </ul>
+
+        </div>
+    </nav>
+
         <form @submit.prevent="makeFilter()" id="form-filter" class="uk-grid-small" uk-grid>
             <div class="uk-width-1-1@m uk-grid-small" uk-grid>
                 <!-- <template v-if="errors.length" v-for="error in errors">
@@ -24,7 +34,7 @@
                 <label for=""><span uk-icon="icon : users"></span> Vendeurs</label>
                 <select class="uk-select uk-border-rounded" v-model="filterFormData.vendeurs">
                     <option value=""> -- Tous les vendeurs -- </option>
-                    <option :value="u.username" v-for="u in users">{{u.localisation}}</option>
+                    <option :value="u.username" v-for="u in users" :key="u.username">{{u.localisation}}</option>
                 </select>
             </div>
             <div class="uk-width-1-6@m uk-width-1-1@s">

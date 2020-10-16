@@ -72,6 +72,8 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/perform-obj/recrutement','ChartController@getRecrutementStat');
 	Route::get('/admin/perform-obj/reabonnement','ChartController@getReabonnementStat');
 	Route::post('/admin/perform-obj/filter','ChartController@makeFilter');
+
+	Route::get('/admin/performance/acte-reabonnement','ChartController@getActeReabonnementStat');
 	// 
 	# DATA OBJECTIFS ON DASHBOARD
 	Route::get('/admin/objectif/recrutement','ObjectifController@getObjectifRecrutementStat');

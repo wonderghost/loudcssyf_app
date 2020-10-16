@@ -41,6 +41,8 @@ import payComission from './userComponents/PayComissionComponent.vue'
 import affectationMateriel from './adminComponents/AffectationMaterielComponent.vue'
 import affectationDepotVendeur from './adminComponents/AffectationDepotVendeur.vue'
 import affectationPdrafPdc from './adminComponents/AffectationPdrafComponent.vue'
+import acteReabonnement from './adminComponents/ActeReabonnement.vue'
+
 // VENDEURS
 import objectifUser from './userComponents/ObjectifUserComponent.vue'
 import addContact from './userComponents/AddContactComponent.vue'
@@ -483,6 +485,19 @@ const router = new VueRouter({
             beforeEnter : (to,from,next) => {
                 if(store.state.typeUser != 'admin') {
                     alert('action non autorise!')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
+        },
+        {
+            path : '/performances/acte-reabonnement',
+            component : acteReabonnement,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'admin') {
+                    alert('action non autorisee !')
                     next('/')
                 }
                 else {

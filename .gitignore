@@ -1,2 +1,3 @@
 /public/uploads/*
 /public/livraison_serial_files/*
+.env

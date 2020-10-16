@@ -12,6 +12,8 @@ use App\CommandMaterial;
 use App\Livraison;
 use Illuminate\Support\Arr;
 use App\RapportVente;
+use App\Abonnement;
+use Carbon\Carbon;
 
 class ChartController extends Controller
 {
@@ -310,6 +312,96 @@ class ChartController extends Controller
                     $request->user()->username,
                     "reabonnement"
                 ));
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+
+    public function getActeReabonnementStat(RapportVente $r , Abonnement $a) {
+        try {
+            $rapport_vente = $r->select('id_rapport')
+                ->where('type','reabonnement')
+                ->where('state','unaborted')
+                ->get();
+
+            $abonnements = $a->whereIn('rapport_id',$rapport_vente)
+                ->where('upgrade',0);
+                
+            
+            $acteReabo = [];
+
+            foreach($this->months as $value) {
+                $abonnementByMonth = $a->whereIn('rapport_id',$rapport_vente)
+                    ->where('upgrade',0)
+                    ->whereYear('debut',date('Y'))
+                    ->whereMonth('debut',$value)
+                    ->get();
+                
+                $acteReabo[$value] = $abonnementByMonth;
+            }
+
+            $statByMonth = [];
+
+            foreach($acteReabo as $key => $value) {
+                $acte = 0;
+                $plus = 0;
+                $duree = [];
+                
+                foreach($value as $_value) {
+                    if($_value->duree > 1) {
+                        $acte++;
+                        $rest = $_value->duree - 1;
+                        $debut = new Carbon($_value->debut);
+                        $fin = $debut->addMonths($_value->duree)
+                            ->subDay()
+                            ->addHours(23)
+                            ->addMinutes(59)
+                            ->addSeconds(59);
+                            
+                        $plus++;
+
+                        array_push($duree,$_value->duree);
+                        
+                    }
+                    else {
+                        $acte++;
+
+                    }
+                }
+
+                array_push($statByMonth,[ 
+                    'date'  =>  array_keys($this->months,$key),
+                    'acte_reabo'    =>  $acte,
+                    'line'  =>  $acte,
+                    'plus_dun'  =>  $plus,
+                    'duree' =>  $duree
+                ]);                
+            }
+
+            // $firstStat = $statByMonth;
+
+            // return response()
+            //     ->json($statByMonth);
+
+            foreach($statByMonth as $key => $value) {
+                foreach($value['duree'] as $_value) {
+                    $rest = $_value - 1;
+                    for($k = 0 ;$k < $rest ; $k++) {
+                        if(($key+$k+1) < 12) {
+
+                            $statByMonth[$key + $k+1]['acte_reabo'] = $statByMonth[$key + $k+1]['acte_reabo'] + 1;
+                            $statByMonth[$key + $k+1]['line'] = $statByMonth[$key + $k+1]['line'] + 1;
+                        }
+                    }
+                }
+            }
+
+            
+            return response()
+                ->json($statByMonth);
         }
         catch(AppException $e) {
             header("Erreur",true,422);
