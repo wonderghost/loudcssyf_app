@@ -12,6 +12,8 @@
     <h3>Tous les Rapports</h3>
     <hr class="uk-divider-small">
 
+    <download-to-excel :data-to-export="rapportList" :data-fields="field_export" file-name="rapport-vente"></download-to-excel>
+
     <!-- paiement comission for user -->
     <template v-if="typeUser == 'v_da'">
       <ul uk-accordion>
@@ -329,6 +331,19 @@ import datepicker from 'vue-date-picker'
         },
         data () {
           return {
+            // data export fields
+            field_export : {
+              'date'   : 'date',
+              'vendeurs' : 'vendeurs',
+              'type' : 'type',
+              'state' : 'state',
+              'quantite' : 'quantite',
+              'promo' : 'promo',
+              'Paiement Comission' : 'paiement_commission',
+              'Montant Ttc' : 'montant_ttc',
+              'Comission' : 'commission'
+            },
+            // /
             filterData : {
               type : "all",
               state : "all",

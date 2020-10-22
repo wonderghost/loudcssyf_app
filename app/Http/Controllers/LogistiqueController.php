@@ -477,7 +477,19 @@ class LogistiqueController extends Controller
     
     public function getListMaterialByVendeurs(Request $request , Exemplaire $sn) {
       try {
-        $serials = $sn->whereNotNull('vendeurs')->orderBy('serial_number','asc')->get();
+        if($request->user()->type != 'v_da' && $request->user()->type != 'v_standart' ) {
+
+          $serials = $sn
+            ->whereNotNull('vendeurs')
+            ->orderBy('serial_number','asc')
+            ->paginate(500);
+        }
+        else {
+          $serials = $sn
+            ->where('vendeurs',$request->user()->username)
+            ->orderBy('serial_number','asc')
+            ->paginate(500);
+        }
         $all = [];
         foreach($serials as $key => $value) {
           $all[$key] = [
@@ -490,7 +502,16 @@ class LogistiqueController extends Controller
           ];
         }
         return response()
-          ->json($all);
+          ->json([
+            'all' =>  $all,
+            'next_url'	=> $serials->nextPageUrl(),
+            'last_url'	=> $serials->previousPageUrl(),
+            'per_page'	=>	$serials->perPage(),
+            'current_page'	=>	$serials->currentPage(),
+            'first_page'	=>	$serials->url(1),
+            'first_item'	=>	$serials->firstItem(),
+            'total'	=>	$serials->total()
+          ]);
       }catch (AppException $e) {
         header("Erreur ",true,422);
         die(json_encode($e->getMessage()));
@@ -728,7 +749,10 @@ class LogistiqueController extends Controller
       $non_attribuer = $sn->select('serial_number')
         ->whereNull('vendeurs')
         ->get();
-      $stock = $s->whereIn('exemplaire',$non_attribuer)->orderBy('exemplaire','asc')->get();
+      $stock = $s
+        ->whereIn('exemplaire',$non_attribuer)
+        ->orderBy('exemplaire','asc')
+        ->paginate(500);
 
         $all = [];
         foreach($stock as $key => $value) {
@@ -741,8 +765,18 @@ class LogistiqueController extends Controller
             'origine' =>  $value->origine
           ];
         }
+      
       return response()
-        ->json($all);
+        ->Json([
+          'all' =>  $all,
+          'next_url'	=> $stock->nextPageUrl(),
+          'last_url'	=> $stock->previousPageUrl(),
+          'per_page'	=>	$stock->perPage(),
+          'current_page'	=>	$stock->currentPage(),
+          'first_page'	=>	$stock->url(1),
+          'first_item'	=>	$stock->firstItem(),
+          'total'	=>	$stock->total()
+        ]);
     }
     catch (AppException $e) {
       header("Erreur",true,422);

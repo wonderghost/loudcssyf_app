@@ -7,8 +7,10 @@
         color="#1e87f0"
         background-color="#fff"></loading>
 
-        <h3>Inventaire Reseaux</h3>
-        <hr class="uk-divider-small">
+    <h3>Inventaire Reseaux</h3>
+    <hr class="uk-divider-small">
+
+    <download-to-excel :data-to-export="serialList" :data-fields="fieldsExport" file-name="inventaire-stock"></download-to-excel>
         
     <div class="uk-child-width-1-6@m uk-grid-small" uk-grid>
       <template>
@@ -33,7 +35,7 @@
       </template>
       <template id="" v-if="typeUser == 'v_da' || typeUser == 'v_standart'">
         <!-- INVENTAIRE DES SOLDES DES CREDITS -->
-        <div v-for="(cred , name) in credits" class="">
+        <div v-for="(cred , name) in credits" class="" :key="name">
           <div class="uk-card uk-border-rounded uk-box-shadow-hover-small uk-background-muted uk-dark uk-card-body uk-padding-small">
             <h3 class="uk-card-title uk-text-capitalize">{{name}}</h3>
             <p>
@@ -56,8 +58,8 @@
               <div class="uk-card uk-card-default uk-border-rounded uk-grid-small uk-box-shadow-small" uk-grid>
                 <div class="uk-card-body uk-width-1-1@m">
                   <!-- ERROR BLOCK -->
-                    <template v-if="errors.length" v-for="error in errors">
-                      <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert>
+                    <template v-if="errors.length">
+                      <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" v-for="(error,index) in errors" uk-alert :key="index">
                         <a href="#" class="uk-alert-close" uk-close></a>
                         <p>{{error}}</p>
                       </div>
@@ -70,14 +72,14 @@
                         <select name="" id="" class="uk-select uk-border-rounded" v-model="transfertData.expediteur">
                           <!-- LIST USERS -->
                           <option value="">-- Selectionnez un vendeur --</option>
-                          <option :value="u.username" v-for="u in users">{{u.localisation}}</option>
+                          <option :value="u.username" :key="u.username" v-for="u in users">{{u.localisation}}</option>
                         </select>
                       </div>
                       <div class="uk-width-1-2@m uk-margin-remove">
                         <label for=""><span uk-icon="icon : users"></span> Destinataire</label>
                         <select class="uk-select uk-border-rounded" v-model="transfertData.destinataire">
                           <option value="">-- Selectionnez un vendeur --</option>
-                          <option v-for="u in users" :value="u.username">{{u.localisation}}</option>
+                          <option v-for="u in users" :key="u.username" :value="u.username">{{u.localisation}}</option>
                         </select>
                       </div>
                       <div class="uk-width-1-6@m uk-margin-remove">
@@ -95,7 +97,7 @@
                     </div>
                     <div class="uk-width-1-2@m">
                       <div class="uk-grid-small" uk-grid>
-                        <div v-for="i in parseInt(transfertData.quantite)" class="uk-width-1-2@m uk-margin-remove">
+                        <div v-for="i in parseInt(transfertData.quantite)" :key="i" class="uk-width-1-2@m uk-margin-remove">
                           <label for="">Serial-{{i}}</label>
                           <input type="text" v-model="transfertData.serialsNumber[i-1]" class="uk-input uk-border-rounded" 
                             :placeholder="'Materiel-'+(i)">
@@ -160,43 +162,72 @@
       </template>
     </div>
 
-    <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-bottom">
-        <li><a @click="materialState = 'inactif',start = 0 , end =15 , currentPage = 1"  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiels Inactifs <span v-if="materialState == 'inactif'" class="uk-badge">{{ListSerialNumber.length}}</span></a></li>
-        <li><a @click="materialState = 'actif' , start = 0 , end =15 , currentPage = 1"  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Materiels Actifs <span v-if="materialState == 'actif'" class="uk-badge">{{ListSerialNumber.length}}</span></a></li>
-    </ul>
-    <!-- FILTER BY USERS -->
-    <template v-if="typeUser == 'admin' || typeUser == 'logistique' || typeUser == 'commercial'" id="">
-      <div class="uk-margin-remove uk-flex uk-flex-right">
-        <select v-model="userFilter" class="uk-input uk-border-rounded uk-width-1-3@m" name="">
-          <option value="">Tous les vendeurs</option>
-          <option v-for="user in users" :value="user.username">{{user.localisation}}</option>
-        </select>
-      </div>
-    </template>
     <!-- // -->
     <!-- LISTE DES NUMEROS DE SERIES -->
-    <div class="">
+    <div class="uk-margin-top">
+      <div class="uk-grid-small" uk-grid>
+        <div class="uk-width-1-4@m">
+          <label for="">Status Materiel</label>
+          <select class="uk-select uk-border-rounded">
+            <option value="">Tous</option>
+            <option value="">actif</option>
+            <option value="">inactif</option>
+          </select>
+        </div>
+        <div class="uk-width-1-4@m">
+          <label for="">Depot Origine</label>
+          <select class="uk-select uk-border-rounded">
+            <option value="">Tous les depots</option>
+          </select>
+        </div>
+        <div class="uk-width-1-4@m">
+          <label for=""><span uk-icon="users"></span> Vendeurs</label>
+          <select class="uk-select uk-border-rounded">
+            <option value="">Tous les vendeurs</option>
+          </select>
+        </div>
+         <!-- paginate component -->
+        <div class="uk-width-1-4@m uk-margin-top">
+          <span class="">{{firstItem}} - {{firstItem + perPage}} sur {{total}}</span>
+          <a v-if="currentPage > 1" @click="paginateFunction(firstPage)" uk-tooltip="aller a la premiere page" class="uk-button-default uk-border-rounded uk-button-small uk-text-small"><span>1</span></a>
+          <button @click="getSerialNumberList()" class="uk-button-small uk-button uk-border-rounded uk-text-small" uk-tooltip="actualiser"><span uk-icon="refresh"></span></button>
+          <template v-if="lastUrl">
+            <button @click="paginateFunction(lastUrl)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Precedent">
+              <span uk-icon="chevron-left"></span>
+            </button>
+          </template>
+          <template v-if="nextUrl">
+            <button @click="paginateFunction(nextUrl)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize u-t uk-text-small" uk-tooltip="Suivant">
+              <span uk-icon="chevron-right"></span>
+            </button>
+          </template>
+        </div>
+        <!-- // -->
+      </div>
       <table class="uk-table uk-table-small uk-table-striped uk-table-hover uk-table-divider uk-table-responsive">
         <thead>
           <tr>
-            <th v-for="head in tableHead">{{head}}</th>
+            <th v-for="(head,index) in tableHead" :key="index">{{head}}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="serial in ListSerialNumber.slice(start,end)">
+          <tr v-for="serial in serialList" :key="serial.numero_serie">
             <td>{{serial.numero_serie}}</td>
             <td>{{serial.vendeurs}}</td>
             <td>{{serial.article}}</td>
-            <td>{{serial.status}}</td>
+            <template v-if="serial.status == 'actif'">
+              <td><span class="uk-alert-success" uk-tooltip="actif" uk-icon="check"></span></td>
+            </template>
+            <template v-else>
+              <td><span class="uk-alert-primary" uk-tooltip="inactif" uk-icon="minus"></span></td>
+            </template>
             <td>{{serial.origine}}</td>
           </tr>
         </tbody>
       </table>
-      <ul class="uk-pagination uk-flex uk-flex-center">
-        <li> <span> Page : {{currentPage}} </span> </li>
-        <li> <button type="button" @click="previousPage()" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-default" name="button"> <span uk-pagination-previous></span> Previous</button> </li>
-        <li> <button type="button" @click="nextPage()" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-default" name="button"> Suivant <span uk-pagination-next></span> </button> </li>
-      </ul>
+      <div class="uk-flex uk-flex-center">
+        <button class="uk-button uk-button-small uk-border-rounded" uk-scroll uk-tooltip="revenir en haut"><span uk-icon="triangle-up"></span></button>
+      </div>
     </div>
   </div>
 </template>
@@ -219,17 +250,35 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         },
         data () {
           return {
+            fieldsExport :{
+              'Numero Serie' : 'numero_serie',
+              'Vendeur' : 'vendeurs',
+              'Article' : 'article',
+              'Status' : 'status',
+              'Origine' : 'origine'
+            },
+            // paginate
+            nextUrl : "",
+            lastUrl : "",
+            perPage : "",
+            currentPage : 1,
+            firstPage : "",
+            firstItem : 1,
+            total : 0,
+    // #####
+
+            serialList : [],
+
             isLoading : false,
             fullPage : true,
             tableHead : ['Numero Serie','Vendeur','Article','Status','Origine'],
             materialState : "inactif",
-            start : 0,
-            end : 15,
-            currentPage : 1,
+            
             materials : [],
             credits : [],
             users : [],
             userFilter : "",
+
             transfertData : {
               _token : "",
               quantite : 1,
@@ -251,6 +300,29 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           }
         },
         methods : {
+          paginateFunction : async function (url) {
+            try {
+              this.isLoading = true
+              let response = await axios.get(url)
+              if(response && response.data) {
+                
+                this.serialList = response.data.all
+
+                this.nextUrl = response.data.next_url
+                this.lastUrl = response.data.last_url
+                this.currentPage = response.data.current_page
+                this.firstPage = response.data.first_page
+                this.firstItem = response.data.first_item,
+                this.total = response.data.total
+
+                this.isLoading = false
+              }
+            }
+            catch(error) {
+              alert("Erreur!")
+              console.log(error)
+            }
+          },
           makeMaterialDefuctueux : async function() {
             try {
                 this.isLoading = true
@@ -306,28 +378,23 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               }else {
                 var response = await axios.get("/user/inventory/get-serial-number-list")
               }
-              this.isLoading = false
-              this.$store.commit('setSerialNumberList',response.data)
+              if(response && response.data) {
+                this.$store.commit('setSerialNumberList',response.data.all)
+                
+                this.serialList = response.data.all
+
+                this.nextUrl = response.data.next_url
+                this.lastUrl = response.data.last_url
+                this.perPage = response.data.per_page
+                this.firstItem = response.data.first_item
+                this.total = response.data.total
+                this.isLoading = false
+              }
             } catch (e) {
               alert(e)
             }
           },
-          nextPage : function () {
-            if(this.ListSerialNumber.length > this.end) {
-              let ecart = this.end - this.start
-              this.start = this.end
-              this.end += ecart
-              this.currentPage++
-            }
-          },
-          previousPage : function () {
-            if(this.start > 0) {
-              let ecart = this.end - this.start
-              this.start -= ecart
-              this.end -= ecart
-              this.currentPage--
-            }
-          },
+          
           getMaterials : async function () { //recuperation de l'inventaire material
             try {
               this.isLoading = true
@@ -374,23 +441,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           },
           myToken () {
             return this.$store.state.myToken
-          },
-          serialNumberList () {
-            return this.$store.state.serialNumberList.filter( (serial) => {
-              return serial.status == this.materialState
-            })
-          },
-          serialNumberForVendeurs() {
-            return this.serialNumberList.filter( (userSerial) =>  {
-              return userSerial.user_id === this.userFilter
-            })
-          },
-          ListSerialNumber () {
-            if(this.userFilter == "") {
-              return this.serialNumberList
-            } else {
-              return this.serialNumberForVendeurs
-            }
           },
           userName() {
             return this.$store.state.userName

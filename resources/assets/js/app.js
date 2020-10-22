@@ -25,6 +25,7 @@ Vue.component('deblocage-cga',require('./adminComponents/DeblocageCgaComponent.v
 Vue.component('feedback',require('./userComponents/FeedBackComponent.vue').default)
 Vue.component('detail-rapport',require('./userComponents/DetailRapportComponent.vue').default)
 Vue.component('set-rapport-parametre',require('./adminComponents/SetRapportParametre.vue').default)
+Vue.component('download-to-excel',require('./userComponents/DownloadExcelComponent.vue').default)
 
 
 // 

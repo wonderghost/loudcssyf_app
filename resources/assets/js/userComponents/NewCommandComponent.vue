@@ -20,8 +20,8 @@
       </template>
       </ul>
       <!-- Erreor block -->
-            <template v-if="errors.length" v-for="error in errors">
-            <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+            <template v-if="errors.length">
+            <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" v-for="(error,index) in errors" :key="index" uk-alert>
               <a href="#" class="uk-alert-close" uk-close></a>
               <p>{{error}}</p>
             </div>
@@ -197,7 +197,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       },
         mounted() {
           UIkit.offcanvas($("#side-nav")).hide();
-          this.getInfosMaterial()          
+          this.getInfosMaterial()
         },
         data () {
           return {
@@ -251,8 +251,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             }
           },
           getInfosMaterial : async function () {
-            
             try {
+              
               this.isLoading = true
               let response = await axios.get('/user/new-command/get-infos-material')
               this.material = response.data
@@ -312,12 +312,11 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               this.formData.reference_material = this.material.reference
               let response = await axios.post('/user/new-command/material',this.formData)
 
-              // Object.assign(this.$data,this.$options.all())
-
               if(response && response.data == 'done') {
                 this.formData.quantite = ""
                 this.isLoading = false
                 alert("Success !")
+                this.$router.push('/command/list')
               }
             } catch (error) {
                 this.isLoading = false

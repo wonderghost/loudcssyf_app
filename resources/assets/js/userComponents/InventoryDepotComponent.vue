@@ -8,8 +8,10 @@
         color="#1e87f0"
         background-color="#fff"></loading>
 
-        <h3>Tous les materiels</h3>
-        <hr class="uk-divider-small">
+      <h3>Tous les materiels</h3>
+      <hr class="uk-divider-small">
+
+      <download-to-excel :data-to-export="serials" :data-fields="fieldsExport" file-name="inventaire-depot"></download-to-excel>
         
       <div class="uk-child-width-1-4@m uk-grid-small" uk-grid>
         <template>
@@ -31,39 +33,52 @@
           </div>
         </template>
       </div>
-      <template id="">
-        <div class="uk-grid-small" uk-grid>
-          <div class="uk-width-1-4@m">
 
-          </div>
-          <div class="uk-width-1-4@m">
-
-          </div>
-          <div class="uk-width-1-4@m">
-            <label for="">Etat</label>
-            <select v-model="filterEtat" class="uk-select uk-border-rounded">
-              <option value="-">Non Defectueux</option>
-              <option value="defectueux">Defectueux</option>
-            </select>
-          </div>
-          <div v-if="typeUser == 'admin' || typeUser == 'logistique' || typeUser == 'commercial'" class="uk-width-1-4@m">
-            <label for="">Depots</label>
-            <select v-model="filterState" class="uk-select uk-border-rounded">
-              <option value="">Tous</option>
-              <option :value="d.localisation" v-for="d in materials" :key="d.localisation"> {{d.localisation}} </option>
-            </select>
-          </div>
+      
+      <div class="uk-grid-small" uk-grid>
+        <!-- <div class="uk-width-1-4@m"></div>
+        <div class="uk-width-1-4@m">
+          <label for="">Etat</label>
+          <select v-model="filterEtat" class="uk-select uk-border-rounded">
+            <option value="-">Non Defectueux</option>
+            <option value="defectueux">Defectueux</option>
+          </select>
         </div>
-      </template>
+        <div v-if="typeUser == 'admin' || typeUser == 'logistique' || typeUser == 'commercial'" class="uk-width-1-4@m">
+          <label for="">Depots</label>
+          <select v-model="filterState" class="uk-select uk-border-rounded">
+            <option value="">Tous</option>
+            <option :value="d.localisation" v-for="d in materials" :key="d.localisation"> {{d.localisation}} </option>
+          </select>
+        </div> -->
+        <!-- paginate component -->
+        <div class="uk-width-1-4@m uk-margin-top">
+          <span class="">{{firstItem}} - {{firstItem + perPage}} sur {{total}}</span>
+          <a v-if="currentPage > 1" @click="paginateFunction(firstPage)" uk-tooltip="aller a la premiere page" class="uk-button-default uk-border-rounded uk-button-small uk-text-small"><span>1</span></a>
+          <button @click="getSerialNumberForDepot()" class="uk-button-small uk-button uk-border-rounded uk-text-small" uk-tooltip="actualiser"><span uk-icon="refresh"></span></button>
+          <template v-if="lastUrl">
+            <button @click="paginateFunction(lastUrl)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Precedent">
+              <span uk-icon="chevron-left"></span>
+            </button>
+          </template>
+          <template v-if="nextUrl">
+            <button @click="paginateFunction(nextUrl)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize u-t uk-text-small" uk-tooltip="Suivant">
+              <span uk-icon="chevron-right"></span>
+            </button>
+          </template>
+        </div>
+        <!-- // -->
+      </div>
+      
       <div class="">
         <table class="uk-table uk-table-small uk-table-striped uk-table-hover uk-table-divider uk-table-responsive">
           <thead>
             <tr>
-              <th v-for="head in tableHead">{{head}}</th>
+              <th v-for="(head,index) in tableHead" :key="index">{{head}}</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="s in filterListEtat.slice(start,end)">
+            <tr v-for="s in serials" :key="s.numero_materiel">
               <td>{{s.numero_materiel}} <sup v-if="s.etat !== '-'" class="uk-badge">{{s.etat}}</sup>   </td>
               <td>{{s.depot}}</td>
               <td>{{s.article}}</td>
@@ -71,11 +86,6 @@
             </tr>
           </tbody>
         </table>
-        <ul class="uk-pagination uk-flex uk-flex-center">
-          <li> <span> Page : {{currentPage}} </span> </li>
-          <li> <button type="button" @click="previousPage()" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-default" name="button"> <span uk-pagination-previous></span> Previous</button> </li>
-          <li> <button type="button" @click="nextPage()" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small uk-button-default" name="button"> Suivant <span uk-pagination-next></span> </button> </li>
-        </ul>
       </div>
   </div>
 </template>
@@ -101,6 +111,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       },
       data () {
         return {
+          fieldsExport : {
+            'Numero Materiel' : 'numero_materiel',
+            'Depot' : 'depot',
+            'Article ' : 'article',
+            'Origine' : 'origine'
+          },
           isLoading : false,
           fullPage : true,
           errors : [],
@@ -115,6 +131,27 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         }
       },
       methods : {
+        paginateFunction : async function (url) {
+          try {
+            
+            let response = await axios.get(url)
+            if(response && response.data) {
+              
+              this.serials = response.data.all
+
+              this.nextUrl = response.data.next_url
+              this.lastUrl = response.data.last_url
+              this.currentPage = response.data.current_page
+              this.firstPage = response.data.first_page
+              this.firstItem = response.data.first_item,
+              this.total = response.data.total
+            }
+          }
+          catch(error) {
+            alert("Erreur!")
+            console.log(error)
+          }
+        },
         getMaterialsDepot : async function () {
           try {
             this.isLoading = true
@@ -140,28 +177,19 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             else {
               var response = await axios.get('/user/inventory/depot/serialNumber')
             }
-            this.serials = response.data
+            this.serials = response.data.all
+
+            this.nextUrl = response.data.next_url
+            this.lastUrl = response.data.last_url
+            this.perPage = response.data.per_page
+            this.firstItem = response.data.first_item
+            this.total = response.data.total
+
             this.isLoading = false
           } catch (e) {
               alert(e)
           }
-        },
-        nextPage : function () {
-          if(this.filterListEtat.length > this.end) {
-            let ecart = this.end - this.start
-            this.start = this.end
-            this.end += ecart
-            this.currentPage++
-          }
-        },
-        previousPage : function () {
-          if(this.start > 0) {
-            let ecart = this.end - this.start
-            this.start -= ecart
-            this.end -= ecart
-            this.currentPage--
-          }
-        },
+        }
       },
       computed : {
         lesMaterials() {
@@ -172,16 +200,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             else {
               return m
             }
-          })
-        },
-        filterListSerials () {
-          return this.serials.filter((s) => {
-            return s.depot.match(this.filterState)
-          })
-        },
-        filterListEtat() {
-          return this.filterListSerials.filter ( (s) => {
-            return s.etat.match(this.filterEtat)   
           })
         },
         typeUser () {
