@@ -12,8 +12,8 @@
         <h3 class="uk-margin-top"><router-link to="/objectifs/visu"><button class="uk-button uk-button-default uk-button-small uk-border-rounded" uk-tooltip="Visu Objectif"><span uk-icon="arrow-left"></span></button></router-link> Nouvel Objectif</h3>
         <hr class="uk-divider-small">    
         <!-- Erreor block -->
-        <template v-if="errors.length" v-for="error in errors">
-            <div class="uk-alert-danger uk-border-rounded" uk-alert>
+        <template v-if="errors.length">
+            <div class="uk-alert-danger uk-border-rounded" uk-alert v-for="(error,index) in errors" :key="index">
                 <a href="#" class="uk-alert-close" uk-close></a>
                 <p>{{error}}</p>
             </div>

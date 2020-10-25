@@ -322,14 +322,12 @@ class ChartController extends Controller
 
     public function getActeReabonnementStat(RapportVente $r , Abonnement $a) {
         try {
+            
             $rapport_vente = $r->select('id_rapport')
                 ->where('type','reabonnement')
                 ->where('state','unaborted')
                 ->get();
 
-            $abonnements = $a->whereIn('rapport_id',$rapport_vente)
-                ->where('upgrade',0);
-                
             
             $acteReabo = [];
 
@@ -343,48 +341,52 @@ class ChartController extends Controller
                 $acteReabo[$value] = $abonnementByMonth;
             }
 
+
             $statByMonth = [];
+
+            $serials = [];
 
             foreach($acteReabo as $key => $value) {
                 $acte = 0;
                 $plus = 0;
                 $duree = [];
+
+                $serials[$key] = [
+                    'data'  =>  [],
+                    'month' =>  array_keys($this->months,$key)
+                ];
                 
                 foreach($value as $_value) {
+
                     if($_value->duree > 1) {
+
                         $acte++;
-                        $rest = $_value->duree - 1;
+                        
                         $debut = new Carbon($_value->debut);
-                        $fin = $debut->addMonths($_value->duree)
-                            ->subDay()
-                            ->addHours(23)
-                            ->addMinutes(59)
-                            ->addSeconds(59);
-                            
-                        $plus++;
 
                         array_push($duree,$_value->duree);
                         
                     }
                     else {
                         $acte++;
-
                     }
+
+                    array_push($serials[$key]['data'],[
+                        'serial'    =>  $_value->serial_number,
+                        'debut' =>  $_value->debut,
+                        'formule'   =>  $_value->formule_name,
+                        'duree' =>  $_value->duree
+                    ]);
+                    
                 }
 
                 array_push($statByMonth,[ 
                     'date'  =>  array_keys($this->months,$key),
                     'acte_reabo'    =>  $acte,
-                    'line'  =>  $acte,
-                    'plus_dun'  =>  $plus,
-                    'duree' =>  $duree
-                ]);                
+                    'duree' =>  $duree,
+                    'data_abonnement'   =>  ''
+                ]);
             }
-
-            // $firstStat = $statByMonth;
-
-            // return response()
-            //     ->json($statByMonth);
 
             foreach($statByMonth as $key => $value) {
                 foreach($value['duree'] as $_value) {
@@ -397,9 +399,34 @@ class ChartController extends Controller
                 }
             }
 
+            // foreach($serials as $key => $value) {
+            //     foreach($value['data'] as $_value) {
+            //         if($_value['duree'] > 1) {
+            //             for($k = 0; $k < $_value['duree'] - 1 ; $k++) {
+            //                 if($key +1 +$k < 12) {
+
+            //                     $tmp = new Carbon($_value['debut']);
+
+            //                     $debut = $tmp->addMonths(1);
+
+            //                     array_push($serials[$key + 1 + $k]['data'],[
+            //                         'serial'    =>  $_value['serial'],
+            //                         'start' =>  $_value['debut'],
+            //                         'debut' =>  $debut->toDateTimeString(),
+            //                         'formule'   =>  $_value['formule'],
+            //                         'duree' => $_value['duree']
+            //                     ]);
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
             
             return response()
-                ->json($statByMonth);
+                ->json([
+                    'stats' => $statByMonth,
+                    // 'serials'   =>  $serials
+                ]);
         }
         catch(AppException $e) {
             header("Erreur",true,422);

@@ -6,7 +6,7 @@
         loader="dots"></loading>
         <!-- MODAL ACTIVATE SERIAL NUMBER -->
       <div id="modal-activate-serial" uk-modal>
-        <div class="uk-modal-dialog">
+        <div class="uk-modal-dialog uk-background-muted">
           <button class="uk-modal-close-default" type="button" uk-close></button>
           <div class="uk-modal-header">
             <h2 class="uk-modal-title">Activer un Materiel</h2>
@@ -122,7 +122,7 @@
               </div>
               <div class="uk-width-1-3@m">
                 <h4>Infos Abonnement</h4>
-                <div uk-slider>
+                <div uk-slider="finite : true">
                   <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1">
                       <ul class="uk-slider-items uk-grid-small uk-child-width-1-1@m">
                           <li v-for="a in serialNumber.abonnements" :key="a.id">
@@ -159,8 +159,8 @@
                       </ul>
                   </div>
                   <div class="uk-margin-large-top">
-                    <a class="uk-position-bottom-center uk-position-small uk-margin-large-right" href="#" uk-slidenav-previous uk-slider-item="previous"></a>
-                    <a class="uk-position-bottom-center uk-position-small uk-margin-large-left " href="#" uk-slidenav-next uk-slider-item="next"></a>
+                    <button class="uk-button uk-padding-remove uk-button-small uk-border-rounded uk-text-capitalize uk-text-small" uk-slidenav-previous uk-slider-item="previous"></button>
+                    <button class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-text-small" uk-slidenav-next uk-slider-item="next"></button>
                 </div>
                 </div>
               </div>

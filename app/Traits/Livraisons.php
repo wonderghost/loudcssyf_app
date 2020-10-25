@@ -292,7 +292,7 @@ public function inventaireLivraison() {
       return $l->whereIn('produits',Produits::select('reference')
         ->get())
         ->orderBy('created_at','desc')
-        ->paginate(100);
+        ->paginate(500);
     }
 
     $ravitaillement = $user->ravitaillementVendeur()
@@ -304,7 +304,7 @@ public function inventaireLivraison() {
       ->get())
       ->whereIn('ravitaillement',$ravitaillement)
       ->orderBy('created_at','desc')
-      ->paginate(100);
+      ->paginate(500);
               
   }
 

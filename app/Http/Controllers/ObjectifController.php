@@ -441,7 +441,10 @@ class ObjectifController extends Controller
     #LISTING ALL OBJECTIFS
     public function AllObjectifs(Objectif $obj , ObjVendeur $obv) {
         try {   
-            $data = $obj->all();
+            $data = $obj->select()
+                ->orderBy('debut','desc')
+                ->get();
+                
             $_data = [];
             foreach($data as $key => $value) {
 

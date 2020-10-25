@@ -184,7 +184,7 @@ class CreditController extends Controller
 			}
 
 			$all = $result->orderBy('created_at','desc')
-				->paginate(100);
+				->paginate(500);
 			
 			return response()
 				->json([
@@ -210,14 +210,14 @@ class CreditController extends Controller
 
 			$all = $c::where('status','unvalidated')
 				->orderBy('created_at','desc')
-				->paginate(100);
+				->paginate(500);
 		}
 		else {
 			$all = $c->select()
 				->where('vendeurs',$request->user()->username)
 				->where('status','unvalidated')
 				->orderBy('created_at','desc')
-				->paginate(100);
+				->paginate(500);
 		}
 
 		return response()->json([

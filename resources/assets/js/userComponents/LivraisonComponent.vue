@@ -11,6 +11,10 @@
         <h3><router-link class="uk-button uk-button-small uk-border-rounded uk-button-default uk-text-small" uk-tooltip="Retour" to="/commandes"><span uk-icon="arrow-left"></span></router-link> Livraison Materiel</h3>
         <hr class="uk-divider-small">
 
+        <!-- EXPORTER LES DONNEES VIA UN FICHIER EXCEL -->
+        <download-to-excel :data-to-export="livraisonList" :data-fields="field_export" file-name="livraison-materiel"></download-to-excel>
+        <!-- // -->
+
         <div class="">
           <div class="uk-grid-small uk-margin-top uk-flex uk-flex-right" uk-grid>
             <div class="uk-width-1-6@m">
@@ -186,6 +190,15 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         },
         data () {
           return {
+            field_export : {
+              'Date' : 'date',
+              'Vendeurs' : 'vendeur',
+              'Materiel' : 'produit',
+              'ID Commande' : 'command',
+              'Status de Livraison' : 'status',
+              'Etat de Validation' : 'validation',
+              'Depot' : 'depot'
+            },
 // paginate
             nextUrl : "",
             lastUrl : "",

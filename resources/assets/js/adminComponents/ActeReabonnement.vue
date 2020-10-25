@@ -16,11 +16,13 @@
 
         <h3 class="uk-margin-top">Acte de reabonnement</h3>
         <hr class="uk-divider-small">
-
-        <div class="uk-grid-small" uk-grid>
+        
+        <div class="uk-grid-small uk-width-1-2@m" uk-grid>
             <div class="uk-width-1-4@m">
                 <label for=""><span uk-icon="users"></span> Vendeurs</label>
-                <select name="" id="" class="uk-select uk-border-rounded"></select>
+                <select name="" id="" class="uk-select uk-border-rounded">
+                    <option value="">Tous</option>
+                </select>
             </div>
             <div class="uk-width-1-4@m">
                 <label for=""><span uk-icon="calendar"></span> Du</label>
@@ -29,6 +31,9 @@
             <div class="uk-width-1-4@m">
                 <label for=""><span uk-icon="calendar"></span> Au</label>
                 <input type="date" class="uk-input uk-border-rounded" placeholder="Fin">
+            </div>
+            <div class="uk-width-1-4@m">
+                <button class="uk-button uk-margin-top uk-border-rounded uk-button-primary">Exporter <span uk-icon="download"></span></button>
             </div>
         </div>
 
@@ -64,7 +69,8 @@ import VeHistogram from 'v-charts/lib/histogram.common'
                 acteReabo : {
                     columns : ['date','acte_reabo'],
                     rows : []
-                }
+                },
+                reabo_acte_list : []
             }
         },
         methods : {
@@ -72,8 +78,9 @@ import VeHistogram from 'v-charts/lib/histogram.common'
                 try {
                     this.isLoading = true
                     let response = await axios.get('/admin/performance/acte-reabonnement')
+                    // let theResponse = await axios.get('/admin/performance/acte-reabonnement-list')
                     if(response) {
-                        this.acteReabo.rows = response.data
+                        this.acteReabo.rows = response.data.stats
                         this.isLoading = false
                     }
                 }

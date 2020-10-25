@@ -13,7 +13,7 @@
     <hr class="uk-divider-small">            
 
         <!-- modal details objectif -->
-        <div id="modal-detailObjectifs" class="uk-modal-container" uk-modal="esc-close : false;bg-close : false">
+        <div id="modal-detailObjectifs" class="uk-modal-container" uk-modal>
             <div class="uk-modal-dialog">
                 <!-- <button class="uk-modal-close-default" type="button" uk-close></button> -->
                 <div class="uk-modal-header">
@@ -29,6 +29,9 @@
                             <input type="search" v-model="autocompleteSearch" class="uk-input uk-border-rounded">
                         </div>
                     </div>
+                    <!-- EXPORTER LES DONNES VIA EXCEL -->
+                    <download-to-excel :data-to-export="detailsObjectif" :data-fields="field_export" file-name="etat-des-objectifs"></download-to-excel>
+                    <!-- // -->
                     <table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover uk-table-responsive">
                         <thead>
                             <tr>
@@ -113,6 +116,17 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         },
         data() {
             return {
+                field_export : {
+                    'Vendeurs' : 'vendeur.localisation',
+                    'Objectif Recrutement' : 'obj_recru',
+                    'Realise Recrutement' : 'realise.recrutement',
+                    'Objectif Reabonnement' : 'obj_rea',
+                    'Realise Reabonnement' : 'realise.reabonnement',
+                    'Classe Recrutement' : 'class_recru',
+                    'Classe Reabonnement' : 'class_rea',
+                    'Bonus' : 'bonus'
+                },
+                // 
                 isLoading : false,
                 fullPage : true,
                 objectifs : [],

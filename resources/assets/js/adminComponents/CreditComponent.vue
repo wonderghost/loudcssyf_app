@@ -10,6 +10,11 @@
 
         <h3><router-link class="uk-button uk-button-small uk-border-rounded uk-button-default uk-text-small" uk-tooltip="Retour" to="/commandes"><span uk-icon="arrow-left"></span></router-link> Commande Credit</h3>
         <hr class="uk-divider-small">
+
+        <!-- EXPORTER LES DONNEES VIA UN FICHIER EXCEL -->
+
+        <download-to-excel :data-to-export="commandList" :data-fields="field_export" file-name="commande-credit-cga"></download-to-excel>
+
         <!-- // -->
         <!-- validation commande modal -->
         <template id="" v-if="typeUser == 'gcga'">
@@ -136,6 +141,15 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         },
         data () {
           return {
+            field_export : {
+              'date' : 'date',
+              'Vendeurs' : 'vendeurs',
+              'Type de credit' : 'type' ,
+              'Montant de la commande' : 'montant',
+              'status' : 'status',
+              'Numero de Recu' : 'numero_recu',
+            },
+            // 
             userList : [],
             filterData : {
               state : "unvalidated",

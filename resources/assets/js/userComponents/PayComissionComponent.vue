@@ -19,6 +19,9 @@
 
     <ul class="uk-switcher uk-margin">
       <li>
+        <!-- EXPORTER LES DONNEES RELANCE VIA UN FICHIER EXCEL -->
+        <download-to-excel :data-to-export="payComissionList" :data-fields="field_export" file-name="historique-paiement-comission"></download-to-excel>
+        <!-- // -->
         <div class="uk-grid-small" uk-grid>
           <div class="uk-width-2-3@m">
             <input type="text" v-model="filterByUser" class="uk-input uk-border-rounded" placeholder="Recherche ...">
@@ -72,6 +75,10 @@
             </tr>
           </tbody>
         </table>
+
+        <div class="uk-flex uk-flex-center">
+            <button class="uk-button uk-button-small uk-border-rounded" uk-scroll uk-tooltip="revenir en haut"><span uk-icon="triangle-up"></span></button>
+        </div>
 
         <div id="validate-payment-comission" uk-modal="esc-close : false ; bg-close : false">
             <div class="uk-modal-dialog">
@@ -169,6 +176,16 @@ import 'vue-loading-overlay/dist/vue-loading.css';
 
     data () {
       return {
+        field_export : {
+          'Du' : 'du',
+          'Au' : 'au',
+          'Montant Total' : 'total',
+          'Status de paiement' : 'status',
+          'Payer le ' : 'pay_at',
+          'Demander le' : 'demand_at',
+          'Vendeurs' : 'vendeurs'
+        },
+        // 
         isLoading : false,
         fullPage : true,
         userActiveValidate : {},

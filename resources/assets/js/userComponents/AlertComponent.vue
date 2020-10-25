@@ -38,6 +38,9 @@
 
         <ul class="uk-switcher uk-margin">
             <li>
+                <!-- EXPORTER LES DONNEES RELANCE VIA UN FICHIER EXCEL -->
+                <download-to-excel :data-to-export="relance" :data-fields="field_export" file-name="Alert-abonnement-a-relancer"></download-to-excel>
+                <!-- // -->
                 <table class="uk-table uk-table-small uk-table-striped uk-table-hover uk-table-divider">
                     <thead>
                         <tr>
@@ -60,6 +63,9 @@
                 </table>
             </li>
             <li>
+                <!-- EXPORTER LES DONNEES INACTIFS VIA UN FICHIER EXCEL -->
+                <download-to-excel :data-to-export="inactif" :data-fields="field_export" file-name="Alert-abonnement-inactifs"></download-to-excel>
+                <!-- // -->
                 <table class="uk-table uk-table-small uk-table-striped uk-table-hover uk-table-divider">
                     <thead>
                         <tr>
@@ -85,91 +91,6 @@
         <div class="uk-flex uk-flex-center">
             <button class="uk-button uk-button-small uk-border-rounded" uk-scroll uk-tooltip="revenir en haut"><span uk-icon="triangle-up"></span></button>
         </div>
-
-        <!-- <div class="">
-            <div>
-                <div class="">
-                    <h2 class="">Relance Abonnement</h2>
-                </div>
-                <div class="">
-                    <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-left-medium">
-                        <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Relance <span class="uk-badge">{{relanceByUser.length}}</span> </a></li>
-                        <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Inactif <span class="uk-badge">{{inactifByUser.length}}</span></a></li>
-                    </ul>
-
-                    <div v-if="typeUser == 'admin'" class="uk-width-1-3@m">
-                        <label for="">
-                            <span uk-icon="icon : users"></span>
-                            Vendeurs
-                        </label>
-                        <select v-model="userSelect"  class="uk-select uk-border-rounded">
-                            <option value="">Tous</option>
-                            <option v-for="u in users" :value="u.localisation" :key="u.username">{{u.localisation}}</option>
-                        </select>
-                    </div>
-                    <div v-if="typeUser == 'v_da' || typeUser == 'v_standart'" class="uk-width-1-3@m">
-                        <label for="">
-                            <span uk-icon="icon : users"></span>
-                            Vendeurs
-                        </label>
-                        <span class="uk-input uk-border-rounded">{{userLocalisation}}</span>
-                    </div>
-                    <ul class="uk-switcher uk-overflow-auto uk-height-medium">
-                        <li>
-                            <table class="uk-table uk-table-small uk-table-striped uk-table-hover uk-table-divider">
-                                <thead>
-                                    <tr>
-                                        <th>Materiel</th>
-                                        <th>Distributeur</th>
-                                        <th>Debut Abonnement</th>
-                                        <th>Fin Abonnement</th>
-                                        <td>Jour(s) Restants</td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr :uk-tooltip="r.distributeur" v-for="(r,index) in relanceByUser.slice(start,end)" :key="index">
-                                        <td>{{r.serial}}</td>
-                                        <td>{{r.distributeur.substring(0,10)}}...</td>
-                                        <td>{{r.debut}}</td>
-                                        <td>{{r.fin}}</td>
-                                        <td>{{r.jours}}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </li>
-                        <li>
-                            <table class="uk-table uk-table-small uk-table-striped uk-table-hover uk-table-divider">
-                                <thead>
-                                    <tr>
-                                        <th>Materiel</th>
-                                        <th>Distributeur</th>
-                                        <th>Debut</th>
-                                        <th>Fin Abonnement</th>
-                                        <th>Jour(s)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr :uk-tooltip="r.distributeur" v-for="(r,index) in inactifByUser.slice(start,end)" :key="index">
-                                        <td>{{r.serial}}</td>
-                                        <td>{{r.distributeur.substring(0,10)}}...</td>
-                                        <td>{{ r.debut }}</td>
-                                        <td>{{r.fin}}</td>
-                                        <td>{{r.jours}}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </li>
-                    </ul>
-                </div>
-                <div class="uk-modal-footer">
-                    <div class="uk-text-center">
-                        <span>Page : {{currentPage}}</span>
-                        <button @click="previousPage()" class="uk-button uk-button-small uk-button-default uk-border-rounded">Precedent</button>
-                        <button @click="nextPage()" class="uk-button uk-button-small uk-button-default uk-border-rounded">Suivant <span uk-icon="icon : carret-right"></span></button>
-                    </div>
-                </div>
-            </div>
-        </div> -->
     </div>
 </template>
 <script>
@@ -186,6 +107,13 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         },
         data() {
             return {
+                field_export : {
+                    'Materiel' : 'serial',
+                    'Vendeurs' : 'distributeur',
+                    'Debut Abonnement' : 'debut',
+                    'Fin Abonnement' : 'fin',
+                    'Jours' : 'jours'
+                },
                 // paginate
                 nextUrl : "",
                 lastUrl : "",
