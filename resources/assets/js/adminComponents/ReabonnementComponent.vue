@@ -9,13 +9,13 @@
         background-color="#083050"></loading>
 
         <!-- Error block -->
-        <template v-if="errors.length" v-for="error in errors">
-          <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert>
+        <template v-if="errors.length">
+          <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert v-for="(error,index) in errors" :key="index">
             <a href="#" class="uk-alert-close" uk-close></a>
             <p>{{error}}</p>
           </div>
         </template>
-      <!-- // -->
+        <!-- // -->
 
         <form @submit.prevent="sendReabonnementRapport()" class="uk-width-1-1@m">
               <div class="uk-margin-small uk-width-1-6@m">

@@ -146,7 +146,7 @@ Trait Rapports {
 		}
 	}
 	// VERIFIER L'EXISTENCE D'UN SERIAL NUMBER EN CAS DE REABONEMENT UPGRADE
-public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
+	public function checkSerialOnUpgradeState(Request $request , Exemplaire $e) {
 		try {
 			$validation = $request->validate([
 				'serial_number'	=>	'required|string'

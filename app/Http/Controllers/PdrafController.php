@@ -2486,16 +2486,10 @@ class PdrafController extends Controller
                     ->whereNotNull('confirm_at')
                     ->whereNull('pay_comission_id')
                     ->sum('montant_ttc');
-
                 
             }
 
             $marge = round(($total_ttc/1.18) * (1.5/100),0);
-
-            // foreach($data as $value) {
-            //     $comission += $value->comission;
-            //     $marge += round(($value->montant_ttc/1.18) * (1.5/100),0);
-            // }
 
             return response()
                 ->json([
@@ -2915,6 +2909,51 @@ class PdrafController extends Controller
             
             return response()
                 ->json('done');
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function sendUpgradeAfrocash(Request $request) {
+        try {
+            $validation = $request->validate([
+                'serial_number' =>  'required|string|max:14|min:14|regex : /(^([0-9]+)?$)/',
+                'new.formule'   =>  'required|string|exists:formule,nom',
+                'old.formule'   =>  'required|string|exists:formule,nom',
+                'telephone_client'  =>  'required|string|max:9|min:9',
+                'montant_ttc'   =>  'required|numeric',
+                'comission' =>  'required|numeric',
+                'password_confirmation' =>  'required|string',
+                'duree' =>  'required|numeric|max:24|min:1'
+            ],[
+                'required'  =>  '`:attribute` requis !',
+            ]);
+
+            // validation du mot de passe
+
+            if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
+                throw new AppException("Mot de passe invalide !");
+            }
+
+            // verifier la disponibilite du montant
+
+            $sender_account = $request->user()->afroCash()->first();
+
+            if($request->input('montant_ttc') >  $sender_account->solde) {
+                throw new AppException("Montant Indisponible !");
+            }
+
+            
+
+
+
+
+            
+
+            return response()
+                ->json($request);
         }
         catch(AppException $e) {
             header("Erreur",true,422);

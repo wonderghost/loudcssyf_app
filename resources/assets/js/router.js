@@ -13,6 +13,7 @@ import PdrafTransaction from './pdrafComponents/PdrafTransaction.vue'
 import RetourAfrocash from './pdrafComponents/RetourAfrocash.vue'
 import ReaboAfrocash from './pdrafComponents/ReaboAfrocash.vue'
 import AllVenteReabo from './pdrafComponents/AllVenteReaboAfrocash.vue'
+import upgradeAfrocash from './pdrafComponents/UpgradeAfrocash.vue'
 // 
 
 // ADMIN ROUTER
@@ -498,6 +499,19 @@ const router = new VueRouter({
             beforeEnter : (to,from,next) => {
                 if(store.state.typeUser != 'admin') {
                     alert('action non autorisee !')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
+        },
+        {
+            path : '/upgrade-afrocash',
+            component : upgradeAfrocash,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'pdraf') {
+                    alert('action non autorisee !')       
                     next('/')
                 }
                 else {
