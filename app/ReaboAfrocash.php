@@ -35,4 +35,8 @@ class ReaboAfrocash extends Model
         return $this->hasMany('App\OptionReaboAfrocash','id_reabo_afrocash','id')->get();
     }
 
+    public function upgrade() {
+        return $this->hasMany('App\UpgradeReaboAfrocash','id_reabo_afrocash','id');
+    }
+
 }

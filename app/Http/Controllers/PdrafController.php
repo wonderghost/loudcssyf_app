@@ -16,6 +16,7 @@ use App\TransactionAfrocash;
 use App\ReaboAfrocash;
 use App\ReaboAfrocashSetting;
 use App\OptionReaboAfrocash;
+use App\UpgradeReaboAfrocash;
 use App\MakePdraf;
 use App\PayCommission;
 use App\Credit;
@@ -2398,6 +2399,8 @@ class PdrafController extends Controller
                 $confirm_at = $value->confirm_at ? new Carbon($value->confirm_at) : null;
                 $remove_at = $value->remove_at ? new Carbon($value->remove_at) : null;
                 $pay_at = $value->pay_at ? new Carbon($value->pay_at) : null;
+
+                $upgradeState = $value->upgrade()->first() ? $value->upgrade()->first() : null;
                 
                 $all[$key] = [
                     'id'    =>  $value->id,
@@ -2417,7 +2420,8 @@ class PdrafController extends Controller
                     'confirm_at'    => $confirm_at ? $confirm_at->toDateTimeString() : null,
                     'remove_at' =>  $remove_at ? $remove_at->toDateTimeString() : null,
                     'pay_at'    =>  $pay_at ? $pay_at->toDateTimeString() : null,
-                    'pay_comission_id'  =>  $value->pay_comission_id
+                    'pay_comission_id'  =>  $value->pay_comission_id,
+                    'upgrade_state' =>  $upgradeState
                 ];
 
             }
@@ -2945,15 +2949,75 @@ class PdrafController extends Controller
                 throw new AppException("Montant Indisponible !");
             }
 
+            $reabo = new ReaboAfrocash;
+            $reabo->generateId();
+            $reabo->serial_number = $request->input('serial_number');
+            $reabo->formule_name = $request->input('new.formule');
+            $reabo->duree = $request->input('duree');
+            $reabo->telephone_client = $request->input('telephone_client');
+            $reabo->montant_ttc = $request->input('montant_ttc');
+            $reabo->comission = $request->input('comission');
+            $reabo->pdraf_id = $request->user()->username;
+
+            // enregistrement de upgrade
+
+            $upgrade_reabo = new UpgradeReaboAfrocash;
+            $upgrade_reabo->from_formule = $request->input('old.formule');
+            $upgrade_reabo->to_formule = $request->input('new.formule');
+            $upgrade_reabo->id_reabo_afrocash = $reabo->id;
+
+            // 
+
+            $data_options = [];
+
+            if($request->input('new.option')) {
+
+                foreach($request->input('new.option') as $key => $value) {
+                    if($value && $value != "") {
+                        $data_options[$key] = new OptionReaboAfrocash;
+                        $data_options[$key]->id_reabo_afrocash = $reabo->id;
+                        $data_options[$key]->id_option = $value && $value != "" ? $value : null;
+                    }
+                }
+            }
+
+
+            // get receiver
+            $reabo_afrocash_setting = ReaboAfrocashSetting::all()->first();
+
+            if(!$reabo_afrocash_setting) {
+                throw new AppException("Parametre Reabo non defini , contactez l'administrateur");
+            }
+
+            $receiver_user = User::where('username',$reabo_afrocash_setting->user_to_receive)->first();
+            $receiver_account = $receiver_user->afroCash()->first();
+
+
+            $sender_account->solde -= $request->input('montant_ttc');
+            $receiver_account->solde += $request->input('montant_ttc');
+
+            $trans = new TransactionAfrocash;
+            $trans->compte_debite = $sender_account->numero_compte;
+            $trans->compte_credite = $receiver_account->numero_compte;
+            $trans->montant = $request->input('montant_ttc');
+            $trans->motif = "Upgrade_Afrocash";
+
+            $reabo->save();
+            
+            if(count($data_options) > 0) {
+                foreach($data_options as $value) {
+                    $value->save();
+                }
+            }
             
 
-
-
-
-            
+            $upgrade_reabo->save();
+            $sender_account->save();
+            $receiver_account->save();
+            $trans->save();
 
             return response()
-                ->json($request);
+                ->json('done');
         }
         catch(AppException $e) {
             header("Erreur",true,422);

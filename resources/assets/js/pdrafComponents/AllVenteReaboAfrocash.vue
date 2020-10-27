@@ -183,7 +183,12 @@
                             <td>{{r.created_at}}</td>
                             <td>{{r.hour}}</td>
                             <td>{{r.materiel}}</td>
-                            <td>{{r.formule}}</td>
+                            <template v-if="r.upgrade_state == null">
+                                <td>{{r.formule}}</td>
+                            </template>
+                            <template v-else>
+                                <td class="uk-alert uk-alert-primary uk-text-bold">{{r.upgrade_state.from_formule}} -> {{r.formule}} (UPGRADE)</td>
+                            </template>
                             <td>{{r.duree}}</td>
                             <td>{{r.option}}</td>
                             <td>{{r.montant |numFormat}}</td>
@@ -231,7 +236,12 @@
                             <td>{{r.created_at}}</td>
                             <td>{{r.hour}}</td>
                             <td>{{r.materiel}}</td>
-                            <td>{{r.formule}}</td>
+                            <template v-if="r.upgrade_state == null">
+                                <td>{{r.formule}}</td>
+                            </template>
+                            <template v-else>
+                                <td class="uk-alert uk-alert-primary uk-text-bold">{{r.upgrade_state.from_formule}} -> {{r.formule}} (UPGRADE)</td>
+                            </template>
                             <td>{{r.duree}}</td>
                             <td>{{r.option}}</td>
                             <td>{{r.montant |numFormat}}</td>
@@ -266,7 +276,12 @@
                             <td>{{r.created_at}}</td>
                             <td>{{r.hour}}</td>
                             <td>{{r.materiel}}</td>
-                            <td>{{r.formule}}</td>
+                            <template v-if="r.upgrade_state == null">
+                                <td>{{r.formule}}</td>
+                            </template>
+                            <template v-else>
+                                <td class="uk-alert uk-alert-primary uk-text-bold">{{r.upgrade_state.from_formule}} -> {{r.formule}} (UPGRADE)</td>
+                            </template>
                             <td>{{r.duree}}</td>
                             <td>{{r.option}}</td>
                             <td>{{r.montant |numFormat}}</td>

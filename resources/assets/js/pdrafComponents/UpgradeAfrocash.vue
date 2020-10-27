@@ -158,7 +158,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     },
                     new : {
                         formule : "",
-                        option : [],
+                        option : [""],
                     },
                     montant_ttc : 0,
                     comission : 0,
@@ -216,13 +216,18 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             },
             sendUpgradeAfrocash : async function () {
                 try {
+                    this.isLoading = true
                     this.dataForm._token = this.myToken
                     let response = await axios.post('/user/pdraf/send-upgrade-afrocash',this.dataForm)
-                    if(response) {
-                        console.log(response.data)
+                    if(response && response.data == 'done') {
+                        this.isLoading = false
+                        alert("Success !")
+                        Object.assign(this.$data,this.$options.data())
+                        this.getInfos()
                     }
                 }
                 catch(error) {
+                    this.isLoading = false
                     if(error.response.data.errors) {
                         let errorTab = error.response.data.errors
                         for (var prop in errorTab) {
