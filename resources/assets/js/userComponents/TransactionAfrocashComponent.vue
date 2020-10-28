@@ -54,6 +54,8 @@
           <th>Expediteur</th>
           <th>Destinataire</th>
           <th>Montant</th>
+          <th>Solde Anterieur</th>
+          <th>Nouveau Solde</th>
           <th>Motif</th>
         </tr>
       </thead>
@@ -63,6 +65,8 @@
           <td>{{ t.expediteur }}</td>
           <td>{{ t.destinataire }}</td>
           <td>{{ t.montant | numFormat }}</td>
+          <td v-if="t.solde_anterieur != null">{{ t.solde_anterieur | numFormat }}</td><td v-else>-</td>
+          <td v-if="t.nouveau_solde != null">{{ t.nouveau_solde | numFormat }}</td><td v-else>-</td>
           <td>{{ t.motif }}</td>
         </tr>
       </tbody>

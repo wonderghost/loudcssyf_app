@@ -155,7 +155,8 @@ Trait Afrocashes {
 			if(!Hash::check($request->input("password_confirmed"),Auth::user()->password)) {
 				throw new AppException("Mauvais mot de passe !");
 			}
-			$commande = CommandCredit::where('id',$request->input('commande'))->first();
+			// $commande = CommandCredit::where('id',$request->input('commande'))->first();
+			$commande = CommandCredit::find($request->input('commande'));
 			// tester l'invalidite de la commande
 			if($this->commandCreditState($commande->id) == 'unvalidated') {
 				// tester la conformite du montant demande au montant saisi
@@ -203,40 +204,37 @@ Trait Afrocashes {
 						case 'afro_cash_sg':
 						//tester la disponibilite du montant
 						if($this->getSoldeGlobal("afrocash") >= $commande->montant) {
-							$afrocashAccount = Afrocash::where([
-								'vendeurs'	=>	$commande->vendeurs,
-								'type'	=>	'semi_grossiste'
-							])->first();
+							$receiver_user = User::where('username',$commande->vendeurs)->first();
+							$receiver_account = $receiver_user->afroCash('semi_grossiste')->first();
 
+							$sender_account = Credit::find('afrocash');
+
+							$sender_account->solde -= $commande->montant;
+							$receiver_account->solde += $commande->montant;
+
+
+							
+							
 							$transaction = new TransactionAfrocash;
-							$transaction->compte_credite = $afrocashAccount->numero_compte;
+							$transaction->compte_credite = $receiver_account->numero_compte;
 							$transaction->montant = $commande->montant;
+							$transaction->motif = "Commande_Afrocash";
+							$transaction->solde_anterieur = $receiver_account->solde - $commande->montant;
+							$transaction->nouveau_solde = $receiver_account->solde;
 
 							$transaction_credit = new TransactionCredit;
 							$transaction_credit->credits = 'afrocash';
 							$transaction_credit->montant = $commande->montant;
 
-							$new_solde = Credit::where('designation','afrocash')->first()->solde -  $commande->montant ;
+							$commande->status = 'validated';
 
-							Credit::where('designation','afrocash')->update([
-								'solde'	=>	$new_solde
-							]);
-
-							$new_solde_vendeurs = Afrocash::where(['vendeurs'	=>	$commande->vendeurs,'type'	=>	'semi_grossiste'])->first()->solde + $request->input('montant');
-
-							Afrocash::where([
-								'vendeurs'	=>	$commande->vendeurs,
-								'type'	=>	'semi_grossiste'
-							])->update([
-								'solde'	=>	$new_solde_vendeurs
-							]);
-
+							
+							$sender_account->save();
+							$receiver_account->save();
+							$commande->save();	
 							$transaction->save();
 							$transaction_credit->save();
-							CommandCredit::where('id',$commande->id)->update([
-								'status'	=>	'validated'
-							]);
-
+						
 							$n = $this->sendNotification("Commande Afrocash" ,"Une Commande Afrocash a ete valide pour :".$commande->vendeurs()->localisation,User::where('type','admin')->first()->username);
 							$n->save();
 							$n = $this->sendNotification("Commande Afrocash" , "Votre Commande Afrocash a ete valide!",$commande->vendeurs);
@@ -575,7 +573,9 @@ Trait Afrocashes {
 					'expediteur'	=>	$value->compte_debite ? $value->afrocash()->vendeurs()->localisation : '-',
 					'destinataire'	=>	$value->compte_credite ? $value->afrocashcredite()->vendeurs()->localisation : '-',
 					'montant'	=>	$value->montant,
-					'motif'	=>	$value->motif
+					'motif'	=>	$value->motif,
+					'solde_anterieur'	=>	$value->solde_anterieur,
+					'nouveau_solde'	=>	$value->nouveau_solde
 				];
 			}
 			return response()

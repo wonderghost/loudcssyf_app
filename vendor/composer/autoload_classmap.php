@@ -148,6 +148,7 @@ return array(
     'App\\TransfertMateriel' => $baseDir . '/app/TransfertMateriel.php',
     'App\\TransfertSerial' => $baseDir . '/app/TransfertSerial.php',
     'App\\Upgrade' => $baseDir . '/app/Upgrade.php',
+    'App\\UpgradeReaboAfrocash' => $baseDir . '/app/UpgradeReaboAfrocash.php',
     'App\\User' => $baseDir . '/app/User.php',
     'BeyondCode\\LaravelWebSockets\\Apps\\App' => $vendorDir . '/beyondcode/laravel-websockets/src/Apps/App.php',
     'BeyondCode\\LaravelWebSockets\\Apps\\AppProvider' => $vendorDir . '/beyondcode/laravel-websockets/src/Apps/AppProvider.php',

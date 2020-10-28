@@ -11,6 +11,8 @@
        <div class="uk-container uk-container-large">
            <h3 class="uk-margin-top">Tous les Reabonnements</h3>
            <hr class="uk-divider-small">
+
+           <download-to-excel :data-to-export="all" :data-fields="field_export" file-name="reabonnement-afrocash"></download-to-excel>
            
 
             <!-- MODAL CONFIRM PAIEMENT COMISSION -->
@@ -173,7 +175,7 @@
                         <th>Etat</th>
                         <th>Paiement</th>
                         <template v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'">
-                            <th>-</th>
+                            <th cols="2">-</th>
                         </template>
                     </tr>
                 </thead>
@@ -225,8 +227,12 @@
                             </td>
                             <td>
                                 <template v-if="!r.confirm_at && !r.remove_at">
-                                    <button @click="confirmRequestForAdmin(r)" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-text-small uk-text-capitalize" uk-tooltip="Confirmer"><span uk-icon="check"></span></button>
-                                    <button @click="removeRequestForAdmin(r)" class="uk-button uk-button-small uk-button-danger uk-border-rounded uk-text-small uk-text-capitalize" uk-tooltip="Annuler"><span uk-icon="close"></span></button>
+                                    <button @click="confirmRequestForAdmin(r)" class="uk-padding-remove uk-button-primary uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Confirmer"><i class="material-icons" style="font-size : 20px;cursor:pointer">done</i></button>
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="!r.confirm_at && !r.remove_at">
+                                    <button @click="removeRequestForAdmin(r)" class="uk-padding-remove uk-button-danger uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Annuler"><i class="material-icons" style="font-size : 20px;cursor:pointer">delete</i></button>
                                 </template>
                             </td>
                         </tr>
@@ -332,6 +338,22 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         },
         data() {
             return {
+                field_export : {
+                    'Date' : 'created_at',
+                    'Heure' : 'hour',
+                    'Materiel' : 'materiel',
+                    'Formule' : 'formule',
+                    'Duree' : 'duree',
+                    'Option(s)' : 'option',
+                    'Montant Ttc' : 'montant',
+                    'Telephone Client' : 'telephone_client',
+                    'Point de Recharge' : 'pdraf.localisation',
+                    'Marge' : 'marge',
+                    'Comission' : 'comission',
+                    'Total' : 'total',
+                    'Confirmer' : 'confirm_at',
+                    'Payer' : 'pay_at'
+                },
         // paginate
                 nextUrl : "",
                 lastUrl : "",

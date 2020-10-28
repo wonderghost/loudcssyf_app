@@ -35,6 +35,11 @@
                             </li>
                         </ul>
                     </div>
+                    <div class="uk-width-1-2@m">
+                        <!-- EDITION DES INFOS DES FORMULES -->
+                        
+                        <!-- // -->
+                    </div>
                 </div>
             </li>
             <li>
@@ -52,6 +57,11 @@
                                 </span>
                             </li>
                         </ul>
+                    </div>
+                    <div class="uk-width-1-2@m">
+                        <!-- EDITION DES INFOS DES OPTIONS -->
+
+                        <!-- // -->
                     </div>
                 </div>
             </li>

@@ -40,3 +40,15 @@ import JsonExcel from 'vue-json-excel'
         }
     }
 </script>
+<style lang="css">
+.download-btn {
+    position : fixed !important;
+    right : 1% !important;
+    bottom : 30% !important;
+    background : rgba(5, 5, 7, 0.3) !important;
+}
+
+.download-btn:hover{
+    background : rgba(77,74,252,1) !important;
+}
+</style>

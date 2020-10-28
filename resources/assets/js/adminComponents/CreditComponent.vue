@@ -271,6 +271,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               let response = await axios.post("/user/send-afrocash",this.validateFormData)
 
               Object.assign(this.$data,this.$options.data())
+              
+              // 
               if(response.data == 'done') {
                 this.isLoading = false
                 alert("Success !")
