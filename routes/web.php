@@ -24,6 +24,9 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/pdraf/confirm-reabo-afrocash','PdrafController@confirmReaboAfrocash');
 	Route::post('/admin/pdraf/remove-reabo-afrocash','PdrafController@removeReaboAfrocash');
 
+	Route::post('/admin/pdraf/change-status-reactivation-materiel','PdrafController@changeStatusReactivationMateriel');
+	
+
 	# affectation de pdraf a un pdc
 
 	// get list all pdraf
@@ -219,6 +222,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/pdraf/get-reabo-afrocash','PdrafController@getAllReaboAfrocash');
 	Route::post('/user/pdraf/pay-comission-request','PdrafController@sendPayComissionRequest')->middleware('pdraf');
 	Route::get('/user/pdraf/filter-reabo-afrocash/{pdc}/{user}/{payState}/{state}/{margeState}','PdrafController@filterReaboAfrocash');
+	Route::post('/user/pdraf/reactivation-materiel','PdrafController@reactivationMaterielRequest')->middleware('pdraf');
+	Route::get('/user/pdraf/get-reactivation-materiel','PdrafController@getReactivationList');
 
 	Route::get('/admin/pay-comission/pdraf/all','PdrafController@getAllPayComission');
 

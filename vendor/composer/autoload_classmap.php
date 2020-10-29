@@ -122,6 +122,7 @@ return array(
     'App\\RavitaillementVendeur' => $baseDir . '/app/RavitaillementVendeur.php',
     'App\\ReaboAfrocash' => $baseDir . '/app/ReaboAfrocash.php',
     'App\\ReaboAfrocashSetting' => $baseDir . '/app/ReaboAfrocashSetting.php',
+    'App\\ReactivationMateriel' => $baseDir . '/app/ReactivationMateriel.php',
     'App\\Recouvrement' => $baseDir . '/app/Recouvrement.php',
     'App\\Recrutements' => $baseDir . '/app/Recrutements.php',
     'App\\RemboursementPromo' => $baseDir . '/app/RemboursementPromo.php',

@@ -20,6 +20,7 @@ use App\UpgradeReaboAfrocash;
 use App\MakePdraf;
 use App\PayCommission;
 use App\Credit;
+use App\ReactivationMateriel;
 use Carbon\Carbon;
 
 class PdrafController extends Controller
@@ -3015,6 +3016,115 @@ class PdrafController extends Controller
             $sender_account->save();
             $receiver_account->save();
             $trans->save();
+
+            return response()
+                ->json('done');
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    // REACTIVATION MATERIEL REQUEST
+
+    public function reactivationMaterielRequest(Request $request,ReactivationMateriel $rm) {
+        try {
+            $validation = $request->validate([
+                'serial_number' =>  'required|string|min:14|max:14',
+                'password_confirmation' =>  'required|string'
+            ],
+            [
+                'required'  =>  '`:attribute` requis !'
+            ]);
+
+            // validation du mot de passe
+
+            if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
+                throw new AppException("Mot de passe invalide !");
+            }
+
+            // constraint on materiel number
+
+            $test = $rm->whereDay('created_at',Date('d'))
+                ->where('serial_number',$request->input('serial_number'))
+                ->first();
+            
+            if($test) {
+                throw new AppException("Cette requete a deja ete envoye! Veuillez ressayer ulterieurement");
+            }
+
+            // traitement
+            $rm->serial_number = $request->input('serial_number');
+            $rm->pdraf_id = $request->user()->username;
+            
+            $rm->save();
+
+            return response()
+                ->json('done');
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    // HISTORIQUE DE REACTIVATION MATERIELS
+    public function getReactivationList(ReactivationMateriel $rm) {
+        try {
+            $data = $rm->orderBy('created_at','desc')
+                ->paginate();
+
+            $all = [];
+            foreach($data as $key => $value) {
+                $all[$key] = [
+                    'id'    =>  $value->id,
+                    'materiel'  =>  $value->serial_number,
+                    'pdraf' =>  $value->pdrafUser()->localisation,
+                    'confirm_at'    =>  $value->confirm_at,
+                    'remove_at' =>  $value->remove_at,
+                    'created_at'    =>  $value->created_at
+                ];
+            }
+            return response()
+                ->json([
+                    'all'   =>  $all,
+                    'next_url'	=> $data->nextPageUrl(),
+					'last_url'	=> $data->previousPageUrl(),
+					'per_page'	=>	$data->perPage(),
+					'current_page'	=>	$data->currentPage(),
+					'first_page'	=>	$data->url(1),
+					'first_item'	=>	$data->firstItem(),
+					'total'	=>	$data->total()
+                ]);
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function changeStatusReactivationMateriel(Request $request) {
+        try {
+            $validation = $request->validate([
+                'id'    =>  'required|exists:reactivation_materiels,id',
+                'state' =>  'required|string'
+            ]);
+
+            $rm = ReactivationMateriel::find($request->input('id'));
+
+            if($request->input('state') == 'confirm') {
+                // 
+                $rm->confirm_at = Carbon::now();
+            }
+            else if($request->input('state') == 'delete') {
+                $rm->remove_at = Carbon::now();
+            }
+            else {
+                throw new AppException("Erreur");
+            }
+
+            $rm->save();
 
             return response()
                 ->json('done');

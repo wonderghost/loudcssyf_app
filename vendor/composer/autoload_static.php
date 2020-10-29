@@ -632,6 +632,7 @@ class ComposerStaticInit15d5dc02f650ad17553f69fb230f4dbd
         'App\\RavitaillementVendeur' => __DIR__ . '/../..' . '/app/RavitaillementVendeur.php',
         'App\\ReaboAfrocash' => __DIR__ . '/../..' . '/app/ReaboAfrocash.php',
         'App\\ReaboAfrocashSetting' => __DIR__ . '/../..' . '/app/ReaboAfrocashSetting.php',
+        'App\\ReactivationMateriel' => __DIR__ . '/../..' . '/app/ReactivationMateriel.php',
         'App\\Recouvrement' => __DIR__ . '/../..' . '/app/Recouvrement.php',
         'App\\Recrutements' => __DIR__ . '/../..' . '/app/Recrutements.php',
         'App\\RemboursementPromo' => __DIR__ . '/../..' . '/app/RemboursementPromo.php',

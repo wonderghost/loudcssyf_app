@@ -21,6 +21,7 @@
             <div class="uk-navbar-left">
                 <ul class="uk-navbar-nav">
                     <li class=""><router-link to="/upgrade-afrocash">Upgrade Afrocash</router-link></li>
+                    <li><router-link to="/reactivation-materiel">Reactivation Materiel</router-link></li>
                 </ul>
 
             </div>

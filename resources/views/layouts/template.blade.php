@@ -41,12 +41,13 @@
       <feedback></feedback>
       <home-component></home-component>
       <tools the-user="{{Auth::user()->type}}"></tools>
+      <historique-reactivation-materiel :view-modal="true"></historique-reactivation-materiel>
       <router-view></router-view>
     </div>
     <div class="uk-section uk-section-muted uk-padding-small uk-margin-top uk-visible@m ">
       <div class="uk-container uk-container-large">
         <p class="uk-text-center">
-          &copy; Copyright {{date('Y')}} Loudcssyf-Sarl,Layedist v2.1 by Smartech
+          &copy; Copyright {{date('Y')}} Loudcssyf-Sarl,Layedist v2.3 by Smartech
         </p>
       </div>
     </div>

@@ -26,6 +26,7 @@ Vue.component('feedback',require('./userComponents/FeedBackComponent.vue').defau
 Vue.component('detail-rapport',require('./userComponents/DetailRapportComponent.vue').default)
 Vue.component('set-rapport-parametre',require('./adminComponents/SetRapportParametre.vue').default)
 Vue.component('download-to-excel',require('./userComponents/DownloadExcelComponent.vue').default)
+Vue.component('historique-reactivation-materiel',require('./pdrafComponents/HistoriqueReactivationComponent.vue').default)
 
 
 // 

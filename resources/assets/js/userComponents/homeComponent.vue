@@ -49,20 +49,13 @@
       <span uk-tooltip="Alertes" v-if="typeUser == 'v_da' || typeUser == 'v_standart' || typeUser == 'admin' || typeUser == 'commercial'" class="uk-button uk-button-small border-button">
         <router-link to="/alertes/abonnement"><i class="material-icons">alarm</i></router-link>
       </span>
-      <!-- <a v-if="typeUser == 'v_da' || typeUser == 'v_standart' || typeUser == 'admin' || typeUser == 'commercial'" class="uk-button uk-button-small border-button" uk-tooltip="Alertes">
-        <span></span> <i class="material-icons">alarm</i> <span style="color : red !important"></span>
-      </a> -->
-      <!-- <a class="uk-button uk-button-small border-button" uk-tooltip="Alertes"><i class="material-icons" style="color : red !important;">alarm</i></a> -->
       <template v-if="typeUser == 'admin' || typeUser == 'commercial'" id="">
-      	<!-- <a class="uk-button uk-button-small uk-button-primary uk-box-shadow-hover-small uk-margin-left uk-border-rounded" href="#modal-promo" uk-toggle><span uk-icon="icon : tag"></span>  PROMO</a> -->
         <span uk-tooltip="Promo">
           <router-link to="/promo"><span uk-icon="icon : tag"></span>  PROMO</router-link>
         </span>
       </template>
     <template v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'" id="">
       <router-link to="/pay-comission" class="uk-button uk-button-small border-button button-pay-comission"><i class="material-icons">monetization_on</i></router-link>
-      <!-- <a class="uk-button uk-button-small border-button button-pay-comission" uk-toggle href="#modal-commission" uk-tooltip="Paiement Commission"><i class="material-icons">monetization_on</i></a> -->
-      <!-- <a class="uk-margin-left" uk-toggle uk-tooltip="Reabonnement Afrocash" href="#modal-reabo-afrocash-list"><span uk-icon="grid"></span></a> -->
       <span class="" uk-tooltip="Reabonnement Afrocash">
         <router-link to="/all-ventes-pdraf"><span uk-icon="grid"></span></router-link>
       </span>
@@ -71,6 +64,7 @@
       <!-- <a v-if="typeUser == 'v_da'" class="uk-button uk-button-small border-button" href="#modal-remboursement" uk-toggle uk-tooltip="Paiement Remboursement"><i class="material-icons">payment</i></a> -->
       <router-link v-if="typeUser == 'v_da'" to="/promo"><i class="material-icons">payment</i></router-link>
       <a class="uk-button uk-button-small border-button" uk-toggle href="#modal-deblocage" uk-tooltip="Deblocage Cga"><i class="material-icons">lock_open</i><span v-if="typeUser !=='v_da' && typeUser !== 'v_standart'">{{deblocageCount}}</span> </a>
+      <a class="uk-button uk-button-small border-button" uk-toggle href="#modal-reactivation-materiel" uk-tooltip="Reactivation Materiels"><i class="material-icons">settings_backup_restore</i><span v-if="typeUser !=='v_da' && typeUser !== 'v_standart'">{{deblocageCount}}</span> </a>
     </div>
     <div class="uk-navbar-right uk-visible@m">
       <a class="uk-button"><span uk-icon="icon : user ;"></span> {{userLocalisation}} </a>

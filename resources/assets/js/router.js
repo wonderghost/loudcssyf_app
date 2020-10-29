@@ -14,6 +14,7 @@ import RetourAfrocash from './pdrafComponents/RetourAfrocash.vue'
 import ReaboAfrocash from './pdrafComponents/ReaboAfrocash.vue'
 import AllVenteReabo from './pdrafComponents/AllVenteReaboAfrocash.vue'
 import upgradeAfrocash from './pdrafComponents/UpgradeAfrocash.vue'
+import reactivationMateriel from './pdrafComponents/ReactivationComponent.vue'
 // 
 
 // ADMIN ROUTER
@@ -512,6 +513,19 @@ const router = new VueRouter({
             beforeEnter : (to,from,next) => {
                 if(store.state.typeUser != 'pdraf') {
                     alert('action non autorisee !')       
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
+        },
+        {
+            path : '/reactivation-materiel',
+            component : reactivationMateriel,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'pdraf') {
+                    alert('action non autorisee!')
                     next('/')
                 }
                 else {
