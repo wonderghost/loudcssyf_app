@@ -8,8 +8,8 @@
             color="#1e87f0"
             background-color="#fff"></loading>        
 
-            <h3>Formule</h3>
-            <hr class="uk-divider-small">
+        <h3>Formule</h3>
+        <hr class="uk-divider-small">
             
         <ul class="uk-subnav uk-subnav-pill" uk-switcher>
             <li><a class="uk-button uk-button-primary uk-border-rounded uk-button-small" href="#">Nouvelle Formule</a></li>
@@ -24,22 +24,19 @@
                 <add-formule-component type="formule"></add-formule-component>
             </li>
             <li>
-                <div class="uk-grid-small" uk-grid>
+                <div class="uk-grid-small uk-grid-divider" uk-grid>
                     <div class="uk-width-1-2@m">
                         <ul class="uk-list uk-list-divider">
                             <li v-for="f in formules" :key="f.nom"> 
                                 <span>{{f.nom}}</span>
                                 <span class="uk-float-right">{{f.prix | numFormat}} GNF
-                                    <button uk-tooltip="Cliquez pour modifier" class="uk-text-capitalize uk-button-primary uk-border-rounded"><span uk-icon="icon : pencil"></span></button>
+                                    <!-- <button uk-tooltip="Cliquez pour modifier" class="uk-text-capitalize uk-button-primary uk-border-rounded"><span uk-icon="icon : pencil"></span></button> -->
+                                    <router-link :to="'/setting/formule/'+f.encrypted_name+'/edit'"><span uk-icon="pencil"></span></router-link>
                                 </span>
                             </li>
                         </ul>
                     </div>
-                    <div class="uk-width-1-2@m">
-                        <!-- EDITION DES INFOS DES FORMULES -->
-                        
-                        <!-- // -->
-                    </div>
+                    
                 </div>
             </li>
             <li>
@@ -47,21 +44,17 @@
                 <add-formule-component type="option"></add-formule-component>
             </li>
             <li>
-                <div class="uk-grid-small" uk-grid>
+                <div class="uk-grid-small uk-grid-divider" uk-grid>
                     <div class="uk-width-1-2@m">
                         <ul class="uk-list uk-list-divider">
                             <li v-for="o in options" :key="o.nom"> 
                                 <span>{{o.nom}}</span>
                                 <span class="uk-float-right">{{o.prix | numFormat}} GNF
-                                    <button uk-tooltip="Cliquez pour modifier" class="uk-text-capitalize uk-button-primary uk-border-rounded"><span uk-icon="icon : pencil"></span></button>
+                                    <!-- <button uk-tooltip="Cliquez pour modifier" class="uk-text-capitalize uk-button-primary uk-border-rounded"><span uk-icon="icon : pencil"></span></button> -->
+                                    <router-link :to="'/setting/option/'+o.encrypted_name+'/edit'"><span uk-icon="pencil"></span></router-link>
                                 </span>
                             </li>
                         </ul>
-                    </div>
-                    <div class="uk-width-1-2@m">
-                        <!-- EDITION DES INFOS DES OPTIONS -->
-
-                        <!-- // -->
                     </div>
                 </div>
             </li>
@@ -87,7 +80,7 @@ import addFormule from './addFormuleComponent.vue'
                 isLoading : false,
                 fullPage : true,
                 formules : [],
-                options : []
+                options : [],
             }
         },
         methods : {
@@ -102,7 +95,6 @@ import addFormule from './addFormuleComponent.vue'
 
                         this.isLoading = false
                     }
-                    
                 } catch(error) {
                     alert("Data Error !")
                 }

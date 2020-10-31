@@ -44,6 +44,7 @@ import affectationMateriel from './adminComponents/AffectationMaterielComponent.
 import affectationDepotVendeur from './adminComponents/AffectationDepotVendeur.vue'
 import affectationPdrafPdc from './adminComponents/AffectationPdrafComponent.vue'
 import acteReabonnement from './adminComponents/ActeReabonnement.vue'
+import editFormuleOption from './adminComponents/EditFormuleOptionComponent.vue'
 
 // VENDEURS
 import objectifUser from './userComponents/ObjectifUserComponent.vue'
@@ -526,6 +527,38 @@ const router = new VueRouter({
             beforeEnter : (to,from,next) => {
                 if(store.state.typeUser != 'pdraf') {
                     alert('action non autorisee!')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
+        },
+        {
+            path : '/setting/formule/:id/edit',
+            component : editFormuleOption,
+            props : {
+                type : "formule"
+            },
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'admin') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                else {
+                    next()
+                }
+            }
+        },
+        {
+            path : '/setting/option/:id/edit',
+            component : editFormuleOption,
+            props : {
+                type : 'option'
+            },
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'admin') {
+                    alert('action non autorisee !')
                     next('/')
                 }
                 else {

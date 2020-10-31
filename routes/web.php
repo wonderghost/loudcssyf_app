@@ -123,7 +123,13 @@ Route::middleware(['auth','admin'])->group(function () {
 	// FORMULES
 	Route::get('/admin/formule','AdminController@formule');
 	Route::post('/admin/formule/add','AdminController@addFormule');
+	Route::get('/admin/formule/{slug}/edit','AdminController@getDataEditFormule');
+
+	Route::post('/admin/formule/{slug}/edit','AdminController@editFormule');
+	
 	Route::post('/admin/option/add','AdminController@addOptionFormule');
+	Route::post('/admin/option/{slug}/edit','AdminController@editOption');
+	Route::get('/admin/option/{slug}/edit','AdminController@getDataEditOption');
 	
 	Route::get('/admin/formule/list','AdminController@listFormule');
 	// creation des comptes de credit

@@ -307,10 +307,33 @@ class AdminController extends Controller
     
     public function listFormule(Formule $f,Option $op) {
       try {
+          $formule = $f->all();
+          $options = $op->all();
+
+          $data_formule = [];
+          $data_option = [];
+
+          foreach($formule as $key => $value) {
+            $data_formule[$key] = [
+              'nom' =>  $value->nom,
+              'created_at'  =>  $value->created_at,
+              'prix'  =>  $value->prix,
+              'encrypted_name'  =>  Crypt::encryptString($value->nom)
+            ];
+          }
+
+          foreach($options as $key => $value) {
+            $data_option[$key] = [
+              'nom' =>  $value->nom,
+              'created_at'  =>  $value->created_at,
+              'prix'  =>  $value->prix,
+              'encrypted_name'  =>  Crypt::encryptString($value->nom)
+            ];
+          }
           return response()
             ->json([
-              'formules'  =>  $f->all(),
-              'options' =>  $op->all()
+              'formules'  =>  $data_formule,
+              'options' =>  $data_option
             ]);
       } catch(AppException $e) {
           header("Erreur",true,422);
@@ -340,6 +363,7 @@ class AdminController extends Controller
             die(json_encode($e->getMessage()));
         }
     }
+  
 
     //
     public function addOptionFormule(Request $request) {
@@ -1149,6 +1173,66 @@ class AdminController extends Controller
 
       return response()
         ->json('done');
+    }
+    catch(AppException $e) {
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+
+
+  // get data for edit formule
+
+  public function getDataEditFormule($slug,Formule $f) {
+    try {
+      $data = $f->find(Crypt::decryptString($slug));
+      return response()
+        ->json($data);
+    }
+    catch(AppException $e) {
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+
+  public function getDataEditOption($slug,Option $o) {
+    try {
+      $data = $o->find(Crypt::decryptString($slug));
+      return response()
+        ->json($data);
+    }
+    catch(AppException $e) {
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+
+  // editer les infos d'une formule
+
+  public function editFormule(Request $request , $slug , Formule $f) {
+    try {
+
+      $formule = $f->find(Crypt::decryptString($slug));
+      $formule->nom = $request->input('nom');
+      $formule->prix = $request->input('prix');
+      $formule->save();
+
+      return response()
+        ->json('done');
+    }
+    catch(AppException $e) {
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+
+  // editer les infos d'une option
+
+  public function editOption(Request $request , $slug) {
+    try {
+
+      return response()
+        ->json($request);
     }
     catch(AppException $e) {
       header("Erreur",true,422);
