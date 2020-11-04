@@ -31,9 +31,13 @@ const store = new Vuex.Store({
     formulesList : [],
     alertCount : 0,
     alertInactifCount : 0,
-    infosComissionPercent : {}
+    infosComissionPercent : {},
+    reactivationCount : 0
   },
   mutations : {
+    setReactivationCount(state,data) {
+      state.reactivationCount = data
+    },
     setInfosComissions(state,data) {
       state.infosComissionPercent = data
     },

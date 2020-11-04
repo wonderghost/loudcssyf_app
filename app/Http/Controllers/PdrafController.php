@@ -3074,6 +3074,9 @@ class PdrafController extends Controller
         try {
             $data = $rm->orderBy('created_at','desc')
                 ->paginate();
+            $count = $rm->whereNull('confirm_at')
+                ->whereNull('remove_at')
+                ->count('serial_number');
 
             $all = [];
             foreach($data as $key => $value) {
@@ -3095,7 +3098,8 @@ class PdrafController extends Controller
 					'current_page'	=>	$data->currentPage(),
 					'first_page'	=>	$data->url(1),
 					'first_item'	=>	$data->firstItem(),
-					'total'	=>	$data->total()
+                    'total'	=>	$data->total(),
+                    'count' =>  $count
                 ]);
         }
         catch(AppException $e) {

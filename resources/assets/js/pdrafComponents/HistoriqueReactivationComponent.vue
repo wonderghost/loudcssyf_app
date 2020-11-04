@@ -157,22 +157,22 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             paginateFunction : async function (url) {
                 try {
                 
-                let response = await axios.get(url)
-                if(response && response.data) {
-                    
-                    this.historiqueList = response.data.all
+                    let response = await axios.get(url)
+                    if(response && response.data) {
+                        
+                        this.historiqueList = response.data.all
 
-                    this.nextUrl = response.data.next_url
-                    this.lastUrl = response.data.last_url
-                    this.currentPage = response.data.current_page
-                    this.firstPage = response.data.first_page
-                    this.firstItem = response.data.first_item,
-                    this.total = response.data.total
-                }
+                        this.nextUrl = response.data.next_url
+                        this.lastUrl = response.data.last_url
+                        this.currentPage = response.data.current_page
+                        this.firstPage = response.data.first_page
+                        this.firstItem = response.data.first_item,
+                        this.total = response.data.total
+                    }
                 }
                 catch(error) {
-                alert("Erreur!")
-                console.log(error)
+                    alert("Erreur!")
+                    console.log(error)
                 }
             },
             getData : async function () {
@@ -187,6 +187,8 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                         this.firstPage = response.data.first_page
                         this.firstItem = response.data.first_item,
                         this.total = response.data.total
+
+                        this.$store.commit('setReactivationCount',response.data.count)
                     }
                 }
                 catch(error) {
@@ -215,7 +217,8 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     console.log(error)
                 }
             }
-        }
+        },
+        computed : {}
     }
 </script>
 <style lang="css">

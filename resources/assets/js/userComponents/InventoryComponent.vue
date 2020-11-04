@@ -168,22 +168,23 @@
       <div class="uk-grid-small" uk-grid>
         <div class="uk-width-1-4@m">
           <label for="">Status Materiel</label>
-          <select class="uk-select uk-border-rounded">
-            <option value="">Tous</option>
-            <option value="">actif</option>
-            <option value="">inactif</option>
+          <select @change="filterRequest()" v-model="filterData.status" class="uk-select uk-border-rounded">
+            <option value="all">Tous</option>
+            <option value="actif">actif</option>
+            <option value="inactif">inactif</option>
           </select>
         </div>
-        <div class="uk-width-1-4@m">
+        <!-- <div class="uk-width-1-4@m">
           <label for="">Depot Origine</label>
-          <select class="uk-select uk-border-rounded">
-            <option value="">Tous les depots</option>
+          <select @change="filterRequest()" v-model="filterData.origine" class="uk-select uk-border-rounded">
+            <option value="all">Tous les depots</option>
           </select>
-        </div>
+        </div> -->
         <div class="uk-width-1-4@m">
           <label for=""><span uk-icon="users"></span> Vendeurs</label>
-          <select class="uk-select uk-border-rounded">
-            <option value="">Tous les vendeurs</option>
+          <select @change="filterRequest()" v-model="filterData.vendeurs" class="uk-select uk-border-rounded">
+            <option value="all">Tous les vendeurs</option>
+            <option :value="u.username" v-for="(u,index) in users" :key="index">{{u.localisation}}</option>
           </select>
         </div>
          <!-- paginate component -->
@@ -296,7 +297,13 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               password : "",
               motif : ""
             },
-            errors : []
+            errors : [],
+            filterData : {
+              _token : "",
+              status : "all",
+              origine : "",
+              vendeurs : "all"
+            }
           }
         },
         methods : {
@@ -323,6 +330,32 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               console.log(error)
             }
           },
+          // ACTIVATION DU FILTRE
+          filterRequest : async function() {
+            try {
+              this.isLoading = true
+
+              this.filterData._token = this.myToken
+              let response = await axios.post('/admin/inventory-stock/filter',this.filterData)
+
+              if(response) {
+
+                this.serialList = response.data.all
+
+                this.nextUrl = response.data.next_url
+                this.lastUrl = response.data.last_url
+                this.perPage = response.data.per_page
+                this.firstItem = response.data.first_item
+                this.total = response.data.total
+
+                this.isLoading = false
+              }
+            }
+            catch(error) {
+              alert(error)
+            }
+          },
+          // REQUEST DE REMPLACEMENT DES MATERIELS DEFECTUEUX
           makeMaterialDefuctueux : async function() {
             try {
                 this.isLoading = true
@@ -373,6 +406,10 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           getSerialNumberList : async function () { // listing des numeros de series
             try {
               this.isLoading = true
+              // reinitialisation des donnees pour le filtre
+              this.filterData.vendeurs = "all"
+              this.filterData.status = "all"
+
               if(this.typeUser == 'admin' || this.typeUser == 'commercial') {
                 var response = await axios.get("/admin/inventory/get-serial-number-list")
               }else {

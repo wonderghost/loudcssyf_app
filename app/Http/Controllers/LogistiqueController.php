@@ -474,6 +474,75 @@ class LogistiqueController extends Controller
           die(json_encode($e->getMessage()));
       }
     }
+
+    # FILTREZ L'INVENTAIRE DE STOCK DES VENDEURS
+    
+    public function filterInventoryStock(Request $request , Exemplaire $sn) {
+      try {
+        $serials = $sn
+          ->whereNotNull('vendeurs');
+          
+        switch ($request->input('vendeurs')) {
+          case 'all':
+              switch ($request->input('status')) { 
+                default:
+                  $serials->where('status',$request->input('status'));
+                  break;
+              }
+            break;
+          default:
+            switch ($request->input('status')) {
+              case 'all':
+                $serials->where('vendeurs',$request->input('vendeurs'));
+              break;                
+              default:
+                $serials->where('vendeurs',$request->input('vendeurs'))
+                  ->where('status',$request->input('status'));
+                break;
+            }
+            break;
+        }
+
+        $result = $serials->orderBy('serial_number','asc')
+          ->paginate(500);
+        
+        $all = $this->organizeInventoryData($result);
+
+
+        return response()
+          ->json([
+            'all' =>  $all,
+            'next_url'	=> $result->nextPageUrl(),
+            'last_url'	=> $result->previousPageUrl(),
+            'per_page'	=>	$result->perPage(),
+            'current_page'	=>	$result->currentPage(),
+            'first_page'	=>	$result->url(1),
+            'first_item'	=>	$result->firstItem(),
+            'total'	=>	$result->total()
+          ]);
+      }
+      catch(AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
+      }
+    }
+    // ORGANISER LES DONNEES DANS UN TABLEAU
+
+    public function organizeInventoryData($serials) {
+
+      $all = [];
+        foreach($serials as $key => $value) {
+          $all[$key] = [
+            'user_id' =>  $value->vendeurs,
+            'numero_serie'  =>  $value->serial_number,
+            'vendeurs'  => $value->vendeurs() ? $value->vendeurs()->localisation : 'undefined',
+            'article' =>  $value->produit()->libelle,
+            'status'  =>  $value->status,
+            'origine' =>  $value->depot() ? $value->depot()->depot : ""
+          ];
+        }
+        return $all;
+    }
     
     public function getListMaterialByVendeurs(Request $request , Exemplaire $sn) {
       try {
@@ -490,17 +559,9 @@ class LogistiqueController extends Controller
             ->orderBy('serial_number','asc')
             ->paginate(500);
         }
-        $all = [];
-        foreach($serials as $key => $value) {
-          $all[$key] = [
-            'user_id' =>  $value->vendeurs,
-            'numero_serie'  =>  $value->serial_number,
-            'vendeurs'  => $value->vendeurs() ? $value->vendeurs()->localisation : 'undefined',
-            'article' =>  $value->produit()->libelle,
-            'status'  =>  $value->status,
-            'origine' =>  $value->depot() ? $value->depot()->depot : ""
-          ];
-        }
+
+        $all = $this->organizeInventoryData($serials);
+       
         return response()
           ->json([
             'all' =>  $all,

@@ -50,7 +50,7 @@ class CommandController extends Controller
 				//
 
 				$all = [
-					'ttc'	=>	$item->prix_initial,
+					'ttc'	=>	$item->prix_initial + $parabole->prix_initial,
 					'ht'	=>	ceil($item->prix_vente/1.18),
 					'tva'	=>	ceil($item->prix_vente - ($item->prix_vente/1.18)),
 					'marge'	=>	$item->marge,
