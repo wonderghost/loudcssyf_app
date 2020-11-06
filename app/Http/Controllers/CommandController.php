@@ -54,7 +54,7 @@ class CommandController extends Controller
 					'ht'	=>	ceil($item->prix_vente/1.18),
 					'tva'	=>	ceil($item->prix_vente - ($item->prix_vente/1.18)),
 					'marge'	=>	$item->marge,
-					'subvention'	=>	$item->prix_initial - $item->prix_vente,
+					'subvention'	=>	($item->prix_initial - $item->prix_vente) + ($parabole->prix_initial - $parabole->prix_vente),
 					'prix_vente'	=>	$item->prix_vente,
 					'reference'	=>	$item->reference ,
 					'migration'	=>	$migration - $compense,

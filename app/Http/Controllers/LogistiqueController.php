@@ -345,8 +345,10 @@ class LogistiqueController extends Controller
         if($this->isExisteCommandeForVendeur(
           $request->input('vendeur'),
           $commande)) {
+            
             if($this->isDisponibleInDepot($request->input('depot'),$request->input('produit'),$request->input('quantite'))) {
               // disponibilite de la quantite dans le depot central
+              
               if($this->isRavitaillementPossible($commande,$request)) {
 
                 // verifier si c'est la parabole
@@ -745,6 +747,7 @@ class LogistiqueController extends Controller
           $parabole = $this->getRestantPourRavitaillement($value->commande,$value->produit,$commande->vendeurs);
         }
       }
+      
       $rv = [
         'terminal'  =>  $terminal,
         'parabole'  => $parabole

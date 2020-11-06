@@ -92,6 +92,8 @@ Trait Similarity {
       'id_commande'  =>  $commande
     ])->first();
 
+    // CommandMaterial::find($commande);
+
     $ravitaillement = RavitaillementVendeur::select('id_ravitaillement')->where('commands',$commande->id_commande)->where('vendeurs',$request->input('vendeur'))->get();
 
     $livraisons = Livraison::where('produits',$request->input('produit'))->whereIn('ravitaillement',$ravitaillement)->sum('quantite');
@@ -102,7 +104,10 @@ Trait Similarity {
     ])->first();
     
     //   dd($comProd->quantite_commande >= ($livraisons+$request->input('quantite')));
+    if($comProd) {
       return ($comProd->parabole_a_livrer >= ($livraisons+$request->input('quantite')));
+    }
+    return false;
   }
 
   public function CommandChangeStatus ($commande,$vendeur) {

@@ -180,7 +180,7 @@
             <option value="all">Tous les depots</option>
           </select>
         </div> -->
-        <div class="uk-width-1-4@m">
+        <div v-if="typeUser == 'admin' || typeUser == 'commercial' || typeUser == 'logistique'" class="uk-width-1-4@m">
           <label for=""><span uk-icon="users"></span> Vendeurs</label>
           <select @change="filterRequest()" v-model="filterData.vendeurs" class="uk-select uk-border-rounded">
             <option value="all">Tous les vendeurs</option>
