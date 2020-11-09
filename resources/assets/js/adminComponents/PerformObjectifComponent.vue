@@ -15,7 +15,6 @@
         <div class="uk-navbar-left">
             <ul class="uk-navbar-nav">
                 <li class=""><router-link to="/performances/acte-reabonnement">Acte de Reabonnement</router-link></li>
-                <!-- <li class=""><router-link to="/objectifs/all">Tous les objectifs</router-link></li> -->
             </ul>
 
         </div>
@@ -61,7 +60,7 @@
         </form>
         <div class="uk-grid-small" uk-grid>
             <div class="uk-width-1-2@m uk-width-1-1@s">
-                <div class="uk-card uk-card-default uk-card-small" style="box-shadow : none">
+                <div class="uk-card uk-card-default uk-card-small uk-box-shadow-small">
                     <div class="uk-card-header" style="border : none !important">
                         <h4 class="uk-card-title">Recrutement</h4>
                         <ve-histogram :data="recrutement"></ve-histogram>
@@ -69,11 +68,17 @@
                 </div>
             </div>
             <div class="uk-width-1-2@m uk-width-1-1@s">
-                <div class="uk-card uk-card-default uk-card-small" style="box-shadow : none">
+                <div class="uk-card uk-card-default uk-card-small uk-box-shadow-small">
                     <div class="uk-card-header" style="border : none !important">
                         <h4 class="uk-card-title">Reabonnement</h4>
                         <ve-histogram :data="reabonnement" :settings="chartSettings"></ve-histogram>
                     </div>
+                </div>
+            </div>
+            <div class="uk-width-1-2@m uk-width-1-1@s">
+                <div class="uk-card uk-card-default uk-card-small uk-box-shadow-small">
+                    <div class="uk-card-header">Migration</div>
+                    <ve-histogram :data="migration" :settings="chartSettings"></ve-histogram>
                 </div>
             </div>
         </div>
@@ -106,6 +111,10 @@ import VeHistogram from 'v-charts/lib/histogram.common'
                 },
                 reabonnement : {
                     columns : ['date','ttc','commission'],
+                    rows : []
+                },
+                migration : {
+                    columns : ['date','quantite'],
                     rows : []
                 },
                 chartSettings : {
@@ -143,6 +152,9 @@ import VeHistogram from 'v-charts/lib/histogram.common'
 
                     response = await axios.get('/admin/perform-obj/reabonnement')
                     this.reabonnement.rows = response.data
+
+                    response = await axios.get('/admin/perform-obj/migration')
+                    this.migration.rows = response.data
 
                     // get users li 
                     response = await axios.get('/admin/all-vendeurs')
