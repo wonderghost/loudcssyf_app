@@ -45,6 +45,7 @@ import affectationDepotVendeur from './adminComponents/AffectationDepotVendeur.v
 import affectationPdrafPdc from './adminComponents/AffectationPdrafComponent.vue'
 import acteReabonnement from './adminComponents/ActeReabonnement.vue'
 import editFormuleOption from './adminComponents/EditFormuleOptionComponent.vue'
+import commandSettings from './adminComponents/CommandSetting.vue'
 
 // VENDEURS
 import objectifUser from './userComponents/ObjectifUserComponent.vue'
@@ -564,6 +565,17 @@ const router = new VueRouter({
                 else {
                     next()
                 }
+            }
+        },
+        {
+            path : '/setting/command/',
+            component : commandSettings,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'admin') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
             }
         }
     ]

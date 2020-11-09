@@ -606,6 +606,7 @@ class ComposerStaticInit15d5dc02f650ad17553f69fb230f4dbd
         'App\\Http\\Requests\\SearchRequest' => __DIR__ . '/../..' . '/app/Http/Requests/SearchRequest.php',
         'App\\Http\\Requests\\UserEditRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UserEditRequest.php',
         'App\\Http\\Requests\\UserRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UserRequest.php',
+        'App\\Kits' => __DIR__ . '/../..' . '/app/Kits.php',
         'App\\Lesclients' => __DIR__ . '/../..' . '/app/Lesclients.php',
         'App\\Livraison' => __DIR__ . '/../..' . '/app/Livraison.php',
         'App\\LivraisonSerialFile' => __DIR__ . '/../..' . '/app/LivraisonSerialFile.php',

@@ -96,6 +96,7 @@ return array(
     'App\\Http\\Requests\\SearchRequest' => $baseDir . '/app/Http/Requests/SearchRequest.php',
     'App\\Http\\Requests\\UserEditRequest' => $baseDir . '/app/Http/Requests/UserEditRequest.php',
     'App\\Http\\Requests\\UserRequest' => $baseDir . '/app/Http/Requests/UserRequest.php',
+    'App\\Kits' => $baseDir . '/app/Kits.php',
     'App\\Lesclients' => $baseDir . '/app/Lesclients.php',
     'App\\Livraison' => $baseDir . '/app/Livraison.php',
     'App\\LivraisonSerialFile' => $baseDir . '/app/LivraisonSerialFile.php',

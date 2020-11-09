@@ -33,24 +33,33 @@
               <!-- COMMANDE MATERIEL -->
               <form @submit.prevent="sendCommandMaterial()">
 
-              <div class="uk-margin-small uk-grid-collapse uk-child-width-1-6@m"  uk-grid>
+              <div class="uk-grid-collapse uk-child-width-1-6@m"  uk-grid>
                 <div>
-                    <label uk-tooltip="">Kit Complet</label>
+                    <!-- <label uk-tooltip="">Kit Complet</label> -->
+                    <label for="">Commande</label>
+                    <select @change="getInfosByCommandMat()" v-model="commandDefaultValue" class="uk-select uk-border-rounded">
+                      <option value="">--Choisissez la commande --</option>
+                      <option v-for="(cm,index) in commandParameters" :key="index" :value="cm.id">{{cm.name}}</option>
+                    </select>
                 </div>
                 <div id="">
                   <label>Qte <input min="1" required @keyup="chooseQuantite()" @change="chooseQuantite()" type="number" v-model="formData.quantite"  class="uk-input uk-border-rounded" placeholder="Quantite"> </label>
                 </div>
                 <div>
-                  <label>Prix TTC (GNF)<input type="text" :value="material.ttc | numFormat"  disabled  class="uk-input uk-border-rounded" ></label>
+                  <label>Prix TTC (GNF)</label>
+                  <input type="text" :value="material.ttc | numFormat"  disabled  class="uk-input uk-border-rounded" >
                 </div>
                 <div>
-                  <label>HT (GNF)<input type="text" :value="material.ht | numFormat" disabled  class="uk-input uk-border-rounded" ></label>
+                  <label>HT (GNF)</label>
+                  <input type="text" :value="material.ht | numFormat" disabled  class="uk-input uk-border-rounded" >
                 </div>
                 <div>
-                  <label>TVA (18%) (GNF)<input type="text" :value="material.tva | numFormat" disabled  class="uk-input uk-border-rounded" ></label>
+                  <label>TVA (18%) (GNF)</label>
+                  <input type="text" :value="material.tva | numFormat" disabled  class="uk-input uk-border-rounded" >
                 </div>
                 <div>
-                  <label>Montant TTC (GNF)<input type="text" :value="montantTtc | numFormat"  disabled  class="uk-input uk-border-rounded" ></label>
+                  <label>Montant TTC (GNF)</label>
+                  <input type="text" :value="montantTtc | numFormat"  disabled  class="uk-input uk-border-rounded" >
                 </div>
                 <!-- SUBVENTION -->
                 <div></div>
@@ -197,10 +206,15 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       },
         mounted() {
           UIkit.offcanvas($("#side-nav")).hide();
+          this.getData()
           this.getInfosMaterial()
         },
         data () {
           return {
+            // 
+            commandDefaultValue : "",
+            commandParameters : [],
+            // 
             isLoading : false,
             fullPage : true,
             material : {},
@@ -250,24 +264,48 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 alert(error)
             }
           },
+          // Initialisation des informations du components
+          getData : async function () {
+            try {
+              let response = await axios.get('/user/new-command/get-data')
+              if(response) {
+                this.commandParameters = response.data
+              }
+            }
+            catch(error) {
+              alert(error)
+            }
+          },
+          getInfosByCommandMat : async function () {
+            try {
+
+              let response = await axios.get('/user/new-command/get-infos-material/'+this.commandDefaultValue)
+              if(response) {
+
+                this.material = response.data
+                this.subvention = {
+                  ttc : this.material.subvention,
+                  ht : Math.round(this.material.subvention/1.18),
+                  tva : Math.round(this.material.subvention - (this.material.subvention/1.18))
+                }
+                this.marge = {
+                  ttc : this.material.marge,
+                  ht : Math.round(this.material.marge/1.18),
+                  tva : Math.round(this.material.marge - (this.material.marge/1.18))
+                }
+              }
+            }
+            catch(error) {
+              alert(e)
+            }
+          },
           getInfosMaterial : async function () {
             try {
-              
               this.isLoading = true
-              let response = await axios.get('/user/new-command/get-infos-material')
-              this.material = response.data
-              this.subvention = {
-                ttc : this.material.subvention,
-                ht : Math.round(this.material.subvention/1.18),
-                tva : Math.round(this.material.subvention - (this.material.subvention/1.18))
-              }
-              this.marge = {
-                ttc : this.material.marge,
-                ht : Math.round(this.material.marge/1.18),
-                tva : Math.round(this.material.marge - (this.material.marge/1.18))
-              }
-              response  = await axios.get('/user/promo/list')
-                this.testRemboursementAfterPromo()
+              // 
+
+              let response  = await axios.get('/user/promo/list')
+              this.testRemboursementAfterPromo()
               if(response.data == 'fail') {
                 // la promo n'existe pas
                 this.promoState = false
@@ -375,10 +413,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 this.isLoading = false
                 alert("Success !")
                 Object.assign(this.$data,this.$options.all())
-                // UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Commande envoyee avec success :-)</div>")
-                //   .then(function () {
-                //     location.reload()
-                //   })
               }
             }
             catch (error) {

@@ -45,6 +45,7 @@ use App\Notifications;
 use App\TransfertMateriel;
 use App\TransfertSerial;
 use App\DeficientMaterial;
+use App\Kits;
 use Illuminate\Support\Facades\DB;
 
 
@@ -1233,6 +1234,45 @@ class AdminController extends Controller
 
       return response()
         ->json($request);
+    }
+    catch(AppException $e) {
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+
+
+  // SAVE KITS MATERIELS REQUEST 
+  public function saveKitRequest(Request $request,Kits $k) {
+    try {
+      $validation = $request->validate([
+        'intitule'  =>  'required|string',
+        'materiels.*' =>  'required|string|exists:produits,reference',
+        'password_confirmation' =>  'required|string'
+      ],[
+        'required'  =>  '`:attribute` requi(s)!'
+      ]);
+
+      // VALIDATION DU MOT DE PASSE 
+
+      if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
+        throw new AppException("Mot de passe invalide !");
+      }
+
+      // RECUPERATION DES INFOS PRODUITS
+
+      $matArray = $request->input('materiels');
+
+      $k->first_reference = count($matArray) > 0 ? $matArray[0] : NULL;
+      $k->second_reference = count($matArray) > 1 ? $matArray[1] : NULL;
+      $k->third_reference = count($matArray) > 2 ? $matArray[2] : NULL;
+
+      $k->name = $request->input('intitule');
+      $k->description = $request->input('description');
+
+      $k->save();
+      return response()
+        ->json('done');
     }
     catch(AppException $e) {
       header("Erreur",true,422);

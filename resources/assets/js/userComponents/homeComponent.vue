@@ -218,9 +218,11 @@
             <li class="uk-parent">
                 <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Commandes</a>
                 <ul class="uk-nav-sub">
-                    <!-- <li><a href="/admin/commandes"><span uk-icon="icon:arrow-right"></span> Toutes les Commandes</a></li> -->
                     <li>
                       <router-link to="/commandes"><span uk-icon="link"></span> Toutes les Commandes</router-link>
+                    </li>
+                    <li>
+                      <router-link to="/setting/command/"><span uk-icon="link"></span> Parametres Commande</router-link>
                     </li>
                 </ul>
             </li>

@@ -63,6 +63,8 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('admin/search/{slug}','AdminController@SearchText');
 	// COMMANDES
 	Route::get('/admin/commandes','AdminController@allCommandes');
+	# PARAMETRAGE DE COMMANDES DE KITS MATERIELS
+	Route::post('/admin/commandes/save-kits','AdminController@saveKitRequest');
 	
 	Route::get('/admin/commandes/livraison','AdminController@getAllLivraison');
 	// DASHBOARD DATA
@@ -340,7 +342,9 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/inventory/all-credit-vendeurs','CreditController@getCreditForVendeurs');
 
 	Route::get('/user/new-command','CommandController@addCommand')->middleware('vendeur');
-	Route::get('/user/new-command/get-infos-material','CommandController@infoMaterial')->middleware('vendeur');
+	// Route::get('/user/new-command/get-infos-material','CommandController@infoMaterial')->middleware('vendeur');
+	Route::get('/user/new-command/get-infos-material/{slug}','CommandController@infoMaterial')->middleware('vendeur');
+	Route::get('/user/new-command/get-data','CommandController@getData')->middleware('vendeur');
 
 	// ========= LISTE DES COMMANDES
 	Route::get('/user/command/filter/{user}/{state}/{promo}','AdminController@filterRequestCommande');

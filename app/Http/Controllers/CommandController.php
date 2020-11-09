@@ -25,6 +25,8 @@ use App\User;
 use App\TransactionAfrocash;
 use App\Notifications;
 use App\Alert;
+use App\Kits;
+
 use Illuminate\Support\Facades\DB;
 
 class CommandController extends Controller
@@ -35,10 +37,57 @@ class CommandController extends Controller
 		use Cga;
 		use Afrocashes;
 		// RECUPERATION DES INFORMATIONS LIEES AU MATERIAL
-		public function infoMaterial(Request $request , Produits $p , RapportVente $r ,CompenseMaterial $c , CommandMaterial $cm) {
+
+		public function getData(Kits $k) {
 			try {
-				$item = $p->where("with_serial",1)->first();
-				$parabole = $p->where('with_serial',0)->first();
+				$data = $k->all();
+				return response()
+					->json($data);
+			}
+			catch(AppException $e) {
+				header("Erreur",true,422);
+				die(json_encode($e->getMessage()));
+			}
+		}
+
+		public function infoMaterial($slug,Request $request , Produits $p , RapportVente $r ,CompenseMaterial $c , CommandMaterial $cm , Kits $k) {
+			try {
+				$dataKits = $k->find($slug);
+
+				$array_materiel = [];
+				if($dataKits->first_reference) {
+					array_push($array_materiel,$dataKits->first_reference);
+				}
+
+				if($dataKits->second_reference) {
+					array_push($array_materiel,$dataKits->second_reference);
+				}
+
+				if($dataKits->third_reference) {
+					array_push($array_materiel,$dataKits->third_reference);
+				}
+
+				$items = [];
+
+				foreach($array_materiel as $key	=>	$value) {
+					$items[$key] = $p->find($value);
+				}
+
+				$terminal = "";
+				$accessoire = [];
+
+				foreach($items as $value) {
+					if($value->with_serial == 1) {
+						$terminal = $value;
+					}
+					else {
+						array_push($accessoire,$value);
+					}
+				}
+
+
+
+
 
 				// trouver le nombre de parabole a livrer
 
@@ -49,14 +98,36 @@ class CommandController extends Controller
 				$compense = $c->whereIn('commande_id',$command)->sum('quantite');
 				//
 
+				$accessoire_prix = [];
+
+				foreach($accessoire as $key => $value) {
+					$pi = 0;
+					$pv = 0;
+
+					$pi += $value->prix_initial;
+					$pv += $value->prix_vente;
+
+					$accessoire_prix = [
+						'prix_initial'	=>	$pi,
+						'prix_vente'	=>	$pv
+					];
+				}
+				// return response()
+				// 	->json([$terminal,$accessoire_prix]);
+				
+				
+
+				// $item = $p->where("with_serial",1)->first();
+				// $parabole = $p->where('with_serial',0)->first();
+
 				$all = [
-					'ttc'	=>	$item->prix_initial + $parabole->prix_initial,
-					'ht'	=>	ceil($item->prix_vente/1.18),
-					'tva'	=>	ceil($item->prix_vente - ($item->prix_vente/1.18)),
-					'marge'	=>	$item->marge,
-					'subvention'	=>	($item->prix_initial - $item->prix_vente) + ($parabole->prix_initial - $parabole->prix_vente),
-					'prix_vente'	=>	$item->prix_vente,
-					'reference'	=>	$item->reference ,
+					'ttc'	=>	$terminal->prix_initial + $accessoire_prix['prix_initial'],
+					'ht'	=>	ceil($terminal->prix_vente/1.18),
+					'tva'	=>	ceil($terminal->prix_vente - ($terminal->prix_vente/1.18)),
+					'marge'	=>	$terminal->marge,
+					'subvention'	=>	($terminal->prix_initial - $terminal->prix_vente) + ($accessoire_prix['prix_initial'] - $accessoire_prix['prix_vente']),
+					'prix_vente'	=>	$terminal->prix_vente,
+					'reference'	=>	$dataKits->id ,
 					'migration'	=>	$migration - $compense,
 					'compense'	=>	0
 				];
