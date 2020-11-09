@@ -176,7 +176,6 @@ Route::middleware(['auth','admin'])->group(function () {
 	// INVENTAIRE SUR LE TERRAIN
 	Route::get('/admin/inventory','LogistiqueController@inventory');
 	Route::get('/admin/inventory/get-serial-number-list','LogistiqueController@getListMaterialByVendeurs');
-	Route::post('/admin/inventory-stock/filter','LogistiqueController@filterInventoryStock');
 	Route::get('/admin/inventory/all-material','LogistiqueController@getAllMaterialForVendeurs');
 
 	# AFFECTATION D'UN MATERIEL D'UN DEPOT A UN VENDEUR
@@ -200,6 +199,10 @@ Route::middleware(['auth','admin'])->group(function () {
 Auth::routes();
 
 Route::middleware(['auth','unblocked'])->group(function () {
+	// 
+	Route::get('/user/inventory-stock/filter/{vendeurs}/{status}','LogistiqueController@filterInventoryStock');
+	// 
+
 	Route::get('/user/get-all-pdraf','PdrafController@getAllPdraf');
 	Route::get('/user/get-all-pdc','PdcController@getAllPdc');
 	

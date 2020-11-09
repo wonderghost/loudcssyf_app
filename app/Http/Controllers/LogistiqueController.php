@@ -479,27 +479,30 @@ class LogistiqueController extends Controller
 
     # FILTREZ L'INVENTAIRE DE STOCK DES VENDEURS
     
-    public function filterInventoryStock(Request $request , Exemplaire $sn) {
+    public function filterInventoryStock($vendeurs,$status , Exemplaire $sn) {
       try {
         $serials = $sn
           ->whereNotNull('vendeurs');
           
-        switch ($request->input('vendeurs')) {
+        switch ($vendeurs) {
           case 'all':
-              switch ($request->input('status')) { 
+              switch ($status) { 
+                case 'all'; 
+                  
+                  break;
                 default:
-                  $serials->where('status',$request->input('status'));
+                  $serials->where('status',$status);
                   break;
               }
             break;
           default:
-            switch ($request->input('status')) {
+            switch ($status) {
               case 'all':
-                $serials->where('vendeurs',$request->input('vendeurs'));
+                $serials->where('vendeurs',$vendeurs);
               break;                
               default:
-                $serials->where('vendeurs',$request->input('vendeurs'))
-                  ->where('status',$request->input('status'));
+                $serials->where('vendeurs',$vendeurs)
+                  ->where('status',$status);
                 break;
             }
             break;

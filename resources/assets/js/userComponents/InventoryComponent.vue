@@ -301,7 +301,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             filterData : {
               _token : "",
               status : "all",
-              origine : "",
               vendeurs : "all"
             }
           }
@@ -335,8 +334,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             try {
               this.isLoading = true
 
+              if(this.typeUser == 'v_da' || this.typeUser == 'v_standart') {
+                this.filterData.vendeurs = this.userName
+              }
+
               this.filterData._token = this.myToken
-              let response = await axios.post('/admin/inventory-stock/filter',this.filterData)
+              let response = await axios.get('/user/inventory-stock/filter/'+this.filterData.vendeurs+'/'+this.filterData.status)
 
               if(response) {
 
