@@ -198,6 +198,20 @@ class ChartController extends Controller
         }
     }
 
+    public function getMigrationStat(RapportVente $r) {
+        try {
+            return response()
+                ->json($this->rapportStat(
+                    $r,
+                    '',
+                    'migration'
+                ));
+        } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
     public function getReabonnementStat(RapportVente $r) {
         try {
             return response()

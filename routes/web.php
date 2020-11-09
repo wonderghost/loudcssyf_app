@@ -74,6 +74,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	#DATA PERFORMANCE  ON DASHBOARD
 	Route::get('/admin/perform-obj/recrutement','ChartController@getRecrutementStat');
 	Route::get('/admin/perform-obj/reabonnement','ChartController@getReabonnementStat');
+	Route::get('/admin/perform-obj/migration','ChartController@getMigrationStat');
 	Route::post('/admin/perform-obj/filter','ChartController@makeFilter');
 
 	Route::get('/admin/performance/acte-reabonnement','ChartController@getActeReabonnementStat');
