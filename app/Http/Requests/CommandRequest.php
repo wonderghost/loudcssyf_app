@@ -26,7 +26,7 @@ class CommandRequest extends FormRequest
         return [
             //
             'quantite'  =>  'required|numeric|min:1',
-            'reference_material'   =>  'required|string',
+            'reference_material'   =>  'required',
             'prix_achat'  =>  'required|numeric'
         ];
     }

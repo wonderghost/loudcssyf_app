@@ -54,6 +54,10 @@ class CommandController extends Controller
 			try {
 				$dataKits = $k->find($slug);
 
+				if(!$dataKits) {
+					throw new AppException("Veuillez selectionner un article ...");
+				}
+
 				$array_materiel = [];
 				if($dataKits->first_reference) {
 					array_push($array_materiel,$dataKits->first_reference);
@@ -85,17 +89,15 @@ class CommandController extends Controller
 					}
 				}
 
-
-
-
-
 				// trouver le nombre de parabole a livrer
 
 				$migration = $r->where('vendeurs',$request->user()->username)
 					->where('type','migration')
 					->sum('quantite');
+
 				$command = $cm->select('id_commande')->where('vendeurs',$request->user()->username)->get();
 				$compense = $c->whereIn('commande_id',$command)->sum('quantite');
+
 				//
 
 				$accessoire_prix = [];
@@ -171,10 +173,16 @@ class CommandController extends Controller
 				throw new AppException("Solde Indisponible!");
 			}
 			// @@@@@
+
+			// return response()
+			// 	->Json($request);
+			// die();
+
 			if(!$this->isExistCommandEnAttente()) {
 				$command = new CommandMaterial;// CREATION DE LA COMMANDE
-				$command_produit = new CommandProduit;
-				$command_produit_parabole = new CommandProduit;
+				// $command_produit = new CommandProduit; //TERMINAL
+				// $command_produit_parabole = new CommandProduit; //ANTENNE | PARABOLE
+				$commandByProduit = [];
 
 				$command->id_commande = "CM-".time();
 				$command->vendeurs = Auth::user()->username;
@@ -184,67 +192,86 @@ class CommandController extends Controller
 					$command->promos_id = $request->input('promo_id');
 				}
 				// ##
-				$command_produit->commande = $command->id_commande;
-				$command_produit_parabole->commande = $command->id_commande;
+				// $command_produit->commande = $command->id_commande;
+				// $command_produit_parabole->commande = $command->id_commande;
 
-				$command_produit_parabole->produit = Produits::where('libelle','Parabole')->first()->reference;
+				// 
+				// RECUPERATION DES PRODUITS DE L'ARTICLE COMMANDE
+				##@@@@@@@@@@@@@@@@@@@@@@@@@ GET INFO KIT @@@@@@@@@@@@@@@@@@@@@@@@@@
+
+				$kit = Kits::find($request->input('reference_material'));
+
+				$terminal = $kit->getTerminalReference();
+				$accessoire = $kit->getAccessoryReference();
+
+				return response()
+					->json([$kit,$terminal,$accessoire]);
+
+				##@@@@@@@@@@@@@@@@@@@@@@@@@@
+
 				$command_produit->produit = $request->input('reference_material');
+				$command_produit_parabole->produit = Produits::where('libelle','Parabole')->first()->reference;
 				
 				// QUANTITE DE PARABOLE A LIVRER	
+				
 				$migration = RapportVente::where('vendeurs',Auth::user()->username)->where('type','migration')->sum('quantite');
 
 				$commandAll = CommandMaterial::select('id_commande')->where('vendeurs',$request->user()->username)->get();
 				$compense = CompenseMaterial::whereIn('commande_id',$commandAll)->sum('quantite');
 
-					$parabole_a_livrer = $request->input('quantite') - ($migration - $compense);
+				$parabole_a_livrer = $request->input('quantite') - ($migration - $compense);
 
-					$command_produit_parabole->quantite_commande = $request->input('quantite');
-					$command_produit_parabole->parabole_a_livrer = $parabole_a_livrer < 0 ? 0 : $parabole_a_livrer;
+				$command_produit_parabole->quantite_commande = $request->input('quantite');
+				$command_produit_parabole->parabole_a_livrer = $parabole_a_livrer < 0 ? 0 : $parabole_a_livrer;
 
-					$command_produit->quantite_commande = $request->input('quantite');
-					$command_produit->parabole_a_livrer = $request->input('quantite');
-					
-					$transaction = new TransactionAfrocash;
-					$transaction->command_material_id = $command->id_commande;
+				$command_produit->quantite_commande = $request->input('quantite');
+				$command_produit->parabole_a_livrer = $request->input('quantite');
+				
+				$transaction = new TransactionAfrocash;
+				$transaction->command_material_id = $command->id_commande;
 
-					$command->save();
-					$command_produit->save();
-					$command_produit_parabole->save();
+				// $command->save();
+				// $command_produit->save();
+				// $command_produit_parabole->save();
 
-					// DEBIT DU COMPTE AFROCASH DU VENDEUR / DA
-					$afrocash_courant_vendeurs = Afrocash::where([
-						'vendeurs'	=>	Auth::user()->username,
-						'type'	=>	'courant'
-					])->first();
+				// DEBIT DU COMPTE AFROCASH DU VENDEUR / DA
 
-					// CREDIT DU COMPTE AFROCASH LOGISTIQUE
-					$afrocash_courant_logistique = Afrocash::where([
-						'vendeurs'	=>	User::where('type','logistique')->first()->username,
-						'type'	=>	'courant'
-					])->first();
+				// $afrocash_courant_vendeurs = Afrocash::where([
+				// 	'vendeurs'	=>	Auth::user()->username,
+				// 	'type'	=>	'courant'
+				// ])->first();
 
-					$afrocash_courant_vendeurs->debitAccountAfrocash($request->input('prix_achat'));
-					$afrocash_courant_logistique->creditAccountAfrocash($request->input('prix_achat'));
+				// CREDIT DU COMPTE AFROCASH LOGISTIQUE
 
-					$afrocash_courant_vendeurs->save();
-					$afrocash_courant_logistique->save();
+				// $afrocash_courant_logistique = Afrocash::where([
+				// 	'vendeurs'	=>	User::where('type','logistique')->first()->username,
+				// 	'type'	=>	'courant'
+				// ])->first();
 
-					$transaction->motif = "Commande Materiel";
-					$transaction->compte_debite = $afrocash_courant_vendeurs->numero_compte;
-					$transaction->compte_credite = $afrocash_courant_logistique->numero_compte;
-					$transaction->montant = $request->input('prix_achat');
+				$afrocash_courant_vendeurs->debitAccountAfrocash($request->input('prix_achat'));
+				$afrocash_courant_logistique->creditAccountAfrocash($request->input('prix_achat'));
 
-					$transaction->save();
-					// ENREGISTREMENT DE LA NOTIFICATION
-					$n = $this->sendNotification("Commande Materiel" ,"Il y a une commande en attente de confirmation pour : ".Auth::user()->localisation,User::where('type','admin')->first()->username);
-					$n->save();
-					$n = $this->sendNotification("Commande Materiel" ,"Votre commande est en attente de confirmation!",Auth::user()->username);
-					$n->save();
-					$n = $this->sendNotification("Commande Materiel" ,"Vous avez une commande en attente de la part de ".Auth::user()->localisation,User::where('type','logistique')->first()->username);
-					$n->save();
+				// $afrocash_courant_vendeurs->save();
+				// $afrocash_courant_logistique->save();
 
-					return response()
-						->json('done');
+				// $transaction->motif = "Commande Materiel";
+				// $transaction->compte_debite = $afrocash_courant_vendeurs->numero_compte;
+				// $transaction->compte_credite = $afrocash_courant_logistique->numero_compte;
+				// $transaction->montant = $request->input('prix_achat');
+
+				// $transaction->save();
+
+				// ENREGISTREMENT DE LA NOTIFICATION
+
+				// $n = $this->sendNotification("Commande Materiel" ,"Il y a une commande en attente de confirmation pour : ".Auth::user()->localisation,User::where('type','admin')->first()->username);
+				// $n->save();
+				// $n = $this->sendNotification("Commande Materiel" ,"Votre commande est en attente de confirmation!",Auth::user()->username);
+				// $n->save();
+				// $n = $this->sendNotification("Commande Materiel" ,"Vous avez une commande en attente de la part de ".Auth::user()->localisation,User::where('type','logistique')->first()->username);
+				// $n->save();
+
+				return response()
+					->json('done');
 			} else {
 				throw new AppException("Vous avez une commande en attente de confirmation!");
 			}

@@ -20,12 +20,12 @@
       </template>
       </ul>
       <!-- Erreor block -->
-            <template v-if="errors.length">
-            <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" v-for="(error,index) in errors" :key="index" uk-alert>
-              <a href="#" class="uk-alert-close" uk-close></a>
-              <p>{{error}}</p>
-            </div>
-          </template>
+      <template v-if="errors.length">
+        <div class="uk-alert-danger uk-border-rounded uk-width-1-1@m" v-for="(error,index) in errors" :key="index" uk-alert>
+          <a href="#" class="uk-alert-close" uk-close></a>
+          <p>{{error}}</p>
+        </div>
+      </template>
        <template v-if="!remboursementPromoState">
         <ul class="uk-switcher uk -margin">
             <!-- ENVOI DE COMMANDE MATERIEL -->
@@ -36,9 +36,9 @@
               <div class="uk-grid-collapse uk-child-width-1-6@m"  uk-grid>
                 <div>
                     <!-- <label uk-tooltip="">Kit Complet</label> -->
-                    <label for="">Commande</label>
+                    <label for="">Article(s)</label>
                     <select @change="getInfosByCommandMat()" v-model="commandDefaultValue" class="uk-select uk-border-rounded">
-                      <option value="">--Choisissez la commande --</option>
+                      <option value="none">--Choisissez la commande --</option>
                       <option v-for="(cm,index) in commandParameters" :key="index" :value="cm.id">{{cm.name}}</option>
                     </select>
                 </div>
@@ -212,7 +212,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         data () {
           return {
             // 
-            commandDefaultValue : "",
+            commandDefaultValue : "none",
             commandParameters : [],
             // 
             isLoading : false,
@@ -293,10 +293,19 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                   ht : Math.round(this.material.marge/1.18),
                   tva : Math.round(this.material.marge - (this.material.marge/1.18))
                 }
+
+                this.chooseQuantite()
               }
             }
             catch(error) {
-              alert(e)
+              if(error.response.data.errors) {
+                let errorTab = error.response.data.errors
+                for (var prop in errorTab) {
+                  this.errors.push(errorTab[prop][0])
+                }
+              } else {
+                  this.errors.push(error.response.data)
+              }
             }
           },
           getInfosMaterial : async function () {
@@ -337,14 +346,15 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 // la promo est inactive
                 if(this.typeUser == 'v_da') {
                   this.formData.prix_achat = parseInt(this.formData.quantite) * (this.material.prix_vente - (this.marge.ht))
-                } else {
-                    this.formData.prix_achat = parseInt(this.formData.quantite) * this.material.prix_vente
-                  }
+                } 
+                else {
+                  this.formData.prix_achat = parseInt(this.formData.quantite) * this.material.prix_vente
+                }
             }
 
           },
           sendCommandMaterial : async function () {
-            this.isLoading = true
+            // this.isLoading = true
             try {
               this.formData._token = this.myToken
               this.formData.reference_material = this.material.reference
