@@ -1,19 +1,19 @@
 <template>
   <div class="uk-container uk-container-large">
     <loading :active.sync="isLoading"
-        :can-cancel="false"
-        :is-full-page="fullPage"
-        loader="bars"
-        :opacity="1"
-        color="#fff"
-        background-color="#083050"></loading>
+      :can-cancel="false"
+      :is-full-page="fullPage"
+      loader="bars"
+      :opacity="1"
+      color="#1e87f0"
+      background-color="#fff"></loading>
 
         <h3>Ravitaillement Depot</h3>
         <hr class="uk-divider-small">
 
         <!-- Erreor block -->
-          <template v-if="errors.length" v-for="error in errors">
-          <div class="uk-alert-danger uk-border-rounded uk-align-center uk-box-shadow-hover-small uk-width-1-3@m" uk-alert>
+          <template v-if="errors.length">
+          <div class="uk-alert-danger uk-border-rounded uk-align-center uk-box-shadow-hover-small uk-width-1-3@m" uk-alert v-for="(error,index) in errors" :key="index">
             <a href="#" class="uk-alert-close" uk-close></a>
             <p>{{error}}</p>
           </div>
@@ -27,7 +27,7 @@
               <label for="">Material</label>
               <select class="uk-select uk-border-rounded" @change="makeSerial($event)" v-model="formData.produit">
                 <option value="">--Materiel--</option>
-                <option :value="m.reference" :id="m.with_serial" v-for="m in materiels"> {{m.libelle}} </option>
+                <option :value="m.reference" :id="m.with_serial" v-for="(m,index) in materiels" :key="index"> {{m.libelle}} </option>
               </select>
             </div>
 
@@ -35,7 +35,7 @@
               <label for="">Depot</label>
               <select class="uk-select uk-border-rounded" v-model="formData.depot">
                 <option value="">-- Choisissez un depot --</option>
-                <option :value="d.localisation" v-for="d in depots"> {{d.localisation}} </option>
+                <option :value="d.localisation" v-for="(d,index) in depots" :key="index"> {{d.localisation}} </option>
               </select>
             </div>
             <div class="uk-width-1-1@m uk-margin-small">
@@ -54,7 +54,7 @@
                 <p> <span uk-icon="icon : info"></span> Remplissez les champs vides !</p>
               </div>
               <div class="uk-grid uk-grid-small" uk-grid>
-                <div v-for="i in parseInt(formData.quantite)" class="uk-width-1-5@m">
+                <div v-for="i in parseInt(formData.quantite)" class="uk-width-1-5@m" :key="i">
                   <label for="">Serial Number {{i}}</label>
                   <input type="text" class="uk-input uk-border-rounded" v-model="formData.serials[i-1]" placeholder="Entrez le Numero de Serie">
                 </div>
@@ -101,10 +101,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       makeSerial : function (event) {
         var terminal
         this.materiels.forEach( (value) => {
-          if(value.with_serial == 1) {
+          if(value.with_serial == 1 && event.target.value == value.reference) {
             terminal = value
           }
+          return 0
         })
+        
         if(event.target.value == terminal.reference) {
           this.serial = true
         }
@@ -124,7 +126,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         }
       },
       sendRavitaillementDepot : async function () {
-        this.isLoading = true
+        // this.isLoading = true
         try {
           this.formData._token = this.myToken
           let response = await axios.post('/user/ravitailler-depot',this.formData)

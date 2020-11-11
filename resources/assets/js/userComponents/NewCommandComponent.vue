@@ -354,7 +354,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 
           },
           sendCommandMaterial : async function () {
-            // this.isLoading = true
+            this.isLoading = true
             try {
               this.formData._token = this.myToken
               this.formData.reference_material = this.material.reference

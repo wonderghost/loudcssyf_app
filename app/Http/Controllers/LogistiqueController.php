@@ -91,42 +91,46 @@ class LogistiqueController extends Controller
           // verifier si le serial_number existe
           if($this->isWithSerialNumber($request->input('produit'))) {
 
-            session([
-              'quantite'  =>  $request->input('quantite'),
-              'produit' =>  $request->input('produit'),
-              'depot' =>  $request->input('depot')
-            ]);
+            // session([
+            //   'quantite'  =>  $request->input('quantite'),
+            //   'produit' =>  $request->input('produit'),
+            //   'depot' =>  $request->input('depot')
+            // ]);
             #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@22222
-            $produit = Produits::find(session('produit'));
+            $produit = Produits::find(request()->produit);
 
+            
             // ENREGISTREMENT DES SERIAL NUMBER
-            for($i=0;$i<session('quantite');$i++) {
+            $serialExemplaire = [];
+            $stockCentral = [];
 
-                DB::table('exemplaire')->insert(
-                    [
-                        'serial_number' => $request->input("serials")[$i],
-                        'produit' => $produit->reference,
-                        'origine' =>  true
-                    ]
-                );
-                DB::table('stock_central')->insert(
-                    [
-                        'exemplaire' => $request->input("serials")[$i],
-                        'depot' => session('depot')
-                    ]
-                );
+            foreach(request()->serials as $key => $value) {
+              $serialExemplaire[$key] = new Exemplaire;
+              $serialExemplaire[$key]->serial_number = $value;
+              $serialExemplaire[$key]->produit = $produit->reference;
+              $serialExemplaire[$key]->origine = true;
+
+              $stockCentral[$key] = new Stock;
+              $stockCentral[$key]->exemplaire = $value;
+              $stockCentral[$key]->depot = request()->depot;
             }
+
+
+            return response()
+              ->json([$serialExemplaire,$stockCentral]);
+
             // ENREGISTREMENT DANS LE STOCK PRIME
+
             $entreeDepot = new RavitaillementDepot;
             $entreeDepot->produit = $produit->reference;
-            $entreeDepot->depot = session('depot');
-            $entreeDepot->quantite = session('quantite');
+            $entreeDepot->depot = request()->depot;
+            $entreeDepot->quantite = request()->quantite;
 
-            if($prod = $this->isInStock($produit->reference,session('depot'))) {
+            if($prod = $this->isInStock($produit->reference,request()->depot)) {
                 //LE PRODUIT EST DEJA PRESENT ON AUGMENTE LA QUANTITE
                 $_quantite = $prod->quantite;
-                $_quantite += session('quantite');
-                StockPrime::select()->where('produit',$produit->reference)->where('depot',session('depot'))->update([
+                $_quantite += request()->quantite;
+                StockPrime::select()->where('produit',$produit->reference)->where('depot',request()->depot)->update([
                     'quantite'=> $_quantite
                 ]);
 

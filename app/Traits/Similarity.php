@@ -34,6 +34,7 @@ use App\Alert;
 use App\CommandCredit;
 use App\Promo;
 use Illuminate\Support\Facades\Crypt;
+use App\Kits;
 
 
 Trait Similarity {
@@ -434,27 +435,42 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
   public function organizeCommandList($commands) {
     $all = [];
     foreach($commands as $key => $values) {
-        $vendeurs = User::where('username',$values->vendeurs)->first();
+        $vendeurs = $values->vendeurs()->first();
 
         $date = new Carbon($values->created_at);
         $date->setLocale('fr_FR');
-        $command_produit = CommandProduit::where([
-        'commande'  =>  $values->id_commande,
-        'produit' =>  Produits::where('with_serial',1)->first()->reference
-        ])->first();
 
-        $parabole = CommandProduit::where([
-          'commande'  =>  $values->id_commande,
-          'produit' =>  Produits::where('with_serial',0)->first()->reference
-          ])->first();
+        $commandItems = $values->commandProduits()->get();
+
+        $accessory = [];
+        $terminal = [];
+
+        foreach($commandItems as $value) {
+          if($value->produits()->where('with_serial',1)->first()) {
+            $terminal = [
+              'item'  =>  $value->produits()->where('with_serial',1)->first(),
+              'data_commande' =>  $value
+            ];
+          }
+          else {
+            array_push($accessory,[
+              'item'  =>  $value->produits()->where('with_serial',0)->first(),
+              'data_commande' =>  $value
+            ]);
+          }
+        }
+
+        $kit = $terminal['item']->kits()
+          ->where('second_reference',$accessory[0]['item']->reference)
+          ->first();
 
         $_promo = $values->promos_id;
         $all [$key] = [
           'date'  =>  $date->toDateString(),
           'vendeurs'  => $vendeurs->localisation,
-          'item' => 'Kit complet',
-          'quantite' => $command_produit ? $command_produit->quantite_commande : '',
-          'parabole_a_livrer' =>  $parabole ? $parabole->parabole_a_livrer : '',
+          'item' => $kit->name,
+          'quantite' => $terminal['data_commande'] ? $terminal['data_commande']->quantite_commande : '',
+          'parabole_a_livrer' =>  $accessory[0]['data_commande'] ? $accessory[0]['data_commande']->parabole_a_livrer : '',
           'status' =>  $values->status,
           'promo' =>  $_promo ? 'En Promo' : 'Hors Promo',
           'id' => $values->id,
@@ -462,6 +478,7 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
           'id_command'  =>  Crypt::encryptString($values->id_commande)
         ];
     }
+
     return [
       'all' =>  $all,
       'next_url'	=> $commands->nextPageUrl(),

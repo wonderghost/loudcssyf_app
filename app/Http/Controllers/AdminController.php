@@ -677,7 +677,7 @@ class AdminController extends Controller
     try {
       if($request->user()->type != 'v_da' && $request->user()->type != 'v_standart') {
 
-        $commands= $c::where('status','unconfirmed')
+        $commands= $c->where('status','unconfirmed')
           ->orderBy('created_at','desc')
           ->paginate(100);
       }
