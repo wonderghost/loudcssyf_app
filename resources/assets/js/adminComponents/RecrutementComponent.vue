@@ -31,14 +31,14 @@
                   <label for="">Formule</label>
                   <select @change="calculMontantTtc()" v-model="formData.formule[input-1]" class="uk-select uk-border-rounded">
                     <option value="">--Formule--</option>
-                    <option v-for="f in formules" :key="f.nom" :data-price="f.prix" :value="f.nom">{{f.nom}}</option>
+                    <option v-for="f in formules" :key="f.nom" :data-price="f.prix" :value="f.nom">{{f.title}}</option>
                   </select>
                 </div>
                 <div class="uk-width-1-6@m">
                   <label for="">Options</label>
                   <select @change="calculMontantTtc()" v-model="formData.options[input-1]" class="uk-select uk-border-rounded">
                     <option value="">--Option--</option>
-                    <option v-for="o in options" :key="o.nom" :value="o.nom">{{o.nom}}</option>
+                    <option v-for="o in options" :key="o.nom" :value="o.nom">{{o.title}}</option>
                   </select>
                 </div>
                 <div class="uk-width-1-6@m">

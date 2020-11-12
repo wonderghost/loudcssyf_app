@@ -22,7 +22,7 @@
                 <form @submit.prevent="sendEditRequest()" class="uk-grid-small" uk-grid>
                     <div class="uk-width-1-1@m">
                         <label for="">Nom de la formule</label>
-                        <input v-model="dataFormEdit.formule.nom" type="text" class="uk-input uk-border-rounded" placeholder="Nom de la formule">
+                        <input v-model="dataFormEdit.formule.title" type="text" class="uk-input uk-border-rounded" placeholder="Nom de la formule">
                     </div>
                     <div class="uk-width-1-1@m">
                         <label for="">Prix</label>
@@ -43,7 +43,7 @@
                 <form @submit.prevent="sendEditRequest()" class="uk-grid-small" uk-grid>
                     <div class="uk-width-1-1@m">
                         <label for="">Nom de l'option</label>
-                        <input v-model="dataFormEdit.option.nom" type="text" class="uk-input uk-border-rounded"  placeholder="Entrez le nom de l'option">
+                        <input v-model="dataFormEdit.option.title" type="text" class="uk-input uk-border-rounded"  placeholder="Entrez le nom de l'option">
                     </div>
                     <div class="uk-width-1-1@m">
                         <label for="">Prix</label>

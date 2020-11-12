@@ -21,11 +21,8 @@
               <h3 class="uk-card-title">{{m.localisation}}</h3>
               <p>
                 <ul class="uk-list uk-list-divider">
-                  <li>
-                    <span class="uk-card-title">Terminal : {{m.terminal}}</span> ,
-                  </li>
-                  <li>
-                    <span class="uk-card-title">Parabole : {{m.parabole}}</span>
+                  <li v-for="p in m.produits" :key="p.infos.reference">
+                    <span class="uk-card-title">{{ p.infos.libelle }} : {{p.quantite}}</span> ,
                   </li>
                 </ul>
               </p>
@@ -111,6 +108,15 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       },
       data () {
         return {
+          // paginate
+            nextUrl : "",
+            lastUrl : "",
+            perPage : "",
+            currentPage : 1,
+            firstPage : "",
+            firstItem : 1,
+            total : 0,
+    // #####
           fieldsExport : {
             'Numero Materiel' : 'numero_materiel',
             'Depot' : 'depot',
@@ -162,7 +168,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               var response = await axios.get('/user/inventory/depot')
             }
             this.materials = response.data
-            this.$store.commit('setMaterials',response.data)
             this.isLoading = false
           } catch (e) {
               alert(e)
