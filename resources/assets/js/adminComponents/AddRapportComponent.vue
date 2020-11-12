@@ -33,7 +33,7 @@
                     </p>
                   </div>
                   <select v-model="formData.promo_id" class="uk-select uk-border-rounded">
-                    <option value=""> -- Promo --</option>
+                    <option value="none"> -- Promo --</option>
                     <option :value="lp.id" v-for="lp in listingPromo" :key="lp.id">{{lp.intitule}}</option>
                   </select>
                 </div>
@@ -51,14 +51,14 @@
                 <recrutement-component 
                   :rapp-date="formData.date"
                   :rapp-vendeur="formData.vendeurs"
-                  :promo-id="'\''+formData.promo_id+'\''"></recrutement-component>
+                  :promo-id="formData.promo_id"></recrutement-component>
               </li>
               <li>
                 <!-- REABONNEMENT -->
                 <reabonnement-component
                   :rapp-date="formData.date"
                   :rapp-vendeur="formData.vendeurs"
-                  :promo-id="'\''+formData.promo_id+'\''"></reabonnement-component>
+                  :promo-id="formData.promo_id"></reabonnement-component>
                 <!-- // -->
               </li>
               <li>
@@ -141,7 +141,7 @@ import reabo from './ReabonnementComponent.vue'
           vendeurs : "",
           date : "",
           montant_ttc : 0,
-          promo_id : "",
+          promo_id : 'none',
           serial_number : [],
           formule : [],
           debut : [],

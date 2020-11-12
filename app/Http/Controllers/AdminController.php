@@ -316,6 +316,7 @@ class AdminController extends Controller
           foreach($formule as $key => $value) {
             $data_formule[$key] = [
               'nom' =>  $value->nom,
+              'title' =>  $value->title,
               'created_at'  =>  $value->created_at,
               'prix'  =>  $value->prix,
               'encrypted_name'  =>  Crypt::encryptString($value->nom)
@@ -324,7 +325,8 @@ class AdminController extends Controller
 
           foreach($options as $key => $value) {
             $data_option[$key] = [
-              'nom' =>  $value->nom,
+              'nom'  =>  $value->nom,
+              'title' =>  $value->title,
               'created_at'  =>  $value->created_at,
               'prix'  =>  $value->prix,
               'encrypted_name'  =>  Crypt::encryptString($value->nom)
@@ -352,8 +354,9 @@ class AdminController extends Controller
             ]);
 
             $formule = new Formule;
-            $formule->nom = $request->input('name');
-            $formule->prix = $request->input('price'); 
+            $formule->nom = Str::slug(request()->name);
+            $formule->title = request()->name;
+            $formule->prix = request()->price;
 
             $formule->save();
             return response()
@@ -1213,9 +1216,9 @@ class AdminController extends Controller
     try {
 
       $formule = $f->find(Crypt::decryptString($slug));
-      $formule->nom = $request->input('nom');
-      $formule->prix = $request->input('prix');
-      $formule->save();
+      $formule->title = request()->title;
+      $formule->prix = request()->prix;
+      $formule->update();
 
       return response()
         ->json('done');

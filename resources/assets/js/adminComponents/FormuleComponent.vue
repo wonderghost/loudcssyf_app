@@ -28,10 +28,11 @@
                     <div class="uk-width-1-2@m">
                         <ul class="uk-list uk-list-divider">
                             <li v-for="f in formules" :key="f.nom"> 
-                                <span>{{f.nom}}</span>
+                                <span>{{f.title}}</span>
                                 <span class="uk-float-right">{{f.prix | numFormat}} GNF
                                     <!-- <button uk-tooltip="Cliquez pour modifier" class="uk-text-capitalize uk-button-primary uk-border-rounded"><span uk-icon="icon : pencil"></span></button> -->
-                                    <router-link :to="'/setting/formule/'+f.encrypted_name+'/edit'"><span uk-icon="pencil"></span></router-link>
+                                    <router-link uk-tooltip="Editer" class="uk-button uk-button-primary uk-button-small uk-padding-remove uk-border-rounded" :to="'/setting/formule/'+f.encrypted_name+'/edit'"><i class="material-icons">edit</i></router-link>
+                                    <button uk-tooltip="Supprimer" class="uk-button uk-button-danger uk-button-small uk-padding-remove uk-border-rounded"><i class="material-icons">delete</i></button>
                                 </span>
                             </li>
                         </ul>
@@ -48,10 +49,11 @@
                     <div class="uk-width-1-2@m">
                         <ul class="uk-list uk-list-divider">
                             <li v-for="o in options" :key="o.nom"> 
-                                <span>{{o.nom}}</span>
+                                <span>{{o.title}}</span>
                                 <span class="uk-float-right">{{o.prix | numFormat}} GNF
                                     <!-- <button uk-tooltip="Cliquez pour modifier" class="uk-text-capitalize uk-button-primary uk-border-rounded"><span uk-icon="icon : pencil"></span></button> -->
-                                    <router-link :to="'/setting/option/'+o.encrypted_name+'/edit'"><span uk-icon="pencil"></span></router-link>
+                                    <router-link uk-tooltip="Editer" class="uk-button uk-button-primary uk-button-small uk-padding-remove uk-border-rounded" :to="'/setting/option/'+o.encrypted_name+'/edit'"><i class="material-icons">edit</i></router-link>
+                                    <button uk-tooltip="Supprimer" class="uk-button uk-button-danger uk-button-small uk-padding-remove uk-border-rounded"><i class="material-icons">delete</i></button>
                                 </span>
                             </li>
                         </ul>

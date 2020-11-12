@@ -783,22 +783,14 @@ class LogistiqueController extends Controller
         
         $stock = $value->stockMateriel()->get();
 
-        $terminal_quantite = 0 ;
-        $parabole_quantite = 0;
+        foreach($stock as $_key => $_value) {
+          $all[$key]['localisation'] = $value->localisation;
 
-        foreach ($stock as $_value) {
-          if($_value->produits()->first()->with_serial == 1) {
-            $terminal_quantite = $_value->quantite;
-          } else {
-            $parabole_quantite = $_value->quantite;
-          }
+          $all[$key]['produits'][$_key] = [
+            'infos' =>  $_value->produits()->first(),
+            'quantite'  =>  $_value->quantite
+          ];
         }
-
-        $all[$key] =[
-          'localisation'  =>  $value->localisation,
-          'terminal'  =>  $terminal_quantite,
-          'parabole'  =>  $parabole_quantite,
-        ];
 
       }
 
