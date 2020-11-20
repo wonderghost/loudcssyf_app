@@ -13,6 +13,7 @@ return array(
     'App\\Afrocash' => $baseDir . '/app/Afrocash.php',
     'App\\Agence' => $baseDir . '/app/Agence.php',
     'App\\Alert' => $baseDir . '/app/Alert.php',
+    'App\\Articles' => $baseDir . '/app/Articles.php',
     'App\\CgaAccount' => $baseDir . '/app/CgaAccount.php',
     'App\\Client' => $baseDir . '/app/Client.php',
     'App\\ComissionSetting' => $baseDir . '/app/ComissionSetting.php',

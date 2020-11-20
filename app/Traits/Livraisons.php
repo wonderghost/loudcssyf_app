@@ -56,10 +56,6 @@ public function getInventaireForDepot(Request $request) {
   ]);
 }
 
-// FAIRE L'INVENTAIRE D'UN Depots
-public function inventaireDepot() {
-  return view('gdepot.inventaire-depot');
-}
 // INVENTAIRE DES LIVRAISONS
 public function inventaireLivraison() {
   return view('gdepot.all-livraison');
@@ -138,7 +134,7 @@ public function inventaireLivraison() {
           throw new AppException("le materiel est defectueux :".$value);
         }
       }
-
+      $livraison = Livraison::find($request->input('livraison'));
       // verifier si le status est non Livrer
       if($this->livraisonStatus($request->input('livraison')) == 'unlivred') {
         // verifier si le mots de passe correspond
@@ -147,6 +143,21 @@ public function inventaireLivraison() {
           if($this->confirmationCodeOk($request->input('livraison'),$request->input('confirm_code'))) {
             // Verifier si les numeros de series existes
             if($request->input('with_serial') == 1) {
+               // VERIFIER SI LES NUMEROS APPARTIENNENT AU MATERIEL SPECIFIE DANS LA COMMANDE
+                
+
+                
+                foreach($request->input('serial_number') as $key => $value) {
+
+                  $materialState = Exemplaire::where('serial_number',$value)
+                    ->where('produit',$livraison->produits)
+                    ->first();
+
+                    if(!$materialState) {
+                      throw new AppException("Erreur Materiel !");
+                    }
+                }
+                // 
               // Les Numeros de Series existes
               // verifier que les champs ne sont pas vides !
               if(count($request->input('serial_number')) <= 0) {
@@ -178,7 +189,7 @@ public function inventaireLivraison() {
               $ravit->livraison = 'confirmer';
               $ravit->save();
             }
-            $livraison = Livraison::find($request->input('livraison'));
+            
             // Changement de status de livraison
             Livraison::where([
               'id'  =>  $request->input('livraison')

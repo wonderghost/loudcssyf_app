@@ -103,8 +103,10 @@ Trait Similarity {
       'commande'  =>  $commande->id_commande,
       'produit' =>  $request->input('produit')
     ])->first();
+
+    // return $comProd;
     
-    //   dd($comProd->quantite_commande >= ($livraisons+$request->input('quantite')));
+    
     if($comProd) {
       return ($comProd->parabole_a_livrer >= ($livraisons+$request->input('quantite')));
     }
@@ -297,6 +299,17 @@ Trait Similarity {
           'depot' =>  $depot->localisation
         ])->first();
 
+        // VERIFIER SI LE NUMERO EST BIEN CELUI DU MATERIEL SPECIFIE
+        $l = Livraison::find($request->input('id_livraison'));
+
+        $MaterialState = Exemplaire::where('serial_number',$request->input('ref'))
+          ->where('produit',$l->produits)
+          ->first();
+
+        if(!$MaterialState) {
+          throw new SerialException("Erreur Materiel !");
+        }
+
         if($existenceState) {
           // Le numero de serie existe dans le depot
           // Verifier si le numero n'est pas deja attribuer a un vendeur
@@ -460,15 +473,17 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
           }
         }
 
-        $kit = $terminal['item']->kits()
-          ->where('second_reference',$accessory[0]['item']->reference)
+
+        $kit = $terminal['item']->articles()
+          ->first()
+          ->kits()
           ->first();
 
         $_promo = $values->promos_id;
         $all [$key] = [
           'date'  =>  $date->toDateString(),
           'vendeurs'  => $vendeurs->localisation,
-          'item' => $kit->name,
+          'item' => $kit ? $kit->name : '-',
           'quantite' => $terminal['data_commande'] ? $terminal['data_commande']->quantite_commande : '',
           'parabole_a_livrer' =>  $accessory[0]['data_commande'] ? $accessory[0]['data_commande']->parabole_a_livrer : '',
           'status' =>  $values->status,

@@ -21,7 +21,7 @@
       </ul>
       <!-- Erreor block -->
       <template v-if="errors.length">
-        <div class="uk-alert-danger uk-border-rounded uk-width-1-1@m" v-for="(error,index) in errors" :key="index" uk-alert>
+        <div class="uk-alert-danger uk-border-rounded uk-width-2-3@m" v-for="(error,index) in errors" :key="index" uk-alert>
           <a href="#" class="uk-alert-close" uk-close></a>
           <p>{{error}}</p>
         </div>
@@ -30,114 +30,126 @@
         <ul class="uk-switcher uk -margin">
             <!-- ENVOI DE COMMANDE MATERIEL -->
             <li>
-              <!-- COMMANDE MATERIEL -->
-              <form @submit.prevent="sendCommandMaterial()">
+              <div class="uk-grid-small uk-grid-divider" uk-grid>
+                <div class="uk-width-1-3@m">
+                   <div class="uk-card uk-card-default uk-border-rounded" style="box-shadow : none !important ; border : solid 1px #ddd !important;">
+                      <div class="uk-card-header">
+                          <h3 class="uk-card-title">SOLDE AFROCASH (GNF)</h3>
+                      </div>
+                      <div class="uk-card-body uk-text-center">
+                          <span class=" uk-card-title">{{soldeAfrocash | numFormat}}</span>
+                      </div>
+                  </div>  
+                </div>
+                  <!-- COMMANDE MATERIEL -->
+                  <form @submit.prevent="sendCommandMaterial()" class="uk-width-2-3@m">
 
-              <div class="uk-grid-collapse uk-child-width-1-6@m"  uk-grid>
-                <div>
-                    <!-- <label uk-tooltip="">Kit Complet</label> -->
-                    <label for="">Article(s)</label>
-                    <select @change="getInfosByCommandMat()" v-model="commandDefaultValue" class="uk-select uk-border-rounded">
-                      <option value="none">--Choisissez la commande --</option>
-                      <option v-for="(cm,index) in commandParameters" :key="index" :value="cm.id">{{cm.name}}</option>
-                    </select>
-                </div>
-                <div id="">
-                  <label>Qte <input min="1" required @keyup="chooseQuantite()" @change="chooseQuantite()" type="number" v-model="formData.quantite"  class="uk-input uk-border-rounded" placeholder="Quantite"> </label>
-                </div>
-                <div>
-                  <label>Prix TTC (GNF)</label>
-                  <input type="text" :value="material.ttc | numFormat"  disabled  class="uk-input uk-border-rounded" >
-                </div>
-                <div>
-                  <label>HT (GNF)</label>
-                  <input type="text" :value="material.ht | numFormat" disabled  class="uk-input uk-border-rounded" >
-                </div>
-                <div>
-                  <label>TVA (18%) (GNF)</label>
-                  <input type="text" :value="material.tva | numFormat" disabled  class="uk-input uk-border-rounded" >
-                </div>
-                <div>
-                  <label>Montant TTC (GNF)</label>
-                  <input type="text" :value="montantTtc | numFormat"  disabled  class="uk-input uk-border-rounded" >
-                </div>
-                <!-- SUBVENTION -->
-                <div></div>
-                <div><label>Subvention</label></div>
-                <div>
-                <input type="text" disabled :value="subvention.ttc | numFormat"  class="uk-input uk-border-rounded" >
-                </div>
-                <div>
-                <input type="text" disabled :value="subvention.ht | numFormat"  class="uk-input uk-border-rounded" >
-                </div>
-                <div>
-                  <input type="text" disabled :value="subvention.tva | numFormat"  class="uk-input uk-border-rounded" >
-                </div>
-                <div>
-                  <input type="text" disabled :value="montantTtcSubv | numFormat"  class="uk-input uk-border-rounded" >
-                </div>
-                <!-- MARGE -->
-                <div></div>
-                <div><label>Marge</label></div>
-                <div>
-                  <input type="text" disabled :value="marge.ttc | numFormat" class="uk-input uk-border-rounded" >
-                </div>
-                <div>
-                  <input type="text" disabled :value="marge.ht | numFormat" class="uk-input uk-border-rounded" >
-                </div>
-                <div>
-                  <input type="text" disabled :value="marge.tva | numFormat" class="uk-input uk-border-rounded" >
-                </div>
-                <div>
-                  <input type="text" disabled  class="uk-input uk-border-rounded" >
-                </div>
-              </div>
+                  <div class="uk-grid-collapse uk-child-width-1-6@m"  uk-grid>
+                    <div>
+                        <!-- <label uk-tooltip="">Kit Complet</label> -->
+                        <label for="">Article(s)</label>
+                        <select @click="getData()" @change="getInfosByCommandMat()" v-model="commandDefaultValue" class="uk-select uk-border-rounded">
+                          <option value="none">--Choisissez la commande --</option>
+                          <option v-for="(cm,index) in commandParameters" :key="index" :value="cm.slug">{{cm.name}}</option>
+                        </select>
+                    </div>
+                    <div id="">
+                      <label>Qte <input min="1" required @keyup="chooseQuantite()" @change="chooseQuantite()" type="number" v-model="formData.quantite"  class="uk-input uk-border-rounded" placeholder="Quantite"> </label>
+                    </div>
+                    <div>
+                      <label>Prix TTC (GNF)</label>
+                      <input type="text" :value="material.ttc | numFormat"  disabled  class="uk-input uk-border-rounded" >
+                    </div>
+                    <div>
+                      <label>HT (GNF)</label>
+                      <input type="text" :value="material.ht | numFormat" disabled  class="uk-input uk-border-rounded" >
+                    </div>
+                    <div>
+                      <label>TVA (18%) (GNF)</label>
+                      <input type="text" :value="material.tva | numFormat" disabled  class="uk-input uk-border-rounded" >
+                    </div>
+                    <div>
+                      <label>Montant TTC (GNF)</label>
+                      <input type="text" :value="montantTtc | numFormat"  disabled  class="uk-input uk-border-rounded" >
+                    </div>
+                    <!-- SUBVENTION -->
+                    <div></div>
+                    <div><label>Subvention</label></div>
+                    <div>
+                    <input type="text" disabled :value="subvention.ttc | numFormat"  class="uk-input uk-border-rounded" >
+                    </div>
+                    <div>
+                    <input type="text" disabled :value="subvention.ht | numFormat"  class="uk-input uk-border-rounded" >
+                    </div>
+                    <div>
+                      <input type="text" disabled :value="subvention.tva | numFormat"  class="uk-input uk-border-rounded" >
+                    </div>
+                    <div>
+                      <input type="text" disabled :value="montantTtcSubv | numFormat"  class="uk-input uk-border-rounded" >
+                    </div>
+                    <!-- MARGE -->
+                    <div></div>
+                    <div><label>Marge</label></div>
+                    <div>
+                      <input type="text" disabled :value="marge.ttc | numFormat" class="uk-input uk-border-rounded" >
+                    </div>
+                    <div>
+                      <input type="text" disabled :value="marge.ht | numFormat" class="uk-input uk-border-rounded" >
+                    </div>
+                    <div>
+                      <input type="text" disabled :value="marge.tva | numFormat" class="uk-input uk-border-rounded" >
+                    </div>
+                    <div>
+                      <input type="text" disabled  class="uk-input uk-border-rounded" >
+                    </div>
+                  </div>
 
-              <div class="uk-margin-small uk-grid-collapse uk-child-width-1-6@m"  uk-grid>
-                <div>
-                    <label uk-tooltip="">Migration</label>
-                </div>
-                <div id="">
-                  <label>Qte<input type="number" :value="material.migration" disabled  class="uk-input uk-border-rounded"></label>
-                </div>
-              </div>
-              <div class="uk-margin-small uk-grid-collapse uk-child-width-1-6@m"  uk-grid>
-                <div>
-                    <label uk-tooltip="">Paraboles dûes</label>
-                </div>
-                <div id="">
-                  <label>Qte<input type="number" :value="material.parabole_du" disabled  class="uk-input uk-border-rounded"></label>
-                </div>
-              </div>
+                  <div class="uk-margin-small uk-grid-collapse uk-child-width-1-6@m"  uk-grid>
+                    <div>
+                        <label uk-tooltip="">Migration</label>
+                    </div>
+                    <div id="">
+                      <label>Qte<input type="number" :value="material.migration" disabled  class="uk-input uk-border-rounded"></label>
+                    </div>
+                  </div>
+                  <div class="uk-margin-small uk-grid-collapse uk-child-width-1-6@m"  uk-grid>
+                    <div>
+                        <label uk-tooltip="">Paraboles dûes</label>
+                    </div>
+                    <div id="">
+                      <label>Qte<input type="number" :value="material.parabole_du" disabled  class="uk-input uk-border-rounded"></label>
+                    </div>
+                  </div>
 
-              <hr class="uk-divider-small">
-              <div class="uk-grid-collapse" uk-grid>
-                <div class="uk-width-5-6@m">
-                  <span>TOTAL TTC-MATERIEL (GNF)</span>
-                </div>
-                <div class="uk-width-1-6@m">
-                  <input type="text" disabled :value="montantTtc | numFormat" class="uk-input uk-border-rounded" >
-                </div>
+                  <hr class="uk-divider-small">
+                  <div class="uk-grid-collapse" uk-grid>
+                    <div class="uk-width-5-6@m">
+                      <span>TOTAL TTC-MATERIEL (GNF)</span>
+                    </div>
+                    <div class="uk-width-1-6@m">
+                      <input type="text" disabled :value="montantTtc | numFormat" class="uk-input uk-border-rounded" >
+                    </div>
+                  </div>
+                  <div class="uk-grid-collapse" uk-grid>
+                    <div class="uk-width-5-6@m">
+                      <span>TOTAL SUBVENTION (GNF)</span>
+                    </div>
+                    <div class="uk-width-1-6@m">
+                      <input type="text" disabled :value="montantTtcSubv | numFormat" class="uk-input uk-border-rounded" >
+                    </div>
+                  </div>
+                  <div class="uk-grid-collapse uk-text-lead" uk-grid>
+                    <div class="uk-width-5-6@m">
+                      <span>TOTAL A PAYER (GNF)</span>
+                    </div>
+                    <div class="uk-width-1-6@m">
+                      <input type="text" disabled :value="formData.prix_achat | numFormat" class="uk-input uk-border-rounded" >
+                    </div>
+                  </div>
+                  <hr class="uk-divider-small">
+                  <button type="submit" class="uk-button uk-button-small uk-button-primary uk-box-shadow-small uk-border-rounded uk-box-shadow-small">valider<span uk-icon="icon:check;ratio:.8"></span></button>
+                </form>
               </div>
-              <div class="uk-grid-collapse" uk-grid>
-                <div class="uk-width-5-6@m">
-                  <span>TOTAL SUBVENTION (GNF)</span>
-                </div>
-                <div class="uk-width-1-6@m">
-                  <input type="text" disabled :value="montantTtcSubv | numFormat" class="uk-input uk-border-rounded" >
-                </div>
-              </div>
-              <div class="uk-grid-collapse uk-text-lead" uk-grid>
-                <div class="uk-width-5-6@m">
-                  <span>TOTAL A PAYER (GNF)</span>
-                </div>
-                <div class="uk-width-1-6@m">
-                  <input type="text" disabled :value="formData.prix_achat | numFormat" class="uk-input uk-border-rounded" >
-                </div>
-              </div>
-              <hr class="uk-divider-small">
-              <button type="submit" class="uk-button uk-button-small uk-button-primary uk-box-shadow-small uk-border-rounded uk-box-shadow-small">valider<span uk-icon="icon:check;ratio:.8"></span></button>
-            </form>
             </li>
             <!-- // -->
           <li>
@@ -227,7 +239,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               prix_achat : 0,
               _token : "",
               reference_material : "",
-              promo_id : ""
+              promo_id : "",
+              parabole_du : 0,
             },
             errors : [],
             success : "",
@@ -243,7 +256,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             },
             promo : {},
             promoState : false,
-            remboursementPromoState : false
+            remboursementPromoState : false,
+
+            soldeAfrocash : 0
           }
         },
         methods : {
@@ -268,8 +283,10 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           getData : async function () {
             try {
               let response = await axios.get('/user/new-command/get-data')
+
               if(response) {
-                this.commandParameters = response.data
+                this.commandParameters = response.data.all
+                this.soldeAfrocash = response.data.solde_afrocash
               }
             }
             catch(error) {
@@ -354,10 +371,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 
           },
           sendCommandMaterial : async function () {
-            this.isLoading = true
+            // this.isLoading = true
             try {
               this.formData._token = this.myToken
               this.formData.reference_material = this.material.reference
+              this.formData.parabole_du = this.material.parabole_du
+
               let response = await axios.post('/user/new-command/material',this.formData)
 
               if(response && response.data == 'done') {

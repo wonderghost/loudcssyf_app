@@ -133,6 +133,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           if(response.data == 'done') {
             alert("Success !")
             Object.assign(this.$data,this.$options.data())
+            this.getInfos()
           }
           this.isLoading = false
         } catch (error) {

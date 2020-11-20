@@ -523,6 +523,7 @@ class ComposerStaticInit15d5dc02f650ad17553f69fb230f4dbd
         'App\\Afrocash' => __DIR__ . '/../..' . '/app/Afrocash.php',
         'App\\Agence' => __DIR__ . '/../..' . '/app/Agence.php',
         'App\\Alert' => __DIR__ . '/../..' . '/app/Alert.php',
+        'App\\Articles' => __DIR__ . '/../..' . '/app/Articles.php',
         'App\\CgaAccount' => __DIR__ . '/../..' . '/app/CgaAccount.php',
         'App\\Client' => __DIR__ . '/../..' . '/app/Client.php',
         'App\\ComissionSetting' => __DIR__ . '/../..' . '/app/ComissionSetting.php',

@@ -131,7 +131,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         mounted() {
           UIkit.offcanvas($("#side-nav")).hide();
           this.getMaterialCommande()
-          this.getSoldeLogistique()
         },
         components : {
           Loading,
@@ -237,6 +236,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 this.total = response.data.total
 
                 this.userList = userResponse.data
+
+                this.getSoldeLogistique()
 
               }
               this.isLoading = false

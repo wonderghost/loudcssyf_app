@@ -8,55 +8,37 @@ class Kits extends Model
 {
     //
     protected $table = 'kits';
+    protected $keyType = 'string';
+    protected $primaryKey = 'slug';
 
+    public function articles() {
+        return $this->hasMany('App\Articles','kit_slug','slug');
+    }
 
     public function getTerminalReference() {
-        $first = $this->belongsTo('App\Produits','first_reference','reference')
-            ->where('with_serial',1)
-            ->first();
-        $second = $this->belongsTo('App\Produits','second_reference','reference')
-            ->where('with_serial',1)
-            ->first();
-        $third = $this->belongsTo('App\Produits','third_reference','reference')
-            ->where('with_serial',1)
-            ->first();
+        $data = $this->articles()->get();
+        
+        foreach($data as $value) {
+            if($tmp = $value->produits()->where('with_serial',1)->first()) {
+                $term = $tmp;
+            }
+        }
 
-        if($first) {
-            return $first;
-        }
-        else if($second) {
-            return $second;
-        }
-        else {
-            return $third;
-        }
+        return $term;
     }
 
     public function getAccessoryReference() {
-        $first = $this->belongsTo('App\Produits','first_reference','reference')
-            ->where('with_serial',0)
-            ->first();
-        $second = $this->belongsTo('App\Produits','second_reference','reference')
-            ->where('with_serial',0)
-            ->first();
-        $third = $this->belongsTo('App\Produits','third_reference','reference')
-            ->where('with_serial',0)
-            ->first();
+        $data = $this->articles()->get();
 
-        $accessory_data = [];
+        $accessory = [];
 
-        if($first) {
-            array_push($accessory_data,$first);
-        }
-        
-        if($second) {
-            array_push($accessory_data,$second);
+        foreach($data as $value) {
+            if($tmp = $value->produits()->where('with_serial',0)->first()) {
+                array_push($accessory,$tmp);
+            }
         }
 
-        if($third) {
-            array_push($accessory_data,$third);
-        }
-        return $accessory_data;
+        return $accessory;
     }
     
 }

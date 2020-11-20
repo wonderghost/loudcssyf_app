@@ -9,62 +9,82 @@
         <h3><router-link to="/command/list"><button class="uk-button uk-button-default uk-button-small uk-border-rounded" uk-tooltip="Retour"><span uk-icon="arrow-left"></span></button></router-link> Ravitailler un vendeur</h3>
         <hr class="uk-divider-small">
         <!-- Erreor block -->
-          <template v-if="errors.length" v-for="error in errors">
-          <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+          <template v-if="errors">
+          <div  v-for="(error,index) in errors" :key="index" class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert>
             <a href="#" class="uk-alert-close" uk-close></a>
             <p>{{error}}</p>
           </div>
         </template>
-    <template id="">
-      <form @submit.prevent="sendRavitaillement()">
-        <!-- SELECT VENDEURS -->
+    <div class="uk-grid-small uk-grid-divider" uk-grid>
+      <div class="uk-width-1-3@m">
+        <form @submit.prevent="sendRavitaillement()">
+          <!-- SELECT VENDEURS -->
+          <div class="uk-grid-small" uk-grid>
+              <div class="uk-width-1-2@m">
+                <label>Vendeur</label>
+                <input type="text" disabled class="uk-input uk-border-rounded" :value="commande.vendeurs_localisation">
+              </div>
+              <div class="uk-width-1-2@m">
+                <label>Parabole du</label>
+                <input type="text" class="uk-input uk-border-rounded" disabled :value="commande.parabole_du">
+              </div>
+              <div class="uk-width-1-2@m">
+                  <label>Terminal restant</label>
+                  <input type="text" class="uk-input uk-border-rounded" disabled :value="commande.restant_ravit.terminal">
+              </div>
+              <div class="uk-width-1-2@m">
+                <label for="">Parabole restant</label>
+                <input type="text" class="uk-input uk-border-rounded" disabled :value="commande.restant_ravit.accessoire">
+              </div>
+            <!-- SELECT MATERIAL -->
+            <div class="uk-width-1-2@m">
+              <label for="">Materiel</label>
+              <select  class="uk-select uk-border-rounded" v-model="formData.produit">
+                <option value="">--Materiel--</option>
+                <option v-for="p in commande.materials" :key="p.reference" :value="p.reference"> {{p.libelle}}</option>
+              </select>
+            </div>
+            <!-- SELECT DEPOT -->
+            <div class="uk-width-1-2@m">
+              <label for="">Depot</label>
+              <select id="depot" class="uk-select uk-border-rounded" v-model="formData.depot">
+                <option value="">-- Choisissez un depot --</option>
+                <option :value="dep.localisation" :key="dep.localisation"  v-for="dep in depots">{{dep.localisation}}</option>
+              </select>
+            </div>
+          <div class="uk-width-1-2@m">
+            <label>Quantite</label>
+            <input type="number" required min="0" class="uk-input uk-border-rounded" v-model="formData.quantite">
+          </div>
+          <div class="uk-width-1-2@m">
+            <label>Compense</label>
+            <input type="text" class="uk-input uk-border-rounded" disabled v-model="formData.compense">
+          </div>
+          <div class="uk-width-1-1@m">
+            <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small">valider <span uk-icon="icon:check;ratio:.8"></span></button>
+          </div>
+          </div>
+        </form>
+      </div>
+      <div class="uk-width-2-3@m">
+        <!-- INVENTAIRE PAR DEPOT  DES PRODUITS-->
         <div class="uk-grid-small" uk-grid>
-            <div class="uk-width-1-3@m">
-              <label>Vendeur</label>
-              <input type="text" disabled class="uk-input uk-border-rounded" :value="commande.vendeurs_localisation">
+          <div v-for="m in depots"  class="uk-width-1-2@m" :key="m.localisation">
+            <div class="uk-card uk-border-rounded uk-card-body uk-background-muted uk-padding">
+              <div class="uk-card-title">{{m.localisation}}</div>
+              <p>
+                <ul class="uk-list uk-list-divider">
+                  <li v-for="p in m.produits" :key="p.infos.reference">
+                    <span class="">{{ p.infos.libelle }} : {{p.quantite}}</span> ,
+                  </li>
+                </ul>
+              </p>
             </div>
-            <div class="uk-width-1-6@m">
-              <label>Parabole du</label>
-              <input type="text" class="uk-input uk-border-rounded" disabled :value="commande.parabole_du">
-            </div>
-            <div class="uk-width-1-5@m">
-                <label>Terminal restant</label>
-                <input type="text" class="uk-input uk-border-rounded" disabled :value="commande.restant_ravit.terminal">
-            </div>
-            <div class="uk-width-1-5@m">
-              <label for="">Parabole restant</label>
-              <input type="text" class="uk-input uk-border-rounded" disabled :value="commande.restant_ravit.parabole">
-            </div>
-          <!-- SELECT MATERIAL -->
-          <div class="uk-width-1-6@m">
-            <label for="">Materiel</label>
-            <select  class="uk-select uk-border-rounded" v-model="formData.produit">
-              <option value="">--Materiel--</option>
-              <option v-for="p in commande.materials" :key="p.reference" :value="p.reference"> {{p.libelle}}</option>
-            </select>
           </div>
-          <!-- SELECT DEPOT -->
-          <div class="uk-width-1-3@m">
-            <label for="">Depot</label>
-            <select id="depot" class="uk-select uk-border-rounded" v-model="formData.depot">
-              <option value="">-- Choisissez un depot --</option>
-              <option :value="dep.localisation" :key="dep.localisation"  v-for="dep in depots">{{dep.localisation}} | Terminal : {{dep.terminal}} | Parabole: {{dep.parabole}}</option>
-            </select>
-          </div>
-        <div class="uk-width-1-6@m">
-          <label>Quantite</label>
-          <input type="number" required min="0" class="uk-input uk-border-rounded" v-model="formData.quantite">
         </div>
-        <div class="uk-width-1-6@m">
-          <label>Compense</label>
-          <input type="text" class="uk-input uk-border-rounded" disabled v-model="formData.compense">
-        </div>
-        <div class="uk-width-1-1@m">
-          <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small">valider <span uk-icon="icon:check;ratio:.8"></span></button>
-        </div>
-        </div>
-      </form>
-    </template>
+        <!-- // -->
+      </div>
+    </div>
   </div>
 </template>
 
@@ -118,7 +138,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                   }
                 }
             } catch(error) {
-                alert('commanstate')
+                alert(error)
                 console.log(error)
             }
           },
@@ -143,6 +163,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           sendRavitaillement : async function () {
             this.isLoading = true
             try {
+              this.errors = []
               let response = await axios.post("/user/ravitailler/"+this.commande.id,this.formData)
               if(response.data == 'done') {
                 alert("Success !")

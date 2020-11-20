@@ -46,7 +46,9 @@ use App\TransfertMateriel;
 use App\TransfertSerial;
 use App\DeficientMaterial;
 use App\Kits;
+use App\Articles;
 use Illuminate\Support\Facades\DB;
+
 
 
 
@@ -1262,18 +1264,41 @@ class AdminController extends Controller
         throw new AppException("Mot de passe invalide !");
       }
 
+      // VERIFIER L'EXISTENCE DE L'ARTICLES
+      
+      if($data = $k->find(Str::slug(request()->intitule))) {
+        throw new AppException("Article existant ! Ressayez ...");
+      }
+
+      // 
+      if(!count(request()->materiels) > 0) {
+        throw new AppException("Veuillez selectionner les produit(s)!");
+      }
+
+
       // RECUPERATION DES INFOS PRODUITS
 
       $matArray = $request->input('materiels');
 
-      $k->first_reference = count($matArray) > 0 ? $matArray[0] : NULL;
-      $k->second_reference = count($matArray) > 1 ? $matArray[1] : NULL;
-      $k->third_reference = count($matArray) > 2 ? $matArray[2] : NULL;
+      $articles = [];
 
-      $k->name = $request->input('intitule');
-      $k->description = $request->input('description');
+      foreach($matArray as $key => $value) {
+        $articles[$key] = new Articles;
+        $articles[$key]->produit = $value;
+        $articles[$key]->kit_slug = Str::slug(request()->intitule);
+      }
+      
+
+      $k->name = request()->intitule;
+      $k->slug = Str::slug(request()->intitule);
+      $k->description = request()->description;
 
       $k->save();
+
+      foreach($articles as $value) {
+        $value->save();
+      }
+
       return response()
         ->json('done');
     }

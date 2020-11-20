@@ -92,15 +92,11 @@ import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 
     export default {
-      created() {
-        this.isLoading = true
-      },
       components : {
         Loading
       },
       mounted() {
         UIkit.offcanvas($("#side-nav")).hide();
-        this.getMaterialsDepot()
         this.getSerialNumberForDepot()
         if(this.typeUser == 'gdepot') {
           this.filterState = this.userLocalisation
@@ -167,8 +163,11 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             else {
               var response = await axios.get('/user/inventory/depot')
             }
-            this.materials = response.data
-            this.isLoading = false
+            if(response) {
+
+              this.materials = response.data
+              this.isLoading = false
+            }
           } catch (e) {
               alert(e)
           }
@@ -182,15 +181,21 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             else {
               var response = await axios.get('/user/inventory/depot/serialNumber')
             }
-            this.serials = response.data.all
 
-            this.nextUrl = response.data.next_url
-            this.lastUrl = response.data.last_url
-            this.perPage = response.data.per_page
-            this.firstItem = response.data.first_item
-            this.total = response.data.total
+            if(response) {
 
-            this.isLoading = false
+              this.serials = response.data.all
+  
+              this.nextUrl = response.data.next_url
+              this.lastUrl = response.data.last_url
+              this.perPage = response.data.per_page
+              this.firstItem = response.data.first_item
+              this.total = response.data.total
+
+              this.getMaterialsDepot()
+  
+              this.isLoading = false
+            }
           } catch (e) {
               alert(e)
           }

@@ -98,8 +98,8 @@
           <div class="uk-modal-body">
             <form @submit.prevent="sendLivraison()">
               <!-- Erreor block -->
-              <template v-if="errors.length" v-for="error in errors">
-              <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+              <template v-if="errors" >
+              <div v-for="(error,index) in errors" :key="index" class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
                 <a href="#" class="uk-alert-close" uk-close></a>
                 <p>{{error}}</p>
               </div>
@@ -293,13 +293,13 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             this.formData.with_serial = withSerial
 
           },
-          sendLivraison : async function () {
+          sendLivraison : async function () { // EXPEDITION DE LA LIVRAISON PAR LE GESTIONNAIRE DE DEPOT
             this.errors = []
             try {
               this.isLoading = true
               UIkit.modal($("#modal-livraison-send")).hide()
               let response = await axios.post('/user/livraison/confirm',this.formData)
-              console.log(response.data)
+              
               this.isLoading = false
               if(response.data == 'done') {
                 alert("Success !")
@@ -321,7 +321,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           validSerial : async function (index) {
             try {
               let response = await axios.post('/user/livraison/validate-serial',{
-                ref : this.formData.serial_number[index]
+                ref : this.formData.serial_number[index],
+                id_livraison : this.formData.livraison
               })
 
             } catch (error) {
@@ -348,7 +349,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           showConfirmationCode : function (livraison) {
             UIkit.modal.alert("<div class='uk-alert-info uk-border-rounded' uk-alert>Votre Code de confirmation pour la commande: <span class='uk-text-bold'>"+livraison.command+"</span> , est : <span class='uk-text-bold'>"+livraison.code_livraison+"</span></div>")
           },
-          confirmLivraison : async function () {
+          confirmLivraison : async function () { // CONFIRMATION LOGISTIQUE
             this.isLoading = true
             UIkit.modal($("#modal-livraison-validate")).hide()
             try {

@@ -16,10 +16,8 @@ class Produits extends Model
     return $this->hasMany('App\Produits');
   }
 
-  public function kits() {
-    return $this->hasMany('App\Kits','first_reference','reference');
+  public function articles() {
+    return $this->hasMany('App\Articles','produit','reference');
   }
-
-  
     
 }

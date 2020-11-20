@@ -100,6 +100,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                     }
                 }
                 catch(error) {
+                    this.isLoading = false
+
                     if(error.response.data.errors) {
                         let errorTab = error.response.data.errors
                         for (var prop in errorTab) {

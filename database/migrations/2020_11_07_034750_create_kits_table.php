@@ -14,25 +14,10 @@ class CreateKitsTable extends Migration
     public function up()
     {
         Schema::create('kits', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('first_reference');
-            $table->string('second_reference')->nullable();
-            $table->string('third_reference')->nullable();
+            $table->string('slug')
+                ->primary();
             $table->string('name');
             $table->text('description')->nullable();
-
-            $table->foreign('first_reference')
-                ->references('reference')
-                ->on('produits');
-                
-            $table->foreign('second_reference')
-                ->references('reference')
-                ->on('produits');
-                
-            $table->foreign('third_reference')
-                ->references('reference')
-                ->on('produits');
-                
             $table->timestamps();
         });
     }

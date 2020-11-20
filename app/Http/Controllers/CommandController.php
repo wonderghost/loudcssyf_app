@@ -41,8 +41,12 @@ class CommandController extends Controller
 		public function getData(Kits $k) {
 			try {
 				$data = $k->all();
+				$solde_afrocash = request()->user()->afroCash('courant')->first()->solde;
 				return response()
-					->json($data);
+					->json([
+						'all'	=>	$data,
+						'solde_afrocash'	=>	$solde_afrocash
+					]);
 			}
 			catch(AppException $e) {
 				header("Erreur",true,422);
@@ -58,23 +62,13 @@ class CommandController extends Controller
 					throw new AppException("Veuillez selectionner un article ...");
 				}
 
-				$array_materiel = [];
-				if($dataKits->first_reference) {
-					array_push($array_materiel,$dataKits->first_reference);
-				}
-
-				if($dataKits->second_reference) {
-					array_push($array_materiel,$dataKits->second_reference);
-				}
-
-				if($dataKits->third_reference) {
-					array_push($array_materiel,$dataKits->third_reference);
-				}
+				$array_materiel = $dataKits->articles()
+					->get();
 
 				$items = [];
 
-				foreach($array_materiel as $key	=>	$value) {
-					$items[$key] = $p->find($value);
+				foreach($array_materiel as $key => $value) {
+					$items[$key] =  $value->produits()->first();
 				}
 
 				$terminal = "";
@@ -91,11 +85,18 @@ class CommandController extends Controller
 
 				// trouver le nombre de parabole a livrer
 
-				$migration = $r->where('vendeurs',$request->user()->username)
+				$rappVente = $r->select('id_rapport')
+					->where('vendeurs',request()->user()->username)
 					->where('type','migration')
-					->sum('quantite');
+					->groupBy('id_rapport')
+					->get();
+				
+				$migration = Exemplaire::whereIn('rapports',$rappVente)
+					->where('produit',$terminal->reference)
+					->count();
 
 				$command = $cm->select('id_commande')->where('vendeurs',$request->user()->username)->get();
+
 				$compense = $c->whereIn('commande_id',$command)->sum('quantite');
 
 				//
@@ -114,13 +115,6 @@ class CommandController extends Controller
 						'prix_vente'	=>	$pv
 					];
 				}
-				// return response()
-				// 	->json([$terminal,$accessoire_prix]);
-				
-				
-
-				// $item = $p->where("with_serial",1)->first();
-				// $parabole = $p->where('with_serial',0)->first();
 
 				$all = [
 					'ttc'	=>	$terminal->prix_initial + $accessoire_prix['prix_initial'],
@@ -129,9 +123,9 @@ class CommandController extends Controller
 					'marge'	=>	$terminal->marge,
 					'subvention'	=>	($terminal->prix_initial - $terminal->prix_vente) + ($accessoire_prix['prix_initial'] - $accessoire_prix['prix_vente']),
 					'prix_vente'	=>	$terminal->prix_vente,
-					'reference'	=>	$dataKits->id ,
-					'migration'	=>	$migration - $compense,
-					'compense'	=>	0
+					'reference'	=>	$dataKits->slug ,
+					'migration'	=>	$migration - $compense > 0 ? $migration - $compense : 0,
+					'compense'	=>	0,
 				];
 				
 				return response()
@@ -155,9 +149,7 @@ class CommandController extends Controller
 		}
 
 		// @###
-	public function addCommand() {
-		return view('command.new-command');
-	}
+	
 // ENVOI D'UNE COMMANDE MATERIEL
 	public function sendCommand(CommandRequest $request) {
 		try {
@@ -174,14 +166,8 @@ class CommandController extends Controller
 			}
 			// @@@@@
 
-			// return response()
-			// 	->Json($request);
-			// die();
-
 			if(!$this->isExistCommandEnAttente()) {
 				$command = new CommandMaterial;// CREATION DE LA COMMANDE
-				// $command_produit = new CommandProduit; //TERMINAL
-				// $command_produit_parabole = new CommandProduit; //ANTENNE | PARABOLE
 				$commandByProduit = [];
 
 				$command->id_commande = "CM-".time();
@@ -192,8 +178,6 @@ class CommandController extends Controller
 					$command->promos_id = $request->input('promo_id');
 				}
 				// ##
-				// $command_produit->commande = $command->id_commande;
-				// $command_produit_parabole->commande = $command->id_commande;
 
 				// 
 				// RECUPERATION DES PRODUITS DE L'ARTICLE COMMANDE
@@ -206,6 +190,7 @@ class CommandController extends Controller
 
 
 				##@@@@@@@@@@@@@@@@@@@@@@@@@@
+
 				$commandTerminal = new CommandProduit;
 				$commandTerminal->commande = $command->id_commande;
 				$commandTerminal->produit = $terminal->reference;
@@ -224,26 +209,9 @@ class CommandController extends Controller
 				
 				
 				// QUANTITE DE PARABOLE A LIVRER	
-				
-				$migration = RapportVente::where('vendeurs',Auth::user()->username)->where('type','migration')->sum('quantite');
-				
-				$commandProduitAll = CommandProduit::select('commande')
-				->where('produit',$commandByProduit[0]->produit)
-				->groupBy('commande')
-				->get();
-				
-				$commandAll = CommandMaterial::select('id_commande')
-				->whereIn('id_commande',$commandProduitAll)
-				->where('vendeurs',$request->user()->username)
-				->get();
-				
-				
-				$compense = CompenseMaterial::whereIn('commande_id',$commandAll)->sum('quantite');
-				
-				$parabole_a_livrer = $request->input('quantite') - ($migration - $compense);
 
 				foreach($accessoire as $key => $value) {
-					$commandByProduit[$key]->parabole_a_livrer = $parabole_a_livrer < 0 ? 0 : $parabole_a_livrer;
+					$commandByProduit[$key]->parabole_a_livrer = $request->input('parabole_du');
 				}
 				
 				#DEBIT DU COMPTE DU VENDEURS ET CREDIT DU COMPTE DE LA LOGISTIQUE
@@ -266,10 +234,6 @@ class CommandController extends Controller
 				$transaction->compte_debite = $sender_account->numero_compte;
 				$transaction->compte_credite = $receiver_account->numero_compte;
 				$transaction->montant = request()->prix_achat;
-
-
-				// return response()
-				// 	->json([$sender_account,$receiver_account,$transaction,$commandByProduit,$commandTerminal]);
 
 				$command->save();
 				$commandTerminal->save();
@@ -319,10 +283,6 @@ class CommandController extends Controller
 			];
 		}
 		return response()->json($all);
-	}
-
-	public function DetailsCommand($id) {
-		return view('command.details')->withId($id);
 	}
 
 // RECUPERATION DES DETAILS DE LA COMMANDE

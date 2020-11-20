@@ -113,12 +113,12 @@ class LogistiqueController extends Controller
               $stockCentral[$key] = new Stock;
               $stockCentral[$key]->exemplaire = $value;
               $stockCentral[$key]->depot = request()->depot;
+
+
+              $serialExemplaire[$key]->save();
+              $stockCentral[$key]->save();
             }
-
-
-            return response()
-              ->json([$serialExemplaire,$stockCentral]);
-
+            
             // ENREGISTREMENT DANS LE STOCK PRIME
 
             $entreeDepot = new RavitaillementDepot;
@@ -126,11 +126,14 @@ class LogistiqueController extends Controller
             $entreeDepot->depot = request()->depot;
             $entreeDepot->quantite = request()->quantite;
 
+            
+
             if($prod = $this->isInStock($produit->reference,request()->depot)) {
                 //LE PRODUIT EST DEJA PRESENT ON AUGMENTE LA QUANTITE
                 $_quantite = $prod->quantite;
                 $_quantite += request()->quantite;
-                StockPrime::select()->where('produit',$produit->reference)->where('depot',request()->depot)->update([
+                StockPrime::select()->where('produit',$produit->reference)->where('depot',request()->depot)
+                  ->update([
                     'quantite'=> $_quantite
                 ]);
 
@@ -138,22 +141,22 @@ class LogistiqueController extends Controller
                 // LE PRODUIT N'EST PAS PRESENT ON L'AJOUTE
                 $stockPrime = new StockPrime;
                 $stockPrime->produit = $produit->reference;
-                $stockPrime->depot = session('depot');
-                $stockPrime->quantite = session('quantite');
+                $stockPrime->depot = request()->depot;
+                $stockPrime->quantite = request()->quantite;
                 $stockPrime->save();
             }
             // modification dans le depot central
-            $newQuantite = $produit->quantite_centrale - session('quantite');
+            $newQuantite = $produit->quantite_centrale - request()->quantite;
             $produit->quantite_centrale = $newQuantite;
             // ENVOI DE LA NOTIFICATION
-            $_depot = Depots::find(session('depot'));
+            $_depot = Depots::find(request()->depot);
 
-            $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".session('depot'),Auth::user()->username);
-            $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".session('depot'),$_depot->vendeurs);
-            $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".session('depot'),User::where("type",'admin')->first()->username);
+            $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".request()->depot,Auth::user()->username);
+            $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".request()->depot,$_depot->vendeurs);
+            $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".request()->depot,User::where("type",'admin')->first()->username);
             $entreeDepot->save();
             $produit->save();
-            session()->forget(['produit','quantite','depot']);
+            
 
             return response()->json('done');
 
@@ -162,14 +165,14 @@ class LogistiqueController extends Controller
           } else {
             // le numero de serie n'existe pas
 
-            $produit = Produits::find($request->input('produit'));
+            $produit = Produits::find(request()->produit);
 
 
             if($prod = $this->isInStock($produit->reference,$request->input('depot'))) {
               // existe deja augmenter la quantite
               $_quantite = $prod->quantite;
-              $_quantite += $request->input("quantite");
-              StockPrime::select()->where('produit',$produit->reference)->where('depot',$request->input('depot'))->update([
+              $_quantite += request()->quantite;
+              StockPrime::select()->where('produit',$produit->reference)->where('depot',request()->depot)->update([
                   'quantite'=> $_quantite
               ]);
 
@@ -177,27 +180,27 @@ class LogistiqueController extends Controller
               // n'existe pas on l'ajoute
               $stockPrime = new StockPrime;
               $stockPrime->produit = $produit->reference;
-              $stockPrime->depot = $request->input('depot');
-              $stockPrime->quantite = $request->input('quantite');
+              $stockPrime->depot = request()->depot;
+              $stockPrime->quantite = request()->quantite;
               $stockPrime->save();
             }
             // $stockDepot->
             $entreeDepot = new RavitaillementDepot;
             $entreeDepot->produit = $produit->reference;
-            $entreeDepot->depot = $request->input('depot');
-            $entreeDepot->quantite = $request->input("quantite");
+            $entreeDepot->depot = request()->depot;
+            $entreeDepot->quantite = request()->quantite;
 
-            $newQuantite = $produit->quantite_centrale - $request->input('quantite');
+            $newQuantite = $produit->quantite_centrale - request()->quantite;
             $produit->quantite_centrale = $newQuantite;
             //
          // ENVOI DE LA NOTIFICATION
-            $_depot = Depots::find($request->input('depot'));
-            $this->sendNotification("Ravitaillement Depot!","Ravitaillement effectue au compte de : ".$request->input('depot'),User::where('type','admin')->first()->username);
-            $this->sendNotification("Ravitaillement Depot!","Ravitaillement effectue au compte de : ".$request->input('depot'),Auth::user()->username);
-            $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".$request->input('depot'),$_depot->vendeurs);
+            $_depot = Depots::find(request()->depot);
+            $this->sendNotification("Ravitaillement Depot!","Ravitaillement effectue au compte de : ".request()->depot,User::where('type','admin')->first()->username);
+            $this->sendNotification("Ravitaillement Depot!","Ravitaillement effectue au compte de : ".request()->depot,Auth::user()->username);
+            $this->sendNotification("Ravitaillement Materiel","Ravitaillement effectue au compte de : ".request()->depot,$_depot->vendeurs);
             $entreeDepot->save();
             $produit->save();
-            // return redirect("/user/list-material")->withSuccess("Success!");
+            
             return response()
               ->json('done');
           }
@@ -361,10 +364,10 @@ class LogistiqueController extends Controller
 
                 if($request->input('compense') > 0) {
                     // 
-                    $compMat->quantite = $request->input('compense');
-                    $compMat->commande_id = $commande;
-                    $compMat->save();
-                  }
+                  $compMat->quantite = $request->input('compense');
+                  $compMat->commande_id = $commande;
+                  $compMat->save();
+                }
                 
                 // verifier si le ravitaillement est possible pour ce vendeur
                 // ##@+++++
@@ -689,19 +692,51 @@ class LogistiqueController extends Controller
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
-    public function getParaboleDu($vendeur) {
+    public function getParaboleDu($commande) {
 
-        $migration = RapportVente::where('vendeurs',$vendeur)
+      $rappVente = RapportVente::select('id_rapport')
+        ->where('vendeurs',$commande->vendeurs)
         ->where('type','migration')
-        ->sum('quantite');
+        ->groupBy('id_rapport')
+        ->get();
 
-        $cm = CommandMaterial::select('id_commande')->where('vendeurs',$vendeur)->get();
+      $accessoireInfos = [];
+      $terminalInfos = "";
+
+      foreach($commande->commandProduits()->get() as $key => $value) {
+        if($value->produits()->where('with_serial',0)
+          ->first()) {
+
+            array_push($accessoireInfos,
+              $value->produits()
+                ->where('with_serial',0)
+                ->first()->reference);
+          }
+          else {
+            $terminalInfos = $value->produits()
+              ->where('with_serial',1)
+              ->first()->reference;
+          }
+      }
+
+      $migration = Exemplaire::whereIn('rapports',$rappVente)
+        ->where('produit',$terminalInfos)
+        ->count();
+
+      // return $migration;
+
+        $cm = CommandMaterial::select('id_commande')->where('vendeurs',$commande->vendeurs)->get();
 
         $compense   = CompenseMaterial::whereIn('commande_id',$cm)->sum('quantite');
           // quantite de parabole du
         $parabole_du = $migration - $compense;
 
-        return $parabole_du;
+        if($parabole_du > 0) {
+
+          return $parabole_du;
+        }
+        return 0;
+
     }
 
     public function getRestantPourRavitaillement($commande , $materiel ,$vendeur ) {
@@ -744,27 +779,31 @@ class LogistiqueController extends Controller
     try {
       $commande = $c->find(Crypt::decryptString($slug));
       $rv = [];
-      $terminal = 0;
-      $parabole = 0;
+
+      $terminal = "";
+      $accessoire = [];
       
       foreach($commande->commandProduits()->get() as $key => $value) {
+
         if($value->produits()->first()->with_serial == 1){
           $terminal = $this->getRestantPourRavitaillement($value->commande,$value->produit,$commande->vendeurs);
-        } else {
-          $parabole = $this->getRestantPourRavitaillement($value->commande,$value->produit,$commande->vendeurs);
+        } 
+        else {
+          $accessoire = $this->getRestantPourRavitaillement($value->commande,$value->produit,$commande->vendeurs);
         }
+
       }
       
       $rv = [
         'terminal'  =>  $terminal,
-        'parabole'  => $parabole
+        'accessoire'  => $accessoire
       ];
       $all = [
         'id'  =>  $commande->id_commande,
         'status'  =>  $commande->status,
         'vendeurs' => $commande->vendeurs,
         'vendeurs_localisation' =>  $commande->vendeurs()->first()->localisation,
-        'parabole_du'  =>  $this->getParaboleDu($commande->vendeurs),
+        'parabole_du'  =>  $this->getParaboleDu($commande),
         'restant_ravit' =>  $rv,
         'materials' =>  $p->select(['reference','libelle'])->get()
       ];
@@ -812,18 +851,20 @@ class LogistiqueController extends Controller
       $non_attribuer = $sn->select('serial_number')
         ->whereNull('vendeurs')
         ->get();
+
       $stock = $s
         ->whereIn('exemplaire',$non_attribuer)
         ->orderBy('exemplaire','asc')
         ->paginate(500);
 
         $all = [];
+
         foreach($stock as $key => $value) {
           $deficient = $df->where('serial_to_replace',$value->exemplaire)->first();
           $all [$key] =[
             'numero_materiel'  =>   $value->exemplaire,
             'depot' =>  $value->depot,
-            'article' =>  "Terminal",
+            'article' =>  $value->exemplaire()->produit()->libelle,
             'etat'  =>  $deficient ? 'defectueux' : '-',
             'origine' =>  $value->origine
           ];
