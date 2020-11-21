@@ -210,6 +210,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	
 	Route::get('/user/reabo-afrocash/get-comission','PdrafController@getComissionToPay');
 	######################################  PDC #########################$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+	Route::post('/pdc/command/new','PdcController@sendCommandAfrocash')->middleware('pdc');
+	Route::get('/pdc/command/new','PdcController@newCommandGetData');
 	Route::post('/user/afrocash/depot-pdc/','PdcController@depotDepot')->middleware('vendeur');
 	Route::get('/user/pdc/','PdcController@operation')->middleware('pdc');
 	Route::get('/user/get-pdraf-list','PdrafController@getList')->middleware('pdc');
@@ -347,8 +349,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 
 	Route::get('/user/new-command','CommandController@addCommand')->middleware('vendeur');
 	// Route::get('/user/new-command/get-infos-material','CommandController@infoMaterial')->middleware('vendeur');
-	Route::get('/user/new-command/get-infos-material/{slug}','CommandController@infoMaterial')->middleware('vendeur');
-	Route::get('/user/new-command/get-data','CommandController@getData')->middleware('vendeur');
+	Route::get('/user/new-command/get-infos-material/{slug}','CommandController@infoMaterial');//->middleware('vendeur');
+	Route::get('/user/new-command/get-data','CommandController@getData');
 
 	// ========= LISTE DES COMMANDES
 	Route::get('/user/command/filter/{user}/{state}/{promo}','AdminController@filterRequestCommande');

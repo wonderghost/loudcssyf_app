@@ -15,6 +15,8 @@ import ReaboAfrocash from './pdrafComponents/ReaboAfrocash.vue'
 import AllVenteReabo from './pdrafComponents/AllVenteReaboAfrocash.vue'
 import upgradeAfrocash from './pdrafComponents/UpgradeAfrocash.vue'
 import reactivationMateriel from './pdrafComponents/ReactivationComponent.vue'
+import commandAfrocash from './pdcComponents/CommandAfrocash.vue'
+import commandAfrocashList from './pdcComponents/CommandAfrocashList.vue'
 // 
 
 // ADMIN ROUTER
@@ -110,7 +112,14 @@ const router = new VueRouter({
         },
         {
             path : '/pdraf/list',
-            component : creationPdraf
+            component : creationPdraf,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'admin' && store.state.typeUser != 'commercial') {
+                    alert("action non autorise !")
+                    next('/')
+                }
+                next()
+            }
 
         },
         // DASHBOARD
@@ -120,7 +129,20 @@ const router = new VueRouter({
         },
         {
             path : '/performances',
-            component : performance
+            component : performance,
+            beforeEnter : (to,from,next) => {
+                if(
+                    store.state.typeUser != 'admin' &&
+                    store.state.typeUser != 'commercial' &&
+                    store.state.typeUser != 'v_da' &&
+                    store.state.typeUser != 'v_standart'    
+                ) {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+
+                next()
+            }
         },
         {
             path : '/objectifs/visu',
@@ -577,10 +599,40 @@ const router = new VueRouter({
                 }
                 next()
             }
+        },
+        {
+            path : '/pdc/command/new',
+            component : commandAfrocash,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'pdc') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            }
+        },
+        {
+            path : '/pdc/command/list',
+            component : commandAfrocashList,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'pdc') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            }
         }
     ]
 
 
 
 })
+
+router.afterEach( (to,from) => {
+    if(UIkit.offcanvas($("#side-nav"))) {
+
+        UIkit.offcanvas($("#side-nav")).hide();
+    }
+})
+
 export default router

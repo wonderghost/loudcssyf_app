@@ -14,13 +14,19 @@ use App\MakePdraf;
 use App\PayCommission;
 use App\ReaboAfrocash;
 use App\Credit;
+use App\Kits;
+use App\CommandAfrocash;
+use App\LivraisonAfrocash;
+use App\ReaboAfrocashSetting;
 
 use App\Traits\Similarity;
 use App\Traits\Afrocashes;
 
+
 use Carbon\Carbon;
 
 
+use Illuminate\Support\Str;
 
 
 class PdcController extends Controller {
@@ -105,10 +111,6 @@ public function SendPdrafAddRequest(Request $request) {
         header("Erreur",true,422);
         die(json_encode($e->getMessage()));
     }
-}
-
-public function operation() {
-    return view('pdc.pdc-home');
 }
 
 public function getPdrafSoldes(Request $request) {
@@ -507,6 +509,195 @@ public function addNewPdc(Request $request) {
                 ->json($data);
         }
         catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    // COMMAND GET DATA
+
+    public function newCommandGetData(Kits $kit) {
+        try {
+
+            return response()
+                ->json($kit->all());
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    // ENVOI DE LA COMMANDE MATERIEL POUR PDC
+
+    // UNICITE D'UNE COMMANDE NON CONFIRMEE
+    public function isExistCommandAfrocash() {
+        try {
+            $response = request()->user()->commandAfrocash()
+                ->where('state',false)
+                ->first();
+
+                if($response) {
+                    return $response;
+                }
+                return false;
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    # GENERER UN ID DE LA COMMANDE 
+
+    public function generateIdCommandAfrocash() {
+        do {
+            $id_commande = mt_rand(1000,9999).Str::upper(Str::random(10));
+
+            $response = request()->user()->commandAfrocash()
+                    ->where('id_commande',$id_commande)
+                    ->first();
+        }
+        while($response);
+
+        return $id_commande;
+    }
+
+    public function sendCommandAfrocash() {
+        try {
+            $validation = request()->validate([
+                'prix_achat'    =>  'required',
+                'reference_material'    =>  'required|exists:kits,slug',
+                'quantite'  =>  'required|min:1'
+            ],[
+                'required'  =>  '`:attribute` requi(s) !'
+            ]);
+
+            // SOLDE PDC
+            $pdc_account = request()->user()->afroCash('semi_grossiste')->first();
+
+            // VERIFICATION DE LA DISPONIBILITE DU MONTANT DANS LE COMPTE PDC
+            if($pdc_account->solde < request()->prix_achat) {
+                throw new AppException("Solde indisponible !");
+            }
+
+            // VERIFIER L'EXISTENCE D'UNE COMMAND NON CONFIRMEE
+
+            if($this->isExistCommandAfrocash()) {
+                throw new AppException("Une commande existe deja ! Ressayez plus tard ...");
+            }
+
+            // DETAILS DE L'ARTICLE
+
+            $kit = Kits::find(request()->reference_material);
+            $terminal = $kit->getTerminalReference();
+            $accessoire = $kit->getAccessoryReference();
+
+            // CREATION DE LA COMMANDE AFROCASH
+
+            $idCommande = $this->generateIdCommandAfrocash();
+
+            $commandAfrocash = [];
+
+            $commandAfrocash[0] = new CommandAfrocash;
+            $commandAfrocash[0]->id_commande = $idCommande;
+            $commandAfrocash[0]->user_id = request()->user()->username;
+            $commandAfrocash[0]->produit_id = $terminal->reference;
+            $commandAfrocash[0]->quantite = request()->quantite;
+            $commandAfrocash[0]->quantite_a_livrer = request()->quantite;
+
+            foreach($accessoire as $key => $value) {
+                $tmp = new CommandAfrocash;
+                $tmp->user_id = request()->user()->username;
+                $tmp->produit_id = $value->reference;
+                $tmp->quantite = request()->quantite;
+                $tmp->quantite_a_livrer = request()->quantite;
+                $tmp->id_commande = $idCommande;
+
+                array_push($commandAfrocash,$tmp);
+            }
+
+            // CREATION DE LA LIVRAISON
+            $livraisonAfrocash = new LivraisonAfrocash;
+            $livraisonAfrocash->command_afrocash = $idCommande;
+            $livraisonAfrocash->generateConfirmCode();
+
+            // TRANSACTION AFROCASH
+
+            $reabo_afrocash_setting = ReaboAfrocashSetting::all()->first();
+
+            if(!$reabo_afrocash_setting) {
+                throw new AppException("Parametre Reabo non defini , contactez l'administrateur");
+            }
+
+            $receiver_user = User::where('username',$reabo_afrocash_setting->user_to_receive)->first();
+            $receiver_account = $receiver_user->afroCash()->first();
+
+            $pdc_account->solde -= request()->prix_achat;
+            $receiver_account->solde += request()->prix_achat;
+
+            
+
+            // ENREGISTREMENT DE LA TRANSACTION
+
+            $trans = new TransactionAfrocash;
+            $trans->compte_debite = $pdc_account->numero_compte;
+            $trans->compte_credite = $receiver_account->numero_compte;
+            $trans->montant = request()->prix_achat;
+            $trans->motif = "Command_Materiel_Afrocash";
+
+            // VALIDATION DE LA REQUETE
+
+            foreach($commandAfrocash as $value) {
+                $value->save();
+            }
+
+            $livraisonAfrocash->save();
+
+            $pdc_account->update();
+            $receiver_account->update();
+            $trans->save();
+
+
+            // ENREGISTREMENT DES NOTIFICATIONS
+
+
+            $n = $this->sendNotification(
+                "Command Materiel Afrocash",
+                "Vous avez envoye une commande Materiel !",
+                request()->user()->username
+            );
+
+            $n->save();
+            
+            $n = $this->sendNotification(
+                "Command Materiel Afrocash",
+                "Une commande Materiel en attente de validation !",
+                $receiver_user->username
+            );
+
+            $n->save();
+
+            $n = $this->sendNotification(
+                "Command Materiel Afrocash",
+                "Une commande Materiel en attente de validation !",
+                'admin'
+            );
+
+            $n->save();
+            
+            $n = $this->sendNotification(
+                "Command Materiel Afrocash",
+                "Une commande Materiel en attente de validation !",
+                'root'
+            );
+    
+            $n->save();
+
+            return response()
+                ->json('done');
+        }
+        catch(AppException  $e){
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));
         }

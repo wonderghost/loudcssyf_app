@@ -654,6 +654,8 @@ class LogistiqueController extends Controller
             'prix_unitaire' =>  'required',
             'quantite'  =>  'required',
             'marge' =>  'required',
+            'marge_pdc' =>  'required',
+            'marge_pdraf' =>  'required',
             'password_confirmation' =>  'required|string'
           ],[
             'required'  =>  '`:attribute` est requis!',
@@ -670,6 +672,8 @@ class LogistiqueController extends Controller
           // $produit->prix_achat = $r
           $produit->prix_initial = $request->input('prix_initial');
           $produit->prix_vente = $request->input('prix_unitaire');
+          $produit->marge_pdc = $request->input('marge_pdc');
+          $produit->marge_pdraf = $request->input('marge_pdraf');
 
           $produit->save();
           

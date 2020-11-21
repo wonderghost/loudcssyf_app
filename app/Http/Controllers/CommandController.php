@@ -116,11 +116,25 @@ class CommandController extends Controller
 					];
 				}
 
+				// MARGE EN FONCTION DES UTILISATEUR [DA/VSTANDART | PDC | PDDRAF]
+
+				if(request()->user()->type == 'v_da' || request()->user()->type == 'v_standart') {
+					// DA/ VSTANDART
+					$marge = $terminal->marge;
+				}
+				else if(request()->user()->type == 'pdc') {
+					$marge = $terminal->marge_pdc;
+				}
+				else {
+					$marge = $terminal->marge_pdraf;
+				}
+				#@@@@@@@@@@@@@@
+
 				$all = [
 					'ttc'	=>	$terminal->prix_initial + $accessoire_prix['prix_initial'],
 					'ht'	=>	ceil($terminal->prix_vente/1.18),
 					'tva'	=>	ceil($terminal->prix_vente - ($terminal->prix_vente/1.18)),
-					'marge'	=>	$terminal->marge,
+					'marge'	=>	$marge,
 					'subvention'	=>	($terminal->prix_initial - $terminal->prix_vente) + ($accessoire_prix['prix_initial'] - $accessoire_prix['prix_vente']),
 					'prix_vente'	=>	$terminal->prix_vente,
 					'reference'	=>	$dataKits->slug ,

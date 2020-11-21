@@ -32,13 +32,13 @@
             <li>
               <div class="uk-grid-small uk-grid-divider" uk-grid>
                 <div class="uk-width-1-3@m">
-                   <div class="uk-card uk-card-default uk-border-rounded" style="box-shadow : none !important ; border : solid 1px #ddd !important;">
-                      <div class="uk-card-header">
-                          <h3 class="uk-card-title">SOLDE AFROCASH (GNF)</h3>
-                      </div>
-                      <div class="uk-card-body uk-text-center">
-                          <span class=" uk-card-title">{{soldeAfrocash | numFormat}}</span>
-                      </div>
+                  <div class="uk-card uk-card-default uk-border-rounded" style="box-shadow : none !important ; border : solid 1px #ddd !important;">
+                    <div class="uk-card-header">
+                        <h3 class="uk-card-title">SOLDE AFROCASH (GNF)</h3>
+                    </div>
+                    <div class="uk-card-body uk-text-center">
+                      <span class=" uk-card-title">{{soldeAfrocash | numFormat}}</span>
+                    </div>
                   </div>  
                 </div>
                   <!-- COMMANDE MATERIEL -->
@@ -217,7 +217,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         
       },
         mounted() {
-          UIkit.offcanvas($("#side-nav")).hide();
           this.getData()
           this.getInfosMaterial()
         },

@@ -13,8 +13,8 @@
 
         <template v-if="typeUser == 'admin'">
             <!-- Erreor block -->
-            <template v-if="errors.length" v-for="error in errors">
-                <div class="uk-alert-danger uk-width-1-2@m uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+            <template v-if="errors">
+                <div v-for="(error,index) in errors" :key="index" class="uk-alert-danger uk-width-1-2@m uk-border-rounded uk-box-shadow-hover-small" uk-alert>
                     <a href="#" class="uk-alert-close" uk-close></a>
                     <p>{{error}}</p>
                 </div>
@@ -105,11 +105,11 @@
                     </div>
                     <div class="uk-modal-body">
                         <form @submit.prevent="sendEditForm()" class="uk-width-1-1@m uk-grid-small" uk-grid>
-                            <div class="uk-width-1-2@m">
+                            <div class="uk-width-1-3@m">
                                 <label for="">Libelle</label>
                                 <input type="text" class="uk-input uk-border-rounded" v-model="editMaterialForm.libelle" placeholder="Libelle du Materiel">
                             </div>
-                            <div class="uk-width-1-2@m">
+                            <div class="uk-width-1-3@m">
                                 <label for="">Prix initial</label>
                                 <input type="number" class="uk-input uk-border-rounded" v-model="editMaterialForm.prix_initial" placeholder="Prix Initial">
                             </div>
@@ -122,9 +122,18 @@
                                 <input type="number" class="uk-input uk-border-rounded" v-model="editMaterialForm.marge" placeholder="Marge Materiel">
                             </div>
                             <div class="uk-width-1-3@m">
+                                <label for="">Marge Pdc</label>
+                                <input type="number" class="uk-input uk-border-rounded" v-model="editMaterialForm.marge_pdc" placeholder="Marge Materiel">
+                            </div>
+                            <div class="uk-width-1-3@m">
+                                <label for="">Marge Pdraf</label>
+                                <input type="number" class="uk-input uk-border-rounded" v-model="editMaterialForm.marge_pdraf" placeholder="Marge Materiel">
+                            </div>
+                            <div class="uk-width-1-4@m">
                                 <label for="">Quantite</label>
                                 <span type="text" class="uk-input uk-border-rounded">{{ editMaterialForm.quantite }}</span>
                             </div>
+                            
                             <div class="uk-width-1-1@m">
                                 <label for="">Confirmez votre mot de passe</label>
                                 <input type="password" class="uk-input uk-border-rounded" placeholder="Entrez votre mot de passe pour confirmer" v-model="editMaterialForm.password_confirmation">
@@ -187,6 +196,8 @@ export default {
                 prix_initial : 0,
                 prix_unitaire : 0,
                 marge : 0,
+                marge_pdc : 0,
+                marge_pdraf : 0,
                 quantite : 0,
                 password_confirmation : ""
             }
@@ -201,6 +212,8 @@ export default {
                 this.editMaterialForm.prix_unitaire = obj.prix_vente
                 this.editMaterialForm.marge = obj.marge
                 this.editMaterialForm.quantite = obj.quantite_centrale
+                this.editMaterialForm.marge_pdc = obj.marge_pdc
+                this.editMaterialForm.marge_pdraf = obj.marge_pdraf
 
             } catch(error) {
                 alert(error)

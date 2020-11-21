@@ -432,6 +432,9 @@
                 <li>
                   <router-link  to="/inventaire-pdraf"><span uk-icon="icon : link"></span> Inventaire PDRAF</router-link>
                 </li>
+                <li>
+                  <router-link to="/pdc/command/new"><span uk-icon="icon : link"></span> Command Materiel</router-link>
+                </li>
               </ul>
             </li>
             <li class="uk-parent">
