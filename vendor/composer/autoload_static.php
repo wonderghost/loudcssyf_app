@@ -554,6 +554,7 @@ class ComposerStaticInit15d5dc02f650ad17553f69fb230f4dbd
         'App\\Http\\Controllers\\Auth\\ResetPasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ResetPasswordController.php',
         'App\\Http\\Controllers\\ChartController' => __DIR__ . '/../..' . '/app/Http/Controllers/ChartController.php',
         'App\\Http\\Controllers\\ChatController' => __DIR__ . '/../..' . '/app/Http/Controllers/ChatController.php',
+        'App\\Http\\Controllers\\CommandAfrocashController' => __DIR__ . '/../..' . '/app/Http/Controllers/CommandAfrocashController.php',
         'App\\Http\\Controllers\\CommandController' => __DIR__ . '/../..' . '/app/Http/Controllers/CommandController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\CreditController' => __DIR__ . '/../..' . '/app/Http/Controllers/CreditController.php',

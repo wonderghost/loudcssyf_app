@@ -17,6 +17,7 @@ import upgradeAfrocash from './pdrafComponents/UpgradeAfrocash.vue'
 import reactivationMateriel from './pdrafComponents/ReactivationComponent.vue'
 import commandAfrocash from './pdcComponents/CommandAfrocash.vue'
 import commandAfrocashList from './pdcComponents/CommandAfrocashList.vue'
+import confirmCommandAfrocash from './pdcComponents/ConfirmCommandAfrocash.vue'
 // 
 
 // ADMIN ROUTER
@@ -615,7 +616,18 @@ const router = new VueRouter({
             path : '/pdc/command/list',
             component : commandAfrocashList,
             beforeEnter : (to,from,next) => {
-                if(store.state.typeUser != 'pdc') {
+                if(store.state.typeUser != 'pdc' && store.state.typeUser != 'admin' && store.state.typeUser != 'v_standart') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            }
+        },
+        {
+            path : '/pdc/command/confirmation/:id',
+            component : confirmCommandAfrocash,
+            beforeEnter : (to,from,next)    =>  {
+                if(store.state.typeUser != 'v_standart') {
                     alert('action non autorisee !')
                     next('/')
                 }

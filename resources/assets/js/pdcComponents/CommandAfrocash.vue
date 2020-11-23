@@ -40,7 +40,7 @@
             </div>
             <div class="uk-width-2-3@m">
               <!-- Erreor block -->
-              <template v-if="errors.length">
+              <template v-if="errors">
                 <div class="uk-alert-danger uk-border-rounded uk-width-2-3@m" v-for="(error,index) in errors" :key="index" uk-alert>
                   <a href="#" class="uk-alert-close" uk-close></a>
                   <p>{{error}}</p>

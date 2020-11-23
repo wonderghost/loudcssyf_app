@@ -702,4 +702,6 @@ public function addNewPdc(Request $request) {
             die(json_encode($e->getMessage()));
         }
     }
+
+   
 }

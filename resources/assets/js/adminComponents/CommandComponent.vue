@@ -18,6 +18,9 @@
     <template v-if="typeUser == 'gcga' || typeUser == 'admin' || typeUser == 'v_da' || typeUser == 'v_standart' || typeUser == 'commercial'">
       <router-link to="/commande-credit/all" style="color : #000 !important"><button class="uk-button uk-button-small uk-border-rounded">Credit</button></router-link>
     </template>
+    <template v-if="typeUser == 'admin' || typeUser == 'v_standart'">
+      <router-link to="/pdc/command/list" style="color : #000 !important"><button class="uk-button uk-button-small uk-border-rounded">Reseaux Afrocash</button></router-link>
+    </template>
     
    
     <template id="" v-if="typeUser == 'logistique'">

@@ -212,6 +212,10 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	######################################  PDC #########################$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	Route::post('/pdc/command/new','PdcController@sendCommandAfrocash')->middleware('pdc');
 	Route::get('/pdc/command/new','PdcController@newCommandGetData');
+	Route::get('/pdc/command/list','CommandAfrocashController@commandAfrocashList');
+	Route::get('/pdc/command/confirm/{slug}','CommandAfrocashController@getDataConfirmCommand')->middleware('vendeur');
+	Route::post('/pdc/command/confirm/{slug}','CommandAfrocashController@confirmCommandAfrocash')->middleware('vendeur');
+
 	Route::post('/user/afrocash/depot-pdc/','PdcController@depotDepot')->middleware('vendeur');
 	Route::get('/user/pdc/','PdcController@operation')->middleware('pdc');
 	Route::get('/user/get-pdraf-list','PdrafController@getList')->middleware('pdc');
