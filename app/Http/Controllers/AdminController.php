@@ -1236,9 +1236,13 @@ class AdminController extends Controller
 
   public function editOption(Request $request , $slug) {
     try {
+      $option = Option::find(Crypt::decryptString($slug));
+      $option->title = request()->title;
+      $option->prix = request()->prix;
+      $option->update();
 
       return response()
-        ->json($request);
+        ->json('done');
     }
     catch(AppException $e) {
       header("Erreur",true,422);

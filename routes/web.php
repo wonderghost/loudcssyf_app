@@ -215,6 +215,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/pdc/command/list','CommandAfrocashController@commandAfrocashList');
 	Route::get('/pdc/command/confirm/{slug}','CommandAfrocashController@getDataConfirmCommand')->middleware('vendeur');
 	Route::post('/pdc/command/confirm/{slug}','CommandAfrocashController@confirmCommandAfrocash')->middleware('vendeur');
+	Route::post('/pdc/command/remove','CommandAfrocashController@removeCommandAfrocash')->middleware('vendeur');
 
 	Route::post('/user/afrocash/depot-pdc/','PdcController@depotDepot')->middleware('vendeur');
 	Route::get('/user/pdc/','PdcController@operation')->middleware('pdc');

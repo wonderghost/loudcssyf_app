@@ -28,6 +28,13 @@
         <!-- FORMULAIRE DE CONFIRMATION DE LA COMMANDE -->
         <div class="uk-grid-small" uk-grid>
             <div class="uk-width-2-3@m">
+                <!-- Erreor block -->
+                <template v-if="errors">
+                    <div class="uk-alert-danger uk-border-rounded uk-width-2-3@m" v-for="(error,index) in errors" :key="index" uk-alert>
+                        <a href="#" class="uk-alert-close" uk-close></a>
+                        <p>{{error}}</p>
+                    </div>
+                </template>
                 <form @submit.prevent="sendConfirmationRequest()" class="uk-grid-small" uk-grid>
                     <div class="uk-width-1-1@m uk-grid-small" uk-grid v-for="(item,index) in items" :key="index">
                         <div class="uk-width-1-5@m">
@@ -90,20 +97,31 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                     serials : [],
                     confirm_code : "",
                     password_confirmation : ""
-                }
+                },
+                errors : []
             }
         },
         methods : {
             sendConfirmationRequest : async function () {
                 try {
+                    this.errors = []
                     this.formData._token = this.myToken
                     let response = await axios.post('/pdc/command/confirm/'+this.$route.params.id,this.formData)
-                    if(response) {
-                        console.log(response.data)
+                    if(response && response.data == 'done') {
+                        alert('success !')
+                        Object.assign(this.$data,this.$options.data())
+                        this.router.push('/pdc/command/list')
                     }
                 }
                 catch(error) {
-                    alert(error)
+                    if(error.response.data.errors) {
+                        let errorTab = error.response.data.errors
+                        for (var prop in errorTab) {
+                            this.errors.push(errorTab[prop][0])
+                        }
+                    } else {
+                        this.errors.push(error.response.data)
+                    }
                 }
             },
             getData : async function () {

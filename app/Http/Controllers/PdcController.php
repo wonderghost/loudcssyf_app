@@ -535,6 +535,7 @@ public function addNewPdc(Request $request) {
         try {
             $response = request()->user()->commandAfrocash()
                 ->where('state',false)
+                ->where('remove_state',false)
                 ->first();
 
                 if($response) {

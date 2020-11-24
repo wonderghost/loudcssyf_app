@@ -70,9 +70,6 @@ import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 
   export default {
-    created() {
-      this.isLoading = true
-    },
     mounted() {
       UIkit.offcanvas($("#side-nav")).hide();
       this.getInfos()
@@ -107,7 +104,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           return 0
         })
         
-        if(event.target.value == terminal.reference) {
+        if(terminal && (event.target.value == terminal.reference)) {
           this.serial = true
         }
         else {
@@ -116,6 +113,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       },
       getInfos : async function () {
         try {
+          this.isLoading = false
           let response = await axios.get('/logistique/ravitaillement/list-depot')
           this.depots = response.data
           response = await axios.get('/user/logistique/get-materiel')
@@ -126,7 +124,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         }
       },
       sendRavitaillementDepot : async function () {
-        // this.isLoading = true
+        this.isLoading = true
         try {
           this.formData._token = this.myToken
           let response = await axios.post('/user/ravitailler-depot',this.formData)
@@ -136,7 +134,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             this.getInfos()
           }
           this.isLoading = false
-        } catch (error) {
+        } 
+        catch (error) {
           this.isLoading = false
           if(error.response.data.errors) {
             let errorTab = error.response.data.errors
