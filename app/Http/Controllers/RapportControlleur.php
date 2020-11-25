@@ -334,55 +334,109 @@ public function validatePayComission(Request $request) {
 
 // voire les details d'un rapport de vente [recrutement | migration]
 
-public function getDetailsForRapport(Request $request , RapportVente $r) {
-  try {
-      $rapport = $r->find($request->input('id_rapport'));
-      $data = [];
-      if($rapport->type == 'migration') {
-        // details des rapports de migration
-        $migration = $rapport->exemplaire();
-        foreach($migration as $key => $value) {
-          $data[$key] =[
-            'serial'  =>  $value->serial_number,
-          ];
+  public function getDetailsForRapport(Request $request , RapportVente $r) {
+    try {
+        $rapport = $r->find($request->input('id_rapport'));
+        $data = [];
+        if($rapport->type == 'migration') {
+          // details des rapports de migration
+          $migration = $rapport->exemplaire();
+          foreach($migration as $key => $value) {
+            $data[$key] =[
+              'serial'  =>  $value->serial_number,
+            ];
+          }
         }
-      }
-      else {
+        else {
 
-        $abonnements = $rapport->abonnements();
-        foreach($abonnements as $key => $value) {
-          $options = $value->options();
-          $debut = new Carbon($value->debut);
+          $abonnements = $rapport->abonnements();
+          foreach($abonnements as $key => $value) {
+            $options = $value->options();
+            $debut = new Carbon($value->debut);
+      
+            $fin = new Carbon($value->debut);
+            $fin->addMonths($value->duree)
+              ->subDay()
+              ->addHours(23)
+              ->addMinutes(59)
+              ->addSeconds(59);
     
-          $fin = new Carbon($value->debut);
-          $fin->addMonths($value->duree)
-            ->subDay()
-            ->addHours(23)
-            ->addMinutes(59)
-            ->addSeconds(59);
-  
-          
-          $upgrade_details = $value->upgrade();
-          
-          
-          $data[$key] = [
-            'serial'  =>  $value->serial_number,
-            'formule' =>  $value->formule_name,
-            'duree' =>  $value->duree,
-            'debut' =>  $debut->toDateTimeString(),
-            'fin' =>  $fin->toDateTimeString(),
-            'option'  =>  $options,
-            'created_at'  =>  $value->created_at,
-            'upgrade_state' => $value->upgrade ? 'UPGRADE' : '',
-            'old_formule' =>  $upgrade_details ? $upgrade_details->depart : ''
-          ];
+            
+            $upgrade_details = $value->upgrade();
+            
+            
+            $data[$key] = [
+              'serial'  =>  $value->serial_number,
+              'formule' =>  $value->formule_name,
+              'duree' =>  $value->duree,
+              'debut' =>  $debut->toDateTimeString(),
+              'fin' =>  $fin->toDateTimeString(),
+              'option'  =>  $options,
+              'created_at'  =>  $value->created_at,
+              'upgrade_state' => $value->upgrade ? 'UPGRADE' : '',
+              'old_formule' =>  $upgrade_details ? $upgrade_details->depart : ''
+            ];
+          }
         }
+        return response()->json($data);
+    } catch(AppException $e) {
+        header("Erreur",true,422);
+        die(json_encode($e->getMessage()));
+    }
+  }
+
+  public function exportRapportData() {
+    try {
+      $validation = request()->validate([
+        'from'  =>  'required|date',
+        'to'  =>  'required|date',
+        'type'  =>  'required',
+        'user'  =>  'required|string'
+      ],[
+        'required'  =>  '`:attribute` requi(s)',
+        'date'  =>  '`:attribute` doit etre une date',
+        'exists'  =>  '`:attribute` n\'existe pas dans le systeme'
+      ]);
+
+      $data = RapportVente::select('id_rapport')
+        ->whereBetween('date_rapport',[request()->from,request()->to]);
+        
+
+      if(request()->user != 'all') {
+        $data->where('vendeurs',request()->user);
       }
-      return response()->json($data);
-  } catch(AppException $e) {
+
+      if(request()->type != 'all') {
+        $data->where('type',request()->type);
+      }
+
+      $serials = Exemplaire::whereIn('rapports',$data)
+        ->get();
+  
+      $all = [];
+
+      if($serials->count() <= 0) {
+        throw new AppException("Aucune donnees !");
+      }
+  
+      foreach($serials as $key => $value) {
+        $all[$key] = [
+          'materiel'  =>  $value->serial_number,
+          'produit' =>  $value->produit()->libelle,
+          'vendeur' =>  $value->vendeurs()->localisation,
+          'rapport'  =>  $value->rapport()->type,
+          'date_rapport'  =>  $value->rapport()->date_rapport
+        ];
+      }
+
+      return response()
+        ->json($all);
+    }
+
+    catch(AppException $e) {
       header("Erreur",true,422);
       die(json_encode($e->getMessage()));
+    }
   }
-}
 
 }

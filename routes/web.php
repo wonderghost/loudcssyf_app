@@ -117,6 +117,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/all-rapport','AdminController@listRapport');
 	Route::post('/admin/rapport/remove-rapport','AdminController@removeRapport');
 	Route::get('/admin/pay-comissions/all','RapportControlleur@payComissionList');
+	Route::post('/admin/rapport/list/export','RapportControlleur@exportRapportData');
 
 	// Route::get('/admin/rapport/all','AdminController@getAllRapport');
 	Route::get('/admin/rapport/commission-total','AdminController@totalCommission');
@@ -139,7 +140,6 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/add-account-credit','CreditController@makeAddAccount');
 
 	// admin routing
-	// Route::get('/admin','AdminController@dashboard');
 	Route::get('/app',function () {
 		return view('layouts.template');
 	});

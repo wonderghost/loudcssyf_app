@@ -45,6 +45,7 @@ import affectationDepotVendeur from './adminComponents/AffectationDepotVendeur.v
 import affectationPdrafPdc from './adminComponents/AffectationPdrafComponent.vue'
 import acteReabonnement from './adminComponents/ActeReabonnement.vue'
 import editFormuleOption from './adminComponents/EditFormuleOptionComponent.vue'
+import exportRapportData from './adminComponents/ExportRapportDataComponent.vue'
 
 // VENDEURS
 import objectifUser from './userComponents/ObjectifUserComponent.vue'
@@ -232,6 +233,17 @@ const router = new VueRouter({
                 else {
                     next()
                 }
+            }
+        },
+        {
+            path : '/rapport/list/export',
+            component : exportRapportData,
+            beforeEnter: (to , from,next) => {
+                if(store.state.typeUser != 'admin') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
             }
         },
         {

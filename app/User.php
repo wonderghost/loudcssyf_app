@@ -134,4 +134,10 @@ class User extends Authenticatable
       return $this->hasMany('App\RavitaillementVendeur','vendeurs','username');
     }
 
+    // REACTIVATION MATERIEL POUR LES PDRAFS
+
+    public function reactivationMateriel() {
+      return $this->hasMany('App\ReactivationMateriel','pdraf_id','username');
+    }
+
 }
