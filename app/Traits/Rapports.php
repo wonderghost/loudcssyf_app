@@ -385,10 +385,7 @@ Trait Rapports {
 
 								}
 							}
-
 							
-							
-							// $rp->save();
 							$rapport->save();
 							// CHANGEMENT DE STATUS DES MATERIELS
 							foreach($request->input('serial_number') as $value) {

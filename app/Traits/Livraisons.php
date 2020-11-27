@@ -145,8 +145,6 @@ public function inventaireLivraison() {
             if($request->input('with_serial') == 1) {
                // VERIFIER SI LES NUMEROS APPARTIENNENT AU MATERIEL SPECIFIE DANS LA COMMANDE
                 
-
-                
                 foreach($request->input('serial_number') as $key => $value) {
 
                   $materialState = Exemplaire::where('serial_number',$value)
