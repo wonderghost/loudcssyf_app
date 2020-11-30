@@ -2600,8 +2600,16 @@ class PdrafController extends Controller
                 throw new AppException("Confirmation impossible pour les reabonnements deja annule !");
             }
 
+            // VERIFIER SI CE N'EST PAS DEJA CONFIRME
+
+            if(!is_null($reabo_afrocash->confirm_at)) {
+                throw new AppException("Deja Confirmee !");
+            }
+
+
             $reabo_afrocash->confirm_at = Carbon::now();
-            $reabo_afrocash->save();
+            $reabo_afrocash->update();
+
             return response()
                 ->json('done');
         } catch(AppException $e) {
@@ -3072,8 +3080,17 @@ class PdrafController extends Controller
     // HISTORIQUE DE REACTIVATION MATERIELS
     public function getReactivationList(ReactivationMateriel $rm) {
         try {
-            $data = $rm->orderBy('created_at','desc')
-                ->paginate();
+            if(request()->user()->type != 'admin') {
+                $data = request()->user()->reactivationMateriel()
+                    ->orderBy('created_at','desc')
+                    ->paginate();
+            }
+            else {
+
+                $data = $rm->orderBy('created_at','desc')
+                    ->paginate();
+            }
+
             $count = $rm->whereNull('confirm_at')
                 ->whereNull('remove_at')
                 ->count('serial_number');

@@ -471,10 +471,13 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                         let errorTab = error.response.data.errors
                         for (var prop in errorTab) {
                             this.errors.push(errorTab[prop][0])
+                            alert(errorTab[prop][0])
                         }
                     } else {
                         this.errors.push(error.response.data)
+                        alert(error.response.data)
                     }
+                    this.getAllData()
                 }
             },
             sendPayComissionRequest : async function () {

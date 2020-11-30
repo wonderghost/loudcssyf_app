@@ -1,15 +1,16 @@
 <template>
     <div>
-        <loading :active.sync="isLoading"
-        :can-cancel="false"
-        :is-full-page="fullPage"
-        loader="bars"
-        :opacity="1"
-        color="#fff"
-        background-color="#083050"></loading>
+      <loading :active.sync="isLoading"
+      :can-cancel="false"
+      :is-full-page="fullPage"
+      loader="bars"
+      :opacity="1"
+      color="#1e87f0"
+      background-color="#fff"></loading>
+      
         <!-- Error block -->
-        <template v-if="errors.length" v-for="error in errors">
-          <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert>
+        <template v-if="errors.length">
+          <div v-for="(error,index) in errors" :key="index" class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert>
             <a href="#" class="uk-alert-close" uk-close></a>
             <p>{{error}}</p>
           </div>
@@ -142,6 +143,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 if(diff < 0) {
                   for(var i = 0; i < loop ; i++) {
                     this.formData.formule.pop()
+                    this.formData.serial_number.pop()
                   }
                 }
                 this.calculMontantTtc()

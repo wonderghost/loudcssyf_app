@@ -1234,15 +1234,21 @@ class AdminController extends Controller
 
   // editer les infos d'une option
 
-  public function editOption(Request $request , $slug) {
+  public function editOption(Request $request , $slug , Option $o) {
     try {
       $option = Option::find(Crypt::decryptString($slug));
       $option->title = request()->title;
       $option->prix = request()->prix;
       $option->update();
 
+      $option = $o->find(Crypt::decryptString($slug));
+      $option->title = request()->title;
+      $option->prix = request()->prix;
+      $option->update();      
+
       return response()
         ->json('done');
+<<<<<<< HEAD
     }
     catch(AppException $e) {
       header("Erreur",true,422);
@@ -1305,6 +1311,8 @@ class AdminController extends Controller
 
       return response()
         ->json('done');
+=======
+>>>>>>> version-2.3
     }
     catch(AppException $e) {
       header("Erreur",true,422);

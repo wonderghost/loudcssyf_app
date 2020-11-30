@@ -14,6 +14,16 @@
 
     <download-to-excel :data-to-export="rapportList" :data-fields="field_export" file-name="rapport-vente"></download-to-excel>
 
+    <!-- EXPORT RAPPORT DATA -->
+    <nav class="" uk-navbar>
+      <div class="uk-navbar-left">
+        <ul class="uk-navbar-nav">
+          <li class=""><router-link to="/rapport/list/export">Exporter</router-link></li>
+        </ul>
+      </div>
+    </nav>
+    <!-- /// -->
+
     <!-- paiement comission for user -->
     <template v-if="typeUser == 'v_da'">
       <ul uk-accordion>
@@ -114,8 +124,8 @@
           </div>
           <div class="uk-modal-body">
             <!-- Error block -->
-              <template v-if="errors.length" v-for="error in errors">
-              <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+              <template v-if="errors">
+              <div v-for="(error,index) in errors" :key="index" class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
                 <a href="#" class="uk-alert-close" uk-close></a>
                 <p>{{error}}</p>
               </div>
@@ -254,8 +264,8 @@
         <div  class="uk-width-1-3@m">
           <h3 class="">Demandez un paiement de comission</h3>
           <!-- Erreor block -->
-          <template v-if="errors.length" v-for="error in errors">
-            <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+          <template v-if="errors">
+            <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert v-for="(error,index) in errors" :key="index">
               <a href="#" class="uk-alert-close" uk-close></a>
               <p>{{error}}</p>
             </div>
@@ -267,7 +277,7 @@
               <p>Demande de comission envoyee :-)</p>
             </div>
           </template>
-          <p class="uk-text-right">
+          <div class="uk-text-right">
             <form>
               <div class="uk-alert-info uk-border-rounded uk-box-shadow-hover-small" uk-alert>
                 <p>Confirmez en tapant votre mot de passe pour envoyer la demande de paiement !</p>
@@ -282,7 +292,7 @@
               </div>
               <button @click="sendPayComission()" type="button" name="button" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-text-capitalize">Envoyez <span uk-icon="icon : check"></span> </button>
             </form>
-          </p>
+          </div>
         </div>
         <div class="uk-width-2-3@m">
           <h3>Toutes les demandes</h3>
