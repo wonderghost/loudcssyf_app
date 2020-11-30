@@ -42,7 +42,7 @@ class User extends Authenticatable
     }
 
     public function exemplaire () {
-      return $this->hasMany('App\Exemplaire');
+      return $this->hasMany('App\Exemplaire','vendeurs','username');
     }
 
     public function agence() {

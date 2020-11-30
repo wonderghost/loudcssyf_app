@@ -1,12 +1,12 @@
 <template>
     <div>
-        <loading :active.sync="isLoading"
-        :can-cancel="false"
-        :is-full-page="fullPage"
-        loader="bars"
-        :opacity="1"
-        color="#fff"
-        background-color="#083050"></loading>
+      <loading :active.sync="isLoading"
+      :can-cancel="false"
+      :is-full-page="fullPage"
+      loader="bars"
+      :opacity="1"
+      color="#1e87f0"
+      background-color="#fff"></loading>
 
         <!-- Error block -->
         <template v-if="errors.length">
@@ -337,7 +337,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           },
           sendReabonnementRapport : async function () {
             try {
-              this.isLoading = true
+              // this.isLoading = true
               this.formData._token = this.myToken
               this.formData.promo_id = this.promoId
               this.formData.vendeurs = this.rappVendeur
