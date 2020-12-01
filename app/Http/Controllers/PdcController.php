@@ -646,6 +646,7 @@ public function addNewPdc(Request $request) {
             $trans->compte_credite = $receiver_account->numero_compte;
             $trans->montant = request()->prix_achat;
             $trans->motif = "Command_Materiel_Afrocash";
+            $trans->command_afrocash_id = $idCommande;
 
             // VALIDATION DE LA REQUETE
 

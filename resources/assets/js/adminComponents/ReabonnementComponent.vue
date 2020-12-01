@@ -194,6 +194,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
               if(!this.formData.upgrade[index]) {
                 
                 Vue.set(this.formData.upgradeData,index,undefined)
+                this.calculMontantTtc()
                 return 0
               }
 
@@ -337,7 +338,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           },
           sendReabonnementRapport : async function () {
             try {
-              // this.isLoading = true
+              this.isLoading = true
               this.formData._token = this.myToken
               this.formData.promo_id = this.promoId
               this.formData.vendeurs = this.rappVendeur
@@ -353,10 +354,6 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                   Object.assign(this.$data,this.$options.data())
                   this.isLoading = false
                   alert("Success !")
-                  // UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Operation effectuee avec success !</div>")
-                  //   .then(function () {
-                  //     location.reload()
-                  //   })
                 }
             } catch(error) {
                 this.isLoading = false

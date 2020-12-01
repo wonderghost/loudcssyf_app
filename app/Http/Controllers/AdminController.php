@@ -697,6 +697,7 @@ class AdminController extends Controller
       }
 
       $all =  $this->organizeCommandList($commands);
+
       return response()->json($all);
 
     }
@@ -1248,7 +1249,7 @@ class AdminController extends Controller
 
       return response()
         ->json('done');
-<<<<<<< HEAD
+
     }
     catch(AppException $e) {
       header("Erreur",true,422);
@@ -1311,8 +1312,6 @@ class AdminController extends Controller
 
       return response()
         ->json('done');
-=======
->>>>>>> version-2.3
     }
     catch(AppException $e) {
       header("Erreur",true,422);

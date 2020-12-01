@@ -133,6 +133,14 @@
                                 <label for="">Quantite</label>
                                 <span type="text" class="uk-input uk-border-rounded">{{ editMaterialForm.quantite }}</span>
                             </div>
+                            <div class="uk-width-1-4@m">
+                                <label for="">Interval Debut</label>
+                                <input v-model="editMaterialForm.interval_serial_first" type="number" class="uk-input uk-border-rounded" placeholder="[xxx,">
+                            </div>
+                            <div class="uk-width-1-4@m">
+                                <label for="">Interval Fin</label>
+                                <input v-model="editMaterialForm.interval_serial_last" type="number" class="uk-input uk-border-rounded" placeholder="yyy]">
+                            </div>
                             
                             <div class="uk-width-1-1@m">
                                 <label for="">Confirmez votre mot de passe</label>
@@ -199,6 +207,8 @@ export default {
                 marge_pdc : 0,
                 marge_pdraf : 0,
                 quantite : 0,
+                interval_serial_first : 0,
+                interval_serial_last : 0,
                 password_confirmation : ""
             }
         }
@@ -214,6 +224,8 @@ export default {
                 this.editMaterialForm.quantite = obj.quantite_centrale
                 this.editMaterialForm.marge_pdc = obj.marge_pdc
                 this.editMaterialForm.marge_pdraf = obj.marge_pdraf
+                this.editMaterialForm.interval_serial_first = obj.interval_serial_first
+                this.editMaterialForm.interval_serial_last = obj.interval_serial_last
 
             } catch(error) {
                 alert(error)
@@ -231,7 +243,6 @@ export default {
                         
                         if(response.data == 'done') {
                             alert("Success !")
-                            // location.reload()
                             this.etatEntrepot()
                         }
 
@@ -291,10 +302,8 @@ export default {
                 this.newMaterialForm._token = this.myToken
                 let response = await axios.post('/admin/add-material',this.newMaterialForm)
                 if(response.data == 'done') {
-                    UIkit.modal.alert("<div class='uk-alert-success uk-border-rounded' uk-alert>Materiel ajoute !</div>")
-                        .then(function() {
-                            location.reload()
-                        })
+                    alert("Success !")
+                    this.etatEntrepot()
                 }
             } catch(error) {
                 this.isLoading = false

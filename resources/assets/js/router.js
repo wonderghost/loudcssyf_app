@@ -48,11 +48,9 @@ import affectationDepotVendeur from './adminComponents/AffectationDepotVendeur.v
 import affectationPdrafPdc from './adminComponents/AffectationPdrafComponent.vue'
 import acteReabonnement from './adminComponents/ActeReabonnement.vue'
 import editFormuleOption from './adminComponents/EditFormuleOptionComponent.vue'
-<<<<<<< HEAD
+
 import commandSettings from './adminComponents/CommandSetting.vue'
-=======
 import exportRapportData from './adminComponents/ExportRapportDataComponent.vue'
->>>>>>> version-2.3
 
 // VENDEURS
 import objectifUser from './userComponents/ObjectifUserComponent.vue'

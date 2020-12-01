@@ -133,18 +133,15 @@ class User extends Authenticatable
     public function ravitaillementVendeur() {
       return $this->hasMany('App\RavitaillementVendeur','vendeurs','username');
     }
-
-<<<<<<< HEAD
     // COMMANDE AFROCASH
 
     public function commandAfrocash() {
       return $this->hasMany('App\CommandAfrocash','user_id','username');
-=======
+    }
     // REACTIVATION MATERIEL POUR LES PDRAFS
 
     public function reactivationMateriel() {
       return $this->hasMany('App\ReactivationMateriel','pdraf_id','username');
->>>>>>> version-2.3
     }
 
 }

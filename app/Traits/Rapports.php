@@ -36,6 +36,7 @@ use App\Abonnement;
 use App\AbonneOption;
 use App\Upgrade;
 use App\TransactionAfrocash;
+use App\Kits;
 
 
 Trait Rapports {
@@ -332,10 +333,21 @@ Trait Rapports {
 							$value->rapports = $id_rapport;
 						}
 
-						# DEBIT DU STOCK VENDEUR						
+						# DEBIT DU STOCK VENDEUR
+						$produit = $serialNumbers->first()->produit();
+						$article = $produit->articles()
+							->first()
+							->kits()
+							->first()
+							->articles()
+							->select('produit')
+							->groupBy('produit')
+							->get();
 
 						$user_stock = StockVendeur::where('vendeurs',request()->vendeurs)
+							->whereIn('produit',$article)
 							->get();
+
 
 						foreach($user_stock as $value) {
 							$value->quantite -= request()->quantite_materiel;
@@ -418,42 +430,26 @@ Trait Rapports {
 						}
 
 						foreach($user_stock as $value) {
-							$value->save();
+							$value->update();
 						}
 
-						$cga_account->save();						
+						$cga_account->update();						
 						$rapport->save();
 
 						foreach($serialNumbers as $value) {
-							$value->save();
+							$value->update();
 						}
 
 						foreach(request()->serial_number as $key => $value) {
 							$abonnement_data[$key]->save();
 							if(array_key_exists($key,$allAbonnOption_data) && !is_null($allAbonnOption_data[$key]->id_option)) {
 								$allAbonnOption_data[$key]->save();
-							}
-<<<<<<< HEAD
-							
-							$rapport->save();
-							// CHANGEMENT DE STATUS DES MATERIELS
-							foreach($request->input('serial_number') as $value) {
-								Exemplaire::where([
-									'vendeurs'  =>  $request->input('vendeurs'),
-									'serial_number' =>  $value,
-									'status'  =>  'inactif'
-									])->update([
-										'status'  =>  'actif',
-										'rapports'  =>  $id_rapport
-									]);
-							}
-=======
+							}							
 						}
 
 						// TRANSACTION PAIEMENT MARGE MATERIEL
 						$mat = $serialNumbers->first()->produit();
-						$montantTransaction = ceil(($mat->prix_vente / 1.18) * request()->quantite_materiel);
->>>>>>> version-2.3
+						$montantTransaction = ceil(($mat->marge / 1.18) * request()->quantite_materiel);
 
 						$receiver_account = $user_rapport->afroCash()->first();
 						$sender_user = User::where('type','logistique')
@@ -472,12 +468,9 @@ Trait Rapports {
 						$trans->compte_debite = $sender_account->numero_compte;
 						$trans->montant = $montantTransaction;
 						$trans->motif = "Paiement_Marge_Materiel";
-
-
-
-						
-						$receiver_account->save();
-						$sender_account->save();
+												
+						$receiver_account->update();
+						$sender_account->update();
 						$trans->save();
 						// redirection
 						return response()
@@ -577,7 +570,7 @@ Trait Rapports {
 							->get();
 						foreach($serialNumbers as $value) {
 							if($value->status == 'inactif' && $value->origine == 1) {
-								throw new AppException("Attention materiel vierge : ".$value);
+								throw new AppException("Attention materiel vierge : ".$value->serial_number);
 							} 
 						}
 
@@ -619,7 +612,7 @@ Trait Rapports {
 						$upgrade = [];
 
 						
-						foreach($request->input('serial_number') as $key	=>	$value) {
+						foreach(request()->serial_number as $key	=>	$value) {
 							$tmp = $e->find($value);
 
 							// 
@@ -652,10 +645,6 @@ Trait Rapports {
 									if(request()->upgradeData[$key]['mois_restant'] != request()->duree[$key]) {
 										throw new AppException("Duree non conforme pour : ".$value);
 									}
-
-									// if($request->input('upgradeData')[$key]['mois_restant'] != $request->input('duree')[$key]) {
-									// 	throw new AppException("Duree non conforme pour : `".$value."`");
-									// }
 								}
 								else {
 									$upgrade[$key]->depart = request()->old_formule[$key]; //$request->input('old_formule')[$key];
@@ -691,28 +680,177 @@ Trait Rapports {
 								
 							} else {
 								// insert into databse
+
+								# TROUVER LE MATERIEL CORRESPONDANT A TRAVERS L'INTERVAL DU NUMERO DE MATERIEL
+								$debut_serial = Str::substr($value,0,3);
+								$_data = $produit->where('with_serial',1)
+									->where('interval_serial_first','<=',$debut_serial)
+									->where('interval_serial_last','>=',$debut_serial)
+									->first();
+
+								#
 								$exem = new Exemplaire;
 								$exem->status = 'actif';
 								$exem->serial_number = $value;
 								$exem->origine = false;
-								$exem->produit = $produit->where('with_serial',1)->first()->reference;
-								// $exem->save();
+								$exem->produit = $_data->reference;
+								$exem->save();
 							}
 						}
 
-						
+						$cga_account->save();
+						$rapport->save();
+
+						foreach(request()->serial_number as $key => $value) {
+
+							$abonnement_data[$key]->save();
+
+							if(array_key_exists($key,$allAbonnOption_data) && !is_null($allAbonnOption_data[$key]->id_option)) {
+								$allAbonnOption_data[$key]->save();
+							}
+
+							if(array_key_exists($key,$upgrade)) {
+								$upgrade[$key]->save();
+							}
+						}
+
+						# REDIRECTION
 
 						return response()
-							->json(request()->serial_number);
-
+							->json('done');
 
 					break;
 					case 'migration':
 						# RAPPORT DE MIGRATION
+						$validation = request()->validate([
+							'date'  =>  'required|date|before_or_equal :'.(date("Y/m/d",strtotime("now"))),
+							'vendeurs'  =>  'required|exists:users,username',
+							'quantite_materiel' =>  'required|min:1',
+							'serial_number.*'	=>	'required|distinct|exists:exemplaire,serial_number'
+						],[
+							'required'	=>	'Champ(s) :attribute est obligatoire!',
+							'exists'	=>	':attribute n\'existe dans la base de donnees',
+							'distinct'	=>	':attribute est duplique'
+						]);
+	
+						// verification de l'existence des numeros de serie et de leur inactivite
+	
+						foreach(request()->serial_number as $value) {
+							if(!$this->checkSerial($value,request()->vendeurs,$e)) {
+								throw new AppException("Numero de Serie Invalide  : ". $value);
+							}
+						}
+
+						# VERIFICATION DE L 'EXISTENCE DU RAPPORT DE MIGRATION A CETTE DATE
+						if($this->isExistRapportOnThisDate(new Carbon(request()->date),request()->vendeurs,'migration')) {
+							throw new AppException("Un rapport existe deja a cette date!");
+						}
+
+						$rapport = new RapportVente;
+						$rapport->makeRapportId();
+						$rapport->date_rapport  = request()->date;
+						$rapport->vendeurs  = request()->vendeurs;
+						$rapport->quantite = request()->quantite_materiel;
+						$rapport->type = 'migration';
+
+						$id_rapport = $rapport->id_rapport;
+						// LA PROMO EXISTE
+						$tmp_promo = $this->isExistPromo();
+
+						if($tmp_promo) {
+							$promo_fin_to_carbon_date = new Carbon($tmp_promo->fin);
+							$promo_debut_to_carbon_date = new Carbon($tmp_promo->debut);
+							$rapport_date_to_carbon_date = new Carbon(request()->date);
+							if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
+								// le rapport est en mode promo
+								$rapport->promo = $tmp_promo->id;
+							}
+						} else {
+							// la promo n'est pas active
+							if(request()->promo_id) {
+								// le rapport appartien a une promo
+								$thePromo = $p->find(request()->promo_id);
+
+								$promo_fin_to_carbon_date = new Carbon($thePromo->fin);
+
+								$promo_debut_to_carbon_date = new Carbon($thePromo->debut);
+
+								$rapport_date_to_carbon_date = new Carbon(request()->date);
+
+								if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
+								// 	// le rapport est en mode promo
+								// 	// AJOUT DU RAPPORT PROMO
+									$rapport->promo = $thePromo->id;
+
+									// $rp->save();
+								} else {
+									throw new AppException("La date choisi n'est pas inclut dans la periode de promo !");
+								}
+
+							}
+						}
+						
+						$rapport->save();
+
+						# CHANGEMENT DE STATUS DES MATERIELS
+
+						$serialNumbers = Exemplaire::whereIn('serial_number',request()->serial_number)
+							->get();
+
+						foreach($serialNumbers as $value) {
+							$value->status = 'actif';
+							$value->rapports = $id_rapport;
+							$value->update();
+						}
+
+						# DEBIT DE LA QUANTITE DANS LE STOCK DU VENDEURS
+
+						$produit = $serialNumbers->first()->produit();
+
+						$user_stock = StockVendeur::where('vendeurs',request()->vendeurs)
+							->where('produit',$produit->reference)
+							->get();
+
+						foreach($user_stock as $value) {
+							$value->quantite -= request()->quantite_materiel;
+							$value->update();
+						}
+
+						// TRANSACTION PAIEMENT MARGE MATERIEL
+						$mat = $serialNumbers->first()->produit();
+						$montantTransaction = ceil(($mat->marge / 1.18) * request()->quantite_materiel);
+
+						$user_rapport = User::where('username',request()->vendeurs)
+							->first();
+
+						$receiver_account = $user_rapport->afroCash()->first();
+						$sender_user = User::where('type','logistique')
+							->first();
+						
+						$sender_account = $sender_user->afroCash()->first();
+
+						$receiver_account->solde += $montantTransaction;
+						$sender_account->solde -= $montantTransaction;
+
+						
+						#ENREGISTREMENT DE LA TRANSACTION
+						
+						$trans = new TransactionAfrocash;
+						$trans->compte_credite = $receiver_account->numero_compte;
+						$trans->compte_debite = $sender_account->numero_compte;
+						$trans->montant = $montantTransaction;
+						$trans->motif = "Paiement_Marge_Materiel";
+												
+						$receiver_account->update();
+						$sender_account->update();
+						$trans->save();
+
+						return response()
+							->json('done');
 
 					break;
 					default:
-						#EXCEPTION
+						throw new AppException("Veuillez ressayez ulterieurement !");
 					break;
 				}
 			}
@@ -728,242 +866,6 @@ Trait Rapports {
 	// 	if($slug) {
 
 	// 			switch ($slug) {
-	// 			
-	// 				case 'reabonnement':
-						
-	// 					$validation = $request->validate([
-	// 						'montant_ttc' =>  'required|numeric|min:10000',
-	// 						'vendeurs'   =>  'required|exists:users,username',
-	// 						'date'  =>  'required|before_or_equal:'.(date("Y/m/d",strtotime("now"))),
-	// 						'serial_number.*'	=>	'required|string|min:14|max:14',
-	// 						'debut.*'	=>	'required|date',
-	// 						'formule.*'	=>	'required|string|exists:formule,nom',
-	// 						'duree.*'	=>	'required|numeric'
-							
-	// 					],[
-	// 						'required'  =>  'Veuillez remplir le champ `:attribute`',
-	// 						'numeric'  =>  '`:attribute` doit etre une valeur numeric',
-	// 						'before_or_equal' =>  'Vous ne pouvez ajouter de rapport a cette date',
-	// 						'after_or_equal'	=>	'Le debut doit etre egal ou superieur a la date d\'activation',
-	// 						'min'	=>	'14 chiffres requis!',
-	// 						'max'	=>	'14 chiffres requis!'
-	// 					]);
-
-	// 					if(!$this->isExistRapportOnThisDate(new Carbon($request->input('date')),$request->input('vendeurs'),'reabonnement')) {
-	// 						if(($request->input('type_credit') == "cga") && $this->isCgaDisponible($request->input("vendeurs"),$request->input('montant'))) {
-
-	// 							$rapport = new RapportVente;
-	// 							$rapport->makeRapportId();
-	// 							$rapport->vendeurs = $request->input('vendeurs');
-	// 							$rapport->montant_ttc = $request->input('montant_ttc');
-	// 							$rapport->type  = 'reabonnement';
-	// 							$rapport->credit_utilise  = $request->input('type_credit');
-	// 							$rapport->date_rapport  = $request->input('date');
-	// 							$rapport->calculCommission('reabonnement',$cs);
-
-	// 							// DEBIT DU SOLDE INDIQUE
-
-	// 							$theUser = User::where('username',$request->input('vendeurs'))->first();
-
-	// 							$cgaAccount = $theUser->cgaAccount();
-								
-	// 							$cgaAccount->solde -= $request->input('montant_ttc');
-
-	// 							// LA PROMO EXISTE
-	// 							$tmp_promo = $this->isExistPromo();
-								
-	// 							if($tmp_promo) {
-
-	// 								$promo_fin_to_carbon_date = new Carbon($tmp_promo->fin);
-	// 								$promo_debut_to_carbon_date = new Carbon($tmp_promo->debut);
-	// 								$rapport_date_to_carbon_date = new Carbon($request->input('date'));
-
-	// 								if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
-	// 									// le rapport est en mode promo
-	// 									$rapport->promo = $tmp_promo->id;
-	// 								}
-
-	// 							} else {
-	// 								// la promo n'est pas active
-	// 								if(request()->promo_id != 'none') {
-	// 									// le rapport appartien a une promo
-	// 									$thePromo = $p->find($request->input('promo_id'));
-	
-	// 									$promo_fin_to_carbon_date = new Carbon($thePromo->fin);
-	
-	// 									$promo_debut_to_carbon_date = new Carbon($thePromo->debut);
-	
-	// 									$rapport_date_to_carbon_date = new Carbon($request->input('date'));
-	
-	// 									if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
-	// 									// 	// le rapport est en mode promo
-	// 										// $rapport->id_rapport_promo = $rp->id;
-	// 										$rapport->promo = $thePromo->id;
-	// 									} else {
-	// 										throw new AppException("La date choisi n'est pas inclut dans la periode de promo !");
-	// 									}
-	
-	// 								}
-	// 							}
-	// 							$id_rapport = $rapport->id_rapport;
-	// 							foreach($request->input('serial_number') as $key => $value) {
-	// 								$tmp = $e->find($value);
-	// 								if($tmp) {
-	// 									// verifier si le numero est actif
-	// 									if($tmp->status == 'inactif' && $tmp->origine == 1) {
-	// 										throw new AppException("Attention Materiel vierge :`".$tmp->serial_number."` !");
-	// 									}
-	// 								} 
-	// 							}
-
-	// 							// verification de la date de debut en cas d'un abonnement actif
-	// 							foreach($request->input('serial_number') as $key => $value) {
-
-									
-	// 								if(array_key_exists($key,$request->input('upgrade')) && $request->input('upgrade')[$key]) {
-	// 									// ceci est un upgrade
-	// 									# pas besoin de ce test
-	// 								}
-	// 								else {
-	// 									// ceci est un abonnement simple
-
-	// 									$dateSuggest = $this->checkSerialDebutDate($value);
-										
-
-	// 									$choiceDate = $request->input('debut')[$key] ? new Carbon($request->input('debut')[$key]) : null;
-
-	// 									if(is_null($choiceDate)) {
-	// 										throw new AppException("Erreur ! ressayez ...");
-	// 									}
-	
-	// 									// test sur la date de debut qui doit etre superieur ou egal a la date d'activation
-
-	// 									$date_rapport = new Carbon($request->input('date'));
-
-	// 									if($choiceDate < $date_rapport) {
-	// 										throw new AppException("Le debut doit etre egal ou superieur a la date d'activation !");
-	// 									}
-
-	// 									if($choiceDate < $dateSuggest) {
-	// 										throw new AppException("Erreur sur la date de debut pour :".$value.",la date suggeree est : `".$dateSuggest."`");
-	// 									}
-
-	// 								}
-	// 							}
-								
-
-	// 						// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-	// 							$abonnement_data = [];
-	// 							$allAbonnOption_data = [];
-	// 							$upgrade = [];
-
-								
-	// 							foreach($request->input('serial_number') as $key	=>	$value) {
-	// 								$tmp = $e->find($value);
-
-	// 								// 
-
-	// 								$abonnement_data[$key] = new Abonnement;
-	// 								$abonnement_data[$key]->makeAbonnementId();
-	// 								$abonnement_data[$key]->rapport_id = $id_rapport;
-	// 								$abonnement_data[$key]->serial_number = $value;
-	// 								$abonnement_data[$key]->formule_name = $request->input('formule')[$key];
-
-									
-	// 								if(array_key_exists($key,$request->input('upgrade')) && $request->input('upgrade')[$key]){
-	// 									// abonnement avec upgrade
-	// 									$upgrade[$key] = new Upgrade;
-
-	// 									if(array_key_exists($key,$request->input('upgradeData')) && !is_null($request->input('upgradeData')[$key])){
-
-	// 										$upgrade[$key]->depart = $request->input('upgradeData')[$key]['formule_name'];
-	// 										$upgrade[$key]->old_abonnement = $request->input('upgradeData')[$key]['id'];
-
-	// 										// tester la conformite de la date et de la duree
-
-	// 										$debutTest = new Carbon($request->input('debut')[$key]);
-	// 										$debutRequest = new Carbon($request->input('upgradeData')[$key]['debut']);
-
-	// 										if($debutTest->ne($debutRequest)) {
-	// 											throw new AppException("date de debut non conforme pour : `".$value."` ");
-	// 										}
-
-	// 										if($request->input('upgradeData')[$key]['mois_restant'] != $request->input('duree')[$key]) {
-	// 											throw new AppException("Duree non conforme pour : `".$value."`");
-	// 										}
-	// 									}
-	// 									else {
-	// 										$upgrade[$key]->depart = $request->input('old_formule')[$key];
-	// 									}
-										
-	// 									$upgrade[$key]->finale = $request->input('formule')[$key];
-	// 									$upgrade[$key]->id_abonnement = $abonnement_data[$key]->id;
-										
-	// 									$abonnement_data[$key]->upgrade = true;
-
-	// 								}
-	// 								else {
-
-	// 									// verifier si un abonnement existe a la meme date de debut  pour le meme numero de materiel
-	
-	// 									if($abonnement_data[$key]->isExistAbonnementForDebutDate()) {
-	// 										throw new AppException("Un abonnement existe deja a cette date de debut pour :`".$value."`!");
-	// 									}
-	// 								}
-
-	// 								$abonnement_data[$key]->debut = $request->input('debut')[$key];
-	// 								$abonnement_data[$key]->duree = $request->input('duree')[$key];
-									
-	// 								// VERIFICATION DE L'EXISTENCE DE L'OPTION
-	// 								if(array_key_exists($key,$request->input('options'))) {	
-	// 									$allAbonnOption_data[$key] = new AbonneOption;
-	// 									$allAbonnOption_data[$key]->id_abonnement = $abonnement_data[$key]->id;
-	// 									$allAbonnOption_data[$key]->id_option = $request->input('options')[$key];
-	// 								}
-
-	// 								if($tmp) {
-	// 									// get serial info from database
-										
-	// 								} else {
-	// 									// insert into databse
-	// 									$exem = new Exemplaire;
-	// 									$exem->status = 'actif';
-	// 									$exem->serial_number = $value;
-	// 									$exem->origine = false;
-	// 									$exem->produit = $produit->where('with_serial',1)->first()->reference;
-	// 									$exem->save();
-	// 								}
-	// 							}
-
-	// 							$cgaAccount->save();
-
-	// 							$rapport->save();
-
-	// 							foreach($request->input('serial_number') as $key => $value) {
-
-	// 								$abonnement_data[$key]->save();
-
-	// 								if(array_key_exists($key,$allAbonnOption_data) && !is_null($allAbonnOption_data[$key]->id_option)) {
-	// 									$allAbonnOption_data[$key]->save();
-	// 								}
-
-	// 								if(array_key_exists($key,$upgrade)) {
-	// 									$upgrade[$key]->save();
-	// 								}
-	// 							}
-								
-	// 							return response()
-	// 								->json('done');
-	// 						} else if(($request->input('type_credit') == "rex") && $this->isRexDisponible($request->input('vendeurs'),$request->input('montant')) ) {
-	// 							dd($request);
-	// 						} else {
-	// 							throw new AppException("Solde Indisponible!");
-	// 						}
-	// 					} else {
-	// 						throw new AppException("Un rapport existe deja a cette date");
-	// 					}
-	// 				break;
 	// 				case 'migration':
 	// 				$validation = $request->validate([
 	// 					'date'  =>  'required|date|before_or_equal :'.(date("Y/m/d",strtotime("now"))),

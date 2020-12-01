@@ -9,6 +9,7 @@ use App\Kits;
 use App\ReaboAfrocashSetting;
 use App\User;
 use App\StockVendeur;
+use App\TransactionAfrocash;
 
 use App\Exceptions\AppException;
 
@@ -264,7 +265,7 @@ class CommandAfrocashController extends Controller
 
             $id_commande = Crypt::decryptString(request()->id_commande);
             $command_afrocash = CommandAfrocash::where('id_commande',$id_commande)
-                ->get();            
+                ->get();
 
             if($command_afrocash->first()->state) {
                 throw new AppException("Commande deja confirmee!");
@@ -276,11 +277,45 @@ class CommandAfrocashController extends Controller
 
             $livraison->remove_state = true;
 
+            # RETOUR DU MONTANT DE LA TRANSACTION
+            $trans = TransactionAfrocash::where('command_afrocash_id',$command_afrocash->first()->id_commande)
+                ->first();
+
+            $user_id = $command_afrocash->first()->user_id()
+                ->first();
+
+            $receiver_account = $user_id->afroCash('semi_grossiste')
+                ->first();
+
+            $reabo_afrocash_setting = ReaboAfrocashSetting::all()->first();
+
+            if(!$reabo_afrocash_setting) {
+                throw new AppException("Parametre Reabo non defini , contactez l'administrateur");
+            }
+
+            $sender_user = User::where('username',$reabo_afrocash_setting->user_to_receive)->first();
+            $sender_account = $sender_user->afroCash()->first();
+            
+            $sender_account->solde -= $trans->montant;
+            $receiver_account->solde += $trans->montant;
+
+            
+            $new_trans = new TransactionAfrocash;
+            $new_trans->compte_debite = $sender_account->numero_compte;
+            $new_trans->compte_credite = $receiver_account->numero_compte;
+            $new_trans->montant = $trans->montant;
+            $new_trans->motif = "Annulation_Commande_Afrocash_Materiel";
+            $new_trans->command_afrocash_id = $command_afrocash->first()->id_commande;
+            
             foreach($command_afrocash as $value) {
                 $value->remove_state = true;
-                $value->save();
+                $value->update();
             }
-            $livraison->save();
+            $livraison->update();
+
+            $sender_account->update();
+            $receiver_account->update();
+            $new_trans->save();
 
             return response()
                 ->json('done');

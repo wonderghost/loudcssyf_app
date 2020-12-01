@@ -447,6 +447,7 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
 //
   public function organizeCommandList($commands) {
     $all = [];
+    
     foreach($commands as $key => $values) {
         $vendeurs = $values->vendeurs()->first();
 
@@ -485,7 +486,7 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
           'vendeurs'  => $vendeurs->localisation,
           'item' => $kit ? $kit->name : '-',
           'quantite' => $terminal['data_commande'] ? $terminal['data_commande']->quantite_commande : '',
-          'parabole_a_livrer' =>  $accessory[0]['data_commande'] ? $accessory[0]['data_commande']->parabole_a_livrer : '',
+          'parabole_a_livrer' => array_key_exists(0,$accessory) ? $accessory[0]['data_commande']->parabole_a_livrer : 0,
           'status' =>  $values->status,
           'promo' =>  $_promo ? 'En Promo' : 'Hors Promo',
           'id' => $values->id,

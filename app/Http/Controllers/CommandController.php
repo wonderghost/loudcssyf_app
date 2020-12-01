@@ -225,7 +225,7 @@ class CommandController extends Controller
 				// QUANTITE DE PARABOLE A LIVRER	
 
 				foreach($accessoire as $key => $value) {
-					$commandByProduit[$key]->parabole_a_livrer = $request->input('parabole_du');
+					$commandByProduit[$key]->parabole_a_livrer = $request->input('parabole_du') <= 0 ? 0 : $request->input('parabole_du');
 				}
 				
 				#DEBIT DU COMPTE DU VENDEURS ET CREDIT DU COMPTE DE LA LOGISTIQUE
