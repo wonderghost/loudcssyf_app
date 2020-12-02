@@ -1443,13 +1443,13 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 					$trans = $rapport->transactions()
 						->first();
 
-					$sender_account->solde -= $trans->montant;
-					$receiver_account->solde += $trans->montant;
+					$sender_account->solde -= $trans ? $trans->montant : 0;
+					$receiver_account->solde += $trans ? $trans->montant : 0;
 
 					$new_trans = new TransactionAfrocash;
 					$new_trans->compte_credite = $receiver_account->numero_compte;
 					$new_trans->compte_debite = $sender_account->numero_compte;
-					$new_trans->montant = $trans->montant;
+					$new_trans->montant = $trans ? $trans->montant : 0;
 					$new_trans->motif = "Annulation_Paiement_Marge_Materiel";
 					$new_trans->rapport_id = $rapport->id_rapport;
 
@@ -1566,13 +1566,13 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 				$trans = $rapport->transactions()
 					->first();
 
-				$sender_account->solde -= $trans->montant;
-				$receiver_account->solde += $trans->montant;
+				$sender_account->solde -= $trans ? $trans->montant : 0;
+				$receiver_account->solde += $trans ? $trans->montant : 0;
 
 				$new_trans = new TransactionAfrocash;
 				$new_trans->compte_credite = $receiver_account->numero_compte;
 				$new_trans->compte_debite = $sender_account->numero_compte;
-				$new_trans->montant = $trans->montant;
+				$new_trans->montant = $trans ? $trans->montant : 0;
 				$new_trans->motif = "Annulation_Paiement_Marge_Materiel";
 				$new_trans->rapport_id = $rapport->id_rapport;
 
