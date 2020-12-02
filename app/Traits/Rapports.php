@@ -1586,7 +1586,9 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 				$new_trans->save();
 				############
 
-				$user_stock->update();
+				if($user_stock) {
+					$user_stock->update();
+				}
 				$rapport->update();
 
 				return response()
