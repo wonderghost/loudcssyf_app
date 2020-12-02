@@ -1539,20 +1539,25 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 				$serialNumbers = $rapport->serialNumbers()
 					->get();
 
-				$produit = $serialNumbers->first()->produits()
+				$produit = $serialNumbers ? $serialNumbers->first()->produits()
 					->where('with_serial',true)
-					->first();
+					->first() : null;
 
-				$user_stock = StockVendeur::where('vendeurs',$rapport->vendeurs)
+				$user_stock = $produit ? StockVendeur::where('vendeurs',$rapport->vendeurs)
 					->where('produit',$produit->reference)
-					->first();
-				$user_stock->quantite -= $rapport->quantite;
+					->first() : null;
+				if($user_stock) {
+					$user_stock->quantite -= $rapport->quantite;
+				}
 
 				// renvoi des numeros de series a l'etat inactif
-				foreach($serialNumbers as $serial) {
-					$serial->rapports = NULL;
-					$serial->status = 'inactif';
-					$serial->save();
+				if($serialNumbers) {
+
+					foreach($serialNumbers as $serial) {
+						$serial->rapports = NULL;
+						$serial->status = 'inactif';
+						$serial->save();
+					}
 				}
 
 				# ANNULATION DE LA TRANSACTION 
