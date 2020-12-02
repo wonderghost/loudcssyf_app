@@ -47,6 +47,10 @@
             text-align : left;
         }
 
+        td:nth-child(6), td:nth-child(5) , td:nth-child(4) , td:nth-child(3){
+            text-align : center;
+        }
+
         .table-data{
             flex: 1 1 20%;
             text-align:center;
@@ -130,6 +134,86 @@
                             <td></td>
                             <td></td>
                             <td></td>
+                        </tr>
+                        <tr class="table-row">
+                            <td>Blocs d'alimentaion</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr class="table-row">
+                            <td>Telecommande SX2</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr class="table-row">
+                            <td>TOTAL COMMANDE TTC (MATERIEL)</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>5 000 000</td>
+                        </tr>
+                        <tr class="table-row">
+                            <td>SUBVENTION</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr class="table-row">
+                            <td>MARGE Z4</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr class="table-row">
+                            <td>Pour information le montant de la subvention est le suivant : </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>4 000 000</td>
+                        </tr>
+                        <tr class="table-row">
+                            <td></td>
+                            <td></td>
+                            <td>TAUX</td>
+                            <td>HT</td>
+                            <td>TVA 18%</td>
+                            <td>MONTANT TTC</td>
+                        </tr>
+                        <tr class="table-row">
+                            <td>COMMISSION</td>
+                            <td></td>
+                            <td>0%</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr class="table-row">
+                            <td>TOTAL A PAYER</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>4 000 000</td>
+                        </tr>
+                        <tr class="table-row">
+                            <td>MONTANT DU CREDIT WEB A ATTRIBUER</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>4 000 000</td>
                         </tr>
                     </tbody>
                 </table>

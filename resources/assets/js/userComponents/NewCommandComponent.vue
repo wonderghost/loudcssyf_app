@@ -351,21 +351,21 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 
             if(this.promoState) {
               // la promo est active
-              if(this.typeUser == 'v_da') {
+              // if(this.typeUser == 'v_da') {
                   // distributeur agree
-                  this.formData.prix_achat = parseInt(this.formData.quantite) * ((this.material.prix_vente - (this.marge.ht)) - this.promo.subvention)
-              } else {
+                  // this.formData.prix_achat = parseInt(this.formData.quantite) * ((this.material.prix_vente - (this.marge.ht)) - this.promo.subvention)
+              // } else {
                   // vendeurs standart
                   this.formData.prix_achat = parseInt(this.formData.quantite) * (this.material.prix_vente - this.promo.subvention)
-              }
+              // }
             } else {
                 // la promo est inactive
-                if(this.typeUser == 'v_da') {
-                  this.formData.prix_achat = parseInt(this.formData.quantite) * (this.material.prix_vente - (this.marge.ht))
-                } 
-                else {
+                // if(this.typeUser == 'v_da') {
+                  // this.formData.prix_achat = parseInt(this.formData.quantite) * (this.material.prix_vente - (this.marge.ht))
+                // } 
+                // else {
                   this.formData.prix_achat = parseInt(this.formData.quantite) * this.material.prix_vente
-                }
+                // }
             }
 
           },

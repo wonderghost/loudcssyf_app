@@ -76,4 +76,12 @@ class RapportVente extends Model
         ->orderBy('created_at','desc')
         ->get();
     }
+
+    public function serialNumbers() {
+      return $this->hasMany('App\Exemplaire','rapports','id_rapport');
+    }
+
+    public function transactions() {
+      return $this->hasMany('App\TransactionAfrocash','rapport_id','id_rapport');
+    }
 }

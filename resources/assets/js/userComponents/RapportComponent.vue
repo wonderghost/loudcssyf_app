@@ -435,7 +435,7 @@ import datepicker from 'vue-date-picker'
             }
           },
           abortRapport : async function () {
-            this.isLoading = true
+            // this.isLoading = true
             UIkit.modal($("#modal-abort-rapport")).hide()
             this.abortRapportFormData._token = this.myToken
             this.abortRapportFormData.id_rapport = this.activRapport.id
@@ -443,10 +443,9 @@ import datepicker from 'vue-date-picker'
               let response = await axios.post('/admin/rapport/abort',this.abortRapportFormData)
               if(response.data == 'done') {
                 this.isLoading = false
-                UIkit.modal.alert("<div class='uk-alert-success' uk-alert>un Rapport Annule :-(</div>")
-                  .then(function () {
-                    location.reload()
-                  })
+                alert("Un rapport a ete annule :(")
+                Object.assign(this.$data,this.$options.data())
+                this.getRapportVente()
               }
             } catch (error) {
               UIkit.modal($("#modal-abort-rapport")).show()

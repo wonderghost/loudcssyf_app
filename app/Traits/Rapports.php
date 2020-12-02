@@ -468,6 +468,7 @@ Trait Rapports {
 						$trans->compte_debite = $sender_account->numero_compte;
 						$trans->montant = $montantTransaction;
 						$trans->motif = "Paiement_Marge_Materiel";
+						$trans->rapport_id = $id_rapport;
 												
 						$receiver_account->update();
 						$sender_account->update();
@@ -840,6 +841,7 @@ Trait Rapports {
 						$trans->compte_debite = $sender_account->numero_compte;
 						$trans->montant = $montantTransaction;
 						$trans->motif = "Paiement_Marge_Materiel";
+						$trans->rapport_id = $id_rapport;
 												
 						$receiver_account->update();
 						$sender_account->update();
@@ -860,132 +862,7 @@ Trait Rapports {
 			die(json_encode($e->getMessage()));
 		}
 	}
-	// public function sendRapport(Request $request,$slug , Exemplaire $e ,RapportPromo $rp , Promo $p , StockVendeur $sv,Produits $produit , \App\ComissionSetting $cs) {
-	// 	try {
-
-	// 	if($slug) {
-
-	// 			switch ($slug) {
-	// 				case 'migration':
-	// 				$validation = $request->validate([
-	// 					'date'  =>  'required|date|before_or_equal :'.(date("Y/m/d",strtotime("now"))),
-	// 					'vendeurs'  =>  'required|exists:users,username',
-	// 					'quantite_materiel' =>  'required|min:1',
-	// 					'serial_number.*'	=>	'required|distinct|exists:exemplaire,serial_number'
-	// 				],[
-	// 					'required'	=>	'Champ(s) :attribute est obligatoire!',
-	// 					'exists'	=>	':attribute n\'existe dans la base de donnees',
-	// 					'distinct'	=>	':attribute est duplique'
-	// 				]);
-
-	// 				// verification de l'existence des numeros de serie et de leur inactivite
-
-	// 				foreach($request->input('serial_number') as $value) {
-	// 					if(!$this->checkSerial($value,$request->input('vendeurs'),$e)) {
-	// 						throw new AppException("Numero de Serie Invalide  : ". $value);
-	// 					}
-	// 				}
-
-	// 				if(!$this->isExistRapportOnThisDate(new Carbon($request->input('date')),$request->input('vendeurs'),'migration')) {
-	// 					$rapport = new RapportVente;
-	// 					$rapport->makeRapportId();
-	// 					$rapport->date_rapport  = $request->input('date');
-	// 					$rapport->vendeurs  = $request->input('vendeurs');
-	// 					$rapport->quantite = $request->input('quantite_materiel');
-	// 					$rapport->type = 'migration';
-
-	// 					$id_rapport = $rapport->id_rapport;
-	// 					// LA PROMO EXISTE
-	// 					$tmp_promo = $this->isExistPromo();
-								
-	// 					if($tmp_promo) {
-	// 						$promo_fin_to_carbon_date = new Carbon($tmp_promo->fin);
-	// 						$promo_debut_to_carbon_date = new Carbon($tmp_promo->debut);
-	// 						$rapport_date_to_carbon_date = new Carbon($request->input('date'));
-	// 						if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
-	// 							// le rapport est en mode promo
-	// 							$rapport->promo = $tmp_promo->id;
-	// 						}
-	// 					} else {
-	// 						// la promo n'est pas active
-	// 						if($request->input('promo_id')) {
-	// 							// le rapport appartien a une promo
-	// 							$thePromo = $p->find($request->input('promo_id'));
-
-	// 							$promo_fin_to_carbon_date = new Carbon($thePromo->fin);
-
-	// 							$promo_debut_to_carbon_date = new Carbon($thePromo->debut);
-
-	// 							$rapport_date_to_carbon_date = new Carbon($request->input('date'));
-
-	// 							if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
-	// 							// 	// le rapport est en mode promo
-	// 							// 	// AJOUT DU RAPPORT PROMO
-	// 								// do {
-	// 								// 	$rp->id =  Str::random(10).'_'.time();
-	// 								// } while ($rp->isExistId());
-
-	// 								// $rp->quantite_a_compenser = $request->input('quantite_materiel');
-	// 								// $rp->compense_espece = $request->input('quantite_materiel') * $thePromo->subvention;
-	// 								// $rp->promo = $thePromo->id;
-	// 								// $rapport->id_rapport_promo = $rp->id;
-
-	// 								$rapport->promo = $thePromo->id;
-
-	// 								// $rp->save();
-	// 							} else {
-	// 								throw new AppException("La date choisi n'est pas inclut dans la periode de promo !");
-	// 							}
-
-	// 						}
-	// 					}
-						
-	// 					$rapport->save();
-
-	// 					// CHANGEMENT DE STATUS DES MATERIELS
-	// 					for($i = 0 ; $i < $request->input('quantite_materiel') ; $i++) {
-	// 						Exemplaire::where([
-	// 							'vendeurs'  =>  $request->input('vendeurs'),
-	// 							'serial_number' =>  $request->input('serial_number')[$i],
-	// 							'status'  =>  'inactif'
-	// 						])->update([
-	// 							'status'  =>  'actif',
-	// 							'rapports'  =>  $id_rapport
-	// 						]);
-	// 					}
-
-	// 					// DEBIT DE LA QUANTITE DANS LE STOCK DU VENDEURS
-	// 					$new_quantite = StockVendeur::where([
-	// 						'vendeurs'  =>  $request->input('vendeurs'),
-	// 						'produit' =>  Produits::where('with_serial',1)->first()->reference
-	// 					])->first()->quantite - $request->input('quantite_materiel');
-
-	// 					StockVendeur::where('vendeurs',$request->input('vendeurs'))
-	// 					->where('produit',Produits::where('with_serial',1)->first()->reference)
-	// 					->update([
-	// 						'quantite'  =>  $new_quantite
-	// 					]);
-
-	// 					return response()
-	// 						->json('done');
-
-	// 				} else {
-	// 					throw new AppException("Un rapport existe deja a cette date!");
-	// 				}
-	// 				break;
-	// 				default:
-	// 				die();
-	// 				break;
-	// 			}
-	// 		} else {
-	// 			throw new AppException("Error!");
-	// 		}
-	// 	} catch (AppException $e) {
-	// 			header("Erreur",true,422);
-	// 			die(json_encode($e->getMessage()));
-	// 		}
-	// }
-
+	
 
 	// VERIFICATION DU NUMERO DE SERIE
 	public function checkSerial($serial,$vendeurs, Exemplaire $e) {
@@ -1507,36 +1384,37 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 					// retour de la quantite dans le stock du vendeur
 
 					#recuperation du stock vendeur
-					$stock_vendeur_terminal = $sv->where('vendeurs',$vendeurs->username)
-						->where('produit',$p->where('with_serial',1)->first()->reference)->first();
 					
-					$stock_vendeur_parabole = $sv->where('vendeurs',$vendeurs->username)
-						->where('produit',$p->where('with_serial',0)->first()->reference)->first();
 
-					// update de la quantite des materiels
-					$new_qt_terminal = $stock_vendeur_terminal->quantite + $rapport->quantite;
-					$new_qt_parabole = $stock_vendeur_parabole->quantite + $rapport->quantite;
+					$serialNumbers = $rapport->serialNumbers()
+						->get();
 
-					StockVendeur::where('vendeurs',$vendeurs->username)
-						->where('produit',$p->where('with_serial',1)->first()->reference)
-						->update([
-							'quantite'	=>	$new_qt_terminal
-						]);
+					$produit = $serialNumbers->first()->produit();
+						$article = $produit->articles()
+							->first()
+							->kits()
+							->first()
+							->articles()
+							->select('produit')
+							->groupBy('produit')
+							->get();
 
-					StockVendeur::where('vendeurs',$vendeurs->username)
-					->where('produit',$p->where('with_serial',0)->first()->reference)
-					->update([
-						'quantite'	=>	$new_qt_parabole
-					]);
+					$user_stock = StockVendeur::where('vendeurs',$rapport->vendeurs)
+						->whereIn('produit',$article)
+						->get();
 
+
+					foreach($user_stock as $value) {
+						$value->quantite += $rapport->quantite;
+						// $value->update();
+					}
 						##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 					// renvoi des numeros de series a l'etat inactif
-					$serialsNumbers = $rapport->exemplaire();
 
-					foreach($serialsNumbers as $serial) {
+					foreach($serialNumbers as $serial) {
 						$serial->rapports = NULL;
 						$serial->status = 'inactif';
-						$serial->save();
+						// $serial->save();
 					}
 
 					// suppression des abonnements actifs
@@ -1548,11 +1426,37 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 
 						if($options) {
 							foreach($options as $_value) {
-								$_value->delete();
+								// $_value->delete();
 							}	
 						}
-						$value->delete();
+						// $value->delete();
 					}
+
+					# ANNULATION DE LA TRANSACTION 
+					$user_rapport = $rapport->vendeurs();
+					$sender_account = $user_rapport->afroCash()->first();
+
+					$receiver_user = User::where('type','logistique')
+						->first();
+					$receiver_account = $receiver_user->afroCash()->first();
+
+					$trans = $rapport->transactions()
+						->first();
+
+					$sender_account->solde -= $trans->montant;
+					$receiver_account->solde += $trans->montant;
+
+					$new_trans = new TransactionAfrocash;
+					$new_trans->compte_credite = $receiver_account->numero_compte;
+					$new_trans->compte_debite = $sender_account->numero_compte;
+					$new_trans->montant = $trans->montant;
+					$new_trans->motif = "Annulation_Paiement_Marge_Materiel";
+					$new_trans->rapport_id = $rapport->id_rapport;
+
+					$sender_account->update();
+					$receiver_account->update();
+					$new_trans->save();
+					############
 
 					// enregistrement de la notification
 					$n = $this->sendNotification("Annulation de Rapport","Le rapport du ".$rapport->date_rapport." a ete annule",$vendeurs->username);
@@ -1564,8 +1468,8 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 					$n = $this->sendNotification("Annulation de Rapport","Vous avez annule le rapport du ".$rapport->date_rapport." pour : ".$vendeurs->localisation,'admin');
 					$n->save();
 
-					$cga->save();
-					$rapport->save();
+					$cga->update();
+					$rapport->update();
 					
 				}
 				else {
@@ -1617,8 +1521,8 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 					$n = $this->sendNotification("Annulation de Rapport","Vous avez annule le rapport du ".$rapport->date_rapport." pour : ".$vendeurs->localisation,'admin');
 					$n->save();
 
-					$cga->save();
-					$rapport->save();
+					$cga->update();
+					$rapport->update();
 					
 				}
 				else {
@@ -1631,28 +1535,54 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 				$rapport->state = 'aborted';
 
 				#recuperation du stock vendeur
-				$stock_vendeur_terminal = $sv->where('vendeurs',$vendeurs->username)
-				->where('produit',$p->where('with_serial',1)->first()->reference)->first();
 
-				// update de la quantite des materiels
-				$new_qt_terminal = $stock_vendeur_terminal->quantite + $rapport->quantite;
+				$serialNumbers = $rapport->serialNumbers()
+					->get();
 
-				StockVendeur::where('vendeurs',$vendeurs->username)
-					->where('produit',$p->where('with_serial',1)->first()->reference)
-					->update([
-						'quantite'	=>	$new_qt_terminal
-					]);
+				$produit = $serialNumbers->first()->produits()
+					->where('with_serial',true)
+					->first();
+
+				$user_stock = StockVendeur::where('vendeurs',$rapport->vendeurs)
+					->where('produit',$produit->reference)
+					->first();
+				$user_stock->quantite -= $rapport->quantite;
 
 				// renvoi des numeros de series a l'etat inactif
-				$serialsNumbers = $rapport->exemplaire();
-
-				foreach($serialsNumbers as $serial) {
+				foreach($serialNumbers as $serial) {
 					$serial->rapports = NULL;
 					$serial->status = 'inactif';
 					$serial->save();
 				}
 
-				$rapport->save();
+				# ANNULATION DE LA TRANSACTION 
+				$user_rapport = $rapport->vendeurs();
+				$sender_account = $user_rapport->afroCash()->first();
+
+				$receiver_user = User::where('type','logistique')
+					->first();
+				$receiver_account = $receiver_user->afroCash()->first();
+
+				$trans = $rapport->transactions()
+					->first();
+
+				$sender_account->solde -= $trans->montant;
+				$receiver_account->solde += $trans->montant;
+
+				$new_trans = new TransactionAfrocash;
+				$new_trans->compte_credite = $receiver_account->numero_compte;
+				$new_trans->compte_debite = $sender_account->numero_compte;
+				$new_trans->montant = $trans->montant;
+				$new_trans->motif = "Annulation_Paiement_Marge_Materiel";
+				$new_trans->rapport_id = $rapport->id_rapport;
+
+				$sender_account->update();
+				$receiver_account->update();
+				$new_trans->save();
+				############
+
+				$user_stock->update();
+				$rapport->update();
 
 				return response()
 					->json('done');

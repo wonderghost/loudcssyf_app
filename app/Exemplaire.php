@@ -17,6 +17,10 @@ class Exemplaire extends Model
       return $this->belongsTo('App\User','vendeurs','username')->first();
     }
 
+    public function produits() {
+      return $this->belongsTo('App\Produits','produit','reference');
+    }
+
     public function produit() {
       return $this->belongsTo('App\Produits','produit','reference')->first();
     }
