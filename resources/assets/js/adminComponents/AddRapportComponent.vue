@@ -178,7 +178,7 @@ import reabo from './ReabonnementComponent.vue'
         }
       },
       sendRapport : async function (type) {
-        // this.isLoading = true
+        this.isLoading = true
 
         this.formData._token = this.myToken
         try {
@@ -191,10 +191,8 @@ import reabo from './ReabonnementComponent.vue'
             }
             if(response.data == 'done') {
               this.isLoading = false
-              UIkit.modal.alert("<div class='uk-alert-success' uk-alert>Rapport ajoute :)</div>")
-                .then(function () {
-                  location.reload()
-                })
+              alert("Success")
+              location.reload()
             }
           }
           else {
