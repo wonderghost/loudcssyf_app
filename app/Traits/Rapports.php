@@ -1539,7 +1539,7 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 				$serialNumbers = $rapport->serialNumbers()
 					->get();
 
-				$produit = $serialNumbers ? $serialNumbers->first()->produits()
+				$produit = $serialNumbers->first() ? $serialNumbers->first()->produits()
 					->where('with_serial',true)
 					->first() : null;
 
