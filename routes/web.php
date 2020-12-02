@@ -143,7 +143,8 @@ Route::middleware(['auth','admin'])->group(function () {
 
 	// admin routing
 	Route::get('/app',function () {
-		return view('layouts.template');
+		// return view('layouts.template');
+		return view('emails.commande-canal-plus');
 	});
 // //
 	Route::get('/admin/add-user','AdminController@getFormUser');

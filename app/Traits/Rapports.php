@@ -767,7 +767,7 @@ Trait Rapports {
 							}
 						} else {
 							// la promo n'est pas active
-							if(request()->promo_id) {
+							if(request()->promo_id != 'none') {
 								// le rapport appartien a une promo
 								$thePromo = $p->find(request()->promo_id);
 
