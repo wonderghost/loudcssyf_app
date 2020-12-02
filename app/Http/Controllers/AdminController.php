@@ -757,13 +757,13 @@ class AdminController extends Controller
         ->first();
 
       // debit du compte afrocash logistique et credit du compte afrocash vendeur
-      $accountAfrocashVendeur->solde += $transactionCommand->montant;
-      $accountAfrocashLogistique->solde -= $transactionCommand->montant;
+      $accountAfrocashVendeur->solde += $transactionCommand ? $transactionCommand->montant : 0;
+      $accountAfrocashLogistique->solde -= $transactionCommand ? $transactionCommand->montant : 0;
 
       $transactionAborted = new $ta;
       $transactionAborted->compte_debite = $accountAfrocashLogistique->numero_compte;
       $transactionAborted->compte_credite = $accountAfrocashVendeur->numero_compte;
-      $transactionAborted->montant = $transactionCommand->montant;
+      $transactionAborted->montant = $transactionCommand ? $transactionCommand->montant : 0;
       $transactionAborted->motif = "Annulation de commande materiel";
       $transactionAborted->command_material_id = $command->id_commande;
 

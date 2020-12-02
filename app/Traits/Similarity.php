@@ -457,7 +457,7 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
         $commandItems = $values->commandProduits()->get();
 
         $accessory = [];
-        $terminal = [];
+        $terminal = false;
 
         foreach($commandItems as $value) {
           if($value->produits()->where('with_serial',1)->first()) {
@@ -474,19 +474,15 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
           }
         }
 
-
-        $kit = $terminal['item']->articles()
-          ->first()
-          ->kits()
-          ->first();
-
+        $kit = $terminal ? $terminal['item']->articles()->first()->kits()->first() : $accessory[0]['item']->articles()->first()->kits()->first();
+        
         $_promo = $values->promos_id;
         $all [$key] = [
           'date'  =>  $date->toDateString(),
           'vendeurs'  => $vendeurs->localisation,
           'item' => $kit ? $kit->name : '-',
-          'quantite' => $terminal['data_commande'] ? $terminal['data_commande']->quantite_commande : '',
-          'parabole_a_livrer' => array_key_exists(0,$accessory) ? $accessory[0]['data_commande']->parabole_a_livrer : 0,
+          'quantite' => $terminal ? $terminal['data_commande']->quantite_commande : $accessory[0]['data_commande']->parabole_a_livrer,
+          'parabole_a_livrer' => array_key_exists(0,$accessory) && $terminal ? $accessory[0]['data_commande']->parabole_a_livrer : 0,
           'status' =>  $values->status,
           'promo' =>  $_promo ? 'En Promo' : 'Hors Promo',
           'id' => $values->id,

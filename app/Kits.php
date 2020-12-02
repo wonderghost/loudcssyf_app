@@ -17,7 +17,7 @@ class Kits extends Model
 
     public function getTerminalReference() {
         $data = $this->articles()->get();
-        
+        $term = false;
         foreach($data as $value) {
             if($tmp = $value->produits()->where('with_serial',1)->first()) {
                 $term = $tmp;

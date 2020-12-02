@@ -71,7 +71,7 @@ class CommandController extends Controller
 					$items[$key] =  $value->produits()->first();
 				}
 
-				$terminal = "";
+				$terminal = null;
 				$accessoire = [];
 
 				foreach($items as $value) {
@@ -90,10 +90,16 @@ class CommandController extends Controller
 					->where('type','migration')
 					->groupBy('id_rapport')
 					->get();
+
+				$migration = 0;
+
+				if(!is_null($terminal)) {
+
+					$migration = Exemplaire::whereIn('rapports',$rappVente)
+						->where('produit',$terminal->reference)
+						->count();
+				}
 				
-				$migration = Exemplaire::whereIn('rapports',$rappVente)
-					->where('produit',$terminal->reference)
-					->count();
 
 				$command = $cm->select('id_commande')->where('vendeurs',$request->user()->username)->get();
 
@@ -120,23 +126,23 @@ class CommandController extends Controller
 
 				if(request()->user()->type == 'v_da' || request()->user()->type == 'v_standart') {
 					// DA/ VSTANDART
-					$marge = $terminal->marge;
+					$marge = !is_null($terminal) ? $terminal->marge : 0;
 				}
 				else if(request()->user()->type == 'pdc') {
-					$marge = $terminal->marge_pdc;
+					$marge = !is_null($terminal) ? $terminal->marge_pdc : 0;
 				}
 				else {
-					$marge = $terminal->marge_pdraf;
+					$marge = !is_null($terminal) ? $terminal->marge_pdraf : 0;
 				}
 				#@@@@@@@@@@@@@@
 
 				$all = [
-					'ttc'	=>	$terminal->prix_initial + $accessoire_prix['prix_initial'],
-					'ht'	=>	ceil($terminal->prix_vente/1.18),
-					'tva'	=>	ceil($terminal->prix_vente - ($terminal->prix_vente/1.18)),
+					'ttc'	=>	!is_null($terminal) ? $terminal->prix_initial + $accessoire_prix['prix_initial'] : $accessoire_prix['prix_initial'],
+					'ht'	=> !is_null($terminal) ? ceil($terminal->prix_vente/1.18) : $accessoire_prix['prix_vente'],
+					'tva'	=> !is_null($terminal) ? ceil($terminal->prix_vente - ($terminal->prix_vente/1.18)) : ceil($accessoire_prix['prix_vente'] - $accessoire_prix['prix_vente'] / 1.18),
 					'marge'	=>	$marge,
-					'subvention'	=>	($terminal->prix_initial - $terminal->prix_vente) + ($accessoire_prix['prix_initial'] - $accessoire_prix['prix_vente']),
-					'prix_vente'	=>	$terminal->prix_vente,
+					'subvention'	=> !is_null($terminal) ? ($terminal->prix_initial - $terminal->prix_vente) + ($accessoire_prix['prix_initial'] - $accessoire_prix['prix_vente']) : 0,
+					'prix_vente'	=> !is_null($terminal) ? $terminal->prix_vente : $accessoire_prix['prix_vente'],
 					'reference'	=>	$dataKits->slug ,
 					'migration'	=>	$migration - $compense > 0 ? $migration - $compense : 0,
 					'compense'	=>	0,
@@ -202,14 +208,17 @@ class CommandController extends Controller
 				$terminal = $kit->getTerminalReference();
 				$accessoire = $kit->getAccessoryReference();
 
-
 				##@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-				$commandTerminal = new CommandProduit;
-				$commandTerminal->commande = $command->id_commande;
-				$commandTerminal->produit = $terminal->reference;
-				$commandTerminal->quantite_commande = request()->quantite;
-				$commandTerminal->parabole_a_livrer = request()->quantite;
+				if($terminal) {
+
+					$commandTerminal = new CommandProduit;
+					$commandTerminal->commande = $command->id_commande;
+					$commandTerminal->produit = $terminal->reference;
+					$commandTerminal->quantite_commande = request()->quantite;
+					$commandTerminal->parabole_a_livrer = request()->quantite;
+				}
+
 
 				foreach($accessoire as $key => $value) {
 					$commandByProduit[$key] = new CommandProduit;
@@ -250,10 +259,17 @@ class CommandController extends Controller
 				$transaction->montant = request()->prix_achat;
 
 				$command->save();
-				$commandTerminal->save();
+
+				if($terminal) {
+					$commandTerminal->save();
+				}
+
 				foreach($commandByProduit as $value) {
 					$value->save();
 				}
+
+				$sender_account->update();
+				$receiver_account->update();
 				$transaction->save();
 				
 				// ENREGISTREMENT DE LA NOTIFICATION
