@@ -466,13 +466,16 @@
               <a href="#"><span uk-icon="credit-card"></span> Afrocash</a>
               <ul class="uk-nav-sub">
                 <li class="">
-                    <router-link  to="/transfert-courant"><span uk-icon="icon : link"></span>Transfert Courant</router-link>
+                  <router-link  to="/transfert-courant"><span uk-icon="icon : link"></span>Transfert Courant</router-link>
                 </li>
                 <li>
-                    <router-link  to="/retour-afrocash"><span uk-icon="icon : link"></span> Retour Afrocash</router-link>
+                  <router-link  to="/retour-afrocash"><span uk-icon="icon : link"></span> Retour Afrocash</router-link>
                 </li>
                 <li>
-                    <router-link  to="/all-transaction-pdraf"><span uk-icon="icon : link"></span>Toutes les transactions</router-link>
+                  <router-link  to="/all-transaction-pdraf"><span uk-icon="icon : link"></span>Toutes les transactions</router-link>
+                </li>
+                <li>
+                  <router-link to="/pdraf/command/new"><span uk-icon="icon : link"></span> Commande Materiel</router-link>
                 </li>
               </ul>
             </li>

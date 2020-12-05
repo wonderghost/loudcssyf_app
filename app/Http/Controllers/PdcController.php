@@ -574,11 +574,17 @@ public function addNewPdc(Request $request) {
                 'required'  =>  '`:attribute` requi(s) !'
             ]);
 
-            // SOLDE PDC
-            $pdc_account = request()->user()->afroCash('semi_grossiste')->first();
+            // SOLDE UTILISATEUR
+            if(request()->user()->type == 'pdc') {
+
+                $sender_account = request()->user()->afroCash('semi_grossiste')->first();
+            }
+            else {
+                $sender_account = request()->user()->afroCash()->first();
+            }
 
             // VERIFICATION DE LA DISPONIBILITE DU MONTANT DANS LE COMPTE PDC
-            if($pdc_account->solde < request()->prix_achat) {
+            if($sender_account->solde < request()->prix_achat) {
                 throw new AppException("Solde indisponible !");
             }
 
@@ -624,46 +630,55 @@ public function addNewPdc(Request $request) {
             $livraisonAfrocash->generateConfirmCode();
 
             // TRANSACTION AFROCASH
+            if(request()->user()->type == 'pdc') {
+                # COMMANDE D'UN PDC
 
-            $reabo_afrocash_setting = ReaboAfrocashSetting::all()->first();
+                $reabo_afrocash_setting = ReaboAfrocashSetting::all()->first();
+    
+                if(!$reabo_afrocash_setting) {
+                    throw new AppException("Parametre Reabo non defini , contactez l'administrateur");
+                }
+    
+                $receiver_user = User::where('username',$reabo_afrocash_setting->user_to_receive)->first();
+                $receiver_account = $receiver_user->afroCash()->first();
+            }
+            else {
+                #COMMANDE D'UN PDRAF
+                $receiver_user = request()->user()
+                    ->pdcUser()
+                    ->usersPdc();
 
-            if(!$reabo_afrocash_setting) {
-                throw new AppException("Parametre Reabo non defini , contactez l'administrateur");
+                $receiver_account = $receiver_user->afroCash('semi_grossiste')->first();
             }
 
-            $receiver_user = User::where('username',$reabo_afrocash_setting->user_to_receive)->first();
-            $receiver_account = $receiver_user->afroCash()->first();
-
-            $pdc_account->solde -= request()->prix_achat;
-            $receiver_account->solde += request()->prix_achat;
-
             
-
+            $sender_account->solde -= request()->prix_achat;
+            $receiver_account->solde += request()->prix_achat;
+            
+            
+            
             // ENREGISTREMENT DE LA TRANSACTION
-
+            
             $trans = new TransactionAfrocash;
-            $trans->compte_debite = $pdc_account->numero_compte;
+            $trans->compte_debite = $sender_account->numero_compte;
             $trans->compte_credite = $receiver_account->numero_compte;
             $trans->montant = request()->prix_achat;
             $trans->motif = "Command_Materiel_Afrocash";
             $trans->command_afrocash_id = $idCommande;
-
+            
             // VALIDATION DE LA REQUETE
-
             foreach($commandAfrocash as $value) {
                 $value->save();
             }
 
             $livraisonAfrocash->save();
 
-            $pdc_account->update();
+            $sender_account->update();
             $receiver_account->update();
             $trans->save();
 
 
             // ENREGISTREMENT DES NOTIFICATIONS
-
-
             $n = $this->sendNotification(
                 "Command Materiel Afrocash",
                 "Vous avez envoye une commande Materiel !",

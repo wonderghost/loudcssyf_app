@@ -13,6 +13,9 @@
                     <li>
                         <router-link class="uk-button uk-button-small uk-text-left" to="/all-transaction-pdraf"><span uk-icon="icon : link"></span>Toutes les transactions</router-link>
                     </li>
+                    <li>
+                        <router-link to="/pdraf/command/new"><span uk-icon="icon : link"></span> Commande Materiel</router-link>
+                    </li>
                 </ul>
             </div>
             

@@ -20,7 +20,7 @@
         <nav class="" uk-navbar>
           <div class="uk-navbar-left">
               <ul class="uk-navbar-nav">
-                  <li class=""><router-link to="/pdc/command/list">Toutes les commandes</router-link></li>
+                  <li class=""><router-link :to="commandListUrl">Toutes les commandes</router-link></li>
               </ul>
           </div>
         </nav>
@@ -169,124 +169,149 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         },
         mounted() {
           this.getData()
+
+          if(this.typeUser == 'pdraf') {
+            this.commandListUrl = '/pdc/command/list/2'
+          }
+          else {
+            this.commandListUrl = "/pdc/command/list/1"
+          }
         },
         data() {
             return {
-                commandDefaultValue : "none",
-                commandParameters : [],
-                isLoading : false,
-                fullPage : true,
-                material : {},
-                marge : {},
-                subvention : {},
-                montantTtc : 0,
-                montantTtcSubv : 0,
-                formData : {
-                quantite : "",
-                prix_achat : 0,
-                _token : "",
-                reference_material : "",
-                promo_id : "",
-                parabole_du : 0,
-                },
-                errors : [],
-                soldeAfrocash : {}
+              commandListUrl : "",  
+              commandDefaultValue : "none",
+              commandParameters : [],
+              isLoading : false,
+              fullPage : true,
+              material : {},
+              marge : {},
+              subvention : {},
+              montantTtc : 0,
+              montantTtcSubv : 0,
+              formData : {
+              quantite : "",
+              prix_achat : 0,
+              _token : "",
+              reference_material : "",
+              promo_id : "",
+              parabole_du : 0,
+              },
+              errors : [],
+              soldeAfrocash : {}
             }
         },
         methods : {
-            getData : async function () {
-                try {
-                    let response = await axios.get('/pdc/command/new')
-                    let theResponse = await axios.get('/user/pdc/get-solde')
-                    if(response && theResponse) {
-                      this.commandParameters = response.data
-                      this.soldeAfrocash = theResponse.data
-                    }
-
-                }
-                catch(error) {
-                    alert(error)
-                }
-            },
-            getInfosByCommandMat : async function () {
+          getData : async function () {
             try {
+              let response = await axios.get('/pdc/command/new')
+              if(this.typeUser == 'pdc') {
 
-              let response = await axios.get('/user/new-command/get-infos-material/'+this.commandDefaultValue)
-              if(response) {
-
-                this.material = response.data
-                this.subvention = {
-                  ttc : this.material.subvention,
-                  ht : Math.round(this.material.subvention/1.18),
-                  tva : Math.round(this.material.subvention - (this.material.subvention/1.18))
-                }
-                this.marge = {
-                  ttc : this.material.marge,
-                  ht : Math.round(this.material.marge/1.18),
-                  tva : Math.round(this.material.marge - (this.material.marge/1.18))
-                }
-
-                this.chooseQuantite()
+                var theResponse = await axios.get('/user/pdc/get-solde')
               }
+              else {
+                var theResponse = await axios.get('/user/pdraf/get-solde')
+              }
+              if(response && theResponse) {
+                this.commandParameters = response.data
+                this.soldeAfrocash = theResponse.data
+              }
+
             }
             catch(error) {
-              if(error.response.data.errors) {
-                let errorTab = error.response.data.errors
-                for (var prop in errorTab) {
-                  this.errors.push(errorTab[prop][0])
-                }
-              } else {
-                  this.errors.push(error.response.data)
-              }
+              alert(error)
             }
           },
-          chooseQuantite : function () {
-            this.montantTtc = parseInt(this.formData.quantite) * this.material.ttc
-            this.montantTtcSubv = parseInt(this.formData.quantite) * this.material.subvention
-            this.material.parabole_du = parseInt(this.formData.quantite) - (this.material.migration - this.material.compense)
+          getInfosByCommandMat : async function () {
+          try {
 
-            if(this.promoState) {
-              // la promo est active
-              this.formData.prix_achat = parseInt(this.formData.quantite) * ((this.material.prix_vente - (this.marge.ht)) - this.promo.subvention)
-            } 
-            else {
-              // la promo est inactive
-              this.formData.prix_achat = parseInt(this.formData.quantite) * (this.material.prix_vente - (this.marge.ht))  
-            }
+            let response = await axios.get('/user/new-command/get-infos-material/'+this.commandDefaultValue)
+            if(response) {
 
-          },
-          sendCommandAfrocashRequest : async function () {
-            try {
-              this.errors = []
-              this.isLoading = true
-              this.formData._token = this.myToken
-              this.formData.reference_material = this.material.reference
-
-              let response = await axios.post('/pdc/command/new',this.formData)
-              if(response && response.data == 'done') {
-                alert("Success!")
-                Object.assign(this.$data,this.$options.data())
-                this.getData()
-                this.isLoading = false
+              this.material = response.data
+              this.subvention = {
+                ttc : this.material.subvention,
+                ht : Math.round(this.material.subvention/1.18),
+                tva : Math.round(this.material.subvention - (this.material.subvention/1.18))
               }
-            }
-            catch(error) {
-              this.isLoading = false
-              if(error.response.data.errors) {
-                let errorTab = error.response.data.errors
-                for (var prop in errorTab) {
-                  this.errors.push(errorTab[prop][0])
-                }
-              } else {
-                  this.errors.push(error.response.data)
+              this.marge = {
+                ttc : this.material.marge,
+                ht : Math.round(this.material.marge/1.18),
+                tva : Math.round(this.material.marge - (this.material.marge/1.18))
               }
+
+              this.chooseQuantite()
+            }
+          }
+          catch(error) {
+            if(error.response.data.errors) {
+              let errorTab = error.response.data.errors
+              for (var prop in errorTab) {
+                this.errors.push(errorTab[prop][0])
+              }
+            } else {
+                this.errors.push(error.response.data)
             }
           }
         },
-        computed : {
-          myToken() {
-            return this.$store.state.myToken
+        chooseQuantite : function () {
+          this.montantTtc = parseInt(this.formData.quantite) * this.material.ttc
+          this.montantTtcSubv = parseInt(this.formData.quantite) * this.material.subvention
+          this.material.parabole_du = parseInt(this.formData.quantite) - (this.material.migration - this.material.compense)
+
+          if(this.promoState) {
+            // la promo est active
+            // this.formData.prix_achat = parseInt(this.formData.quantite) * ((this.material.prix_vente - (this.marge.ht)) - this.promo.subvention)
+            this.formData.prix_achat = parseInt(this.formData.quantite) * (this.material.prix_vente - this.promo.subvention)
+          } 
+          else {
+            // la promo est inactive
+            this.formData.prix_achat = parseInt(this.formData.quantite) * this.material.prix_vente  
+          }
+
+        },
+        sendCommandAfrocashRequest : async function () {
+          try {
+            this.errors = []
+            this.isLoading = true
+            this.formData._token = this.myToken
+            this.formData.reference_material = this.material.reference
+
+            if(this.typeUser == 'pdc') {
+
+              var response = await axios.post('/pdc/command/new',this.formData)
+            }
+            else {
+              var response = await axios.post('/pdraf/command/new',this.formData)
+            }
+            
+            if(response && response.data == 'done') {
+              alert("Success!")
+              Object.assign(this.$data,this.$options.data())
+              this.getData()
+              this.isLoading = false
+            }
+          }
+          catch(error) {
+            this.isLoading = false
+            if(error.response.data.errors) {
+              let errorTab = error.response.data.errors
+              for (var prop in errorTab) {
+                this.errors.push(errorTab[prop][0])
+              }
+            } else {
+                this.errors.push(error.response.data)
+            }
           }
         }
+      },
+      computed : {
+        typeUser() {
+          return this.$store.state.typeUser
+        },
+        myToken() {
+          return this.$store.state.myToken
+        }
+      }
     }
 </script>

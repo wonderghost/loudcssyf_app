@@ -626,15 +626,27 @@ const router = new VueRouter({
             }
         },
         {
-            path : '/pdc/command/list',
-            component : commandAfrocashList,
-            beforeEnter : (to,from,next) => {
-                if(store.state.typeUser != 'pdc' && store.state.typeUser != 'admin' && store.state.typeUser != 'v_standart') {
+            path : '/pdraf/command/new',
+            component : commandAfrocash,
+            beforeEnter : (to, from , next) => {
+                if(store.state.typeUser != 'pdraf') {
                     alert('action non autorisee !')
                     next('/')
                 }
                 next()
             }
+        },
+        {
+            path : '/pdc/command/list/:state',
+            component : commandAfrocashList,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'pdc' && store.state.typeUser != 'admin' && store.state.typeUser != 'v_standart' && store.state.typeUser != 'pdraf') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            },
+            props : true
         },
         {
             path : '/pdc/command/confirmation/:id',

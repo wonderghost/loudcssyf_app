@@ -25,13 +25,50 @@ class CommandAfrocashController extends Controller
 
      // COMMANDE AFROCASH LIST
 
-    public function commandAfrocashList() {
+    public function commandAfrocashList($slug) {
         try {
             $user = request()->user();
-            if($user->type == 'pdc' || $user->type == 'pdraf') {
+
+            if($user->type == 'pdc' && $slug == 2) {
+
+                $pdrafUser = request()->user()
+                    ->pdrafUserList()
+                    ->select('id_pdraf')
+                    ->groupBy('id_pdraf')
+                    ->get();
 
                 $commandId = CommandAfrocash::select('id_commande')
+                    ->whereIn('user_id',$pdrafUser)
+                    ->where('state',false)
+                    ->where('remove_state',false)
+                    ->distinct('id_commande')
+                    ->paginate();
+                
+            }
+            else if($user->type == 'pdc' && $slug == 1) {
+                $commandId = CommandAfrocash::select('id_commande')
                     ->where('user_id',$user->username)
+                    ->where('state',false)
+                    ->where('remove_state',false)
+                    ->distinct('id_commande')
+                    ->paginate();
+            }
+            else if ($user->type == 'pdraf') {
+                $commandId = CommandAfrocash::select('id_commande')
+                    ->where('user_id',$user->username)
+                    ->where('state',false)
+                    ->where('remove_state',false)
+                    ->distinct('id_commande')
+                    ->paginate();
+            }
+            else if($user->type == 'v_standart') { 
+                $pdcUser = User::select('username')
+                    ->where('type','pdc')
+                    ->groupBy('username')
+                    ->get();
+
+                $commandId = CommandAfrocash::select('id_commande')
+                    ->whereIn('user_id',$pdcUser)
                     ->where('state',false)
                     ->where('remove_state',false)
                     ->distinct('id_commande')
@@ -43,7 +80,7 @@ class CommandAfrocashController extends Controller
                     ->where('state',false)
                     ->where('remove_state',false)
                     ->distinct('id_commande')
-                    ->paginate(); 
+                    ->paginate();
             }
 
             $data = [];

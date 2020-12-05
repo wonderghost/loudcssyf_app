@@ -461,18 +461,23 @@ Trait Rapports {
 						$sender_account->solde -= $montantTransaction;
 
 						
-						#ENREGISTREMENT DE LA TRANSACTION
+						#ENREGISTREMENT DE LA TRANSACTION // ACTION DISPONIBLE SEULEMENT POUR LE DISTRIBUTEUR
+
+						if($user_rapport->type == 'v_da') {
+
+							$trans = new TransactionAfrocash;
+							$trans->compte_credite = $receiver_account->numero_compte;
+							$trans->compte_debite = $sender_account->numero_compte;
+							$trans->montant = $montantTransaction;
+							$trans->motif = "Paiement_Marge_Materiel";
+							$trans->rapport_id = $id_rapport;
+
+							$receiver_account->update();
+							$sender_account->update();
+							$trans->save();
+						}
 						
-						$trans = new TransactionAfrocash;
-						$trans->compte_credite = $receiver_account->numero_compte;
-						$trans->compte_debite = $sender_account->numero_compte;
-						$trans->montant = $montantTransaction;
-						$trans->motif = "Paiement_Marge_Materiel";
-						$trans->rapport_id = $id_rapport;
 												
-						$receiver_account->update();
-						$sender_account->update();
-						$trans->save();
 						// redirection
 						return response()
 							->json('done');
@@ -834,18 +839,23 @@ Trait Rapports {
 						$sender_account->solde -= $montantTransaction;
 
 						
-						#ENREGISTREMENT DE LA TRANSACTION
+						#ENREGISTREMENT DE LA TRANSACTION // ACTION DISPONIBLE UNIQUEMENT POUR LE DISTRIBUTEUR
+
+						if($user_rapport->type == 'v_da') {
+
+							$trans = new TransactionAfrocash;
+							$trans->compte_credite = $receiver_account->numero_compte;
+							$trans->compte_debite = $sender_account->numero_compte;
+							$trans->montant = $montantTransaction;
+							$trans->motif = "Paiement_Marge_Materiel";
+							$trans->rapport_id = $id_rapport;
+													
+							$receiver_account->update();
+							$sender_account->update();
+							$trans->save();
+						}
 						
-						$trans = new TransactionAfrocash;
-						$trans->compte_credite = $receiver_account->numero_compte;
-						$trans->compte_debite = $sender_account->numero_compte;
-						$trans->montant = $montantTransaction;
-						$trans->motif = "Paiement_Marge_Materiel";
-						$trans->rapport_id = $id_rapport;
-												
-						$receiver_account->update();
-						$sender_account->update();
-						$trans->save();
+						
 
 						return response()
 							->json('done');

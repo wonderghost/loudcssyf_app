@@ -17,10 +17,16 @@
         <h3 class="uk-margin-top">Toutes les commandes</h3>
         <hr class="uk-divider-small">
 
-        <nav v-if="typeUser == 'pdc'" class="" uk-navbar>
+        <nav v-if="typeUser == 'pdc' || typeUser == 'pdraf'" class="" uk-navbar>
           <div class="uk-navbar-left">
               <ul class="uk-navbar-nav">
-                  <li class=""><router-link to="/pdc/command/new">Nouvelle Commande</router-link></li>
+                  <li class=""><router-link :to="newCommandUrl">Nouvelle Commande</router-link></li>
+                  <li v-if="$route.params.state == 2 && typeUser == 'pdc'">
+                      <router-link to="/pdc/command/list/1">Mes Commandes</router-link>
+                  </li>
+                  <li v-if="$route.params.state == 1">
+                      <router-link to="/pdc/command/list/2">Commande Pdraf</router-link>
+                  </li>
               </ul>
           </div>
         </nav>
@@ -87,13 +93,24 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         },
         mounted() {
             this.getData()
+
+            if(this.typeUser == 'pdraf')  {
+                this.newCommandUrl = '/pdraf/command/new'
+            }
+            else {
+                this.newCommandUrl = '/pdc/command/new'
+            }
         },
         data() {
             return {
                 list : [],
                 isLoading : false,
-                fullPage : true
+                fullPage : true,
+                newCommandUrl : ""
             }
+        },
+        watch : {
+            '$route' : 'getData'
         },
         methods : {
             showConfirmCode : function (code) {
@@ -104,10 +121,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                     alert(error)
                 }
             },
-            getData : async function () {
+            getData : async function (id) {
                 try {
                     this.isLoading = true
-                    let response = await axios.get('/pdc/command/list')
+                    var response = await axios.get('/pdc/command/list/'+this.$route.params.state)
+                    
+
                     if(response) {
                         this.list = response.data.all
                         this.isLoading = false

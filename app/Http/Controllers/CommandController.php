@@ -131,7 +131,7 @@ class CommandController extends Controller
 				else if(request()->user()->type == 'pdc') {
 					$marge = !is_null($terminal) ? $terminal->marge_pdc : 0;
 				}
-				else {
+				else if(request()->user()->type == 'pdraf') {
 					$marge = !is_null($terminal) ? $terminal->marge_pdraf : 0;
 				}
 				#@@@@@@@@@@@@@@

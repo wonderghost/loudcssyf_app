@@ -14,6 +14,7 @@
             margin : 10% 10% auto;
             border : 2px solid #000;
             padding : 1% ;
+            margin-bottom : .5% !important;
         }
         .logo {
             
@@ -217,9 +218,20 @@
                         </tr>
                     </tbody>
                 </table>
+                <div>
+                    <span>Condition de reglement : Comptant</span>
+                </div>
+                <div>
+                    <span>Compte de paiement Canal+ Guinee : </span>
+                    <span>Banque : ECOBANK GUINEE , Code Banque : GN010 , Code Guichet : 001</span>
+                    <span>Numero Compte : 0010124621733904 , SWIFT : ECOCGNCN , RIB : 010001001006424746 </span>
+                </div>
             </div>
             <!-- // -->
         </div>
+    </div>
+    <div class="container">
+        
     </div>
 </body>
 </html>
