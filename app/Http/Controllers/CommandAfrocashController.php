@@ -144,7 +144,7 @@ class CommandAfrocashController extends Controller
                 ->where('id_commande',$id)
                 ->where('state',false)
                 ->get();
-            
+
             $data = [];
 
             if($response->count() <= 0) {
@@ -168,6 +168,9 @@ class CommandAfrocashController extends Controller
         }
     }
 
+    # CONFIRMATION DE COMMANDE AFROCASH MATERIEL POUR PDC
+
+
     public function confirmCommandAfrocash($slug) {
         try {
             $validation = request()->validate([
@@ -185,40 +188,69 @@ class CommandAfrocashController extends Controller
                 throw new AppException("Mot de passe invalide !");
             }
 
+
+
             $idCommande = Crypt::decryptString($slug);
             $command_afrocash = CommandAfrocash::where('id_commande',$idCommande)
                 ->where('state',false)
                 ->where('remove_state',false);
         
             $command_afrocash_produit_id = $command_afrocash->select('produit_id')
-                ->get();            
+                ->get();
 
-            // VERIFICATION DE L'EXISTENCE DES NUMEROS DANS LE STOCK VENDEURS DU RECEPTEUR AFROCASH ET DE LA DISPONIBILITE
+            // VERIFICATION DE L'EXISTENCE DES NUMEROS DANS LE STOCK VENDEURS DU [RECEPTEUR AFROCASH / PDC] ET DE LA DISPONIBILITE
 
-            $reabo_afrocash_setting = ReaboAfrocashSetting::all()->first();
-            $recepteur_afrocash = User::where('username',$reabo_afrocash_setting->user_to_receive)->first();
-            
-            foreach(request()->serials as $key => $value) {
+            if(request()->user()->type == 'v_standart') {
+
+                // CONFIRMATION D'UN VENDEUR STANDART
+
+                $reabo_afrocash_setting = ReaboAfrocashSetting::all()->first();
+                $recepteur_afrocash = User::where('username',$reabo_afrocash_setting->user_to_receive)->first();
                 
-                $serialStockAfrocash[$key] = $recepteur_afrocash->exemplaire()
-                    ->where('status','inactif')
-                    ->whereNull('rapports')
-                    ->where('serial_number',$value)
-                    ->whereNull('pdc_id')
-                    ->whereIn('produit',$command_afrocash_produit_id)
-                    ->first();
-
-                if(!$serialStockAfrocash[$key]) {
-                    throw new AppException("Erreur Materiel ... Verifiez qu'il n'est pas deja attribuer !");
+                foreach(request()->serials as $key => $value) {
+                    
+                    $serialStockAfrocash[$key] = $recepteur_afrocash->exemplaire()
+                        ->where('status','inactif')
+                        ->whereNull('rapports')
+                        ->where('serial_number',$value)
+                        ->whereNull('pdc_id')
+                        ->whereIn('produit',$command_afrocash_produit_id)
+                        ->first();
+    
+                    if(!$serialStockAfrocash[$key]) {
+                        throw new AppException("Erreur Materiel ... Verifiez qu'il n'est pas deja attribuer : ".$value);
+                    }
                 }
             }
+            else if(request()->user()->type == 'pdc') {
+                // CONFIRMATION D'UN PDC
 
+                $recepteur_afrocash = request()->user();
+                foreach(request()->serials as $key => $value) {
+                    $serialStockAfrocash[$key] = $recepteur_afrocash->exemplaireForPdc()
+                        ->where('status','inactif')
+                        ->whereNull('rapports')
+                        ->where('serial_number',$value)
+                        ->whereNull('pdraf_id')
+                        ->whereIn('produit',$command_afrocash_produit_id)
+                        ->first();
+
+                    if(!$serialStockAfrocash[$key]) {
+                        throw new AppException("Erreur Materiel ... Verifiez qu'il n'est pas deja attribuer : ".$value);
+                    }
+
+                }
+            }
             // VERIFICATION DE LA VALIDITE DU CODE DE CONFIRMATION
             
 
             $command_data = $command_afrocash
                 ->select()
                 ->get();
+            
+            if(!$command_data->first()) {
+                throw new AppException("Operation indisonible !");
+            }
 
             $livraison_afrocash = $command_data->first()->livraison()
                 ->where('confirm_code',request()->confirm_code)
@@ -245,29 +277,60 @@ class CommandAfrocashController extends Controller
 
             fclose($handle);
 
-            #   ATTRIBUTION DES NUMEROS AU PDC
+            #   ATTRIBUTION DES NUMEROS AU [PDC/PDRAF]
 
-            foreach($serialStockAfrocash as $value) {
-                $value->pdc_id = $command_data->first()->user_id;
+            if(request()->user()->type == 'v_standart') {
+                // CAS POUR UN PDC
+
+                foreach($serialStockAfrocash as $value) {
+                    $value->pdc_id = $command_data->first()->user_id;
+                }
+            }
+            else if(request()->user()->type == 'pdc') {
+                // CAS POUR UN PDRAF
+
+                foreach($serialStockAfrocash as $value) {
+                    $value->pdraf_id = $command_data->first()->user_id;
+                }
             }
 
+            $stock_fournisseur = $recepteur_afrocash->stockVendeurs()
+                ->whereIn('produit',$command_afrocash_produit_id)
+                ->get();
+
+            # VERIFIER LA DISPONIBILITE DE LA QUANTITE DES PRODUITS
+
+            foreach($stock_fournisseur as $value) {
+                if(count(request()->serials) > $value->quantite) {
+                    throw new AppException("Quantite indisponible ... Verifiez votre stock de : ".$value->produit()->libelle);
+                }
+            }
+            
             #MISE A JOUR DU STOCK
+
+            foreach($stock_fournisseur as $value) {
+                $value->quantite -= count(request()->serials);
+            }
+
             $stock_vendeur = StockVendeur::where('vendeurs',$command_data->first()->user_id)
-                ->first();
+                ->whereIn('produit',$command_afrocash_produit_id)
+                ->get();
 
-            $stock = [];
-
-            if($stock_vendeur) {
+            if($stock_vendeur->count() > 0) {
                 // LE STOCK EXISTE DEJA
+
+                foreach($stock_vendeur as $value) {
+                    $value->quantite +=  count(request()->serials);
+                }
 
             }
             else {
                 // CREATION DU STOCK
                 foreach($command_data as $key => $value) {
-                    $stock[$key] = new StockVendeur;
-                    $stock[$key]->produit = $value->produit_id;
-                    $stock[$key]->vendeurs = $value->user_id;
-                    $stock[$key]->quantite = $value->quantite_a_livrer;
+                    $stock_vendeur[$key] = new StockVendeur;
+                    $stock_vendeur[$key]->produit = $value->produit_id;
+                    $stock_vendeur[$key]->vendeurs = $value->user_id;
+                    $stock_vendeur[$key]->quantite = $value->quantite_a_livrer;
                 }
             }
 
@@ -279,10 +342,20 @@ class CommandAfrocashController extends Controller
             foreach($command_data as $key => $value) {
                 $value->state = true;
                 $value->save();// MISE A JOUR DES INFOS DE LA COMMANDE
-                $stock[$key]->save();// MISE A JOUR DU STOCK
-                $serialStockAfrocash[$key]->save(); // AFFECTATION DES MATERIELS AU PDC
             }
-            $livraison_afrocash->save(); // ENREGISTREMENT DES INFOS DE LIVRAISON
+
+            foreach($stock_vendeur as $value) {
+                $value->save();
+            }
+            
+            foreach($stock_fournisseur as $value) {
+                $value->update();
+            }
+
+            foreach($serialStockAfrocash as $value) {
+                $value->update();
+            }
+            $livraison_afrocash->update(); // ENREGISTREMENT DES INFOS DE LIVRAISON
 
             return response()
                 ->json('done');
@@ -321,17 +394,29 @@ class CommandAfrocashController extends Controller
             $user_id = $command_afrocash->first()->user_id()
                 ->first();
 
-            $receiver_account = $user_id->afroCash('semi_grossiste')
-                ->first();
+            if($user_id->type == 'pdc') {
+                
+                $receiver_account = $user_id->afroCash('semi_grossiste')
+                    ->first();
 
-            $reabo_afrocash_setting = ReaboAfrocashSetting::all()->first();
+                $reabo_afrocash_setting = ReaboAfrocashSetting::all()->first();
 
-            if(!$reabo_afrocash_setting) {
-                throw new AppException("Parametre Reabo non defini , contactez l'administrateur");
+                if(!$reabo_afrocash_setting) {
+                    throw new AppException("Parametre Reabo non defini , contactez l'administrateur");
+                }
+
+                $sender_user = User::where('username',$reabo_afrocash_setting->user_to_receive)->first();
+                $sender_account = $sender_user->afroCash()->first();
             }
-
-            $sender_user = User::where('username',$reabo_afrocash_setting->user_to_receive)->first();
-            $sender_account = $sender_user->afroCash()->first();
+            else if($user_id->type == 'pdraf') {
+                $receiver_account = $user_id->afroCash()
+                    ->first();
+                
+                $sender_user = $user_id->pdcUser()
+                    ->usersPdc();
+                
+                $sender_account = $sender_user->afroCash('semi_grossiste')->first();
+            }
             
             $sender_account->solde -= $trans->montant;
             $receiver_account->solde += $trans->montant;
@@ -356,6 +441,101 @@ class CommandAfrocashController extends Controller
 
             return response()
                 ->json('done');
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    # CONFIRMATION DE COMMANDE MATERIEL AFROCASH POUR LES PDRAF
+    public function confirmCommandAfrocashForPdraf() {
+        try {
+
+            $validation = request()->validate([
+                'serials.*' =>  'required|string|distinct|exists:exemplaire,serial_number',
+                'confirm_code'  =>  'required|string|exists:livraison_afrocashes,confirm_code',
+                'password_confirmation'  => 'required|string'
+            ],[
+                'required'  =>  '`:attribute` requi(s)',
+                'exists'    =>  '`:attribute` n\'existe pas dans le systeme !',
+                'distinct'  =>  'Vous avez dupliquer un champ(s) `:attribute`'
+            ]);
+
+            return response()
+                ->json(request());
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    # INVENTAIRE STOCK MATERIEL POUR PDC / PDRAF
+
+    public function inventoryStock() {
+        try {
+
+            if(request()->user()->type == 'pdc') {
+
+                $serials = request()->user()->exemplaireForPdc()
+                    ->whereNotNull('vendeurs')
+                    ->whereNull('rapports')
+                    ->whereNull('pdraf_id')
+                    ->orderBy('created_at','desc')
+                    ->paginate();
+
+            }
+            else if(request()->user()->type == 'pdraf') {
+
+                $serials = request()->user()->exemplaireForPdraf()
+                    ->whereNotNull('vendeurs')
+                    ->whereNull('rapports')
+                    ->orderBy('created_at','desc')
+                    ->paginate();
+
+            }
+
+            $data = [];
+
+            foreach($serials as $key => $value) {
+
+                $data[$key] = [
+                    'numero_materiel'   =>  $value->serial_number,
+                    'user'  =>  $value->pdcUser()->first()->localisation,
+                    'article'   =>  $value->produit()->libelle,
+                    'status'    =>  $value->status  
+                ];
+
+            }
+
+            $stock_vendeur = request()->user()->stockVendeurs()
+                ->get();
+            $data_stock = [];
+
+            foreach($stock_vendeur as $key => $value) {
+                
+                $data_stock[$key] = [
+                    'produit'   =>  $value->produit()->libelle,
+                    'quantite'  =>  $value->quantite,
+                    'marge' => $value->produit()->marge_pdc,
+                    'ttc'   =>  $value->produit()->prix_vente,
+                    'ht'    =>  ceil($value->produit()->prix_vente / 1.18)
+                ];
+            }
+            
+            return response()
+                ->json([
+                    'all'  => $data,
+                    'stock' =>  $data_stock,
+                    'next_url'	=> $serials->nextPageUrl(),
+                    'last_url'	=> $serials->previousPageUrl(),
+                    'per_page'	=>	$serials->perPage(),
+                    'current_page'	=>	$serials->currentPage(),
+                    'first_page'	=>	$serials->url(1),
+                    'first_item'	=>	$serials->firstItem(),
+                    'total'	=>	$serials->total()
+                ]);
         }
         catch(AppException $e) {
             header("Erreur",true,422);

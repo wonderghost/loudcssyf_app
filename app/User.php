@@ -45,6 +45,15 @@ class User extends Authenticatable
       return $this->hasMany('App\Exemplaire','vendeurs','username');
     }
 
+    public function exemplaireForPdc() {
+      return $this->hasMany('App\Exemplaire','pdc_id','username');
+    }
+
+    public function exemplaireForPdraf() {
+      return $this->hasMany('App\Exemplaire','pdraf_id','username');
+    }
+
+
     public function agence() {
       return $this->belongsTo('App\Agence','agence','reference')->first();
     }
@@ -146,6 +155,10 @@ class User extends Authenticatable
 
     public function reactivationMateriel() {
       return $this->hasMany('App\ReactivationMateriel','pdraf_id','username');
+    }
+
+    public function stockVendeurs() {
+      return $this->hasMany('App\StockVendeur','vendeurs','username');
     }
 
 }

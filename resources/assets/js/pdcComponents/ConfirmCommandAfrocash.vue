@@ -20,7 +20,10 @@
          <nav class="" uk-navbar>
             <div class="uk-navbar-left">
                 <ul class="uk-navbar-nav">
-                    <li class=""><router-link to="/pdc/command/list">Toutes les commandes</router-link></li>
+                    <!-- <li class=""><router-link to="/pdc/command/list/1">Toutes les commandes</router-link></li> -->
+                    <li>
+                        <a @click="$router.go(-1)" class="">Toutes les commandes</a>
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -104,16 +107,28 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         methods : {
             sendConfirmationRequest : async function () {
                 try {
+                    this.isLoading = true
                     this.errors = []
                     this.formData._token = this.myToken
-                    let response = await axios.post('/pdc/command/confirm/'+this.$route.params.id,this.formData)
+
+                    if(this.typeUser == 'pdc') {
+                        var response = await axios.post('/pdraf/command/confirm/'+this.$route.params.id,this.formData)
+                    }
+
+                    if(this.typeUser == 'v_standart') {
+                        var response = await axios.post('/pdc/command/confirm/'+this.$route.params.id,this.formData)
+                    }
+                    // 
+
                     if(response && response.data == 'done') {
                         alert('success !')
-                        Object.assign(this.$data,this.$options.data())
-                        this.router.push('/pdc/command/list')
+                        Object.assign(this.$data,this.$options.all())
+                        this.$router.go(-1)
+                        this.isLoading = false
                     }
                 }
                 catch(error) {
+                    this.isLoading = false
                     if(error.response.data.errors) {
                         let errorTab = error.response.data.errors
                         for (var prop in errorTab) {
@@ -126,7 +141,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             },
             getData : async function () {
                 try {
-                    let response = await axios.get('/pdc/command/confirm/'+this.$route.params.id)
+                    if(this.typeUser == 'pdc') {
+                        var response = await axios.get('/pdraf/command/confirm/'+this.$route.params.id)
+                    }
+                    else {
+                        var response = await axios.get('/pdc/command/confirm/'+this.$route.params.id)
+                    }
                     if(response) {
                         this.items = response.data
                     }
@@ -137,6 +157,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             }
         },
         computed : {
+            typeUser() {
+                return this.$store.state.typeUser
+            },
             myToken() {
                 return this.$store.state.myToken
             }

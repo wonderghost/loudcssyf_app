@@ -214,9 +214,19 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/pdc/command/new','PdcController@sendCommandAfrocash')->middleware('pdc');
 	Route::get('/pdc/command/new','PdcController@newCommandGetData');
 	Route::get('/pdc/command/list/{slug?}','CommandAfrocashController@commandAfrocashList');
+
 	Route::get('/pdc/command/confirm/{slug}','CommandAfrocashController@getDataConfirmCommand')->middleware('vendeur');
 	Route::post('/pdc/command/confirm/{slug}','CommandAfrocashController@confirmCommandAfrocash')->middleware('vendeur');
+
+	Route::get('/pdraf/command/confirm/{slug}','CommandAfrocashController@getDataConfirmCommand')->middleware('pdc');
+	// Route::post('/pdraf/command/confirm/{slug}','CommandAfrocashController@confirmCommandAfrocashForPdraf')->middleware('pdc');
+	Route::post('/pdraf/command/confirm/{slug}','CommandAfrocashController@confirmCommandAfrocash')->middleware('pdc');
+
+	Route::get('/pdc/material/inventory','CommandAfrocashController@inventoryStock');
+	
+
 	Route::post('/pdc/command/remove','CommandAfrocashController@removeCommandAfrocash')->middleware('vendeur');
+	Route::post('/pdraf/command/remove','CommandAfrocashController@removeCommandAfrocash')->middleware('pdc');
 
 	Route::post('/user/afrocash/depot-pdc/','PdcController@depotDepot')->middleware('vendeur');
 	Route::get('/user/pdc/','PdcController@operation')->middleware('pdc');

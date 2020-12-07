@@ -18,6 +18,7 @@ import reactivationMateriel from './pdrafComponents/ReactivationComponent.vue'
 import commandAfrocash from './pdcComponents/CommandAfrocash.vue'
 import commandAfrocashList from './pdcComponents/CommandAfrocashList.vue'
 import confirmCommandAfrocash from './pdcComponents/ConfirmCommandAfrocash.vue'
+import inventoryAfrocashMateriel from './pdcComponents/InventoryAfrocashComponent.vue'
 // 
 
 // ADMIN ROUTER
@@ -220,11 +221,25 @@ const router = new VueRouter({
         },
         {
             path : "/material/entrepot",
-            component : entrepot
+            component : entrepot,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'admin') {
+                    alert('action noo autorisee !')
+                    next('/')
+                }
+                next()
+            }
         },
         {
             path : '/material/all-material',
-            component : allMaterial
+            component : allMaterial,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'admin' && store.state.typeUser != 'gdepot' && store.state.typeUser != 'logistique') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            }
         },
         {
             path : '/inventory',
@@ -653,6 +668,39 @@ const router = new VueRouter({
             component : confirmCommandAfrocash,
             beforeEnter : (to,from,next)    =>  {
                 if(store.state.typeUser != 'v_standart') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            }
+        },
+        {
+            path : '/pdraf/command/confirmation/:id',
+            component : confirmCommandAfrocash,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'pdc') {
+                    alert('action non autorisee!')
+                    next('/')
+                }
+                next()
+            }
+        },
+        {
+            path : '/pdc/material/inventory',
+            component : inventoryAfrocashMateriel,
+            beforeEnter : (to,from, next) => {
+                if(store.state.typeUser != 'pdc') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            }
+        },
+        {
+            path : '/pdraf/materiel/inventory',
+            component : inventoryAfrocashMateriel,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'pdraf') {
                     alert('action non autorisee !')
                     next('/')
                 }

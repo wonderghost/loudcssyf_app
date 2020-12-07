@@ -204,6 +204,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         methods : {
           getData : async function () {
             try {
+              this.isLoading = true
               let response = await axios.get('/pdc/command/new')
               if(this.typeUser == 'pdc') {
 
@@ -213,8 +214,10 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 var theResponse = await axios.get('/user/pdraf/get-solde')
               }
               if(response && theResponse) {
+
                 this.commandParameters = response.data
                 this.soldeAfrocash = theResponse.data
+                this.isLoading = false
               }
 
             }
@@ -278,18 +281,15 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             this.formData.reference_material = this.material.reference
 
             if(this.typeUser == 'pdc') {
-
               var response = await axios.post('/pdc/command/new',this.formData)
             }
-            else {
+            else if(this.typeUser == 'pdraf') {
               var response = await axios.post('/pdraf/command/new',this.formData)
             }
             
             if(response && response.data == 'done') {
               alert("Success!")
-              Object.assign(this.$data,this.$options.data())
-              this.getData()
-              this.isLoading = false
+              this.$router.push(this.commandListUrl)
             }
           }
           catch(error) {

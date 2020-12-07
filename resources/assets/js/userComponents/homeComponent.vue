@@ -432,11 +432,20 @@
                 <li>
                   <router-link  to="/inventaire-pdraf"><span uk-icon="icon : link"></span> Inventaire PDRAF</router-link>
                 </li>
+              </ul>
+            </li>
+            <li class="uk-parent">
+              <a href="#"><span uk-icon="icon : cog"></span> Materiel</a>
+              <ul class="uk-nav-sub">
                 <li>
-                  <router-link to="/pdc/command/new"><span uk-icon="icon : link"></span> Command Materiel</router-link>
+                  <router-link to="/pdc/command/new"><span uk-icon="icon : link"></span> Commandes</router-link>
+                </li>
+                <li>
+                  <router-link to="/pdc/material/inventory"><span uk-icon="icon : link"></span> Inventaire Stock</router-link>
                 </li>
               </ul>
             </li>
+            
             <li class="uk-parent">
               <a href="#"><span uk-icon="users"></span> Utilisateurs</a>
               <ul class="uk-nav-sub">
@@ -474,8 +483,16 @@
                 <li>
                   <router-link  to="/all-transaction-pdraf"><span uk-icon="icon : link"></span>Toutes les transactions</router-link>
                 </li>
-                <li>
+              </ul>
+            </li>
+            <li class="uk-parent">
+              <a href="#"><span uk-icon="cog"></span> Materiel</a>
+              <ul class="uk-nav-sub">
+                 <li>
                   <router-link to="/pdraf/command/new"><span uk-icon="icon : link"></span> Commande Materiel</router-link>
+                </li>
+                <li>
+                  <router-link to="/pdraf/materiel/inventory"><span uk-icon="icon : link"></span> Inventaire Stock</router-link>
                 </li>
               </ul>
             </li>

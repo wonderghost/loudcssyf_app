@@ -6,41 +6,44 @@ use Illuminate\Database\Eloquent\Model;
 
 class Exemplaire extends Model
 {
-    //
-    protected $table = 'exemplaire';
-    protected $keyType = 'string';
-    protected $primaryKey = 'serial_number';
+  protected $table = 'exemplaire';
+  protected $keyType = 'string';
+  protected $primaryKey = 'serial_number';
 
-    protected $fillable = ['vendeurs'];
+  protected $fillable = ['vendeurs'];
 
-    public function vendeurs() {
-      return $this->belongsTo('App\User','vendeurs','username')->first();
-    }
+  public function vendeurs() {
+    return $this->belongsTo('App\User','vendeurs','username')->first();
+  }
 
-    public function produits() {
-      return $this->belongsTo('App\Produits','produit','reference');
-    }
+  public function pdcUser() {
+    return $this->belongsTo('App\User','pdc_id','username');
+  }
 
-    public function produit() {
-      return $this->belongsTo('App\Produits','produit','reference')->first();
-    }
+  public function produits() {
+    return $this->belongsTo('App\Produits','produit','reference');
+  }
 
-    public function depot() {
-      return $this->hasMany('App\Stock','exemplaire','serial_number')->first();
-    }
+  public function produit() {
+    return $this->belongsTo('App\Produits','produit','reference')->first();
+  }
 
-    public function deficientMaterial() {
-      return $this->hasMany('App\DeficientMaterial','serial_to_replace','serial_number')->first();
-    }
+  public function depot() {
+    return $this->hasMany('App\Stock','exemplaire','serial_number')->first();
+  }
 
-    public function rapport() {
-      return $this->belongsTo('App\RapportVente','rapports','id_rapport')->first();
-    }
+  public function deficientMaterial() {
+    return $this->hasMany('App\DeficientMaterial','serial_to_replace','serial_number')->first();
+  }
 
-    public function abonnements() {
-      return $this->hasMany('App\Abonnement','serial_number','serial_number')
-        ->orderBy('created_at','desc')
-        ->get();
-    }
+  public function rapport() {
+    return $this->belongsTo('App\RapportVente','rapports','id_rapport')->first();
+  }
+
+  public function abonnements() {
+    return $this->hasMany('App\Abonnement','serial_number','serial_number')
+      ->orderBy('created_at','desc')
+      ->get();
+  }
 
 }
