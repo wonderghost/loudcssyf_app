@@ -6,3 +6,143 @@
 @import "variables";
 
 
+html , body {
+    margin : 0px;
+    padding : 0px;
+  }
+  
+  #entete {
+    z-index: 1;
+    background : rgba(255,255,250,1);
+    color : #000 !important;
+  }
+  
+  .side-nav {
+    /* background : rgba(0,30,100,0.7) !important; */
+    background : #1e87f0;
+  }
+  
+  
+  .side-nav  ul  li > a{
+    color : #fff !important;
+  }
+  
+  .border-button {
+    border-color : #1e87f0 !important;
+    color : #1e87f0 !important;
+  }
+  
+  .notification-container:hover {
+    background : rgba(0 , 0 , 0 , 0.1) !important;
+  }
+  
+  .notification-container {
+    border : solid 0.2px #ddd;
+    padding : 1% !important;
+  }
+  
+  #chat-button {
+    position : fixed;
+    right : 0;
+    bottom : 0;
+    margin-right : 0.5%;
+    margin-bottom : 1%;
+  }
+  
+  .form-chat-text {
+    position : absolute;
+    bottom : 0;
+    /* width : 100%; */
+  }
+  
+  .form-chat-text input {
+    border : solid 0px #000 !important;
+    border-bottom : solid 1px #ccc !important;
+  
+  }
+  
+  .form-chat-text button {
+    position : absolute ;
+    margin-left : 5% !important ;
+  }
+  
+  .more-tools {
+   cursor : pointer !important;
+   border-radius: 100px 100px 100px 100px !important;
+   padding : 5px !important;
+  }
+  
+  div.vue-radial-menu-wrapper {
+    position : fixed ;
+    /* top : 20% !important; */
+    right : 1% !important;
+    bottom : 10% !important;
+    cursor : pointer;
+    background : #1e87f0 !important;
+    color : #fff !important; 
+    z-index: 1 !important;
+  }
+  
+  div.vue-radial-menu-wrapper .vue-radial-menu-item {
+    border : none !important;
+    box-shadow:  none !important;
+  }
+  /*  */
+  .img-bg {
+    width : 100% !important;
+    height : 100% !important;
+  }
+  .login-page-content {
+    /* border : solid 1px #ccc; */
+    margin-top : 5% !important;
+    width : 90% !important;
+    height : 60% !important;
+    margin-left : 2.5% !important;
+    z-index : 1;
+    background : rgba(0,0,0,0.3) !important;
+    /* background : #fff; */
+  }
+  
+  .promo-da {
+    position : absolute;
+    right : 0;
+    margin-top : 1%;
+    margin-right : 40%;
+    width : 30%;
+  }
+  
+  .promo-da-responsive {
+    background :rgba(255,255,255,1) !important;
+  }
+  ul.dash-li > li , ul.obj-li > li {
+    display:  inline-block !important;
+  }
+  
+  ul.dash-li > li a , ul.obj-li > li a {
+    text-decoration : none !important;
+  }
+  
+  
+  /*  */
+  
+  .bonus-view{
+    top : 20% !important;
+    right : 0 !important;
+    transition : all .3s ease;
+  }
+  
+  .bonus-view:hover {
+    top : 19.5% !important;
+  }
+  
+  .bottom-content {
+    position : fixed;
+    bottom : 0;
+    width : 100% !important;
+    padding : 1% !important;
+    background : #eef !important;
+  }
+
+  .content-block {
+    margin-bottom : 15% !important;
+  }

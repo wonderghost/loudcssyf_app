@@ -147,7 +147,7 @@
                     </div>
                   </div>
                   <hr class="uk-divider-small">
-                  <button type="submit" class="uk-button uk-button-small uk-button-primary uk-box-shadow-small uk-border-rounded uk-box-shadow-small">valider<span uk-icon="icon:check;ratio:.8"></span></button>
+                  <button type="submit" class="uk-button uk-width-1-1@s uk-width-1-2@m uk-width-1-4@l uk-button-small uk-button-primary uk-box-shadow-small uk-border-rounded uk-box-shadow-small">valider<span uk-icon="icon:check;ratio:.8"></span></button>
                 </form>
               </div>
             </li>
@@ -186,7 +186,7 @@
                   <!-- <div class="uk-margin-small">
                     <input type="file"  @change="fileUpload">
                   </div> -->
-                <button type="submit" class="uk-button uk-button-small uk-border-rounded uk-button-primary">validez</button>
+                <button type="submit" class="uk-button uk-width-1-1@s uk-width-1-2@m uk-width-1-4@l uk-button-small uk-border-rounded uk-button-primary">validez</button>
               </div>
             </form>
             </li>
