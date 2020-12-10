@@ -47,6 +47,10 @@ use App\TransfertSerial;
 use App\DeficientMaterial;
 use App\Kits;
 use App\Articles;
+use App\Interval;
+use App\IntervalProduit;
+use App\FormuleInterval;
+
 use Illuminate\Support\Facades\DB;
 
 
@@ -68,7 +72,21 @@ class AdminController extends Controller
     // recuperation etat du depot Central
     public function getEtatDepotCentral(Request $request , Produits $p) {
       //
-      return response()->json($p->all());
+      $data = [];
+      foreach($p->all() as $key => $value) {
+        $data[$key] = [
+          'libelle' =>  $value->libelle,
+          'quantite_centrale' =>  $value->quantite_centrale,
+          'prix_initial'  =>  $value->prix_initial,
+          'prix_vente'  =>  $value->prix_vente,
+          'marge' =>  $value->marge,
+          'marge_pdc' => $value->marge_pdc,
+          'marge_pdraf' =>  $value->marge_pdraf,
+          'with_serial' =>  $value->with_serial,
+          'reference' =>  Crypt::encryptString($value->reference)
+        ];
+      }
+      return response()->json($data);
     }
     // VERIFIER SI LE NUMEROD N'EXISTE PAS EN DB
     public function isExistNumeroCga($numero) {
@@ -1312,6 +1330,48 @@ class AdminController extends Controller
 
       return response()
         ->json('done');
+    }
+    catch(AppException $e) {
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+
+  #  GET DATA EDIT MATERIEL
+
+  public function getDataEditMateriel($slug) {
+    try {
+      $produitData = Produits::find(Crypt::decryptString($slug));
+      $produitData->intervals = $produitData->intervals()->first() ? $produitData->intervals()->first()
+        ->intervalData()
+        ->first() : 
+        null;
+
+      return response()
+        ->json($produitData);
+    }
+    catch(AppException $e) {
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+
+  # INTERVAL & FORMULES
+
+  public function getIntervalInfos() {
+    try {
+      $intervals = Interval::all();
+      $data = [];
+      foreach($intervals as $key => $value) {
+        $data[$key] = [
+          'interval_first'  =>  $value->interval_serial_first,
+          'interval_last' =>  $value->interval_serial_last,
+          'formule' =>  $value->formule()->first() ? $value->formule()->get() : []
+        ];
+      }
+
+      return response()
+        ->json($data);
     }
     catch(AppException $e) {
       header("Erreur",true,422);

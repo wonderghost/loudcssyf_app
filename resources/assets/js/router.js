@@ -36,6 +36,8 @@ import afrocashOperationAdmin from './adminComponents/AfrocashCentral.vue'
 import transactionAfrocash from './userComponents/TransactionAfrocashComponent.vue'
 import recouvrement from './userComponents/RecouvrementComponent.vue'
 import entrepot from './adminComponents/EntrepotComponent.vue'
+import editProduit from './adminComponents/EditProduit.vue'
+
 import allMaterial from './userComponents/InventoryDepotComponent.vue'
 import inventaireReseaux from './userComponents/InventoryComponent.vue'
 import commande from './adminComponents/CommandComponent.vue'
@@ -224,7 +226,18 @@ const router = new VueRouter({
             component : entrepot,
             beforeEnter : (to,from,next) => {
                 if(store.state.typeUser != 'admin') {
-                    alert('action noo autorisee !')
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            }
+        },
+        {
+            path : '/material/edit/:id',
+            component : editProduit,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'admin') {
+                    alert('action non autorisee !')
                     next('/')
                 }
                 next()
@@ -343,11 +356,36 @@ const router = new VueRouter({
         },
         {
             path : '/retour-afrocash',
-            component : RetourAfrocash
+            component : RetourAfrocash,
+            beforeEach : (to,from,next) => {
+                if(store.state.typeUser != 'pdraf') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            }
         },
         {
             path : '/reabonnement-afrocash',
-            component : ReaboAfrocash
+            component : ReaboAfrocash,
+            beforeEach : (to,from,next) => {
+                if(store.state.typeUser != 'pdraf') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            }
+        },
+        {
+            path : '/recrutement-afrocash',
+            component : ReaboAfrocash,
+            beforeEach : (to,from,next) => {
+                if(store.state.typeUser != 'pdraf') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            }
         },
         {
             path : '/all-ventes-pdraf',

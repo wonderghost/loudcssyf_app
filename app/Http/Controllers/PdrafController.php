@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Exceptions\AppException;
-// use Illuminate\Support\Str;
+use Illuminate\Support\Str;
 
 use App\User;
 use App\Agence;
@@ -22,6 +22,7 @@ use App\PayCommission;
 use App\Credit;
 use App\ReactivationMateriel;
 use Carbon\Carbon;
+use App\RecrutementAfrocash;
 
 class PdrafController extends Controller
 {
@@ -423,6 +424,95 @@ class PdrafController extends Controller
             return response()
                 ->json('done');
         } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    ####################################### SEND RECRUTEMENT AFROCASH ##################################################
+
+    public function sendRecrutementAfrocash() {
+        try {
+            $validation = request()->validate([
+                'serial_number' =>  'required|exists:exemplaire,serial_number|string|max:14|min:14|regex : /(^([0-9]+)?$)/',
+                'formule'   =>  'required|string|exists:formule,nom',
+                'duree' =>  'required|numeric|max:24|min:1',
+                'telephone_client'  =>  'required|string|max:9|min:9',
+                'montant_ttc'   =>  'required|numeric',
+                'comission' =>  'required|numeric',
+                'password_confirmation' =>  'required|string'
+            ],[
+                'required'  =>  '`:attribute` requis !',
+            ]);
+
+             // VALIDATION DU MOT DE PASSE
+
+            if(!Hash::check(request()->password_confirmation,request()->user()->password)) {
+                throw new AppException("Mot de passe invalide !");
+            }
+
+            # VERIFIER LA DISPONIBILITE DE LA QUANTITE
+            $stockVendeur = request()->user()->stockVendeurs()
+                ->select('quantite')
+                ->groupBy('quantite')
+                ->first();
+
+            if($stockVendeur->quantite <= 0) {
+                throw new AppException("Quantite indisponible !");
+            }
+            // VERIFIER LA DISPONIBILITE DU MONTANT
+            $sender_account = request()->user()->afroCash()->first();
+            if(request()->montant_ttc > $sender_account->solde) {
+                throw new AppException("Montant indisponible!");
+            }
+
+            # VERIFIER SI LE NUMERO APPARTIEN AU PDRAF
+            $serial = request()->user()->exemplaireForPdraf()
+                ->where('serial_number',request()->serial_number)
+                ->whereNull('recrutement_afrocash_id')
+                ->first();
+
+            if(!$serial) {
+                throw new AppException("Materiel invalide !");
+            }
+
+            # VERIFIER LA CONFORMITE ENTRE LE NUMERO ET LA FORMULE A TRAVERS L'INTERVAL
+            $serialIntervalData = Str::substr(request()->serial_number,0,3);
+            $produit = $serial->produit(); 
+            $intervals = $produit->intervals()
+                ->first()
+                ->intervalData()           
+                ->first();
+            
+
+            
+            
+            return response()
+                ->json($serialIntervalData);            
+
+            $recrutement = new RecrutementAfrocash;
+            $recrutement->generateId();
+            $recrutement->formule_name = request()->formule;
+            $recrutement->duree = request()->duree;
+            $recrutement->telephone_client = request()->telephone_client;
+            $recrutement->montant_ttc = request()->montant_ttc;
+            $recrutement->comission = request()->comission;
+            $recrutement->pdraf_id = request()->user()->username;
+
+            $data_options = [];
+
+            foreach(request()->options as $key => $value) {
+                if($value && $value != "") {
+                    $data_options[$key] = new OptionReaboAfrocash;
+                    $data_options[$key]->id_reabo_afrocash = $reabo->id;
+                    $data_options[$key]->id_option = $value && $value != "" ? $value : null;
+                }
+            }
+
+            return response()
+                ->json($recrutement);
+        }
+        catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));
         }

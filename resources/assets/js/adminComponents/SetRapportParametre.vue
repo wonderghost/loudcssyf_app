@@ -16,6 +16,9 @@
                         <li>
                             <a href="#" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Reabo Afrocash</a>
                         </li>
+                        <li>
+                            <a href="#" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Interval & Formules</a>
+                        </li>
                     </ul>
 
                     <ul class="uk-switcher uk-margin">
@@ -62,6 +65,40 @@
                                 </form>
                             </div>
                         </li>
+                        <li>
+                            <!-- INTERVAL ET FORMULE -->
+                            <table class="uk-table uk-table-small uk-table-divier uk-table-striped uk-table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>interval first</th>
+                                        <th>interval last</th>
+                                        <th>Formules</th>
+                                        <th>-</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(inter,index) in intervalList" :key="index">
+                                        <td>{{ inter.interval_first }}</td>
+                                        <td>{{ inter.interval_last }}</td>
+                                        <td>
+                                            <span v-if="inter.formule">
+                                                <span v-for="(f,index) in inter.formule" :key="index">
+                                                    
+                                                </span>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <template>
+                                                <input type="text" class="uk-input uk-border-rounded uk-width-1-3@m">
+                                                <button class="uk-button-primary uk-border-rounded">ok</button>
+                                            </template>
+                                            <button uk-tooltip="Ajouter une formule" class="uk-button-primary uk-border-rounded uk-padding-remove"><i class="material-icons">note_add</i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <!-- // -->
+                        </li>
                     </ul>                    
                     
                 </div>
@@ -99,7 +136,8 @@ export default {
                 password_confirmation : ""
             },
             percentInfos : {},
-            userList : []
+            userList : [],
+            intervalList : []
         }
     },
     methods : {
@@ -141,6 +179,11 @@ export default {
                 response = await axios.get('/admin/all-vendeurs')
                 if(response && response.data) {
                     this.userList = response.data
+                }
+
+                response = await axios.get('/admin/get-interval-infos')
+                if(response) {
+                    this.intervalList = response.data
                 }
             } catch(error){
                 alert(error)

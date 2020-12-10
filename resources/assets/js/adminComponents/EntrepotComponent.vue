@@ -1,6 +1,6 @@
 <template>
     <div class="uk-container uk-container-large">
-         <loading :active.sync="isLoading"
+        <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
         loader="bars"
@@ -9,7 +9,7 @@
         background-color="#fff"></loading>
 
         <h3>Entrepot</h3>
-        <hr class="uk-divider-sma">
+        <hr class="uk-divider-small">
 
         <template v-if="typeUser == 'admin'">
             <!-- Erreor block -->
@@ -21,12 +21,49 @@
             </template>
             
             <ul class="uk-subnav uk-subnav-pill" uk-switcher>
-                <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Nouveau Material</a></li>
-                <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Nouvau Depot</a></li>
                 <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Inventaire</a></li>
+                <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Nouvau Depot</a></li>
+                <li><a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Nouveau Material</a></li>
             </ul>
             
             <ul class="uk-switcher">
+                <li>
+                    <!-- ENTREPOT -->
+                    <div class="uk-width-1-1@m">
+                        <table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover">
+                            <thead>
+                                <tr>
+                                    <th>designation</th>
+                                    <th>qte</th>
+                                    <th>prix initital</th>
+                                    <th>prix</th>
+                                    <th>marge</th>
+                                    <th>marge pdc</th>
+                                    <th>marge pdraf</th>
+                                    <th>S/N</th>
+                                    <td>-</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(m,index) in materials" :key="index">
+                                    <td>{{ m.libelle}}</td>
+                                    <td>{{ m.quantite_centrale}}</td>
+                                    <td>{{ m.prix_initial | numFormat}}</td>
+                                    <td>{{ m.prix_vente | numFormat}}</td>
+                                    <td>{{ m.marge | numFormat}}</td>
+                                    <td>{{ m.marge_pdc | numFormat}}</td>
+                                    <td>{{ m.marge_pdraf | numFormat}}</td>
+                                    <td v-if="m.with_serial"><i class="material-icons">check</i></td>
+                                    <td v-else><i class="material-icons">close</i></td>
+                                    <td>
+                                        <button @click="$router.push('/material/edit/'+m.reference)" class="uk-button-primary uk-border-rounded uk-padding-remove"><i class="material-icons">edit</i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </li>
+                <li></li>
                 <li>
                     <!-- NOUVEAU MATERIAL -->
                     <form @submit.prevent="addMaterial()" class="uk-grid-small uk-width-1-2@m" uk-grid>
@@ -62,13 +99,10 @@
                         </div>
                     </form>
                     <!-- // -->
-                </li>
-                <li></li>
-                <li>
-                    <!-- ENTREPOT -->
-                    <div class="uk-child-width-1-4@m uk-grid-small" uk-grid>
+                    
+                    <!-- <div class="uk-child-width-1-4@m uk-grid-small" uk-grid>
                         <template>
-                        <!-- INVENTAIRE DES MATERIELS -->
+                        
                             <div v-for="m in materials" :key="m.reference"  class="">
                                 <div class="uk-card uk-border-rounded uk-box-shadow-hover-small uk-background-muted uk-dark uk-card-body uk-padding-small">
                                     <h3 class="uk-card-title">{{m.libelle}}</h3>
@@ -84,14 +118,14 @@
                                                 <span class="">Marge : {{m.marge | numFormat}}</span>
                                             </li>
                                             <li>
-                                                <button @click="editMaterialFunction(m)" uk-toggle="target : #modal-edit-material" class="uk-button uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-hover-small">Editer <span uk-icon="icon : pencil"></span></button>
+                                                <router-link :to="'/material/edit/'+m.reference" class="uk-button uk-button-primary uk-border-rounded">Editer</router-link>
                                             </li>
                                         </ul>
                                     </p>
                                 </div>
                             </div>
                         </template>
-                    </div>
+                    </div> -->
                     <!-- // -->
                 </li>
             </ul>        

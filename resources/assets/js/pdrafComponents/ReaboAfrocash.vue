@@ -10,11 +10,12 @@
 
         <ul class="uk-breadcrumb">
             <li><router-link uk-tooltip="Tableau de bord" to="/dashboard"><span uk-icon="home"></span></router-link></li>
-            <li><span>Reabonnement Afrocash</span></li>
+            <li v-if="$route.path == '/reabonnement-afrocash'"><span>Reabonnement Afrocash</span></li>
+            <li v-else><span>Recrutement Afrocash</span></li>
         </ul>
 
-        
-        <h3 class="uk-margin-top">Reabonnement Afrocash</h3>
+        <h3 v-if="$route.path == '/reabonnement-afrocash'" class="uk-margin-top">Reabonnement Afrocash</h3>
+        <h3 v-else class="uk-margin-top">Recrutement Afrocash</h3>
         <hr class="uk-divider-small">
 
         <nav class="" uk-navbar>
@@ -22,6 +23,8 @@
                 <ul class="uk-navbar-nav">
                     <li class=""><router-link to="/upgrade-afrocash">Upgrade Afrocash</router-link></li>
                     <li><router-link to="/reactivation-materiel">Reactivation Materiel</router-link></li>
+                    <li v-if="$route.path == '/recrutement-afrocash'"><router-link to="/reabonnement-afrocash">Reabonnement Afrocash</router-link></li>
+                    <li v-else><router-link to="/recrutement-afrocash">Recrutement Afrocash</router-link></li>
                 </ul>
 
             </div>
@@ -103,136 +106,153 @@
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
 
-    export default {
-        components : {
-            Loading
-        },
-        mounted() {
-            UIkit.offcanvas($("#side-nav")).hide();
-            this.getInfos()
-        },
-        data() {
-            return {
-                isLoading : false,
-                fullPage : true,
-                dataForm : {
-                    _token : "",
-                    serial_number : "",
-                    formule : "",
-                    duree : 1,
-                    options : [],
-                    telephone_client : "",
-                    montant_ttc : 0,
-                    comission : 0,
-                    password_confirmation : ""
-                },
-                duree : [1,2,3,6,9,12,24],
-                formuleList : [],
-                optionsList : [],
-                actifOption : "",
-                errors : [],
-                userAccount : {}
+export default {
+    components : {
+        Loading
+    },
+    mounted() {
+        UIkit.offcanvas($("#side-nav")).hide();
+        this.getInfos()
+    },
+    data() {
+        return {
+            requestUrl : "",
+            pourcentComission : 0,
+            isLoading : false,
+            fullPage : true,
+            dataForm : {
+                _token : "",
+                serial_number : "",
+                formule : "",
+                duree : 1,
+                options : [],
+                telephone_client : "",
+                montant_ttc : 0,
+                comission : 0,
+                password_confirmation : ""
+            },
+            duree : [1,2,3,6,9,12,24],
+            formuleList : [],
+            optionsList : [],
+            actifOption : "",
+            errors : [],
+            userAccount : {}
+        }
+    },
+    watch : {
+        '$route' : 'getInfos'
+    },
+    methods : {
+        sendReaboAfrocash : async function () {
+            try {
+                // this.isLoading = true
+                this.dataForm._token = this.myToken
+                let response = await axios.post(this.requestUrl,this.dataForm)
+                if(response) {
+                    console.log(response.data)
+                    // this.isLoading = false
+                    // alert("Success !")
+                    // Object.assign(this.$data,this.$options.data())
+                    // this.getInfos()
+                }
+            } catch(error) {
+                this.isLoading = false
+                if(error.response.data.errors) {
+                    let errorTab = error.response.data.errors
+                    for (var prop in errorTab) {
+                        this.errors.push(errorTab[prop][0])
+                    }
+                } else {
+                    this.errors.push(error.response.data)
+                }
             }
         },
-        methods : {
-            sendReaboAfrocash : async function () {
-                try {
-                    this.isLoading = true
-                    this.dataForm._token = this.myToken
-                    let response = await axios.post('/user/pdraf/send-reabo-afrocash',this.dataForm)
-                    if(response && response.data == 'done') {
-                        this.isLoading = false
-                        alert("Success !")
-                        Object.assign(this.$data,this.$options.data())
-                        this.getInfos()
-                    }
-                } catch(error) {
-                    this.isLoading = false
-                    if(error.response.data.errors) {
-                        let errorTab = error.response.data.errors
-                        for (var prop in errorTab) {
-                            this.errors.push(errorTab[prop][0])
+        calculMontantTtc : function () {
+            try {
+                var ttc = 0
+                var comission = 0
+                if(this.actifFormuleInfo[0]) {
+                    ttc = (this.actifFormuleInfo[0].prix + this.totalOption()) * this.dataForm.duree
+                    comission = Math.round((ttc/1.18) * (this.pourcentComission/100))
+                }
+                
+                this.dataForm.montant_ttc = ttc
+                this.dataForm.comission = comission
+                
+
+            } catch(error) {
+                alert(error)
+            }
+        },
+        totalOption : function () {
+            try {
+                var total = 0
+
+                if(this.dataForm.options.length > 0) {
+
+                    this.dataForm.options.forEach((o) => {
+                        if(o != "") {
+
+                            this.actifOption = o
+                            total += this.actifOptionInfos[0].prix
                         }
-                    } else {
-                        this.errors.push(error.response.data)
-                    }
-                }
-            },
-            calculMontantTtc : function () {
-                try {
-                    var ttc = 0
-                    var comission = 0
-                    if(this.actifFormuleInfo[0]) {
-                        ttc = (this.actifFormuleInfo[0].prix + this.totalOption()) * this.dataForm.duree
-                        comission = Math.round((ttc/1.18) * (5.5/100))
-                    }
+                    })
                     
-                    this.dataForm.montant_ttc = ttc
-                    this.dataForm.comission = comission
-                    
-
-                } catch(error) {
-                    alert(error)
+                    return total
                 }
-            },
-            totalOption : function () {
-                try {
-                    var total = 0
 
-                    if(this.dataForm.options.length > 0) {
-
-                        this.dataForm.options.forEach((o) => {
-                            if(o != "") {
-
-                                this.actifOption = o
-                                total += this.actifOptionInfos[0].prix
-                            }
-                        })
-                        
-                        return total
-                    }
-
-                    return 0
+                return 0
 
 
-                } catch(error) {
-                    alert(error)
-                }
-            },         
-            getInfos : async function () {
-                try {
-                    this.isLoading = true
-                    var response = await axios.get('/user/formule/list')
-                    
-                    if(response) {
-                        this.formuleList = response.data.formules
-                        this.optionsList = response.data.options
-                    }
-
-                    response = await axios.get('/user/pdraf/get-solde')
-                    if(response) {
-                        this.userAccount = response.data
-                        this.isLoading = false
-                    }
-                } catch(error) {
-                    alert(error)
-                }
-            }  
-        },
-        computed : {
-            actifOptionInfos () {
-                return this.optionsList.filter((o) => {
-                    return o.nom == this.actifOption
-                })
-            },
-            actifFormuleInfo() {
-                return this.formuleList.filter((f) => {
-                    return f.nom == this.dataForm.formule
-                })
-            },
-            myToken() {
-                return this.$store.state.myToken
+            } catch(error) {
+                alert(error)
             }
+        },         
+        getInfos : async function () {
+            try {
+                Object.assign(this.$data,this.$options.data())
+                this.isLoading = true
+                var response = await axios.get('/user/formule/list')
+                
+                if(response) {
+                    this.formuleList = response.data.formules
+                    this.optionsList = response.data.options
+                }
+
+                response = await axios.get('/user/pdraf/get-solde')
+                if(response) {
+                    this.userAccount = response.data
+                    this.isLoading = false
+                }
+
+                if(this.$route.path == '/reabonnement-afrocash') {
+                    this.requestUrl = "/user/pdraf/send-reabo-afrocash"
+                    this.pourcentComission = 5.5
+                }
+                else if(this.$route.path == '/recrutement-afrocash') {
+                    this.requestUrl = "/user/pdraf/send-recrutement-afrocash"
+                    this.pourcentComission = 3
+                }
+
+            } catch(error) {
+                alert(error)
+            }
+        }  
+    },
+    computed : {
+        actifOptionInfos () {
+            return this.optionsList.filter((o) => {
+                return o.nom == this.actifOption
+            })
+        },
+        actifFormuleInfo() {
+            return this.formuleList.filter((f) => {
+                return f.nom == this.dataForm.formule
+            })
+        },
+        myToken() {
+            return this.$store.state.myToken
         }
     }
+}
 </script>

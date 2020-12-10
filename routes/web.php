@@ -12,6 +12,10 @@
 */
 
 Route::middleware(['auth','admin'])->group(function () {
+	// INTERVAL & FORMULES
+	Route::get('/admin/get-interval-infos','AdminController@getIntervalInfos');
+
+	// 
 	Route::post('/admin/serial-number/actived','LogistiqueController@makeActivedSerial');
 	// RESEAUX DES PDC ET PDRAF
 	Route::get('/admin/pdc/list','PdcController@getList');
@@ -109,6 +113,9 @@ Route::middleware(['auth','admin'])->group(function () {
 	// etat depot Central
 	Route::get('/admin/depot-central','AdminController@etatDepotCentral');
 	Route::get('/admin/entrepot/all','AdminController@getEtatDepotCentral');
+
+	Route::get('/admin/material/edit/{slug}','AdminController@getDataEditMateriel');
+
 	// PARAMETRES
 	Route::get('/admin/settings','Settings@index');
 	Route::post('/admin/change-password','Settings@changePassword');
@@ -248,7 +255,10 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/pdraf/retour-afrocash-infos','PdrafController@infosRetourAfrocash')->middleware('pdraf');
 	Route::post('/user/pdraf/send-retour-afrocash','PdrafController@sendRetourAfrocash')->middleware('pdraf');
 	Route::get('/user/pdraf/get-solde','PdrafController@getSolde')->middleware('pdraf');
+
 	Route::post('/user/pdraf/send-reabo-afrocash','PdrafController@sendReaboAfrocash')->middleware('pdraf');
+	Route::post('/user/pdraf/send-recrutement-afrocash','PdrafController@sendRecrutementAfrocash')->middleware('pdraf');
+
 	Route::post('/user/pdraf/send-upgrade-afrocash','PdrafController@sendUpgradeAfrocash')->middleware('pdraf');
 	Route::get('/user/pdraf/get-reabo-afrocash','PdrafController@getAllReaboAfrocash');
 	Route::post('/user/pdraf/pay-comission-request','PdrafController@sendPayComissionRequest')->middleware('pdraf');

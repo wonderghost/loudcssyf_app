@@ -37,6 +37,8 @@ use App\Livraison;
 use App\Afrocash;
 use App\CompenseMaterial;
 use App\DeficientMaterial;
+use App\Interval;
+use App\IntervalProduit;
 
 //
 use App\Traits\Similarity;
@@ -44,6 +46,8 @@ use App\Traits\Livraisons;
 //
 use App\Exceptions\CommandStatus;
 use App\Exceptions\AppException;
+
+
 
 
 class LogistiqueController extends Controller
@@ -645,9 +649,9 @@ class LogistiqueController extends Controller
 
 
     //
-    public function makeEditMaterial(Request $request , Produits $p) {
+    public function makeEditMaterial(Produits $p) {
       try {
-          $validation = $request->validate([
+          $validation = request()->validate([
             'reference' =>  'required|string|exists:produits,reference',
             'libelle' =>  'required|string|',
             'prix_initial'  =>  'required',
@@ -662,25 +666,51 @@ class LogistiqueController extends Controller
             'exists'  =>  '`:attribute` n\'existe pas dans le systeme!'
           ]);
 
-          if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
+          if(!Hash::check(request()->password_confirmation,request()->user()->password)) {
             throw new AppException("Mot de passe invalide !");
           }
-          
-          $produit = $p->find($request->input('reference'));
-          $produit->libelle = $request->input('libelle');
-          $produit->marge = $request->input('marge');
-          // $produit->prix_achat = $r
-          $produit->prix_initial = $request->input('prix_initial');
-          $produit->prix_vente = $request->input('prix_unitaire');
-          $produit->marge_pdc = $request->input('marge_pdc');
-          $produit->marge_pdraf = $request->input('marge_pdraf');
-          $produit->interval_serial_first = $request->input('interval_serial_first');
-          $produit->interval_serial_last = $request->input('interval_serial_last');          
 
-          $produit->save();
+          $produit = $p->find(request()->reference);
+          $produit->libelle = request()->libelle;
+          $produit->marge = request()->marge;
+          $produit->prix_initial = request()->prix_initial;
+          $produit->prix_vente = request()->prix_unitaire;
+          $produit->marge_pdc = request()->marge_pdc;
+          $produit->marge_pdraf = request()->marge_pdraf;
+
+          if(request()->interval_serial_first && request()->interval_serial_last) {
+
+            $interval = $produit->intervals()->first();
+  
+            if($interval) {
+  
+              $interval_data = $interval->intervalData()->first();
+              $interval_data->interval_serial_first = request()->interval_serial_first;
+              $interval_data->interval_serial_last = request()->interval_serial_last;
+  
+              $interval_data->update();
+            }
+            else {
+              $new_interval = new Interval;
+              $new_interval->generateId();
+              $new_interval->interval_serial_first = request()->interval_serial_first;
+              $new_interval->interval_serial_last = request()->interval_serial_last;
+  
+              $newIntervalProduit = new IntervalProduit;
+              $newIntervalProduit->produit_id = $produit->reference;
+              $newIntervalProduit->interval_id = $new_interval->id;
+  
+  
+              $new_interval->save();
+              $newIntervalProduit->save();
+            }
+          }
+
+          $produit->update();
           
           return response()
             ->json('done');
+
       } catch(AppException $e) {
           header("Erreur",true,422);
           die(json_encode($e->getMessage()));

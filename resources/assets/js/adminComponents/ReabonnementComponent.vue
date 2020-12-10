@@ -139,266 +139,266 @@
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
 
-    export default {
-        components : {
-            Loading
-        },
-        props : {
-            rappDate : String,
-            rappVendeur : String,
-            promoId : String
-        },
-        mounted() {
-            
-        },
-        data() {
-            return {
-                isLoading : false,
-                fullPage : true,
-                formData : {
-                  _token : "",
-                  quantite_materiel : 1,
-                  vendeurs : "",
-                  date : "",
-                  montant_ttc : 0,
-                  promo_id : "",
-                  serial_number : [""],
-                  formule : [""],
-                  debut : [""],
-                  duree : [""],
-                  options : [""],
-                  type_credit : "cga",
-                  upgrade : [false],
-                  upgradeData : [""],
-                  old_formule : [""],
-                  old_duree : [""],
-                  old_debut : [""]
-              },
-              duree : [1,2,3,6,9,12,24],
-              amount_ttc : [],
-              currentF : "",
-              currentO : "",
-              currentOldFormule : "",
-              errors : [],
-              // 
-              debutSuggest : [""],
-
-              prix_formule : 0,
-              duree_formule : 0
-            }
-        },
-        methods : {
-          upgradeStateActive : async function (index) {
-            try {
-              
-              if(!this.formData.upgrade[index]) {
-                
-                Vue.set(this.formData.upgradeData,index,undefined)
-                this.calculMontantTtc()
-                return 0
-              }
-
-              axios.post('/user/rapport/check-upgrade',{
-                _token : this.myToken,
-                serial_number : this.formData.serial_number[index]
-              })
-              .then((response) => {
-                  if(response.data != 'fail') {
-                    Vue.set(this.formData.upgradeData,index,response.data)
-                  }
-                  else {
-                    Vue.set(this.formData.upgradeData,index,undefined)
-                  }
-
-                  this.calculMontantTtc()
-                  
-              }, (error) => {
-                  if(error.response.data.errors) {
-                    let errorTab = error.response.data.errors
-                    for (var prop in errorTab) {
-                      this.errors.push(errorTab[prop][0])
-                    }
-                  } else {
-                      this.errors.push(error.response.data)
-                  }
-              })
-              
-
-            } catch(error) {
-                if(error.response.data.errors) {
-                  let errorTab = error.response.data.errors
-                  for (var prop in errorTab) {
-                    this.errors.push(errorTab[prop][0])
-                  }
-                } else {
-                    this.errors.push(error.response.data)
-                }
-            }
+export default {
+    components : {
+        Loading
+    },
+    props : {
+        rappDate : String,
+        rappVendeur : String,
+        promoId : String
+    },
+    mounted() {
+        
+    },
+    data() {
+        return {
+            isLoading : false,
+            fullPage : true,
+            formData : {
+              _token : "",
+              quantite_materiel : 1,
+              vendeurs : "",
+              date : "",
+              montant_ttc : 0,
+              promo_id : "",
+              serial_number : [""],
+              formule : [""],
+              debut : [""],
+              duree : [""],
+              options : [""],
+              type_credit : "cga",
+              upgrade : [false],
+              upgradeData : [""],
+              old_formule : [""],
+              old_duree : [""],
+              old_debut : [""]
           },
+          duree : [1,2,3,6,9,12,24],
+          amount_ttc : [],
+          currentF : "",
+          currentO : "",
+          currentOldFormule : "",
+          errors : [],
+          // 
+          debutSuggest : [""],
 
-          ajusteQuantiteInput : function () {
-            try {
-                var diff = this.formData.quantite_materiel - this.formData.formule.length
-                var loop = diff * (-1)
-
-                var diffSerial = this.formData.quantite_materiel - this.formData.serial_number.length
-                var serialLoop = diffSerial * (-1)
-
-                
-                if(diff < 0) {
-                  for(var i = 0; i < loop ; i++) {
-                    this.formData.formule.pop()
-
-                  }
-                }
-
-                if(diffSerial < 0) {
-                  for(var k = 0 ; k < serialLoop ; k++) {
-                    this.formData.serial_number.pop()
-                  }
-                }
-                this.calculMontantTtc()
-            } catch(error) {
-                alert(error)
-            }
-          },
-          calculMontantTtc : function () {
-            try {
-              
-              var ttc_montant = 0
-              var i = 0 
-              this.formData.formule.forEach((f) => {
-              this.currentF = f
-
-              if(this.formData.upgrade[i]) {
-
-                // ABONNEMENT AVEC UPGRADE
-                
-
-                if(this.upgradeDatas[i]) {
-                  //  les donnees existent dans le systeme
-                   this.prix_formule = this.upgradeDatas[i].formule_prix
-                   this.duree_formule = this.upgradeDatas[i].mois_restant
-                   
-                } 
-                else if(this.formData.old_formule[i]) {
-                  //  les donnees n'existent pas dans le systeme
-                  this.currentOldFormule = this.formData.old_formule[i]
-                  this.prix_formule = this.currentOldFormulePrix[0].prix
-                  this.duree_formule = this.formData.old_duree[i]
-
-                  // Vue.set(this.formData.duree[i],i,this.formData.old_duree[i])
-                  // Vue.set(this.formData.debut[i],i,this.formData.old_debut[i])
-
-                }
-
-                if(this.formData.options[i]) {
-                  this.currentO = this.formData.options[i]
-                  var tmp  = (parseFloat(this.currentFormule[0].prix) - parseFloat(this.prix_formule) + parseFloat(this.currentOption[0].prix)) * parseInt(this.duree_formule)
-                } else {
-                    if(this.formData.formule[i]) {
-                      var tmp = (parseFloat(this.currentFormule[0].prix) - parseFloat(this.prix_formule)) * parseInt(this.duree_formule)
-                    } else {
-                      //  throw "Veuillez choisir une Formule et une duree!"
-                    }
-                }
-
-              } 
-              else {
-
-                  // JUSTE UN SIMPLE ABONNEMENT
-
-                if(this.formData.options[i]) {
-                  this.currentO = this.formData.options[i]
-                  var tmp  = (parseFloat(this.currentFormule[0].prix) + parseFloat(this.currentOption[0].prix)) * parseInt(this.formData.duree[i])
-                } else {
-                    if(this.formData.formule[i] && this.formData.duree[i]) {
-                      var tmp = parseFloat(this.currentFormule[0].prix) * parseInt(this.formData.duree[i])
-                    } else {
-                      //  throw "Veuillez choisir une Formule et une duree!"
-                    }
-                }
-              }
-              
-                if(tmp < 0) {
-                  this.formData.formule.pop()
-                  throw "Veuillez choisir une formule superieure a l'ancienne"
-                }
-
-                ttc_montant += tmp
-                
-                i++
-
-              })
-
-              this.formData.montant_ttc = ttc_montant
-            } catch(error) {
-                alert(error)
-            }
-          },
-          sendReabonnementRapport : async function () {
-            try {
-              this.isLoading = true
-              this.formData._token = this.myToken
-              this.formData.promo_id = this.promoId
-              this.formData.vendeurs = this.rappVendeur
-              this.formData.date = this.rappDate
-
-              if(this.typeUser === 'admin') {
-                  var response = await axios.post('/admin/send-rapport/reabonnement',this.formData)
-              } else {
-                  var response = await axios.post('/user/send-rapport/reabonnement',this.formData)
-              }
-
-              if(response.data == 'done') {
-                  Object.assign(this.$data,this.$options.data())
-                  this.isLoading = false
-                  alert("Success !")
-                }
-            } catch(error) {
-                this.isLoading = false
-                if(error.response.data.errors) {
-                  let errorTab = error.response.data.errors
-                  for (var prop in errorTab) {
-                    this.errors.push(errorTab[prop][0])
-                  }
-                } else {
-                    this.errors.push(error.response.data)
-                }
-            }
-          }
-        },
-        computed : {
-          upgradeDatas() {
-            return this.formData.upgradeData
-          },
-          currentOldFormulePrix() {
-            return this.formules.filter((f) => {
-              return f.nom === this.currentOldFormule
-            })
-          },
-          currentOption() {
-            return this.options.filter((o) => {
-              return o.nom === this.currentO
-            })
-          },
-          currentFormule() {
-            return this.formules.filter((f) => {
-              return f.nom === this.currentF
-            })
-          },
-          myToken() {
-              return this.$store.state.myToken
-          },
-          typeUser() {
-              return this.$store.state.typeUser
-          },
-          formules() {
-              return this.$store.state.formulesList
-          },
-          options() {
-              return this.$store.state.optionsList
-          }
+          prix_formule : 0,
+          duree_formule : 0
         }
+    },
+    methods : {
+      upgradeStateActive : async function (index) {
+        try {
+          
+          if(!this.formData.upgrade[index]) {
+            
+            Vue.set(this.formData.upgradeData,index,undefined)
+            this.calculMontantTtc()
+            return 0
+          }
+
+          axios.post('/user/rapport/check-upgrade',{
+            _token : this.myToken,
+            serial_number : this.formData.serial_number[index]
+          })
+          .then((response) => {
+              if(response.data != 'fail') {
+                Vue.set(this.formData.upgradeData,index,response.data)
+              }
+              else {
+                Vue.set(this.formData.upgradeData,index,undefined)
+              }
+
+              this.calculMontantTtc()
+              
+          }, (error) => {
+              if(error.response.data.errors) {
+                let errorTab = error.response.data.errors
+                for (var prop in errorTab) {
+                  this.errors.push(errorTab[prop][0])
+                }
+              } else {
+                  this.errors.push(error.response.data)
+              }
+          })
+          
+
+        } catch(error) {
+            if(error.response.data.errors) {
+              let errorTab = error.response.data.errors
+              for (var prop in errorTab) {
+                this.errors.push(errorTab[prop][0])
+              }
+            } else {
+                this.errors.push(error.response.data)
+            }
+        }
+      },
+
+      ajusteQuantiteInput : function () {
+        try {
+            var diff = this.formData.quantite_materiel - this.formData.formule.length
+            var loop = diff * (-1)
+
+            var diffSerial = this.formData.quantite_materiel - this.formData.serial_number.length
+            var serialLoop = diffSerial * (-1)
+
+            
+            if(diff < 0) {
+              for(var i = 0; i < loop ; i++) {
+                this.formData.formule.pop()
+
+              }
+            }
+
+            if(diffSerial < 0) {
+              for(var k = 0 ; k < serialLoop ; k++) {
+                this.formData.serial_number.pop()
+              }
+            }
+            this.calculMontantTtc()
+        } catch(error) {
+            alert(error)
+        }
+      },
+      calculMontantTtc : function () {
+        try {
+          
+          var ttc_montant = 0
+          var i = 0 
+          this.formData.formule.forEach((f) => {
+          this.currentF = f
+
+          if(this.formData.upgrade[i]) {
+
+            // ABONNEMENT AVEC UPGRADE
+            
+
+            if(this.upgradeDatas[i]) {
+              //  les donnees existent dans le systeme
+                this.prix_formule = this.upgradeDatas[i].formule_prix
+                this.duree_formule = this.upgradeDatas[i].mois_restant
+                
+            } 
+            else if(this.formData.old_formule[i]) {
+              //  les donnees n'existent pas dans le systeme
+              this.currentOldFormule = this.formData.old_formule[i]
+              this.prix_formule = this.currentOldFormulePrix[0].prix
+              this.duree_formule = this.formData.old_duree[i]
+
+              // Vue.set(this.formData.duree[i],i,this.formData.old_duree[i])
+              // Vue.set(this.formData.debut[i],i,this.formData.old_debut[i])
+
+            }
+
+            if(this.formData.options[i]) {
+              this.currentO = this.formData.options[i]
+              var tmp  = (parseFloat(this.currentFormule[0].prix) - parseFloat(this.prix_formule) + parseFloat(this.currentOption[0].prix)) * parseInt(this.duree_formule)
+            } else {
+                if(this.formData.formule[i]) {
+                  var tmp = (parseFloat(this.currentFormule[0].prix) - parseFloat(this.prix_formule)) * parseInt(this.duree_formule)
+                } else {
+                  //  throw "Veuillez choisir une Formule et une duree!"
+                }
+            }
+
+          } 
+          else {
+
+              // JUSTE UN SIMPLE ABONNEMENT
+
+            if(this.formData.options[i]) {
+              this.currentO = this.formData.options[i]
+              var tmp  = (parseFloat(this.currentFormule[0].prix) + parseFloat(this.currentOption[0].prix)) * parseInt(this.formData.duree[i])
+            } else {
+                if(this.formData.formule[i] && this.formData.duree[i]) {
+                  var tmp = parseFloat(this.currentFormule[0].prix) * parseInt(this.formData.duree[i])
+                } else {
+                  //  throw "Veuillez choisir une Formule et une duree!"
+                }
+            }
+          }
+          
+            if(tmp < 0) {
+              this.formData.formule.pop()
+              throw "Veuillez choisir une formule superieure a l'ancienne"
+            }
+
+            ttc_montant += tmp
+            
+            i++
+
+          })
+
+          this.formData.montant_ttc = ttc_montant
+        } catch(error) {
+            alert(error)
+        }
+      },
+      sendReabonnementRapport : async function () {
+        try {
+          this.isLoading = true
+          this.formData._token = this.myToken
+          this.formData.promo_id = this.promoId
+          this.formData.vendeurs = this.rappVendeur
+          this.formData.date = this.rappDate
+
+          if(this.typeUser === 'admin') {
+              var response = await axios.post('/admin/send-rapport/reabonnement',this.formData)
+          } else {
+              var response = await axios.post('/user/send-rapport/reabonnement',this.formData)
+          }
+
+          if(response.data == 'done') {
+              Object.assign(this.$data,this.$options.data())
+              this.isLoading = false
+              alert("Success !")
+            }
+        } catch(error) {
+            this.isLoading = false
+            if(error.response.data.errors) {
+              let errorTab = error.response.data.errors
+              for (var prop in errorTab) {
+                this.errors.push(errorTab[prop][0])
+              }
+            } else {
+                this.errors.push(error.response.data)
+            }
+        }
+      }
+    },
+    computed : {
+      upgradeDatas() {
+        return this.formData.upgradeData
+      },
+      currentOldFormulePrix() {
+        return this.formules.filter((f) => {
+          return f.nom === this.currentOldFormule
+        })
+      },
+      currentOption() {
+        return this.options.filter((o) => {
+          return o.nom === this.currentO
+        })
+      },
+      currentFormule() {
+        return this.formules.filter((f) => {
+          return f.nom === this.currentF
+        })
+      },
+      myToken() {
+          return this.$store.state.myToken
+      },
+      typeUser() {
+          return this.$store.state.typeUser
+      },
+      formules() {
+          return this.$store.state.formulesList
+      },
+      options() {
+          return this.$store.state.optionsList
+      }
     }
+}
 </script>

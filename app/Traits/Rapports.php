@@ -1416,7 +1416,7 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 
 					foreach($user_stock as $value) {
 						$value->quantite += $rapport->quantite;
-						// $value->update();
+						$value->update();
 					}
 						##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 					// renvoi des numeros de series a l'etat inactif
@@ -1424,7 +1424,7 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 					foreach($serialNumbers as $serial) {
 						$serial->rapports = NULL;
 						$serial->status = 'inactif';
-						// $serial->save();
+						$serial->save();
 					}
 
 					// suppression des abonnements actifs
@@ -1436,10 +1436,10 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 
 						if($options) {
 							foreach($options as $_value) {
-								// $_value->delete();
+								$_value->delete();
 							}	
 						}
-						// $value->delete();
+						$value->delete();
 					}
 
 					# ANNULATION DE LA TRANSACTION 

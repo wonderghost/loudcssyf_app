@@ -499,8 +499,11 @@
             <li class="uk-parent">
               <a href="#"><span uk-icon="cart"></span> Ventes</a>
               <ul class="uk-nav-sub">
+                <li>
+                  <router-link to="/recrutement-afrocash"><span uk-icon="icon : link"></span> Recrutement</router-link>
+                </li>
                 <li class="">
-                    <router-link to="/reabonnement-afrocash"><span uk-icon="icon : link"></span> Reabonnement</router-link>
+                  <router-link to="/reabonnement-afrocash"><span uk-icon="icon : link"></span> Reabonnement</router-link>
                 </li>
                 <li>
                     <router-link to="/all-ventes-pdraf"><span uk-icon="icon : link"></span> Toutes les ventes</router-link>

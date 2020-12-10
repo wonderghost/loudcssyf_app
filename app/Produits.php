@@ -19,5 +19,9 @@ class Produits extends Model
   public function articles() {
     return $this->hasMany('App\Articles','produit','reference');
   }
+
+  public function intervals() {
+    return $this->hasMany('App\IntervalProduit','produit_id','reference');
+  }
     
 }
