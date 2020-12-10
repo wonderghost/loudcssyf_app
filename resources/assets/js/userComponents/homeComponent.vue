@@ -376,7 +376,6 @@
                   <li>
                     <router-link to="/command/list"><span uk-icon="link"></span> Toutes les Commandes</router-link>
                   </li>
-                    <!-- <li><a href="/user/commandes"><span uk-icon="icon:thumbnails"></span> Toutes les Commandes</a></li> -->
                 </ul>
             </li>
           </template>

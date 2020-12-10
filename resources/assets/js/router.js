@@ -38,6 +38,8 @@ import recouvrement from './userComponents/RecouvrementComponent.vue'
 import entrepot from './adminComponents/EntrepotComponent.vue'
 import editProduit from './adminComponents/EditProduit.vue'
 
+import setRapportParametre from './adminComponents/SetRapportParametre.vue'
+
 import allMaterial from './userComponents/InventoryDepotComponent.vue'
 import inventaireReseaux from './userComponents/InventoryComponent.vue'
 import commande from './adminComponents/CommandComponent.vue'
@@ -79,6 +81,7 @@ import store from './store.js'
 // import { some } from 'lodash'
 
 import alertAbonnement from './userComponents/AlertComponent.vue'
+import { mapActions } from 'vuex'
 
 Vue.use(VueRouter);
 
@@ -147,6 +150,17 @@ const router = new VueRouter({
                     next('/')
                 }
 
+                next()
+            }
+        },
+        {
+            path : '/',
+            component : setRapportParametre,
+            beforeEnter : (to,from,next) => {
+                if(store.state.type != 'admin') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
                 next()
             }
         },

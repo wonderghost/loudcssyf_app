@@ -145,15 +145,15 @@ export default {
     methods : {
         sendReaboAfrocash : async function () {
             try {
-                // this.isLoading = true
+                this.isLoading = true
                 this.dataForm._token = this.myToken
                 let response = await axios.post(this.requestUrl,this.dataForm)
                 if(response) {
                     console.log(response.data)
-                    // this.isLoading = false
-                    // alert("Success !")
-                    // Object.assign(this.$data,this.$options.data())
-                    // this.getInfos()
+                    this.isLoading = false
+                    alert("Success !")
+                    Object.assign(this.$data,this.$options.data())
+                    this.getInfos()
                 }
             } catch(error) {
                 this.isLoading = false

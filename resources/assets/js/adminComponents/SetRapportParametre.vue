@@ -88,10 +88,6 @@
                                             </span>
                                         </td>
                                         <td>
-                                            <template>
-                                                <input type="text" class="uk-input uk-border-rounded uk-width-1-3@m">
-                                                <button class="uk-button-primary uk-border-rounded">ok</button>
-                                            </template>
                                             <button uk-tooltip="Ajouter une formule" class="uk-button-primary uk-border-rounded uk-padding-remove"><i class="material-icons">note_add</i></button>
                                         </td>
                                     </tr>
