@@ -154,10 +154,10 @@ const router = new VueRouter({
             }
         },
         {
-            path : '/',
+            path : '/set-rapport-parametre',
             component : setRapportParametre,
             beforeEnter : (to,from,next) => {
-                if(store.state.type != 'admin') {
+                if(store.state.typeUser != 'admin') {
                     alert('action non autorisee !')
                     next('/')
                 }

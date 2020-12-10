@@ -1,108 +1,120 @@
 <template>
-    <div>
+    <div class="uk-container uk-container-large">
         <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
-        loader="dots"></loading>
+        loader="bars"
+        :opacity="1"
+        color="#1e87f0"
+        background-color="#fff"></loading>
 
-        <div id="rapport-setting-modal" class="uk-modal-container" uk-modal="esc-close : false ; bg-close : false">
-            <div class="uk-modal-dialog">
-                <div class="uk-modal-header">
-                    <h3 class="">Reglage Rapport de vente</h3>
+        <ul class="uk-breadcrumb">
+            <li><router-link uk-tooltip="Tableau de bord" to="/dashboard"><span uk-icon="home"></span></router-link></li>
+            <li><span>Parametre</span></li>
+            <li><span>Reglage Rapport de Vente</span></li>
+        </ul>
+
+        <h3>Reglage Rapport de Vente</h3>
+        <hr class="uk-divider-small">
+
+        <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
+            <li><a class="uk-button uk-button-small uk-button-primary uk-border-rounded" href="#">Commission</a></li>
+            <li>
+                <a href="#" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Reabo Afrocash</a>
+            </li>
+            <li>
+                <a href="#" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Interval & Formules</a>
+            </li>
+        </ul>
+
+        <ul class="uk-switcher uk-margin">
+            <li>
+                <!-- paramtre pourcentage des comissions -->
+                <div class="uk-grid-small" uk-grid>
+                    <form @submit.prevent="sendParameters()" class="uk-width-1-2@m">
+                        <div class="uk-width-1-2@m">
+                            <label for="">Pourcentage en Recrutement</label>
+                            <input v-model="dataForm.pourcent_recrut" type="text" class="uk-input uk-border-rounded" placeholder="Pourcentage Recrutement (ex : 5.5)">
+                        </div>
+                        <div class="uk-width-1-2@m">
+                            <label for="">Pourcentage en Reabonnement</label>
+                            <input v-model="dataForm.pourcent_reabo" type="text" class="uk-input uk-border-rounded" placeholder="Pourcentage Reabonnement (ex : 5.5)">
+                        </div>
+                        <div class="uk-width-1-2@m" >
+                            <label for="">Confirmez le mot de passe</label>
+                            <input v-model="dataForm.password_confirmation" type="password" class="uk-input uk-border-rounded" placeholder="Entrez votre mot de passe">
+                        </div>
+                        <div class="uk-margin-small">
+                            <button type="submit" class="uk-button uk-button-small uk-border-rounded uk-button-primary">Envoyez</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="uk-modal-body">
-                    <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-slide-left-medium, uk-animation-slide-right-medium">
-                        <li><a class="uk-button uk-button-small uk-button-primary uk-border-rounded" href="#">Commission</a></li>
-                        <li>
-                            <a href="#" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Reabo Afrocash</a>
-                        </li>
-                        <li>
-                            <a href="#" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Interval & Formules</a>
-                        </li>
-                    </ul>
 
-                    <ul class="uk-switcher uk-margin">
-                        <li>
-                            <!-- paramtre pourcentage des comissions -->
-                            <div class="uk-grid-small" uk-grid>
-                                <form @submit.prevent="sendParameters()" class="uk-width-1-2@m">
-                                    <div class="uk-width-1-2@m">
-                                        <label for="">Pourcentage en Recrutement</label>
-                                        <input v-model="dataForm.pourcent_recrut" type="text" class="uk-input uk-border-rounded" placeholder="Pourcentage Recrutement (ex : 5.5)">
-                                    </div>
-                                    <div class="uk-width-1-2@m">
-                                        <label for="">Pourcentage en Reabonnement</label>
-                                        <input v-model="dataForm.pourcent_reabo" type="text" class="uk-input uk-border-rounded" placeholder="Pourcentage Reabonnement (ex : 5.5)">
-                                    </div>
-                                    <div class="uk-width-1-2@m" >
-                                        <label for="">Confirmez le mot de passe</label>
-                                        <input v-model="dataForm.password_confirmation" type="password" class="uk-input uk-border-rounded" placeholder="Entrez votre mot de passe">
-                                    </div>
-                                    <div class="uk-margin-small">
-                                        <button type="submit" class="uk-button uk-button-small uk-border-rounded uk-button-primary">Envoyez</button>
-                                    </div>
-                                </form>
-                            </div>
-
-                        </li>
-                        <li>
-                            <div uk-grid class="uk-grid-small">
-                                <form @submit.prevent="sendReaboSetting()" class="uk-width-1-2@m">
-                                    <div class="uk-width-1-2@m uk-margin-small">
-                                        <label for=""><span uk-icon="users"></span>  Utilisateur</label>
-                                        <select v-model="reaboSetting.username" class="uk-select uk-border-rounded">
-                                            <option value="">-- Utilisateur --</option>
-                                            <option :value="u.username" v-for="(u,index) in userStandart" :key="index">{{u.localisation}}</option>
-                                        </select>
-                                    </div>
-                                    <div class="uk-width-1-2@m uk-margin-small">
-                                        <label for="">Confirmez le mot de passe</label>
-                                        <input v-model="reaboSetting.password_confirmation" type="password" class="uk-input uk-border-rounded" placeholder="Confirmez votre mot de passe">
-                                    </div>
-                                    <div>
-                                        <button type="submit" class="uk-button uk-button-primary uk-border-rounded uk-button-small">Envoyez</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </li>
-                        <li>
-                            <!-- INTERVAL ET FORMULE -->
-                            <table class="uk-table uk-table-small uk-table-divier uk-table-striped uk-table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>interval first</th>
-                                        <th>interval last</th>
-                                        <th>Formules</th>
-                                        <th>-</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(inter,index) in intervalList" :key="index">
-                                        <td>{{ inter.interval_first }}</td>
-                                        <td>{{ inter.interval_last }}</td>
-                                        <td>
-                                            <span v-if="inter.formule">
-                                                <span v-for="(f,index) in inter.formule" :key="index">
-                                                    
-                                                </span>
+            </li>
+            <li>
+                <div uk-grid class="uk-grid-small">
+                    <form @submit.prevent="sendReaboSetting()" class="uk-width-1-2@m">
+                        <div class="uk-width-1-2@m uk-margin-small">
+                            <label for=""><span uk-icon="users"></span>  Utilisateur</label>
+                            <select v-model="reaboSetting.username" class="uk-select uk-border-rounded">
+                                <option value="">-- Utilisateur --</option>
+                                <option :value="u.username" v-for="(u,index) in userStandart" :key="index">{{u.localisation}}</option>
+                            </select>
+                        </div>
+                        <div class="uk-width-1-2@m uk-margin-small">
+                            <label for="">Confirmez le mot de passe</label>
+                            <input v-model="reaboSetting.password_confirmation" type="password" class="uk-input uk-border-rounded" placeholder="Confirmez votre mot de passe">
+                        </div>
+                        <div>
+                            <button type="submit" class="uk-button uk-button-primary uk-border-rounded uk-button-small">Envoyez</button>
+                        </div>
+                    </form>
+                </div>
+            </li>
+            <li>
+                <div class="uk-grid-small" uk-grid>
+                    <div class="uk-width-2-3@m">
+                        <!-- INTERVAL ET FORMULE -->
+                        <table class="uk-table uk-table-small uk-table-divier uk-table-striped uk-table-hover">
+                            <thead>
+                                <tr>
+                                    <th>interval first</th>
+                                    <th>interval last</th>
+                                    <th>Formules</th>
+                                    <th>-</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(inter,index) in intervalList" :key="index">
+                                    <td>{{ inter.interval_first }}</td>
+                                    <td>{{ inter.interval_last }}</td>
+                                    <td>
+                                        <span v-if="inter.formule">
+                                            <span v-for="(f,index) in inter.formule" :key="index">
+                                                
                                             </span>
-                                        </td>
-                                        <td>
-                                            <button uk-tooltip="Ajouter une formule" class="uk-button-primary uk-border-rounded uk-padding-remove"><i class="material-icons">note_add</i></button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <!-- // -->
-                        </li>
-                    </ul>                    
-                    
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button @click="addFormule(inter)" uk-tooltip="Ajouter une formule" class="uk-button-primary uk-border-rounded uk-padding-remove"><i class="material-icons">note_add</i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!-- // -->
+                    </div>
+                    <div class="uk-width-1-4@m uk-card uk-card-default uk-border-rounded uk-padding" v-show="addFormuleState">
+                        <form>
+                            <div class="uk-width-1-1@m">
+                                <label for="">Formule</label>
+                                <input type="text" class="uk-input uk-border-rounded">
+                            </div>
+                            <button class="uk-button uk-margin-small-top uk-button-primary uk-button-small uk-border-rounded">Envoyez</button>
+                        </form>
+                    </div>
                 </div>
-                <div class="uk-modal-footer uk-text-right">
-                    <button class="uk-button uk-button-danger uk-button-small uk-border-rounded uk-modal-close" type="button">Fermer</button>
-                </div>
-            </div>
-        </div>
+            </li>
+        </ul>                    
     </div>
 </template>
 
@@ -133,10 +145,29 @@ export default {
             },
             percentInfos : {},
             userList : [],
-            intervalList : []
+            intervalList : [],
+            addFormuleData : {
+                _token : "",
+                formule_name : "",
+                intervalId : ""
+            },
+            addFormuleState : false
         }
     },
     methods : {
+        addFormule : async function (id) {
+            try {
+                console.log(id)
+                this.addFormuleState = true
+                // let response = await axios.post('/admin/add-formule-interval')
+                // if(response) {
+                //     console.log(response.data)
+                // }
+            }
+            catch(error) {
+                alert(error)
+            }
+        },
         sendReaboSetting : async function () {
             try {
                 this.isLoading = true

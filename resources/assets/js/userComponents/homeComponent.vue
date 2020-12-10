@@ -250,7 +250,10 @@
               <li>
                 <router-link to="/setting/profile"><span uk-icon="link"></span> Profile</router-link>
               </li>
-              <li><a href="#" uk-toggle="target : #rapport-setting-modal"><span uk-icon="icon : minus"></span> Reglage Rapport de vente</a></li>
+              <li>
+                <router-link to="/set-rapport-parametre"><span uk-icon="link"></span> Reglage Rapport de vente</router-link>
+              </li>
+              <!-- <li><a href="#" uk-toggle="target : #rapport-setting-modal"><span uk-icon="icon : minus"></span> Reglage Rapport de vente</a></li> -->
               <li>
                   <form action="/logout" method="post">
                     <input type="hidden" name="_token" :value="myToken">

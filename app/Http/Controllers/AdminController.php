@@ -1364,6 +1364,7 @@ class AdminController extends Controller
       $data = [];
       foreach($intervals as $key => $value) {
         $data[$key] = [
+          'id'  =>  $value->id,
           'interval_first'  =>  $value->interval_serial_first,
           'interval_last' =>  $value->interval_serial_last,
           'formule' =>  $value->formule()->first() ? $value->formule()->get() : []
@@ -1372,6 +1373,20 @@ class AdminController extends Controller
 
       return response()
         ->json($data);
+    }
+    catch(AppException $e) {
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+
+  # AJOUTER UNE FORMULE A L'INTERVAL
+
+  public function addFormuleToInterval() {
+    try {
+
+      return response()
+        ->json('good');
     }
     catch(AppException $e) {
       header("Erreur",true,422);

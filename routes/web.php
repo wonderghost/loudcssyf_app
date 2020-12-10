@@ -14,6 +14,7 @@
 Route::middleware(['auth','admin'])->group(function () {
 	// INTERVAL & FORMULES
 	Route::get('/admin/get-interval-infos','AdminController@getIntervalInfos');
+	Route::post('/admin/add-formule-interval','AdminController@addFormuleToInterval');
 
 	// 
 	Route::post('/admin/serial-number/actived','LogistiqueController@makeActivedSerial');

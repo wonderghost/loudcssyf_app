@@ -35,7 +35,6 @@
     <input type="hidden" id="username" value="{{Auth::user()->username}}">
 
     <div id="app">
-      <set-rapport-parametre></set-rapport-parametre>
       <serial-search></serial-search>
       <deblocage-cga></deblocage-cga>
       <feedback></feedback>
