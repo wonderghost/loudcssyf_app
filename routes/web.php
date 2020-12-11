@@ -262,6 +262,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 
 	Route::post('/user/pdraf/send-upgrade-afrocash','PdrafController@sendUpgradeAfrocash')->middleware('pdraf');
 	Route::get('/user/pdraf/get-reabo-afrocash','PdrafController@getAllReaboAfrocash');
+	Route::get('/user/pdraf/get-recrutement-afrocash','PdrafController@getAllRecrutementAfrocash');
+	Route::get('/user/pdraf/get-vente-details/{slug}','PdrafController@getVenteDetails');
 	Route::post('/user/pdraf/pay-comission-request','PdrafController@sendPayComissionRequest')->middleware('pdraf');
 	Route::get('/user/pdraf/filter-reabo-afrocash/{pdc}/{user}/{payState}/{state}/{margeState}','PdrafController@filterReaboAfrocash');
 	Route::post('/user/pdraf/reactivation-materiel','PdrafController@reactivationMaterielRequest')->middleware('pdraf');

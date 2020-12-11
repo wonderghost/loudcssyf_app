@@ -502,7 +502,7 @@ class CommandAfrocashController extends Controller
 
                 $data[$key] = [
                     'numero_materiel'   =>  $value->serial_number,
-                    'user'  =>  $value->pdcUser()->first()->localisation,
+                    'user'  =>  request()->user()->type == 'pdc' ? $value->pdcUser()->first()->localisation : $value->pdrafUser()->first()->localisation,
                     'article'   =>  $value->produit()->libelle,
                     'status'    =>  $value->status  
                 ];
@@ -518,7 +518,7 @@ class CommandAfrocashController extends Controller
                 $data_stock[$key] = [
                     'produit'   =>  $value->produit()->libelle,
                     'quantite'  =>  $value->quantite,
-                    'marge' => $value->produit()->marge_pdc,
+                    'marge' => request()->user()->type == 'pdc' ? $value->produit()->marge_pdc : $value->produit()->marge_pdraf,
                     'ttc'   =>  $value->produit()->prix_vente,
                     'ht'    =>  ceil($value->produit()->prix_vente / 1.18)
                 ];

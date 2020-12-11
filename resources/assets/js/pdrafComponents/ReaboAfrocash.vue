@@ -32,9 +32,9 @@
 
         <div class="uk-grid-small" uk-grid>
             <div class="uk-width-2-3@m">
-                <div v-for="(err,index) in errors" :key="index" class="uk-alert-danger uk-width-1-2@m uk-border-rounded" uk-alert>
+                <div v-for="(err,index) in errors" :key="index" class="uk-alert-danger uk-margin-small uk-width-1-1@m uk-border-rounded" uk-alert>
                     <a class="uk-alert-close" uk-close></a>
-                    <p>{{err}}</p>
+                    <p class="uk-text-center">{{err}}</p>
                 </div>
                 <div class="uk-width-1-1@m uk-alert-info uk-border-rounded uk-box-shadow-hover-small" uk-alert>
 
@@ -43,6 +43,50 @@
                     </p>
                 </div>
                 <form @submit.prevent="sendReaboAfrocash()" class="uk-grid-small" uk-grid>
+                    <template v-if="$route.path == '/recrutement-afrocash'">
+                        <div class="uk-width-1-1@m">
+                            <h3>Infos Client</h3>
+                        </div>
+                        <div class="uk-width-1-6@m">
+                            <label for="">Titre*</label>
+                            <select v-model="dataForm.titre" class="uk-select uk-border-rounded">
+                                <option value="Mr">Mr</option>
+                                <option value="Mme">Mme</option>
+                                <option value="Mlle">Mlle</option>
+                            </select>
+                        </div>
+                        <div class="uk-width-1-6@m">
+                            <label for="">Pays</label>
+                            <span class="uk-input uk-border-rounded">122</span>
+                        </div>
+                        <div class="uk-width-1-3@m">
+                            <label for="">Nom*</label>
+                            <input v-model="dataForm.nom" type="text" class="uk-input uk-border-rounded" placeholder="Nom du client">
+                        </div>
+                        <div class="uk-width-1-3@m">
+                            <label for="">Prenom*</label>
+                            <input v-model="dataForm.prenom" type="text" class="uk-input uk-border-rounded" placeholder="Prenom du client">
+                        </div>
+                        <div class="uk-width-1-3@m">
+                            <label for="">Ville/Quartier*</label>
+                            <input v-model="dataForm.ville" type="text" class="uk-input uk-border-rounded" placeholder="Ville ou Quartier du client (ex : Conakry)">
+                        </div>
+                        <div class="uk-width-1-3@m">
+                            <label for="">Adresse Postale</label>
+                            <input v-model="dataForm.adresse_postal" type="text" class="uk-input uk-border-rounded" placeholder="Adresse Postale du client (ex : BP 1433)">
+                        </div>
+                        <div class="uk-width-1-3@m">
+                            <label for="">Email</label>
+                            <input v-model="dataForm.email" type="text" class="uk-input uk-border-rounded" placeholder="Adresse Email du client (ex : xyz@gmail.com)">
+                        </div>
+                        
+                        <div class="uk-width-1-1@m">
+                            <hr class="uk-divider-small">
+                        </div>
+                    </template>
+                    <div class="uk-width-1-1@m">
+                        <h3>Infos Materiel</h3>
+                    </div>
                     <div class="uk-width-1-3@m">
                         <label for="">Numero Materiel* (<span>{{dataForm.serial_number.length}}</span>)</label>
                         <input v-model="dataForm.serial_number" type="text" class="uk-input uk-border-rounded" placeholder="Numero du materiel">
@@ -84,12 +128,12 @@
                         <input v-model="dataForm.password_confirmation" type="password" class="uk-input uk-border-rounded" placeholder="Entrez le mot de passe">
                     </div>
                     <div class="uk-width-1-1@m">
-                        <button type="submit" class="uk-button uk-button-primary uk-button-small uk-border-rounded">Envoyez</button>
+                        <button type="submit" class="uk-button uk-button-primary uk-width-1-1@s uk-width-1-4@m uk-width-1-6@l uk-button-small uk-border-rounded">Envoyez</button>
                     </div>
                 </form>
             </div>
             <div class="uk-width-1-3@m">
-                <div class="uk-card uk-card-default uk-border-rounded" style="box-shadow : none !important ; border : solid 1px #ddd !important;">
+                <div class="uk-card uk-card-default uk-border-rounded" style="box-shadow : none !important ; border : solid 1px #ddd !important;" uk-sticky="offset : 100">
                     <div class="uk-card-header">
                         <h3 class="uk-card-title">SOLDE AFROCASH (GNF)</h3>
                     </div>
@@ -129,7 +173,14 @@ export default {
                 telephone_client : "",
                 montant_ttc : 0,
                 comission : 0,
-                password_confirmation : ""
+                password_confirmation : "",
+                titre : "Mr",
+                nom : "",
+                prenom : "",
+                ville : "",
+                adresse_postal : "",
+                email : "",
+                
             },
             duree : [1,2,3,6,9,12,24],
             formuleList : [],
@@ -148,8 +199,7 @@ export default {
                 this.isLoading = true
                 this.dataForm._token = this.myToken
                 let response = await axios.post(this.requestUrl,this.dataForm)
-                if(response) {
-                    console.log(response.data)
+                if(response && response.data == 'done') {
                     this.isLoading = false
                     alert("Success !")
                     Object.assign(this.$data,this.$options.data())

@@ -355,7 +355,7 @@ const router = new VueRouter({
             component : CreatePdraf
         },
         {
-            path : '/all-ventes',
+            path : '/all-ventes-pdraf',
             component: AllVenteReabo
         }
         // PDRAF ROUTERS
@@ -403,6 +403,10 @@ const router = new VueRouter({
         },
         {
             path : '/all-ventes-pdraf',
+            component : AllVenteReabo
+        },
+        {
+            path : "/all-ventes-pdraf/recrutement-afrocash",
             component : AllVenteReabo
         },
         // REPERTOIRE DE CONTACT

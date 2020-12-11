@@ -23,6 +23,7 @@ use App\Credit;
 use App\ReactivationMateriel;
 use Carbon\Carbon;
 use App\RecrutementAfrocash;
+use App\RecrutementAfrocashOption;
 
 class PdrafController extends Controller
 {
@@ -440,9 +441,13 @@ class PdrafController extends Controller
                 'telephone_client'  =>  'required|string|max:9|min:9',
                 'montant_ttc'   =>  'required|numeric',
                 'comission' =>  'required|numeric',
-                'password_confirmation' =>  'required|string'
+                'password_confirmation' =>  'required|string',
+                'nom'   =>  'required|string',
+                'prenom'    =>  'required|string',
+                'ville' =>  'required|string',
             ],[
                 'required'  =>  '`:attribute` requis !',
+                'exists'   =>   '`:attribute` n\'existe pas dans le systeme'
             ]);
 
              // VALIDATION DU MOT DE PASSE
@@ -483,12 +488,13 @@ class PdrafController extends Controller
                 ->first()
                 ->intervalData()           
                 ->first();
+            $formuleInterval = $intervals->formule()
+                ->where('id_formule',request()->formule)
+                ->first();
             
-
-            
-            
-            return response()
-                ->json($serialIntervalData);            
+            if(!$formuleInterval) {
+                throw new AppException("Erreur sur la formule choisie ... Verifiez le numero materiel !");
+            }       
 
             $recrutement = new RecrutementAfrocash;
             $recrutement->generateId();
@@ -498,19 +504,128 @@ class PdrafController extends Controller
             $recrutement->montant_ttc = request()->montant_ttc;
             $recrutement->comission = request()->comission;
             $recrutement->pdraf_id = request()->user()->username;
+            $recrutement->nom = request()->nom;
+            $recrutement->prenom = request()->prenom;
+            $recrutement->ville = request()->ville;
+            $recrutement->adresse_postal = request()->adress_postal;
+            $recrutement->email = request()->email;
 
             $data_options = [];
 
             foreach(request()->options as $key => $value) {
                 if($value && $value != "") {
-                    $data_options[$key] = new OptionReaboAfrocash;
-                    $data_options[$key]->id_reabo_afrocash = $reabo->id;
+                    $data_options[$key] = new RecrutementAfrocashOption;
+                    $data_options[$key]->id_recrutement_afrocash = $recrutement->id;
                     $data_options[$key]->id_option = $value && $value != "" ? $value : null;
                 }
             }
 
+            $serial->recrutement_afrocash_id = $recrutement->id;
+
+            # DEBIT DU SOLDE
+            $sender_account = request()->user()->afroCash()->first();
+            
+            $reabo_afrocash_setting = ReaboAfrocashSetting::all()->first();
+
+            if(!$reabo_afrocash_setting) {
+                throw new AppException("Parametre Reabo non defini , contactez l'administrateur");
+            }
+
+            $receiver_user = User::where('username',$reabo_afrocash_setting->user_to_receive)->first();
+            $receiver_account = $receiver_user->afroCash()->first();
+
+            $sender_account->solde -= request()->montant_ttc;
+            $receiver_account->solde += request()->montant_ttc;
+
+            # DEBIT DU STOCK DU PDRAF
+
+            $article = $produit->articles()
+                ->first()
+                ->kits()
+                ->first()
+                ->articles()
+                ->select('produit')
+                ->groupBy('produit')
+                ->get();
+
+            $stock_vendeur = request()->user()->stockVendeurs()
+                ->whereIn('produit',$article)
+                ->get();
+
+            foreach($stock_vendeur as $value) {
+                $value->quantite --;
+            }
+
+            # TRANSACTION RECRUTEMENT MATERIEL
+
+            $trans = new TransactionAfrocash;
+            $trans->compte_debite = $sender_account->numero_compte;
+            $trans->compte_credite = $receiver_account->numero_compte;
+            $trans->montant = request()->montant_ttc;
+            $trans->motif = "Recrutement_Afrocash";
+            $trans->recrutement_afrocash_id = $recrutement->id;
+
+            # TRANSACTION MARGE MATERIEL
+
+            $logistiqueUser = User::where('type','logistique')
+                ->first();
+            $logistiqueAccount = $logistiqueUser->afroCash()->first();
+
+            $pdcUser = request()->user()
+                ->pdcUser()
+                ->usersPdc();
+
+            $pdcAccount = $pdcUser->afroCash('semi_grossiste')->first();
+
+            $montantMargeMateriel = ceil($produit->marge_pdraf / 1.18);
+            $montantMargeMaterielPdc = ceil($produit->marge_pdc / 1.18);
+
+            $sender_account->solde += $montantMargeMateriel;
+            $logistiqueAccount->solde -= $montantMargeMateriel;
+
+            # TRANSACTION MARGE MATERIEL PDC
+
+            $pdcAccount->solde += $montantMargeMaterielPdc;
+            $logistiqueAccount->solde -= $montantMargeMaterielPdc;
+
+            $transMarge = new TransactionAfrocash;
+            $transMarge->compte_debite = $logistiqueAccount->numero_compte;
+            $transMarge->compte_credite = $sender_account->numero_compte;
+            $transMarge->montant = $montantMargeMateriel;
+            $transMarge->motif = "Paiement_Marge_Materiel";
+            $transMarge->recrutement_afrocash_id = $recrutement->id;
+
+            $transMargePdc = new TransactionAfrocash;
+            $transMargePdc->compte_debite = $logistiqueAccount->numero_compte;
+            $transMargePdc->compte_credite = $pdcAccount->numero_compte;
+            $transMargePdc->montant = $montantMargeMaterielPdc;
+            $transMargePdc->motif = "Paiement_Marge_materiel";
+            $transMargePdc->recrutement_afrocash_id = $recrutement->id;
+
+            # 
+            $recrutement->save();
+
+            foreach(request()->options as $key => $value) {
+                $data_options[$key]->save();    
+            }
+
+            $serial->update();
+
+            foreach($stock_vendeur as $value) {
+                $value->update();
+            }
+
+            $trans->save();
+            $transMarge->save();
+            $transMargePdc->save();
+            $sender_account->update();
+            $receiver_account->update();
+            $logistiqueAccount->update();
+            $pdcAccount->update();
+
+
             return response()
-                ->json($recrutement);
+                ->json('done');
         }
         catch(AppException $e) {
             header("Erreur",true,422);
@@ -2529,6 +2644,110 @@ class PdrafController extends Controller
 					'total'	=>	$data->total()
                 ]);
         } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    # TOUS LES RECRUTEMENTS AFROCASH
+
+    public function getAllRecrutementAfrocash() {
+        try {
+            if(request()->user()->type == 'admin') {
+                $data = RecrutementAfrocash::select()
+                    ->orderBy('created_at','desc')
+                    ->paginate();
+            }
+            else if(request()->user()->type == 'pdraf') {
+                $data = request()->user()
+                    ->recrutementAfrocash()
+                    ->orderBy('created_at','desc')
+                    ->paginate();
+            }
+            else if(request()->user()->type == 'pdc') {
+                $pdraf_users = request()->user()
+                    ->pdrafUsersForList()
+                    ->select('id_pdraf')
+                    ->groupBy('id_pdraf')
+                    ->get();
+
+                $data = RecrutementAfrocash::select()
+                    ->orderBy('created_at','desc')
+                    ->whereIn('pdraf_id',$pdraf_users)
+                    ->paginate();
+            }
+
+            $all = [];
+
+            foreach($data as $key => $value) {
+
+                $marge = round(($value->montant_ttc/1.18) * (1.5/100),0);
+                $options = "";
+                foreach($value->options() as $_value) {
+                    $options .= $_value->id_option.",";
+                }
+
+                $created_at = new Carbon($value->created_at);
+                $confirm_at = $value->confirm_at ? new Carbon($value->confirm_at) : null;
+                $remove_at = $value->remove_at ? new Carbon($value->remove_at) : null;
+                $pay_at = $value->pay_at ? new Carbon($value->pay_at) : null;
+                
+                $all[$key] = [
+                    'id'    =>  $value->id,
+                    'materiel'  =>  $value->serialNumber(),
+                    'formule'   =>  $value->formule_name,
+                    'duree' =>  $value->duree,
+                    'option'    =>  $options,
+                    'montant'   =>  $value->montant_ttc,
+                    'comission' =>  $value->comission,
+                    'telephone_client'  =>  $value->telephone_client,
+                    'pdraf' =>  $value->pdrafUser()->only('localisation','username'),
+                    'pdc_hote'  =>  $value->pdrafUser()->pdcUser()->usersPdc()->only('localisation','username'),
+                    'marge' =>  $marge,
+                    'total' =>  $marge + $value->comission,
+                    'created_at'    =>  $created_at->toDateString(),
+                    'hour'  =>  $created_at->toTimeString(),
+                    'confirm_at'    => $confirm_at ? $confirm_at->toDateTimeString() : null,
+                    'remove_at' =>  $remove_at ? $remove_at->toDateTimeString() : null,
+                    'pay_at'    =>  $pay_at ? $pay_at->toDateTimeString() : null,
+                    'pay_comission_id'  =>  $value->pay_comission_id,
+                    'upgrade_state' =>  null
+                ];
+            }
+
+            return response()
+                ->json([
+                    'all'   =>  $all,
+                    'next_url'	=> $data->nextPageUrl(),
+					'last_url'	=> $data->previousPageUrl(),
+					'per_page'	=>	$data->perPage(),
+					'current_page'	=>	$data->currentPage(),
+					'first_page'	=>	$data->url(1),
+					'first_item'	=>	$data->firstItem(),
+					'total'	=>	$data->total()
+                ]);
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    # DETAILS VENTE
+
+    public function getVenteDetails($slug) {
+        try {
+            $data = RecrutementAfrocash::find($slug);
+            $data->serial = $data->serialNumber();
+            $date = new Carbon($data->created_at);
+            $data->date = $date->toDateTimeString();
+
+            $data->marge = round(($data->montant_ttc/1.18) * (1.5/100),0);
+
+            return response()
+                ->json($data);
+        }
+        catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));
         }

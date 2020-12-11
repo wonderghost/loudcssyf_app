@@ -1,5 +1,5 @@
 <template>
-   <div>
+   <div class="uk-container uk-container-large">
        <loading :active.sync="isLoading"
         :can-cancel="false"
         :is-full-page="fullPage"
@@ -8,40 +8,58 @@
         color="#1e87f0"
         background-color="#fff"></loading>
 
-       <div class="uk-container uk-container-large">
-           <h3 class="uk-margin-top">Tous les Reabonnements</h3>
-           <hr class="uk-divider-small">
+        <ul class="uk-breadcrumb">
+            <li><router-link uk-tooltip="Tableau de bord" to="/dashboard"><span uk-icon="home"></span></router-link></li>
+            <li><span>Reseaux Afrocash</span></li>
+            <li v-if="$route.path == '/all-ventes-pdraf'"><span>Reabonnement Afrocash</span></li>
+            <li v-else><span>Recrutement Afrocash</span></li>
+        </ul>
 
-           <download-to-excel :data-to-export="all" :data-fields="field_export" file-name="reabonnement-afrocash"></download-to-excel>
-           
+        <h3 v-if="$route.path == '/all-ventes-pdraf'">Tous les Reabonnements</h3>
+        <h3 v-else >Tous les Recrutements</h3>
+        <hr class="uk-divider-small">
 
-            <!-- MODAL CONFIRM PAIEMENT COMISSION -->
-            <div id="modal-pay-comission" uk-modal="esc-close : false ; bg-close : false">
-                <div class="uk-modal-dialog">
-                    <div class="uk-modal-header">
-                        <h2 class="uk-modal-title">Paiement Comission</h2>
-                    </div>
-                    <div class="uk-modal-body">
-                        <div class="uk-alert-danger" uk-alert v-for="(err,index) in errors" :key="index">
-                            <a class="uk-alert-close" uk-close></a>
-                            <p>{{err}}</p>
-                        </div>
-                        <p class=""></p>
-                        <form @submit.prevent="sendPayComissionRequest()">
-                            <div class="uk-margin-small">
-                                <label for="">Confirmez votre mot de passe</label>
-                                <input v-model="password_confirmation" type="password" class="uk-input uk-border-rounded" placeholder="Entrez le mot de passe">
-                            </div>
-                            <button class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
-                        </form>
-                    </div>
-                    <div class="uk-modal-footer uk-text-right">
-                        <button class="uk-button uk-button-danger uk-border-rounded uk-modal-close uk-button-small" type="button">Cancel</button>
-                    </div>
+        <nav class="" uk-navbar>
+            <div class="uk-navbar-left">
+                <ul class="uk-navbar-nav">
+                    <li v-if="$route.path == '/all-ventes-pdraf'" ><router-link to="/all-ventes-pdraf/recrutement-afrocash">Recrutements</router-link></li>
+                    <li v-else><router-link to="/all-ventes-pdraf">Reabonnements</router-link></li>
+                </ul>
+            </div>
+        </nav>
+       
+        <download-to-excel :data-to-export="all" :data-fields="field_export" file-name="reabonnement-afrocash"></download-to-excel>
+        <detailVente :vente-id="venteId"></detailVente>
+        
+
+        <!-- MODAL CONFIRM PAIEMENT COMISSION -->
+        <div v-if="$route.path == '/all-ventes-pdraf'" id="modal-pay-comission" uk-modal="esc-close : false ; bg-close : false">
+            <div class="uk-modal-dialog">
+                <div class="uk-modal-header">
+                    <h2 class="uk-modal-title">Paiement Comission</h2>
                 </div>
-            </div>            
-            <!-- // -->
-            <!-- ADMIN -->
+                <div class="uk-modal-body">
+                    <div class="uk-alert-danger" uk-alert v-for="(err,index) in errors" :key="index">
+                        <a class="uk-alert-close" uk-close></a>
+                        <p>{{err}}</p>
+                    </div>
+                    <p class=""></p>
+                    <form @submit.prevent="sendPayComissionRequest()">
+                        <div class="uk-margin-small">
+                            <label for="">Confirmez votre mot de passe</label>
+                            <input v-model="password_confirmation" type="password" class="uk-input uk-border-rounded" placeholder="Entrez le mot de passe">
+                        </div>
+                        <button class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
+                    </form>
+                </div>
+                <div class="uk-modal-footer uk-text-right">
+                    <button class="uk-button uk-button-danger uk-border-rounded uk-modal-close uk-button-small" type="button">Cancel</button>
+                </div>
+            </div>
+        </div>            
+        <!-- // -->
+        <!-- ADMIN -->
+        <template v-if="$route.path == '/all-ventes-pdraf'">
             <template v-if="typeUser == 'admin' || typeUser == 'commercial' || typeUser == 'gcga' || typeUser == 'pdc'">
                 <div class="uk-grid-small" uk-grid>
                     <div class="uk-grid-small uk-width-1-2@m" uk-grid>
@@ -107,8 +125,9 @@
                     </div>
                 </div>
             </template>
-            <!-- // -->
-           
+        </template>
+        <!-- // -->
+        <template v-if="$route.path == '/all-ventes-pdraf'">
             <template v-if="typeUser == 'pdraf'">
                 <div class="uk-grid-small" uk-grid>
                     <div class="uk-width-1-6@m">
@@ -134,210 +153,221 @@
                     </div>
                 </div>
             </template>
-            <div class="uk-grid-small uk-flex uk-flex-right" uk-grid>
-                <!-- paginate component -->
-                <div class="uk-width-1-3@m uk-margin-top">
-                    <span class="">{{firstItem}} - {{firstItem + perPage}} sur {{total}}</span>
-                    <a v-if="currentPage > 1" @click="paginateFunction(firstPage)" uk-tooltip="aller a la premiere page" class="uk-button-default uk-border-rounded uk-button-small uk-text-small"><span>1</span></a>
-                    <button @click="getAllData()" class="uk-button-small uk-button uk-border-rounded uk-text-small" uk-tooltip="actualiser"><span uk-icon="refresh"></span></button>
-                    <template v-if="lastUrl">
-                        <button @click="paginateFunction(lastUrl)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Precedent">
-                        <span uk-icon="chevron-left"></span>
-                        </button>
-                    </template>
-                    <template v-if="nextUrl">
-                        <button @click="paginateFunction(nextUrl)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize u-t uk-text-small" uk-tooltip="Suivant">
-                        <span uk-icon="chevron-right"></span>
-                        </button>
-                    </template>
-                </div>
-                <!-- // -->
+        </template>
+        <div class="uk-grid-small uk-flex uk-flex-right" uk-grid>
+            <!-- paginate component -->
+            <div class="uk-width-1-3@m uk-margin-top">
+                <span class="">{{firstItem}} - {{firstItem + perPage}} sur {{total}}</span>
+                <a v-if="currentPage > 1" @click="paginateFunction(firstPage)" uk-tooltip="aller a la premiere page" class="uk-button-default uk-border-rounded uk-button-small uk-text-small"><span>1</span></a>
+                <button @click="getAllData()" class="uk-button-small uk-button uk-border-rounded uk-text-small" uk-tooltip="actualiser"><span uk-icon="refresh"></span></button>
+                <template v-if="lastUrl">
+                    <button @click="paginateFunction(lastUrl)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Precedent">
+                    <span uk-icon="chevron-left"></span>
+                    </button>
+                </template>
+                <template v-if="nextUrl">
+                    <button @click="paginateFunction(nextUrl)" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize u-t uk-text-small" uk-tooltip="Suivant">
+                    <span uk-icon="chevron-right"></span>
+                    </button>
+                </template>
             </div>
-            <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover uk-table-divider uk-table-responsive">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Heure</th>
-                        <th>Materiel</th>
-                        <th>Formule</th>
-                        <th>Duree</th>
-                        <th>Option</th>
-                        <th>Montant Ttc</th>
-                        <template v-if="typeUser != 'admin' && typeUser != 'gcga' && typeUser != 'commercial'">
-                            <th>Comission</th>
+            <!-- // -->
+        </div>
+        <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover uk-table-divider uk-table-responsive">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Heure</th>
+                    <th>Materiel</th>
+                    <th>Formule</th>
+                    <th>Duree</th>
+                    <th>Option</th>
+                    <th>Montant Ttc</th>
+                    <template v-if="typeUser != 'admin' && typeUser != 'gcga' && typeUser != 'commercial'">
+                        <th>Comission</th>
+                    </template>
+                    <th>Telephone Client</th>
+                    <th>Pdraf</th>
+                    <template v-if="typeUser == 'pdc' || typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'">
+                        <th>Marge</th>
+                        <th>Total</th>
+                    </template>
+                    <th>Etat</th>
+                    <th>Paiement</th>
+                    <!-- <template v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'"> -->
+                    <th cols="3">-</th>
+                    <!-- </template> -->
+                </tr>
+            </thead>
+            <tbody>
+                <template v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'">
+                    <tr v-for="(r,index) in all" :key="index">
+                        <td>{{r.created_at}}</td>
+                        <td>{{r.hour}}</td>
+                        <td>{{r.materiel}}</td>
+                        <template v-if="r.upgrade_state == null">
+                            <td>{{r.formule}}</td>
                         </template>
-                        <th>Telephone Client</th>
-                        <th>Pdraf</th>
-                        <template v-if="typeUser == 'pdc' || typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'">
-                            <th>Marge</th>
-                            <th>Total</th>
+                        <template v-else>
+                            <td class="uk-alert uk-alert-primary uk-text-bold">{{r.upgrade_state.from_formule}} -> {{r.formule}} (UPGRADE)</td>
                         </template>
-                        <th>Etat</th>
-                        <th>Paiement</th>
-                        <template v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'">
-                            <th cols="2">-</th>
-                        </template>
+                        <td>{{r.duree}}</td>
+                        <td>{{r.option}}</td>
+                        <td>{{r.montant |numFormat}}</td>
+                        <td>{{r.telephone_client}}</td>
+                        <td>{{r.pdraf.localisation}}</td>
+                        <td>
+                            <template v-if="r.pay_comission_id">
+                                <span class="uk-label uk-label-success">{{r.marge | numFormat}}</span>
+                            </template>
+                            <template v-else>
+                                <span class="uk-label uk-label-warning">{{r.marge | numFormat}}</span>
+                            </template>
+
+                        </td>
+                        <td>{{r.total | numFormat }}</td>
+                        <td>
+                            <template v-if="r.confirm_at">
+                                <span class="uk-label uk-label-success">confirme</span>
+                            </template>
+                            <template v-else-if="r.remove_at">
+                                <span class="uk-label uk-label-danger">annule</span>
+                            </template>
+                            <template v-else>
+                                <span class="uk-label uk-label-primary">instance</span>
+                            </template>
+                        </td>
+                        <td>
+                            <template v-if="r.pay_at">
+                                <span class="uk-label uk-label-success" uk-icon="check"></span>
+                            </template>
+                            <template v-else>
+                                <span class="uk-label uk-label-danger" uk-icon="close"></span>
+                            </template>
+                        </td>
+                        <td>
+                            <button @click="venteId = r.id" uk-toggle="target : #modal-container" class="uk-padding-remove uk-button uk-button-default uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Details"><i class="material-icons" style="font-size : 20px;cursor:pointer">more_vert</i></button>
+                        </td>
+                        <td>
+                            <template v-if="!r.confirm_at && !r.remove_at">
+                                <button @click="confirmRequestForAdmin(r)" class="uk-padding-remove uk-button uk-button-primary uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Confirmer"><i class="material-icons" style="font-size : 20px;cursor:pointer">done</i></button>
+                            </template>
+                        </td>
+                        <td>
+                            <template v-if="!r.confirm_at && !r.remove_at">
+                                <button @click="removeRequestForAdmin(r)" class="uk-padding-remove uk-button uk-button-danger uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Annuler"><i class="material-icons" style="font-size : 20px;cursor:pointer">delete</i></button>
+                            </template>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    <template v-if="typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'">
-                        <tr v-for="(r,index) in all" :key="index">
-                            <td>{{r.created_at}}</td>
-                            <td>{{r.hour}}</td>
-                            <td>{{r.materiel}}</td>
-                            <template v-if="r.upgrade_state == null">
-                                <td>{{r.formule}}</td>
+                </template>
+                <template v-if="typeUser == 'pdc'">
+                    <tr v-for="(r,index) in all" :key="index">
+                        <td>{{r.created_at}}</td>
+                        <td>{{r.hour}}</td>
+                        <td>{{r.materiel}}</td>
+                        <template v-if="r.upgrade_state == null">
+                            <td>{{r.formule}}</td>
+                        </template>
+                        <template v-else>
+                            <td class="uk-alert uk-alert-primary uk-text-bold">{{r.upgrade_state.from_formule}} -> {{r.formule}} (UPGRADE)</td>
+                        </template>
+                        <td>{{r.duree}}</td>
+                        <td>{{r.option}}</td>
+                        <td>{{r.montant |numFormat}}</td>
+                        <td>{{r.comission | numFormat}}</td>
+                        <td>{{r.telephone_client}}</td>
+                        <td>{{r.pdraf.localisation}}</td>
+                        <td>{{r.marge | numFormat}}</td>
+                        <td>{{r.total | numFormat }}</td>
+                        <td>
+                            <template v-if="r.confirm_at">
+                                <span class="uk-label uk-label-success">confirme</span>
+                            </template>
+                            <template v-else-if="r.remove_at">
+                                <span class="uk-label uk-label-danger">annule</span>
                             </template>
                             <template v-else>
-                                <td class="uk-alert uk-alert-primary uk-text-bold">{{r.upgrade_state.from_formule}} -> {{r.formule}} (UPGRADE)</td>
+                                <span class="uk-label uk-label-primary">instance</span>
                             </template>
-                            <td>{{r.duree}}</td>
-                            <td>{{r.option}}</td>
-                            <td>{{r.montant |numFormat}}</td>
-                            <td>{{r.telephone_client}}</td>
-                            <td>{{r.pdraf.localisation}}</td>
-                            <td>
-                                <template v-if="r.pay_comission_id">
-                                    <span class="uk-alert-success">{{r.marge | numFormat}}</span>
-                                </template>
-                                <template v-else>
-                                    <span class="uk-alert-warning">{{r.marge | numFormat}}</span>
-                                </template>
-
-                            </td>
-                            <td>{{r.total | numFormat }}</td>
-                            <td>
-                                <template v-if="r.confirm_at">
-                                    <span class="uk-alert-success">confirme</span>
-                                </template>
-                                <template v-else-if="r.remove_at">
-                                    <span class="uk-alert-danger">annule</span>
-                                </template>
-                                <template v-else>
-                                    <span class="uk-alert-primary">instance</span>
-                                </template>
-                            </td>
-                            <td>
-                                <template v-if="r.pay_at">
-                                    <span class="uk-alert-success" uk-icon="check"></span>
-                                </template>
-                                <template v-else>
-                                    <span class="uk-alert-danger" uk-icon="close"></span>
-                                </template>
-                            </td>
-                            <td>
-                                <template v-if="!r.confirm_at && !r.remove_at">
-                                    <button @click="confirmRequestForAdmin(r)" class="uk-padding-remove uk-button-primary uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Confirmer"><i class="material-icons" style="font-size : 20px;cursor:pointer">done</i></button>
-                                </template>
-                            </td>
-                            <td>
-                                <template v-if="!r.confirm_at && !r.remove_at">
-                                    <button @click="removeRequestForAdmin(r)" class="uk-padding-remove uk-button-danger uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Annuler"><i class="material-icons" style="font-size : 20px;cursor:pointer">delete</i></button>
-                                </template>
-                            </td>
-                        </tr>
-                    </template>
-                    <template v-if="typeUser == 'pdc'">
-                        <tr v-for="(r,index) in all" :key="index">
-                            <td>{{r.created_at}}</td>
-                            <td>{{r.hour}}</td>
-                            <td>{{r.materiel}}</td>
-                            <template v-if="r.upgrade_state == null">
-                                <td>{{r.formule}}</td>
+                        </td>
+                        <td>
+                            <template v-if="r.pay_comission_id">
+                                <span class="uk-label uk-label-success" uk-icon="check"></span>
                             </template>
                             <template v-else>
-                                <td class="uk-alert uk-alert-primary uk-text-bold">{{r.upgrade_state.from_formule}} -> {{r.formule}} (UPGRADE)</td>
+                                <span class="uk-label uk-label-danger" uk-icon="close"></span>
                             </template>
-                            <td>{{r.duree}}</td>
-                            <td>{{r.option}}</td>
-                            <td>{{r.montant |numFormat}}</td>
-                            <td>{{r.comission | numFormat}}</td>
-                            <td>{{r.telephone_client}}</td>
-                            <td>{{r.pdraf.localisation}}</td>
-                            <td>{{r.marge | numFormat}}</td>
-                            <td>{{r.total | numFormat }}</td>
-                            <td>
-                                <template v-if="r.confirm_at">
-                                    <span class="uk-alert-success">confirme</span>
-                                </template>
-                                <template v-else-if="r.remove_at">
-                                    <span class="uk-alert-danger">annule</span>
-                                </template>
-                                <template v-else>
-                                    <span class="uk-alert-primary">instance</span>
-                                </template>
-                            </td>
-                            <td>
-                                <template v-if="r.pay_comission_id">
-                                    <span class="uk-alert-success" uk-icon="check"></span>
-                                </template>
-                                <template v-else>
-                                    <span class="uk-alert-danger" uk-icon="close"></span>
-                                </template>
-                            </td>
-                        </tr>
-                    </template>
-                    <template v-if="typeUser == 'pdraf'">
-                        <tr v-for="(r,index) in all" :key="index">
-                            <td>{{r.created_at}}</td>
-                            <td>{{r.hour}}</td>
-                            <td>{{r.materiel}}</td>
-                            <template v-if="r.upgrade_state == null">
-                                <td>{{r.formule}}</td>
+                        </td>
+                        <td>
+                            <button @click="venteId = r.id" uk-toggle="target : #modal-container" class="uk-padding-remove uk-button uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Details"><i class="material-icons" style="font-size : 20px;cursor:pointer">more_vert</i></button>
+                        </td>
+                    </tr>
+                </template>
+                <template v-if="typeUser == 'pdraf'">
+                    <tr v-for="(r,index) in all" :key="index">
+                        <td>{{r.created_at}}</td>
+                        <td>{{r.hour}}</td>
+                        <td>{{r.materiel}}</td>
+                        <template v-if="r.upgrade_state == null">
+                            <td>{{r.formule}}</td>
+                        </template>
+                        <template v-else>
+                            <td class="uk-alert uk-alert-primary uk-text-bold">{{r.upgrade_state.from_formule}} -> {{r.formule}} (UPGRADE)</td>
+                        </template>
+                        <td>{{r.duree}}</td>
+                        <td>{{r.option}}</td>
+                        <td>{{r.montant |numFormat}}</td>
+                        <td>{{r.comission | numFormat}}</td>
+                        <td>{{r.telephone_client}}</td>
+                        <td>{{r.pdraf.localisation}}</td>
+                        <td>
+                            <template v-if="r.confirm_at">
+                                <span class="uk-label uk-label-success">confirme</span>
+                            </template>
+                            <template v-else-if="r.remove_at">
+                                <span class="uk-label uk-label-danger">annule</span>
                             </template>
                             <template v-else>
-                                <td class="uk-alert uk-alert-primary uk-text-bold">{{r.upgrade_state.from_formule}} -> {{r.formule}} (UPGRADE)</td>
+                                <span class="uk-label uk-label-primary">instance</span>
                             </template>
-                            <td>{{r.duree}}</td>
-                            <td>{{r.option}}</td>
-                            <td>{{r.montant |numFormat}}</td>
-                            <td>{{r.comission | numFormat}}</td>
-                            <td>{{r.telephone_client}}</td>
-                            <td>{{r.pdraf.localisation}}</td>
-                            <td>
-                                <template v-if="r.confirm_at">
-                                    <span class="uk-alert-success">confirme</span>
-                                </template>
-                                <template v-else-if="r.remove_at">
-                                    <span class="uk-alert-danger">annule</span>
-                                </template>
-                                <template v-else>
-                                    <span class="uk-alert-primary">instance</span>
-                                </template>
-                            </td>
-                            <td>
-                                <template v-if="r.pay_at">
-                                    <span class="uk-alert-success" uk-icon="check"></span>
-                                </template>
-                                <template v-else>
-                                    <span class="uk-alert-danger" uk-icon="close"></span>
-                                </template>
-                            </td>
-                        </tr>
-                    </template>
-                </tbody>
-            </table>
-            <div class="uk-flex uk-flex-center">
-                <button class="uk-button uk-button-small uk-border-rounded" uk-scroll uk-tooltip="revenir en haut"><span uk-icon="triangle-up"></span></button>
-            </div>
-
-       </div>
+                        </td>
+                        <td>
+                            <template v-if="r.pay_at">
+                                <span class="uk-label uk-label-success" uk-icon="check"></span>
+                            </template>
+                            <template v-else>
+                                <span class="uk-label uk-label-danger" uk-icon="close"></span>
+                            </template>
+                        </td>
+                        <td>
+                            <button @click="venteId = r.id" uk-toggle="target : #modal-container" class="uk-padding-remove uk-button uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Details"><i class="material-icons" style="font-size : 20px;cursor:pointer">more_vert</i></button>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+        <div class="uk-flex uk-flex-center">
+            <button class="uk-button uk-button-small uk-border-rounded" uk-scroll uk-tooltip="revenir en haut"><span uk-icon="triangle-up"></span></button>
+        </div>
    </div>
 </template>
 <script>
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
+import detailVente from './DetailReaboAfrocash.vue';
 
     export default {
         components : {
-            Loading
+            Loading,
+            detailVente
         },
         mounted () {
-            UIkit.offcanvas($("#side-nav")).hide();
             this.getAllData()
         },
         data() {
             return {
+                venteId : "",
+                dataUrl : "",
                 field_export : {
                     'Date' : 'created_at',
                     'Heure' : 'hour',
@@ -385,6 +415,9 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     margeState : "all"
                 }
             }
+        },
+        watch : {
+            '$route' : 'getAllData'
         },
         methods : {
             paginateFunction : async function (url) {
@@ -557,8 +590,16 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             getAllData : async function () {
                 try {
                     Object.assign(this.$data,this.$options.data())
+
+                    if(this.$route.path == '/all-ventes-pdraf') {
+                        this.dataUrl = '/user/pdraf/get-reabo-afrocash'
+                    }
+                    else if(this.$route.path == '/all-ventes-pdraf/recrutement-afrocash') {
+                        this.dataUrl = '/user/pdraf/get-recrutement-afrocash'
+                    }
+
                     this.isLoading = true
-                    var response = await axios.get('/user/pdraf/get-reabo-afrocash')
+                    var response = await axios.get(this.dataUrl)
                     var theResponse = await axios.get('/user/reabo-afrocash/get-comission')
 
                     if(response && theResponse) {

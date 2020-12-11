@@ -1384,9 +1384,33 @@ class AdminController extends Controller
 
   public function addFormuleToInterval() {
     try {
+      $validation = request()->validate([
+        'formule_name.*'  =>  'required|string|exists:formule,nom',
+        'interval_id' =>  'required|string|exists:intervals,id'
+      ]);
+      
+      if(count(request()->formule_name) <= 0) {
+        throw new AppException("Selectionnez au moins une formule !");
+      }
+      $interval = Interval::find(request()->interval_id);
+      $formuleIntervals = [];
+
+      foreach(request()->formule_name as $key => $value) {
+        $data = $interval->formule()
+          ->where('id_formule',$value)
+          ->first();
+        
+        if(!$data) {
+
+          $formuleIntervals[$key] = new FormuleInterval;
+          $formuleIntervals[$key]->id_interval = $interval->id;
+          $formuleIntervals[$key]->id_formule = $value;
+          $formuleIntervals[$key]->save();
+        }
+      }
 
       return response()
-        ->json('good');
+        ->json('done');
     }
     catch(AppException $e) {
       header("Erreur",true,422);

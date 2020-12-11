@@ -25,4 +25,16 @@ class RecrutementAfrocash extends Model
         }
         return false;
     }
+
+    public function options() {
+        return $this->hasMany('App\RecrutementAfrocashOption','id_recrutement_afrocash','id')->get();
+    }
+
+    public function pdrafUser() {
+        return $this->belongsTo('App\User','pdraf_id','username')->first();
+    }
+
+    public function serialNumber() {
+        return $this->hasOne('App\Exemplaire','recrutement_afrocash_id','id')->first()->serial_number;
+    }
 }

@@ -90,7 +90,8 @@
                                     <td>{{ inter.interval_last }}</td>
                                     <td>
                                         <span v-if="inter.formule">
-                                            <span v-for="(f,index) in inter.formule" :key="index">
+                                            <span v-for="(f,index) in inter.formule" :key="index" class="uk-label uk-label-success uk-margin-small-left">
+                                                {{ f.id_formule }}
                                                 
                                             </span>
                                         </span>
@@ -103,13 +104,19 @@
                         </table>
                         <!-- // -->
                     </div>
-                    <div class="uk-width-1-4@m uk-card uk-card-default uk-border-rounded uk-padding" v-show="addFormuleState">
-                        <form>
+                    <div class="uk-width-1-3@m uk-card uk-card-default uk-border-rounded uk-padding" v-show="addFormuleState">
+                        <a @click="addFormuleState = false" href="#" class="uk-alert-close" uk-close></a>
+                        <form @submit.prevent="addFormuleInterval()">
                             <div class="uk-width-1-1@m">
-                                <label for="">Formule</label>
-                                <input type="text" class="uk-input uk-border-rounded">
+                                <label for="">Formule [ {{ intervals.interval_first }} , {{ intervals.interval_last }} ]</label>
+                                <ul class="uk-list uk-list-divider">
+                                    <li v-for="(f,index) in formules" :key="index">
+                                        <input type="checkbox" :id="f.nom" :value="f.nom" v-model="addFormuleData.formule_name">
+                                        {{f.nom}}
+                                    </li>
+                                </ul>
                             </div>
-                            <button class="uk-button uk-margin-small-top uk-button-primary uk-button-small uk-border-rounded">Envoyez</button>
+                            <button class="uk-margin-small-top uk-button-primary uk-button-small uk-border-rounded">Enregistrez</button>
                         </form>
                     </div>
                 </div>
@@ -148,21 +155,46 @@ export default {
             intervalList : [],
             addFormuleData : {
                 _token : "",
-                formule_name : "",
-                intervalId : ""
+                formule_name : [],
+                interval_id : ""
             },
-            addFormuleState : false
+            intervals : {},
+            addFormuleState : false,
+            formules : []
         }
     },
     methods : {
+        addFormuleInterval : async function () {
+            try {
+                this.isLoading = true
+
+                this.addFormuleData.interval_id = this.intervals.id
+                this.addFormuleData._token = this.myToken
+                let response = await axios.post('/admin/add-formule-interval',this.addFormuleData)
+                if(response && response.data == 'done') {
+                    alert("Success !")
+                    Object.assign(this.$data,this.$options.data())
+                    this.getParametersInfos()
+                    this.isLoading = false
+                }
+            }
+            catch(error) {
+                if(error.response.data.errors) {
+                    let errorTab = error.response.data.errors
+                    for (var prop in errorTab) {
+                    // this.errors.push(errorTab[prop][0])
+                    alert(errorTab[prop][0])
+                    }
+                } else {
+                    // this.errors.push(error.response.data)
+                    alert(error.response.data)
+                }
+            }
+        },
         addFormule : async function (id) {
             try {
-                console.log(id)
                 this.addFormuleState = true
-                // let response = await axios.post('/admin/add-formule-interval')
-                // if(response) {
-                //     console.log(response.data)
-                // }
+                this.intervals = id
             }
             catch(error) {
                 alert(error)
@@ -194,6 +226,8 @@ export default {
         },
         getParametersInfos : async function () {
             try {
+                this.isLoading = true
+
                 var response = await axios.get('/admin/get-rapport-parameters')
                 if(response.data) {
                     this.percentInfos = response.data
@@ -212,6 +246,14 @@ export default {
                 if(response) {
                     this.intervalList = response.data
                 }
+
+                response = await axios.get('/admin/formule/list')
+                if(response) {
+                    this.formules = response.data.formules
+
+                    this.isLoading = false
+                }
+
             } catch(error){
                 alert(error)
             }

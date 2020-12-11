@@ -172,6 +172,11 @@ import reabo from './ReabonnementComponent.vue'
           response = await axios.get('/user/promo/listing')
           this.listingPromo = response.data
 
+          response = await axios.get('/admin/get-rapport-parameters')
+          if(response) {
+            this.percentComission = response.data
+          }
+
           this.isLoading = false
         } catch (e) {
             alert(e)
@@ -223,9 +228,6 @@ import reabo from './ReabonnementComponent.vue'
       }
     },
     computed : {
-      percentComission() {
-        return this.$store.state.infosComissionPercent
-      },
       myToken () {
         return this.$store.state.myToken
       },

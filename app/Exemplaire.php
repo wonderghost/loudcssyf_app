@@ -20,6 +20,10 @@ class Exemplaire extends Model
     return $this->belongsTo('App\User','pdc_id','username');
   }
 
+  public function pdrafUser() {
+    return $this->belongsTo('App\User','pdraf_id','username');
+  }
+
   public function produits() {
     return $this->belongsTo('App\Produits','produit','reference');
   }

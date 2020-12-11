@@ -191,7 +191,6 @@
             <li class="uk-parent">
                 <a href="#"><span uk-icon="icon:grid;ratio:0.9"></span> Materiels</a>
                 <ul class="uk-nav-sub">
-                    <!-- <li><a href="/admin/add-depot"><span uk-icon="icon:arrow-right"></span> Entrepot</a></li> -->
                     <li>
                       <router-link to="/material/entrepot"><span uk-icon="link"></span> Entrepot</router-link>
                     </li>
@@ -201,15 +200,11 @@
                     <li>
                       <router-link to="/material/affectation"><span uk-icon="link"></span> Affectation Materiel</router-link>
                     </li>
-                    <!-- <li><a href="/admin/depot-central"><span uk-icon="icon:arrow-right"></span> Entrepot</a></li> -->
-                    <!-- <li><a href="/admin/list-material"><span uk-icon="icon:arrow-right"></span> Tous les materiels</a></li> -->
-                    <!-- <li><a href="/admin/history-depot"><span uk-icon="icon:arrow-right"></span> Historique </a></li> -->
                 </ul>
             </li>
             <li class="uk-parent">
                 <a href="#"><span uk-icon="icon:thumbnails;ratio:0.9"></span> Stock</a>
                 <ul class="uk-nav-sub">
-                    <!-- <li><a href="/admin/inventory"><span uk-icon="icon:arrow-right"></span> Inventaire</a></li> -->
                     <li>
                       <router-link to="/inventory"><span uk-icon="link"></span> Inventaire</router-link>
                     </li>
@@ -466,7 +461,7 @@
               <a href="#"><span uk-icon="cart"></span> Ventes</a>
               <ul class="uk-nav-sub">
                 <li class="">
-                  <router-link to="/all-ventes"><span uk-icon="icon : link"></span> Toutes les ventes</router-link>
+                  <router-link to="/all-ventes-pdraf"><span uk-icon="icon : link"></span> Toutes les ventes</router-link>
                 </li>
               </ul>
             </li>
