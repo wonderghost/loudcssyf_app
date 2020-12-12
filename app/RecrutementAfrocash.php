@@ -35,6 +35,15 @@ class RecrutementAfrocash extends Model
     }
 
     public function serialNumber() {
-        return $this->hasOne('App\Exemplaire','recrutement_afrocash_id','id')->first()->serial_number;
+        $data = $this->hasOne('App\Exemplaire','recrutement_afrocash_id','id')->first() ? $this->hasOne('App\Exemplaire','recrutement_afrocash_id','id')->first()->serial_number : null; 
+        return $data;
+    }
+
+    public function serialNumberData() {
+        return $this->hasOne('App\Exemplaire','recrutement_afrocash_id','id')->first();
+    }
+
+    public function transactions() {
+        return $this->hasMany('App\TransactionAfrocash','recrutement_afrocash_id','id');
     }
 }

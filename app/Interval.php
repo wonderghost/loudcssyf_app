@@ -29,4 +29,8 @@ class Interval extends Model
     public function formule() {
         return $this->hasMany('App\FormuleInterval','id_interval','id');
     }
+
+    public function produit() {
+        return $this->hasMany('App\IntervalProduit','interval_id','id');
+    }
 }

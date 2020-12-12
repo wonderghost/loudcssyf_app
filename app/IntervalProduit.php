@@ -12,4 +12,8 @@ class IntervalProduit extends Model
     public function intervalData() {
         return $this->belongsTo('App\Interval','interval_id','id');
     }
+
+    public function produitData() {
+        return $this->belongsTo('App\Produits','produit_id','reference');
+    }
 }

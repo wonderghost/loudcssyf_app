@@ -27,7 +27,9 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/pdraf/get-list','PdrafController@getListCreationPdraf');
 	Route::post('/admin/pdraf/set-vendeur-for-reabo','PdrafController@setUserStandartForReabo');
 	Route::post('/admin/pdraf/confirm-reabo-afrocash','PdrafController@confirmReaboAfrocash');
+	Route::post('/admin/pdraf/confirm-recrutement-afrocash','PdrafController@confirmRecrutementAfrocash');
 	Route::post('/admin/pdraf/remove-reabo-afrocash','PdrafController@removeReaboAfrocash');
+	// Route::post('/admin/pdraf/remove-recrutement-afrocash','PdrafController@removeRecrutementAfrocash');
 
 	Route::post('/admin/pdraf/change-status-reactivation-materiel','PdrafController@changeStatusReactivationMateriel');
 	
@@ -247,6 +249,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/pdc/pay-comission-request','PdcController@sendPayComissionRequest')->middleware('pdc');
 
 	Route::post('/user/pdraf/confirm-reabo-afrocash','PdrafController@confirmReaboAfrocash')->middleware('cga');
+	Route::post('/user/pdraf/confirm-recrutement-afrocash','PdrafController@confirmRecrutementAfrocash')->middleware('cga');
 
 	##############################@@@@@@@@@@@@@ -------------- PDRAF -------------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@####
 

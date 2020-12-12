@@ -239,10 +239,10 @@
                         </td>
                         <td>
                             <template v-if="r.pay_at">
-                                <span class="uk-label uk-label-success" uk-icon="check"></span>
+                                <span class="uk-label-success" uk-icon="check"></span>
                             </template>
                             <template v-else>
-                                <span class="uk-label uk-label-danger" uk-icon="close"></span>
+                                <span class="uk-label-danger" uk-icon="close"></span>
                             </template>
                         </td>
                         <td>
@@ -254,8 +254,10 @@
                             </template>
                         </td>
                         <td>
-                            <template v-if="!r.confirm_at && !r.remove_at">
-                                <button @click="removeRequestForAdmin(r)" class="uk-padding-remove uk-button uk-button-danger uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Annuler"><i class="material-icons" style="font-size : 20px;cursor:pointer">delete</i></button>
+                            <template v-if="$route.path == '/all-ventes-pdraf'">
+                                <template v-if="!r.confirm_at && !r.remove_at">
+                                    <button @click="removeRequestForAdmin(r)" class="uk-padding-remove uk-button uk-button-danger uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Annuler"><i class="material-icons" style="font-size : 20px;cursor:pointer">delete</i></button>
+                                </template>
                             </template>
                         </td>
                     </tr>
@@ -413,7 +415,10 @@ import detailVente from './DetailReaboAfrocash.vue';
                     payState : "all",
                     state : "all",
                     margeState : "all"
-                }
+                },
+
+                confirmUrl : "",
+                removeUrl : ""
             }
         },
         watch : {
@@ -445,13 +450,19 @@ import detailVente from './DetailReaboAfrocash.vue';
                     if(!conf) {
                         return 0
                     }
-                    this.isLoading = true
-                    if(this.typeUser == 'admin') {
-                        var response = await axios.post('/admin/pdraf/remove-reabo-afrocash',{
-                            _token : this.myToken,
-                            id : r.id
-                        })
+                    // this.isLoading = true
+                    if(this.$route.path == '/all-ventes-pdraf') {
+
+                        if(this.typeUser == 'admin') {
+
+                            this.removeUrl = "/admin/pdraf/remove-reabo-afrocash"
+                        }
                     }
+                    
+                    var response = await axios.post(this.removeUrl,{
+                        _token : this.myToken,
+                        id : r.id
+                    })
 
                     if(response && response.data == 'done') {
                         this.isLoading = false
@@ -479,20 +490,34 @@ import detailVente from './DetailReaboAfrocash.vue';
                     if(!conf) {
                         return 0
                     }
-                    
-                    if(this.typeUser == 'admin') {
 
-                        var response = await axios.post('/admin/pdraf/confirm-reabo-afrocash',{
+                    if(this.$route.path == '/all-ventes-pdraf') {
+                        if(this.typeUser == 'admin') {
+                            this.confirmUrl = '/admin/pdraf/confirm-reabo-afrocash'
+                            
+                        }
+                        else if(this.typeUser == 'gcga') {
+                           this.confirmUrl = '/user/pdraf/confirm-reabo-afrocash'
+                        }
+                        
+                    }
+                    else if(this.$route.path == '/all-ventes-pdraf/recrutement-afrocash') {
+
+                        if(this.typeUser == 'admin') {
+                            this.confirmUrl = '/admin/pdraf/confirm-recrutement-afrocash'
+                        }
+                        else if(this.typeUser == 'gcga') {
+                            this.confirmUrl = '/user/pdraf/confirm-recrutement-afrocash'
+                        }
+
+                    }
+
+                    var response = await axios.post(this.confirmUrl,{
                             _token : this.myToken,
                             id : r.id
                         })
-                    }
-                    else if(this.typeUser == 'gcga') {
-                        var response = await axios.post('/user/pdraf/confirm-reabo-afrocash',{
-                            _token : this.myToken,
-                            id : r.id
-                        })
-                    }
+                    
+                    
                     if(response && response.data) {
                         alert("Success!")
                         Object.assign(this.$data,this.$options.data())

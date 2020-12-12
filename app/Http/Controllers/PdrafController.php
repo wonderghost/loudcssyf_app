@@ -456,15 +456,6 @@ class PdrafController extends Controller
                 throw new AppException("Mot de passe invalide !");
             }
 
-            # VERIFIER LA DISPONIBILITE DE LA QUANTITE
-            $stockVendeur = request()->user()->stockVendeurs()
-                ->select('quantite')
-                ->groupBy('quantite')
-                ->first();
-
-            if($stockVendeur->quantite <= 0) {
-                throw new AppException("Quantite indisponible !");
-            }
             // VERIFIER LA DISPONIBILITE DU MONTANT
             $sender_account = request()->user()->afroCash()->first();
             if(request()->montant_ttc > $sender_account->solde) {
@@ -479,6 +470,17 @@ class PdrafController extends Controller
 
             if(!$serial) {
                 throw new AppException("Materiel invalide !");
+            }
+
+            # VERIFIER LA DISPONIBILITE DE LA QUANTITE
+            $stockVendeur = request()->user()->stockVendeurs()
+                ->select('quantite')
+                ->where('produit',$serial->produit()->reference)
+                ->groupBy('quantite')
+                ->first();
+
+            if($stockVendeur->quantite <= 0) {
+                throw new AppException("Quantite indisponible !");
             }
 
             # VERIFIER LA CONFORMITE ENTRE LE NUMERO ET LA FORMULE A TRAVERS L'INTERVAL
@@ -2653,7 +2655,7 @@ class PdrafController extends Controller
 
     public function getAllRecrutementAfrocash() {
         try {
-            if(request()->user()->type == 'admin') {
+            if(request()->user()->type == 'admin' || request()->user()->type == 'gcga') {
                 $data = RecrutementAfrocash::select()
                     ->orderBy('created_at','desc')
                     ->paginate();
@@ -3464,5 +3466,168 @@ class PdrafController extends Controller
             die(json_encode($e->getMessage()));
         }
     }
+
+    # CONFIRM RECRUTEMENT AFROCASH
+
+    public function confirmRecrutementAfrocash() {
+        try {
+            $validation = request()->validate([
+                'id'    =>  'required|exists:recrutement_afrocashes,id',
+            ]);
+
+            $recrutement = RecrutementAfrocash::findOrFail(request()->id);
+            if(!is_null($recrutement->remove_at) && !is_null($recrutement->confirm_at)) {
+                throw new AppException("Confirmation Impossible !");
+            }
+            // // VERIFIER SI CE N'EST PAS DEJA CONFIRME
+
+            if(!is_null($recrutement->confirm_at)) {
+                throw new AppException("Deja confirmee !");
+            }
+
+            $recrutement->confirm_at = Carbon::now();
+            $recrutement->update();
+
+            return response()
+                ->json('done');
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    # REMOVE RECRUTEMENT AFROCASH
+
+    // public function removeRecrutementAfrocash() {
+    //     try {
+
+    //         $validation = request()->validate([
+    //             'id'    =>  'required|exists:recrutement_afrocashes,id'
+    //         ]);
+
+    //         $recrutement = RecrutementAfrocash::findOrFail(request()->id);
+    //         $serial = $recrutement->serialNumberData();
+    //         $serial->recrutement_afrocash_id = NULL;
+            
+    //         # VERIFIER S'IL N'A PAS ETE CONFIRMER
+    //         if(!is_null($recrutement->confirm_at) || !is_null($recrutement->remove_at)) {
+    //             throw new AppException("Annulation Impossible !");
+    //         }
+            
+    //         $recrutement->remove_at = Carbon::now();
+
+    //         # ACCOUNT PDRAF
+
+    //         $pdraf_user = $recrutement->pdrafUser();
+    //         $pdraf_account = $pdraf_user->afroCash()->first();
+
+    //         $reabo_afrocash_setting = ReaboAfrocashSetting::all()->first();
+
+    //         if(!$reabo_afrocash_setting) {
+    //             throw new AppException("Parametre Reabo non defini , contactez l'administrateur !");
+    //         }
+
+    //         $afrocash_receiver_user = User::where('username',$reabo_afrocash_setting->user_to_receive)->first();
+    //         $afrocash_receiver_account = $afrocash_receiver_user->afroCash()->first();
+
+    //         $afrocash_receiver_account->solde -= $recrutement->montant_ttc;
+    //         $pdraf_account->solde += $recrutement->montant_ttc;
+
+    //         # RETOUR DANS LE STOCK VENDEUR
+    //         $produit = $serial->produit();
+    //         $article = $produit->articles()
+    //             ->first()
+    //             ->kits()
+    //             ->first()
+    //             ->articles()
+    //             ->select('produit')
+    //             ->groupBy('produit')
+    //             ->get();
+
+    //         $stock_vendeur = request()->user()->stockVendeurs()
+    //             ->whereIn('produit',$article)
+    //             ->get();
+
+    //         foreach($stock_vendeur as $value) {
+    //             $value->quantite ++;
+    //         }
+            
+    //         #@@@@@@@@@
+
+    //         $logistiqueUser = User::where('type','logistique')
+    //             ->first();
+    //         $logistiqueAccount = $logistiqueUser->afroCash()->first();
+
+    //         $pdcUser = $pdraf_user
+    //             ->pdcUser()
+    //             ->usersPdc();
+
+    //         $pdcAccount = $pdcUser->afroCash('semi_grossiste')->first();
+
+    //         $montantMargeMaterielPdc = $recrutement->transactions()
+    //             ->where('motif','Paiement_Marge_Materiel')
+    //             ->where('compte_credite',$pdcAccount->numero_compte)
+    //             ->first()
+    //             ->montant;
+
+    //         $montantMargeMateriel = $recrutement->transactions()
+    //             ->where('motif','Paiement_Marge_Materiel')
+    //             ->where('compte_credite',$pdraf_account->numero_compte)
+    //             ->first()
+    //             ->montant;
+
+    //         $pdraf_account->solde -= $montantMargeMateriel;
+    //         $logistiqueAccount->solde += $montantMargeMateriel;
+
+    //         # TRANSACTION MARGE MATERIEL PDC
+
+    //         $pdcAccount->solde -= $montantMargeMaterielPdc;
+    //         $logistiqueAccount->solde += $montantMargeMaterielPdc;
+
+    //         $transMarge = new TransactionAfrocash;
+    //         $transMarge->compte_debite = $pdraf_account->numero_compte;
+    //         $transMarge->compte_credite = $logistiqueAccount->numero_compte;
+    //         $transMarge->montant = $montantMargeMateriel;
+    //         $transMarge->motif = "Annul_Paiement_Marge_Materiel";
+    //         $transMarge->recrutement_afrocash_id = $recrutement->id;
+
+    //         $transMargePdc = new TransactionAfrocash;
+    //         $transMargePdc->compte_debite = $pdcAccount->numero_compte;
+    //         $transMargePdc->compte_credite = $logistiqueAccount->numero_compte;
+    //         $transMargePdc->montant = $montantMargeMaterielPdc;
+    //         $transMargePdc->motif = "Annul_Paiement_Marge_materiel";
+    //         $transMargePdc->recrutement_afrocash_id = $recrutement->id;
+            
+
+    //         # ENREGISTREMENT DE LA TRANSACTION
+
+    //         $trans = new TransactionAfrocash;
+    //         $trans->compte_debite = $afrocash_receiver_account->numero_compte;
+    //         $trans->compte_credite = $pdraf_account->numero_compte;
+    //         $trans->montant = $recrutement->montant_ttc;
+    //         $trans->motif = "Annul_Recrutement_afrocash";
+    //         $trans->recrutement_afrocash_id = $recrutement->id;
+
+    //         foreach($stock_vendeur as $value) {
+    //             $value->update();
+    //         }
+
+    //         $serial->update();
+    //         $pdraf_account->update();
+    //         $afrocash_receiver_account->update();
+    //         $recrutement->update();
+    //         $trans->save();
+    //         $transMarge->save();
+    //         $transMargePdc->save();
+
+    //         return response()
+    //             ->json('done');
+    //     }
+    //     catch(AppException $e) {
+    //         header("Erreur",true,422);
+    //         die(json_encode($e->getMessage()));
+    //     }
+    // }
     
 }

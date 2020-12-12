@@ -38,12 +38,12 @@
                             <span class="uk-input uk-border-rounded">{{ vente.adresse_postal }}</span>
                         </div>
                         <div class="uk-width-1-3@m">
-                            <label for="">Email</label>
-                            <span class="uk-input uk-border-rounded">{{ vente.email }}</span>
-                        </div>
-                        <div class="uk-width-1-3@m">
                             <label for="">Telephone</label>
                             <span class="uk-input uk-border-rounded">{{ vente.telephone_client }}</span>
+                        </div>
+                        <div class="uk-width-1-1@m">
+                            <label for="">Email</label>
+                            <span class="uk-input uk-border-rounded">{{ vente.email }}</span>
                         </div>
                     </div>
                     <div class="uk-width-1-2@m uk-grid-small" uk-grid>

@@ -37,7 +37,8 @@ use App\AbonneOption;
 use App\Upgrade;
 use App\TransactionAfrocash;
 use App\Kits;
-
+use App\Interval;
+use App\IntervalProduit;
 
 Trait Rapports {
 
@@ -592,7 +593,7 @@ Trait Rapports {
 								
 								$dateSuggest = $this->checkSerialDebutDate($value);
 								$choiceDate = request()->debut[$key] ? new Carbon(request()->debut[$key]) : null;
-								// $request->input('debut')[$key] ? new Carbon($request->input('debut')[$key]) : null;
+								
 								if(is_null($choiceDate)) {
 									throw new AppException("Erreur ! ressayez ...");
 								}
@@ -689,11 +690,14 @@ Trait Rapports {
 
 								# TROUVER LE MATERIEL CORRESPONDANT A TRAVERS L'INTERVAL DU NUMERO DE MATERIEL
 								$debut_serial = Str::substr($value,0,3);
-								$_data = $produit->where('with_serial',1)
-									->where('interval_serial_first','<=',$debut_serial)
+								$interval = Interval::where('interval_serial_first','<=',$debut_serial)
 									->where('interval_serial_last','>=',$debut_serial)
 									->first();
 
+								$_data = $interval->produit()
+									->first()
+									->produitData()
+									->first();
 								#
 								$exem = new Exemplaire;
 								$exem->status = 'actif';
