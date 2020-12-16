@@ -59,7 +59,7 @@
         </div>            
         <!-- // -->
         <!-- ADMIN -->
-        <template v-if="$route.path == '/all-ventes-pdraf'">
+        <template>
             <template v-if="typeUser == 'admin' || typeUser == 'commercial' || typeUser == 'gcga' || typeUser == 'pdc'">
                 <div class="uk-grid-small" uk-grid>
                     <div class="uk-grid-small uk-width-1-2@m" uk-grid>
@@ -117,9 +117,9 @@
                         <div class="uk-width-1-4@m">
                             <label for=""><span uk-icon="credit-card"></span> Comission Total</label>
                             <span class="uk-input uk-border-rounded uk-text-center">{{comission + marge | numFormat}}</span>
-                            <template v-if="typeUser == 'pdc'">
+                            <!-- <template v-if="typeUser == 'pdc'">
                                 <button uk-toggle="target : #modal-pay-comission" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-button-primary uk-margin-small">se faire payer</button>
-                            </template>
+                            </template> -->
                         </div>
                         
                     </div>
@@ -127,13 +127,12 @@
             </template>
         </template>
         <!-- // -->
-        <template v-if="$route.path == '/all-ventes-pdraf'">
+        <template>
             <template v-if="typeUser == 'pdraf'">
                 <div class="uk-grid-small" uk-grid>
                     <div class="uk-width-1-6@m">
                         <label for="">Comission Total (GNF)</label>
                         <span class="uk-input uk-border-rounded uk-text-center">{{comission | numFormat}}</span>
-                        <button uk-toggle="target : #modal-pay-comission" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-button-primary uk-margin-small">se faire payer</button>
                     </div>
                     <div class="uk-width-1-6@m">
                         <label for="">Paiement</label>
@@ -418,7 +417,9 @@ import detailVente from './DetailReaboAfrocash.vue';
                 },
 
                 confirmUrl : "",
-                removeUrl : ""
+                removeUrl : "",
+                getComissionUrl : "",
+                filterRequestUrl : ""
             }
         },
         watch : {
@@ -554,7 +555,7 @@ import detailVente from './DetailReaboAfrocash.vue';
                             password_confirmation : this.password_confirmation,
                             montant : Math.round(this.marge + this.comission),
                         })
-                    } 
+                    }
                     else if(this.typeUser == 'pdraf') {
                         url = '/user/pdraf/pay-comission-request'
                         var response = await axios.post(url,{
@@ -588,8 +589,17 @@ import detailVente from './DetailReaboAfrocash.vue';
                     this.isLoading = true
                     this.filterData._token = this.myToken
 
+                    if(this.$route.path == '/all-ventes-pdraf') {
+
+                        this.filterRequestUrl = "/user/pdraf/filter-reabo-afrocash/"
+                    }
+                    else if(this.$route.path == '/all-ventes-pdraf/recrutement-afrocash') {
+
+                        this.filterRequestUrl = '/user/pdraf/filter-recrutement-afrocash/'
+                    }
+
                     let response = await axios
-                        .get('/user/pdraf/filter-reabo-afrocash/'+this.filterData.pdc+'/'+this.filterData.user+'/'+this.filterData.payState+'/'+this.filterData.state+'/'+this.filterData.margeState)
+                        .get(this.filterRequestUrl+this.filterData.pdc+'/'+this.filterData.user+'/'+this.filterData.payState+'/'+this.filterData.state+'/'+this.filterData.margeState)
 
                     if(response) {
                         
@@ -618,14 +628,17 @@ import detailVente from './DetailReaboAfrocash.vue';
 
                     if(this.$route.path == '/all-ventes-pdraf') {
                         this.dataUrl = '/user/pdraf/get-reabo-afrocash'
+                        this.getComissionUrl = '/user/reabo-afrocash/get-comission'
                     }
                     else if(this.$route.path == '/all-ventes-pdraf/recrutement-afrocash') {
                         this.dataUrl = '/user/pdraf/get-recrutement-afrocash'
+                        this.getComissionUrl = '/user/recrutement-afrocash/get-comission'
                     }
 
                     this.isLoading = true
                     var response = await axios.get(this.dataUrl)
-                    var theResponse = await axios.get('/user/reabo-afrocash/get-comission')
+                    var theResponse = await axios.get(this.getComissionUrl)
+
 
                     if(response && theResponse) {
                         this.isLoading = false

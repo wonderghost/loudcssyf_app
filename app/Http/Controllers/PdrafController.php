@@ -672,6 +672,1989 @@ class PdrafController extends Controller
 
     ################################ ALL REABO AFROCASH ###########################
 
+    #FILTER RECRUTEMENT AFROCASH
+
+    public function filterRecrutementAfrocash($pdc,$user,$payState,$state,$margeState) {
+        try {
+
+            $data = [];
+            $pdraf_users = [];
+
+            $comission = 0;
+            $total_ttc = 0;
+            $total_marge = 0;
+
+            if($pdc && $user && $payState && $state && $margeState) {
+
+                if(request()->user()->type == 'pdc') {
+                    
+                    $pdraf_users = request()->user()
+                        ->pdrafUsersForList()
+                        ->select('id_pdraf')
+                        ->groupBy('id_pdraf')
+                        ->get();
+                }
+                else if(request()->user()->type == 'pdraf') {
+                    $user = request()->user()->username;
+                }
+                else {
+                    if($pdc != 'all') {
+                        $theUser = User::where('username',$pdc)->first();
+                        $pdraf_users = $theUser->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
+                    }
+                    else {
+                        $pdraf_users = User::select('username')->where('type','pdraf')
+                            ->groupBy('username')
+                            ->get();
+                    }
+                }
+                
+
+                switch ($user) {
+                    case 'all':
+                        switch ($state) {
+                            case 'all' : 
+                                switch ($payState) {
+                                    case 'all' : 
+                                        switch ($margeState) {
+                                            case 'all':
+
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+    
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+    
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+    
+                                            break;
+                                        }
+                                    break;
+                                    case 'payer':
+                                        switch ($margeState) {
+                                            case 'all' : 
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+                                                
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                                
+                                            break;
+                                            case 'payer':
+    
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+                                                
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                    
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+    
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+
+                                                    $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+    
+                                            break;
+                                        }
+                                    break;
+                                    case 'impayer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                                    $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                        }
+                                    break;
+                                }  
+                            break;
+                            case 'confirme':
+                                switch ($payState) {
+                                    case 'all' : 
+                                        switch ($margeState) {
+                                            case 'all' : 
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('confirm_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('confirm_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+
+                                            break;
+                                            case 'payer':
+    
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+    
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+    
+                                            break;
+                                        }
+                                    break;
+                                    case 'payer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+    
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+    
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                        }
+                                    break;
+                                    case 'impayer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                                
+                                                    $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNull('pay_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                        }
+                                    break;
+                                }  
+                            break;
+                            case 'annule' :
+                                switch ($payState) {
+                                    case 'all':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+                                                
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                        }
+                                    break;
+                                    case 'payer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNotNull('pay_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNotNull('pay_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                        }
+                                    break;
+                                    case 'impayer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                                
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNotNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                        }
+                                    break;
+                                }
+                            break;
+                            case 'en_instance':
+                                switch ($payState) {
+                                    case 'all':
+                                        switch ($margeState) {
+                                            case 'all' : 
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);  
+                                            break;
+                                            case 'impayer':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                        }
+                                    break;
+                                    case 'payer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                        }
+                                    break;
+                                    case 'impayer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+
+                                                $total_comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'impayer':
+                                                $filterData = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                                
+                                                    $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                        }
+                                    break;
+                                }
+                            break;
+                        }       
+                    break;
+                    default:
+                        switch ($state) {
+                            case 'all' : 
+                                switch ($payState) {
+                                    case 'all' : 
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                                
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+    
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+    
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+
+
+                                                $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+
+                                                $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+    
+                                            break;
+                                        }
+                                    break;
+                                    case 'payer':
+                                        switch ($margeState) {
+                                            case 'all' : 
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+    
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNotNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+    
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                ->whereNotNull('confirm_at')
+                                                ->whereNotNull('pay_at')
+                                                ->whereNull('pay_comission_id')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+    
+                                            break;
+                                        }
+                                    break;
+                                    case 'impayer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+                                                
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+
+                                            break;
+                                            case 'impayer':
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                        }
+                                    break;
+                                }  
+                            break;
+                            case 'confirme':
+                                switch ($payState) {
+                                    case 'all' : 
+                                        switch ($margeState) {
+                                            case 'all' : 
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+    
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+    
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+    
+                                            break;
+                                        }
+                                    break;
+                                    case 'payer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+    
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+    
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+    
+                                            break;
+                                        }
+                                    break;
+                                    case 'impayer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+
+
+                                            break;
+                                            case 'payer':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('confirm_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                        }
+                                    break;
+                                }  
+                            break;
+                            case 'annule' :
+                                switch ($payState) {
+                                    case 'all':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                        }
+                                    break;
+                                    case 'payer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                        }
+                                    break;
+                                    case 'impayer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'impayer':
+
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNotNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                        }
+                                    break;
+                                }
+                            break;
+                            case 'en_instance':
+                                switch ($payState) {
+                                    case 'all':
+                                        switch ($margeState) {
+                                            case 'all' : 
+
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comissionm = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comissionm = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'impayer':
+
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comissionm = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                        }
+                                    break;
+                                    case 'payer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+                                                    
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+                                                    
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNotNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                        }
+                                    break;
+                                    case 'impayer':
+                                        switch ($margeState) {
+                                            case 'all':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('comission');
+
+                                                $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                ->whereNull('confirm_at')
+                                                ->whereNull('remove_at')
+                                                ->whereNull('pay_at')
+                                                ->orderBy('created_at','desc')
+                                                ->sum('montant_ttc');
+
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'payer':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNotNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                            case 'impayer':
+                                                
+                                                $filterData = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->paginate(100);
+
+                                                    $comission = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('comission');
+
+                                                    $total_ttc = RecrutementAfrocash::where('pdraf_id',$user)
+                                                    ->whereNull('confirm_at')
+                                                    ->whereNull('remove_at')
+                                                    ->whereNull('pay_at')
+                                                    ->whereNull('pay_comission_id')
+                                                    ->orderBy('created_at','desc')
+                                                    ->sum('montant_ttc');
+
+                                                    $total_marge = round(($total_ttc/1.18) * (1.5/100),0);
+                                            break;
+                                        }
+                                    break;
+                                }
+                            break;
+                        }
+                        break;
+                    }
+
+                $data = $filterData;
+            }
+            $all = [];            
+
+            foreach($data as $key => $value) {
+                $marge = round(($value->montant_ttc/1.18) * (1.5/100),0);
+                $options = "";
+
+                foreach($value->options() as $_value) {
+                    $options .= $_value->id_option.",";
+                }
+
+                $created_at = new Carbon($value->created_at);
+                $confirm_at = $value->confirm_at ? new Carbon($value->confirm_at) : null;
+                $remove_at = $value->remove_at ? new Carbon($value->remove_at) : null;
+                $pay_at = $value->pay_at ? new Carbon($value->pay_at) : null;
+                
+                $all[$key] = [
+                    'id'    =>  $value->id,
+                    'materiel'  =>  $value->serial_number,
+                    'formule'   =>  $value->formule_name,
+                    'duree' =>  $value->duree,
+                    'option'    =>  $options,
+                    'montant'   =>  $value->montant_ttc,
+                    'comission' =>  $value->comission,
+                    'telephone_client'  =>  $value->telephone_client,
+                    'pdraf' =>  $value->pdrafUser()->only('localisation','username'),
+                    'pdc_hote'  =>  $value->pdrafUser()->pdcUser()->usersPdc()->only('localisation','username'),
+                    'marge' =>  $marge,
+                    'total' =>  $marge + $value->comission,
+                    'created_at'    =>  $created_at->toDateString(),
+                    'hour'  =>  $created_at->toTimeString(),
+                    'confirm_at'    => $confirm_at ? $confirm_at->toDateTimeString() : null,
+                    'remove_at' =>  $remove_at ? $remove_at->toDateTimeString() : null,
+                    'pay_at'    =>  $pay_at ? $pay_at->toDateTimeString() : null,
+                    'pay_comission_id'  =>  $value->pay_comission_id
+                ];
+
+            }
+
+            return response()
+                ->json([
+                    'all'   =>  $all,
+                    'comission' =>  $comission,
+                    'marge' =>  $total_marge,
+                    'next_url'	=> $data->nextPageUrl(),
+					'last_url'	=> $data->previousPageUrl(),
+					'per_page'	=>	$data->perPage(),
+					'current_page'	=>	$data->currentPage(),
+					'first_page'	=>	$data->url(1),
+					'first_item'	=>	$data->firstItem(),
+					'total'	=>	$data->total()
+                ]);
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function getAllReaboAfrocash(Request $request) {
+        try {
+            if($request->user()->type == 'admin' || $request->user()->type == 'gcga' || $request->user()->type == 'commercial') {
+
+                // list reabonnement afrocash
+                $data = ReaboAfrocash::select()
+                    ->orderBy('created_at','desc')
+                    ->paginate(100);
+            }
+            else if($request->user()->type == 'pdraf') {
+                $data = ReaboAfrocash::where('pdraf_id',$request->user()->username)
+                    ->orderBy('created_at','desc')
+                    ->paginate(100);
+            }
+            else if($request->user()->type == 'pdc') {
+                
+                $pdraf_users = $request->user()
+                    ->pdrafUsersForList()
+                    ->select('id_pdraf')
+                    ->groupBy('id_pdraf')
+                    ->get();
+                
+                $data = ReaboAfrocash::whereIn('pdraf_id',$pdraf_users)
+                    ->orderBy('created_at','desc')
+                    ->paginate(100);
+            }
+
+            $all = [];
+            
+            foreach($data as $key => $value) {
+                $marge = round(($value->montant_ttc/1.18) * (1.5/100),0);
+                $options = "";
+                foreach($value->options() as $_value) {
+                    $options .= $_value->id_option.",";
+                }
+
+                $created_at = new Carbon($value->created_at);
+                $confirm_at = $value->confirm_at ? new Carbon($value->confirm_at) : null;
+                $remove_at = $value->remove_at ? new Carbon($value->remove_at) : null;
+                $pay_at = $value->pay_at ? new Carbon($value->pay_at) : null;
+
+                $upgradeState = $value->upgrade()->first() ? $value->upgrade()->first() : null;
+                
+                $all[$key] = [
+                    'id'    =>  $value->id,
+                    'materiel'  =>  $value->serial_number,
+                    'formule'   =>  $value->formule_name,
+                    'duree' =>  $value->duree,
+                    'option'    =>  $options,
+                    'montant'   =>  $value->montant_ttc,
+                    'comission' =>  $value->comission,
+                    'telephone_client'  =>  $value->telephone_client,
+                    'pdraf' =>  $value->pdrafUser()->only('localisation','username'),
+                    'pdc_hote'  =>  $value->pdrafUser()->pdcUser()->usersPdc()->only('localisation','username'),
+                    'marge' =>  $marge,
+                    'total' =>  $marge + $value->comission,
+                    'created_at'    =>  $created_at->toDateString(),
+                    'hour'  =>  $created_at->toTimeString(),
+                    'confirm_at'    => $confirm_at ? $confirm_at->toDateTimeString() : null,
+                    'remove_at' =>  $remove_at ? $remove_at->toDateTimeString() : null,
+                    'pay_at'    =>  $pay_at ? $pay_at->toDateTimeString() : null,
+                    'pay_comission_id'  =>  $value->pay_comission_id,
+                    'upgrade_state' =>  $upgradeState
+                ];
+
+            }
+
+            return response()
+                ->json([
+                    'all'   =>  $all,
+                    'next_url'	=> $data->nextPageUrl(),
+					'last_url'	=> $data->previousPageUrl(),
+					'per_page'	=>	$data->perPage(),
+					'current_page'	=>	$data->currentPage(),
+					'first_page'	=>	$data->url(1),
+					'first_item'	=>	$data->firstItem(),
+					'total'	=>	$data->total()
+                ]);
+
+
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
     // get Reabo Afrocash by pdc
 
     public function filterReaboAfrocash(Request $request ,$pdc, $user,$payState , $state,$margeState) {
@@ -2567,89 +4550,6 @@ class PdrafController extends Controller
         }
     }
 
-    public function getAllReaboAfrocash(Request $request) {
-        try {
-            if($request->user()->type == 'admin' || $request->user()->type == 'gcga' || $request->user()->type == 'commercial') {
-
-                // list reabonnement afrocash
-                $data = ReaboAfrocash::select()
-                    ->orderBy('created_at','desc')
-                    ->paginate(100);
-            }
-            else if($request->user()->type == 'pdraf') {
-                $data = ReaboAfrocash::where('pdraf_id',$request->user()->username)
-                    ->orderBy('created_at','desc')
-                    ->paginate(100);
-            }
-            else if($request->user()->type == 'pdc') {
-                
-                $pdraf_users = $request->user()
-                    ->pdrafUsersForList()
-                    ->select('id_pdraf')
-                    ->groupBy('id_pdraf')
-                    ->get();
-                
-                $data = ReaboAfrocash::whereIn('pdraf_id',$pdraf_users)
-                    ->orderBy('created_at','desc')
-                    ->paginate(100);
-            }
-
-            $all = [];
-            
-            foreach($data as $key => $value) {
-                $marge = round(($value->montant_ttc/1.18) * (1.5/100),0);
-                $options = "";
-                foreach($value->options() as $_value) {
-                    $options .= $_value->id_option.",";
-                }
-
-                $created_at = new Carbon($value->created_at);
-                $confirm_at = $value->confirm_at ? new Carbon($value->confirm_at) : null;
-                $remove_at = $value->remove_at ? new Carbon($value->remove_at) : null;
-                $pay_at = $value->pay_at ? new Carbon($value->pay_at) : null;
-
-                $upgradeState = $value->upgrade()->first() ? $value->upgrade()->first() : null;
-                
-                $all[$key] = [
-                    'id'    =>  $value->id,
-                    'materiel'  =>  $value->serial_number,
-                    'formule'   =>  $value->formule_name,
-                    'duree' =>  $value->duree,
-                    'option'    =>  $options,
-                    'montant'   =>  $value->montant_ttc,
-                    'comission' =>  $value->comission,
-                    'telephone_client'  =>  $value->telephone_client,
-                    'pdraf' =>  $value->pdrafUser()->only('localisation','username'),
-                    'pdc_hote'  =>  $value->pdrafUser()->pdcUser()->usersPdc()->only('localisation','username'),
-                    'marge' =>  $marge,
-                    'total' =>  $marge + $value->comission,
-                    'created_at'    =>  $created_at->toDateString(),
-                    'hour'  =>  $created_at->toTimeString(),
-                    'confirm_at'    => $confirm_at ? $confirm_at->toDateTimeString() : null,
-                    'remove_at' =>  $remove_at ? $remove_at->toDateTimeString() : null,
-                    'pay_at'    =>  $pay_at ? $pay_at->toDateTimeString() : null,
-                    'pay_comission_id'  =>  $value->pay_comission_id,
-                    'upgrade_state' =>  $upgradeState
-                ];
-
-            }
-
-            return response()
-                ->json([
-                    'all'   =>  $all,
-                    'next_url'	=> $data->nextPageUrl(),
-					'last_url'	=> $data->previousPageUrl(),
-					'per_page'	=>	$data->perPage(),
-					'current_page'	=>	$data->currentPage(),
-					'first_page'	=>	$data->url(1),
-					'first_item'	=>	$data->firstItem(),
-					'total'	=>	$data->total()
-                ]);
-        } catch(AppException $e) {
-            header("Erreur",true,422);
-            die(json_encode($e->getMessage()));
-        }
-    }
 
     # TOUS LES RECRUTEMENTS AFROCASH
 
@@ -2661,6 +4561,7 @@ class PdrafController extends Controller
                     ->paginate();
             }
             else if(request()->user()->type == 'pdraf') {
+                
                 $data = request()->user()
                     ->recrutementAfrocash()
                     ->orderBy('created_at','desc')
@@ -2819,7 +4720,72 @@ class PdrafController extends Controller
             die(json_encode($e->getMessage()));
         }
     }
+    
+    # PAIEMENT COMISSION POUR L'HISTORIQUE DE RECRUTEMENT
+    public function getComissionToPayRecrutement() {
+        try {
+            $comission = 0;
+            $marge = 0;
+            $total = 0;
 
+            $data_comission = [];
+            $data_marge = [];
+
+            if(request()->user()->type == 'admin' || request()->user()->type == 'gcga' || request()->user()->type == 'commercial') {
+                // list reabonnement afrocash
+
+                $comission = RecrutementAfrocash::whereNotNull('confirm_at')
+                    ->whereNull('pay_comission_id')
+                    ->sum('comission');
+
+                $total_ttc = RecrutementAfrocash::whereNotNull('confirm_at')
+                    ->whereNull('pay_comission_id')
+                    ->sum('montant_ttc');
+            }
+            else if(request()->user()->type == 'pdraf') {
+
+                $comission = RecrutementAfrocash::whereNull('pay_at')
+                    ->whereNotNull('confirm_at')
+                    ->where('pdraf_id',request()->user()->username)
+                    ->sum('comission');
+
+                $total_ttc = RecrutementAfrocash::whereNull('pay_at')
+                    ->whereNotNull('confirm_at')
+                    ->where('pdraf_id',request()->user()->username)
+                    ->sum('montant_ttc');
+
+                
+            }
+            else if(request()->user()->type == 'pdc') {
+                
+                $pdraf_users = request()->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
+                
+                $comission = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                    ->whereNotNull('confirm_at')
+                    ->whereNull('pay_comission_id')
+                    ->sum('comission');
+
+                $total_ttc = RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                    ->whereNotNull('confirm_at')
+                    ->whereNull('pay_comission_id')
+                    ->sum('montant_ttc');
+                
+            }
+
+            $marge = round(($total_ttc/1.18) * (1.5/100),0);
+
+            return response()
+                ->json([
+                    'comission' =>  $comission,
+                    'marge' =>  $marge,
+                    'total' =>  $total
+                ]);
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
 
     // HISTORIQUE DE PAIEMENT DE COMISSION POUR PDRAF
 
@@ -3497,137 +5463,55 @@ class PdrafController extends Controller
         }
     }
 
-    # REMOVE RECRUTEMENT AFROCASH
+    # GET AFROCASH COMISSION 
+    public function getAfrocashComission() {
+        try {
 
-    // public function removeRecrutementAfrocash() {
-    //     try {
+            $comission = 0;
 
-    //         $validation = request()->validate([
-    //             'id'    =>  'required|exists:recrutement_afrocashes,id'
-    //         ]);
+            if(request()->user()->type == 'pdraf') {
 
-    //         $recrutement = RecrutementAfrocash::findOrFail(request()->id);
-    //         $serial = $recrutement->serialNumberData();
-    //         $serial->recrutement_afrocash_id = NULL;
+                $comission = request()->user()->reaboAfrocash()
+                    ->whereNull('remove_at')
+                    ->whereNull('pay_at')
+                    ->whereNotNull('confirm_at')
+                    ->sum('comission');
+
+                $comission += request()->user()
+                    ->recrutementAfrocash()
+                    ->whereNull('remove_at')
+                    ->whereNull('pay_at')
+                    ->whereNotNull('confirm_at')
+                    ->sum('comission');
+            }
+            else if(request()->user()->type == 'pdc') {
+                
+                $pdraf_users = request()->user()
+                    ->pdrafUsersForList()
+                    ->select('id_pdraf')
+                    ->groupBy('id_pdraf')
+                    ->get();
+                
+                $ttc = ReaboAfrocash::whereIn('pdraf_id',$pdraf_users)
+                    ->whereNotNull('confirm_at')
+                    ->whereNull('pay_comission_id')
+                    ->sum('montant_ttc');
+
+                $ttc += RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                    ->whereNotNull('confirm_at')
+                    ->whereNull('pay_comission_id')
+                    ->sum('montant_ttc');
+
+                $comission = round(($ttc/1.18) * (1.5/100),0);
+
+            }
             
-    //         # VERIFIER S'IL N'A PAS ETE CONFIRMER
-    //         if(!is_null($recrutement->confirm_at) || !is_null($recrutement->remove_at)) {
-    //             throw new AppException("Annulation Impossible !");
-    //         }
-            
-    //         $recrutement->remove_at = Carbon::now();
-
-    //         # ACCOUNT PDRAF
-
-    //         $pdraf_user = $recrutement->pdrafUser();
-    //         $pdraf_account = $pdraf_user->afroCash()->first();
-
-    //         $reabo_afrocash_setting = ReaboAfrocashSetting::all()->first();
-
-    //         if(!$reabo_afrocash_setting) {
-    //             throw new AppException("Parametre Reabo non defini , contactez l'administrateur !");
-    //         }
-
-    //         $afrocash_receiver_user = User::where('username',$reabo_afrocash_setting->user_to_receive)->first();
-    //         $afrocash_receiver_account = $afrocash_receiver_user->afroCash()->first();
-
-    //         $afrocash_receiver_account->solde -= $recrutement->montant_ttc;
-    //         $pdraf_account->solde += $recrutement->montant_ttc;
-
-    //         # RETOUR DANS LE STOCK VENDEUR
-    //         $produit = $serial->produit();
-    //         $article = $produit->articles()
-    //             ->first()
-    //             ->kits()
-    //             ->first()
-    //             ->articles()
-    //             ->select('produit')
-    //             ->groupBy('produit')
-    //             ->get();
-
-    //         $stock_vendeur = request()->user()->stockVendeurs()
-    //             ->whereIn('produit',$article)
-    //             ->get();
-
-    //         foreach($stock_vendeur as $value) {
-    //             $value->quantite ++;
-    //         }
-            
-    //         #@@@@@@@@@
-
-    //         $logistiqueUser = User::where('type','logistique')
-    //             ->first();
-    //         $logistiqueAccount = $logistiqueUser->afroCash()->first();
-
-    //         $pdcUser = $pdraf_user
-    //             ->pdcUser()
-    //             ->usersPdc();
-
-    //         $pdcAccount = $pdcUser->afroCash('semi_grossiste')->first();
-
-    //         $montantMargeMaterielPdc = $recrutement->transactions()
-    //             ->where('motif','Paiement_Marge_Materiel')
-    //             ->where('compte_credite',$pdcAccount->numero_compte)
-    //             ->first()
-    //             ->montant;
-
-    //         $montantMargeMateriel = $recrutement->transactions()
-    //             ->where('motif','Paiement_Marge_Materiel')
-    //             ->where('compte_credite',$pdraf_account->numero_compte)
-    //             ->first()
-    //             ->montant;
-
-    //         $pdraf_account->solde -= $montantMargeMateriel;
-    //         $logistiqueAccount->solde += $montantMargeMateriel;
-
-    //         # TRANSACTION MARGE MATERIEL PDC
-
-    //         $pdcAccount->solde -= $montantMargeMaterielPdc;
-    //         $logistiqueAccount->solde += $montantMargeMaterielPdc;
-
-    //         $transMarge = new TransactionAfrocash;
-    //         $transMarge->compte_debite = $pdraf_account->numero_compte;
-    //         $transMarge->compte_credite = $logistiqueAccount->numero_compte;
-    //         $transMarge->montant = $montantMargeMateriel;
-    //         $transMarge->motif = "Annul_Paiement_Marge_Materiel";
-    //         $transMarge->recrutement_afrocash_id = $recrutement->id;
-
-    //         $transMargePdc = new TransactionAfrocash;
-    //         $transMargePdc->compte_debite = $pdcAccount->numero_compte;
-    //         $transMargePdc->compte_credite = $logistiqueAccount->numero_compte;
-    //         $transMargePdc->montant = $montantMargeMaterielPdc;
-    //         $transMargePdc->motif = "Annul_Paiement_Marge_materiel";
-    //         $transMargePdc->recrutement_afrocash_id = $recrutement->id;
-            
-
-    //         # ENREGISTREMENT DE LA TRANSACTION
-
-    //         $trans = new TransactionAfrocash;
-    //         $trans->compte_debite = $afrocash_receiver_account->numero_compte;
-    //         $trans->compte_credite = $pdraf_account->numero_compte;
-    //         $trans->montant = $recrutement->montant_ttc;
-    //         $trans->motif = "Annul_Recrutement_afrocash";
-    //         $trans->recrutement_afrocash_id = $recrutement->id;
-
-    //         foreach($stock_vendeur as $value) {
-    //             $value->update();
-    //         }
-
-    //         $serial->update();
-    //         $pdraf_account->update();
-    //         $afrocash_receiver_account->update();
-    //         $recrutement->update();
-    //         $trans->save();
-    //         $transMarge->save();
-    //         $transMargePdc->save();
-
-    //         return response()
-    //             ->json('done');
-    //     }
-    //     catch(AppException $e) {
-    //         header("Erreur",true,422);
-    //         die(json_encode($e->getMessage()));
-    //     }
-    // }
-    
+            return response()
+                ->json($comission);
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
 }

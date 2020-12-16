@@ -7,6 +7,16 @@
         :opacity="1"
         color="#1e87f0"
         background-color="#fff"></loading>
+        <!-- PAY COMISSION BUTTON -->
+        <div v-if="typeUser == 'pdraf' || typeUser == 'pdc'" class="bonus-view uk-position-fixed uk-position-z-index">
+            <button class="uk-button uk-button-small uk-button-primary uk-border-rounded"  uk-tooltip="Paiement comission"> 
+                <span class="">
+                    <i class="material-icons uk-float uk-float-left">attach_money</i> 
+                    {{comissionAfrocash | numFormat}} GNF
+                </span>
+            </button>
+        </div>
+        <!-- // -->
         <!-- BONUS BUTTON -->
         <div v-if="typeUser == 'v_da' || typeUser == 'v_standart'" class="bonus-view uk-position-fixed uk-position-z-index" uk-toggle="target : #modal-pay-bonus">
             <button class="uk-button uk-button-small uk-button-primary uk-border-rounded"  uk-tooltip="Bonus"> 
@@ -201,6 +211,7 @@ export default {
     mounted() {
         this.getInfosForm()
         this.getBonusObjectif()
+        this.getAfrocashComission()
     },
     props : {
         theUser : String
@@ -234,10 +245,23 @@ export default {
             isLoading : false,
             fullPage : true,
             bonus : 0 ,// marge arriere 
-            password_confirm : ""
+            password_confirm : "",
+            comissionAfrocash : 0,
         }
     },
     methods : {
+        // RECUPERATION DU MONTANT TOTAL DE LA COMISSION
+        getAfrocashComission : async function () {
+            try {
+                let response = await axios.get('/user/reseaux-afrocash/get-comission')
+                if(response) {
+                    this.comissionAfrocash = response.data
+                }
+            }
+            catch(error) {
+                alert(error)
+            }
+        },
         // confirmation du paiement du bonus 
         confirmPayBonus : async function () {
             try {
@@ -304,7 +328,7 @@ export default {
             }
         },
         sendAnnuleSaisi : async function() {
-            // this.isLoading = true
+            this.isLoading = true
             UIkit.modal($("#modal-plus")).hide()
             try {
                 this.annuleSaisiForm._token = this.myToken
