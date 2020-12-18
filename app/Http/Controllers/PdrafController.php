@@ -4950,9 +4950,9 @@ class PdrafController extends Controller
 
     // DEMANDE DE PAIEMENT DE COMISSION POUR PDRAF
 
-    public function sendPayComissionRequest(Request $request) {
+    public function sendPayComissionRequest() {
         try {
-            $validation = $request->validate([
+            $validation = request()->validate([
                 'montant'   =>  'required|numeric|min : 10000',
                 'password_confirmation'  => 'required|string',
             ],[
@@ -4960,34 +4960,48 @@ class PdrafController extends Controller
                 'min'   =>  'Le montant minimum requis est de : 100,000 GNF'
             ]);
                 // verification de la validite du mot de passe
-            if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
+            if(!Hash::check(request()->password_confirmation,request()->user()->password)) {
                 throw new AppException("Mot de passe invalide !");
             }
 
-            $reabo_afrocash = $request->user()->reaboAfrocash()
+
+            $comission = 0;
+
+            $comission += request()->user()->reaboAfrocash()
+                ->whereNull('remove_at')
+                ->whereNull('pay_at')
+                ->whereNotNull('confirm_at')
+                ->sum('comission');
+
+            $comission += request()->user()->recrutementAfrocash()
+                ->whereNull('remove_at')
+                ->whereNull('pay_at')
+                ->whereNotNull('confirm_at')
+                ->sum('comission');
+
+            $reabo_afrocash = request()->user()->reaboAfrocash()
                 ->whereNull('remove_at')
                 ->whereNull('pay_at')
                 ->whereNotNull('confirm_at')
                 ->get();
 
-            if($reabo_afrocash->count() <= 0) {
+            $recrutementAfrocash = request()->user()->recrutementAfrocash()
+                ->whereNull('remove_at')
+                ->whereNull('pay_at')
+                ->whereNotNull('confirm_at')
+                ->get();
+
+            if($comission <= 0) {
                 throw new AppException("Vous n'avez pas de comission !");
             }
 
-            $comission = 0;
-
-            foreach($reabo_afrocash as $value) {
-                $comission += $value->comission;
-                $value->pay_at = Carbon::now();
-            }
-
-            if($comission != $request->input('montant')) {
+            if($comission != request()->input('montant')) {
                 throw new AppException("Erreur ! Ressayez");
             }
 
-            $receiver_account = $request->user()->afroCash()->first();
+            $receiver_account = request()->user()->afroCash()->first();
 
-            $sender_user = $request->user()->pdcUser()->usersPdc();
+            $sender_user = request()->user()->pdcUser()->usersPdc();
             $sender_account = $sender_user->afroCash('semi_grossiste')->first();
 
             $receiver_account->solde += $comission;
@@ -5002,31 +5016,37 @@ class PdrafController extends Controller
 
             
 
-            $sender_account->save();
-            $receiver_account->save();
+            $sender_account->update();
+            $receiver_account->update();
             $trans->save();
 
             foreach($reabo_afrocash as $value) {
-                $value->save();
+                $value->pay_at = Carbon::now();
+                $value->update();
+            }
+
+            foreach($recrutementAfrocash as $value) {
+                $value->pay_at = Carbon::now();
+                $value->update();
             }
 
             $n = $this->sendNotification(
                 "Paiement Comission" ,
                 "Reception de ".number_format($comission)." GNF de la part de ".$sender_user->localisation,
-                $request->user()->username
+                request()->user()->username
                 );
             $n->save();
 
             $n = $this->sendNotification(
                 "Paiement Comission" ,
-                "Envoi de ".number_format($comission)." GNF a :".$request->user()->localisation,
+                "Envoi de ".number_format($comission)." GNF a :".request()->user()->localisation,
                 $sender_user->username
                 );
             $n->save();
 
             $n = $this->sendNotification(
                 "Paiement Comission" ,
-                "Envoi de : ".number_format($comission)." GNF de la part de ".$sender_user->localisation.", a : ".$request->user()->localisation,
+                "Envoi de : ".number_format($comission)." GNF de la part de ".$sender_user->localisation.", a : ".request()->user()->localisation,
                 'admin'
                 );
             $n->save();

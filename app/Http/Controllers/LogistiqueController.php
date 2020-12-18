@@ -886,6 +886,7 @@ class LogistiqueController extends Controller
     try {
       $non_attribuer = $sn->select('serial_number')
         ->whereNull('vendeurs')
+        ->where('status','inactif')
         ->get();
 
       $stock = $s
@@ -893,18 +894,18 @@ class LogistiqueController extends Controller
         ->orderBy('exemplaire','asc')
         ->paginate(500);
 
-        $all = [];
+      $all = [];
 
-        foreach($stock as $key => $value) {
-          $deficient = $df->where('serial_to_replace',$value->exemplaire)->first();
-          $all [$key] =[
-            'numero_materiel'  =>   $value->exemplaire,
-            'depot' =>  $value->depot,
-            'article' =>  $value->exemplaire()->produit()->libelle,
-            'etat'  =>  $deficient ? 'defectueux' : '-',
-            'origine' =>  $value->origine
-          ];
-        }
+      foreach($stock as $key => $value) {
+        $deficient = $df->where('serial_to_replace',$value->exemplaire)->first();
+        $all [$key] =[
+          'numero_materiel'  =>   $value->exemplaire,
+          'depot' =>  $value->depot,
+          'article' =>  $value->exemplaire()->produit()->libelle,
+          'etat'  =>  $deficient ? 'defectueux' : '-',
+          'origine' =>  $value->origine
+        ];
+      }
       
       return response()
         ->Json([

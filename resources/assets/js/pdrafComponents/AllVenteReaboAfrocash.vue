@@ -31,32 +31,6 @@
         <download-to-excel :data-to-export="all" :data-fields="field_export" file-name="reabonnement-afrocash"></download-to-excel>
         <detailVente :vente-id="venteId"></detailVente>
         
-
-        <!-- MODAL CONFIRM PAIEMENT COMISSION -->
-        <div v-if="$route.path == '/all-ventes-pdraf'" id="modal-pay-comission" uk-modal="esc-close : false ; bg-close : false">
-            <div class="uk-modal-dialog">
-                <div class="uk-modal-header">
-                    <h2 class="uk-modal-title">Paiement Comission</h2>
-                </div>
-                <div class="uk-modal-body">
-                    <div class="uk-alert-danger" uk-alert v-for="(err,index) in errors" :key="index">
-                        <a class="uk-alert-close" uk-close></a>
-                        <p>{{err}}</p>
-                    </div>
-                    <p class=""></p>
-                    <form @submit.prevent="sendPayComissionRequest()">
-                        <div class="uk-margin-small">
-                            <label for="">Confirmez votre mot de passe</label>
-                            <input v-model="password_confirmation" type="password" class="uk-input uk-border-rounded" placeholder="Entrez le mot de passe">
-                        </div>
-                        <button class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
-                    </form>
-                </div>
-                <div class="uk-modal-footer uk-text-right">
-                    <button class="uk-button uk-button-danger uk-border-rounded uk-modal-close uk-button-small" type="button">Cancel</button>
-                </div>
-            </div>
-        </div>            
         <!-- // -->
         <!-- ADMIN -->
         <template>
@@ -537,51 +511,6 @@ import detailVente from './DetailReaboAfrocash.vue';
                         alert(error.response.data)
                     }
                     this.getAllData()
-                }
-            },
-            sendPayComissionRequest : async function () {
-                this.errors = []
-                try {
-
-                    UIkit.modal($("#modal-pay-comission")).hide()
-                    this.isLoading = true
-
-                    var url = ""
-
-                    if(this.typeUser == 'pdc') {
-                        url = '/user/pdc/pay-comission-request'
-                        var response = await axios.post(url,{
-                            _token : this.myToken,
-                            password_confirmation : this.password_confirmation,
-                            montant : Math.round(this.marge + this.comission),
-                        })
-                    }
-                    else if(this.typeUser == 'pdraf') {
-                        url = '/user/pdraf/pay-comission-request'
-                        var response = await axios.post(url,{
-                            _token : this.myToken,
-                            password_confirmation : this.password_confirmation,
-                            montant : Math.round(this.comission),
-                        })
-                    }
-                    
-                    if(response && response.data == 'done') {
-                        this.isLoading = false
-                        alert("Success !")
-                        this.getAllData()
-                    }
-                } catch(error) {
-                    UIkit.modal($("#modal-pay-comission")).show()
-                    this.isLoading = false
-                    
-                    if(error.response.data.errors) {
-                        let errorTab = error.response.data.errors
-                        for (var prop in errorTab) {
-                            this.errors.push(errorTab[prop][0])
-                        }
-                    } else {
-                        this.errors.push(error.response.data)
-                    }
                 }
             },
             filterRequest : async function () {

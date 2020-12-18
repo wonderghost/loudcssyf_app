@@ -9,13 +9,59 @@
         background-color="#fff"></loading>
         <!-- PAY COMISSION BUTTON -->
         <div v-if="typeUser == 'pdraf' || typeUser == 'pdc'" class="bonus-view uk-position-fixed uk-position-z-index">
-            <button class="uk-button uk-button-small uk-button-primary uk-border-rounded"  uk-tooltip="Paiement comission"> 
+            <button class="uk-button uk-button-small uk-button-primary uk-border-rounded"  uk-tooltip="Paiement comission" uk-toggle="target : #modal-pay-comission"> 
                 <span class="">
                     <i class="material-icons uk-float uk-float-left">attach_money</i> 
-                    {{comissionAfrocash | numFormat}} GNF
+                    Comission
+                    <!-- {{comissionAfrocash | numFormat}} GNF -->
                 </span>
             </button>
         </div>
+        <!-- // -->
+        <!-- MODAL PAY COMISSION -->
+        <template v-if="typeUser == 'pdraf' || typeUser == 'pdc'">
+            <div id="modal-pay-comission" uk-modal="esc-close : false ; bg-close : false">
+                <div class="uk-modal-dialog">
+                    <div class="uk-modal-header">
+                        <h2 class="uk-modal-title">Paiement Comission</h2>
+                    </div>
+                    <div class="uk-modal-body">
+                        <div v-if="errors">
+                            <div v-for="(err,index) in errors" :key="index">
+                                <a class="uk-alert-close" uk-close></a>
+                                <p>
+                                    {{err}}
+                                </p>
+                            </div>
+                        </div>
+                        <form @submit.prevent="sendPayComissionRequest()" class="uk-grid-small" uk-grid>
+                            <!-- Error block -->
+                            <template v-if="errors">
+                                <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-1@m" uk-alert v-for="(error,index) in errors" :key="index">
+                                    <a href="#" class="uk-alert-close" uk-close></a>
+                                    <p>{{error}}</p>
+                                </div>
+                            </template>
+                            <p uk-alert class="uk-alert-info uk-border-rounded">
+                                <span uk-icon="icon : info"></span> Vous etes sur le point de confirmer le paiement de votre Comission qui s'eleve a : <span class="uk-text-bold">{{comissionAfrocash | numFormat}} GNF</span>
+                            </p>
+                            <div class="uk-width-1-1@m">
+                                <label for=""><span uk-icon="icon : lock"></span> Confirmez votre mot de passe </label>
+                                <input type="password" placeholder="Entrez votre mot de passe" v-model="password_confirm" class="uk-input uk-border-rounded">
+                            </div>
+                            <div>
+                                <button class="uk-button uk-button-small uk-border-rounded uk-button-primary">
+                                    Envoyez
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="uk-modal-footer uk-text-right">
+                        <button class="uk-button uk-button-danger uk-border-rounded uk-button-small uk-modal-close" type="button">Fermer</button>
+                    </div>
+                </div>
+            </div>
+        </template>
         <!-- // -->
         <!-- BONUS BUTTON -->
         <div v-if="typeUser == 'v_da' || typeUser == 'v_standart'" class="bonus-view uk-position-fixed uk-position-z-index" uk-toggle="target : #modal-pay-bonus">
@@ -250,12 +296,61 @@ export default {
         }
     },
     methods : {
+        // CONFIRMATION PAIEMENT COMISSION AFROCASH
+        sendPayComissionRequest : async function () {
+            this.errors = []
+            try {
+
+                UIkit.modal($("#modal-pay-comission")).hide()
+                this.isLoading = true
+
+                var url = ""
+
+                if(this.typeUser == 'pdc') {
+                    url = '/user/pdc/pay-comission-request'
+                    var response = await axios.post(url,{
+                        _token : this.myToken,
+                        password_confirmation : this.password_confirm,
+                        montant : Math.round(this.comissionAfrocash),
+                    })
+                }
+                else if(this.typeUser == 'pdraf') {
+                    url = '/user/pdraf/pay-comission-request'
+                    var response = await axios.post(url,{
+                        _token : this.myToken,
+                        password_confirmation : this.password_confirm,
+                        montant : Math.round(this.comissionAfrocash),
+                    })
+                }
+                
+                if(response) {
+                    
+                    this.isLoading = false
+                    alert("Success !")
+                    location.reload()
+                }
+            } catch(error) {
+                UIkit.modal($("#modal-pay-comission")).show()
+                this.isLoading = false
+                
+                if(error.response.data.errors) {
+                    let errorTab = error.response.data.errors
+                    for (var prop in errorTab) {
+                        this.errors.push(errorTab[prop][0])
+                    }
+                } else {
+                    this.errors.push(error.response.data)
+                }
+            }
+        },
         // RECUPERATION DU MONTANT TOTAL DE LA COMISSION
         getAfrocashComission : async function () {
             try {
+                this.Loading = true
                 let response = await axios.get('/user/reseaux-afrocash/get-comission')
                 if(response) {
                     this.comissionAfrocash = response.data
+                    this.isLoading = false
                 }
             }
             catch(error) {

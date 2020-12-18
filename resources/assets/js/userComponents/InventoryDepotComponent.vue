@@ -33,21 +33,7 @@
 
       
       <div class="uk-grid-small" uk-grid>
-        <!-- <div class="uk-width-1-4@m"></div>
-        <div class="uk-width-1-4@m">
-          <label for="">Etat</label>
-          <select v-model="filterEtat" class="uk-select uk-border-rounded">
-            <option value="-">Non Defectueux</option>
-            <option value="defectueux">Defectueux</option>
-          </select>
-        </div>
-        <div v-if="typeUser == 'admin' || typeUser == 'logistique' || typeUser == 'commercial'" class="uk-width-1-4@m">
-          <label for="">Depots</label>
-          <select v-model="filterState" class="uk-select uk-border-rounded">
-            <option value="">Tous</option>
-            <option :value="d.localisation" v-for="d in materials" :key="d.localisation"> {{d.localisation}} </option>
-          </select>
-        </div> -->
+        
         <!-- paginate component -->
         <div class="uk-width-1-4@m uk-margin-top">
           <span class="">{{firstItem}} - {{firstItem + perPage}} sur {{total}}</span>

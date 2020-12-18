@@ -13,6 +13,7 @@ use App\TransactionAfrocash;
 use App\MakePdraf;
 use App\PayCommission;
 use App\ReaboAfrocash;
+use App\RecrutementAfrocash;
 use App\Credit;
 use App\Kits;
 use App\CommandAfrocash;
@@ -398,9 +399,9 @@ public function addNewPdc(Request $request) {
 }
 // SEND PAY COMISSION REQUEST
 
-    public function sendPayComissionRequest(Request $request  , PayCommission $pay) {
+    public function sendPayComissionRequest(PayCommission $pay) {
         try {
-            $validation = $request->validate([
+            $validation = request()->validate([
                 'montant'   =>  'required|numeric|min : 10000',
                 'password_confirmation'  => 'required|string',
             ],[
@@ -408,55 +409,62 @@ public function addNewPdc(Request $request) {
                 'min'   =>  'Le montant minimum requis est de : 1,000,000 GNF'
             ]);
 
-            if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
+            if(!Hash::check(request()->input('password_confirmation'),request()->user()->password)) {
                 throw new AppException("Mot de passe invalide !");
             }
 
             // get all reabo afrocash
-            $data_pdraf = $request->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
+            $data_pdraf = request()->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
+
+            $ttc = ReaboAfrocash::whereIn('pdraf_id',$data_pdraf)
+                ->whereNotNull('confirm_at')
+                ->whereNull('pay_comission_id')
+                ->sum('montant_ttc');
+
+            $ttc += RecrutementAfrocash::whereIn('pdraf_id',$data_pdraf)
+                ->whereNotNull('confirm_at')
+                ->whereNull('pay_comission_id')
+                ->sum('montant_ttc');
+
+            $marge = round(($ttc/1.18) * (1.5/100),0);
+
+            if($marge <= 0) {
+                throw new AppException("Vous n'avez pas de comission !");
+            }
+
+            $pay->id = "pay_comission_".request()->user()->username.time();
+            $tmp = $pay->id;
+            
+            $pay->montant = $marge;
 
             $reaboAfrocash = ReaboAfrocash::whereIn('pdraf_id',$data_pdraf)
                 ->whereNotNull('confirm_at')
                 ->whereNull('pay_comission_id')
                 ->get();
-            
-            
-            if($reaboAfrocash->count() <= 0 ) {
-                throw new AppException("Vous n'avez pas de comission !");
-            }
-            
-            $pay->id = "pay_comission_".$request->user()->username.time();
-            $tmp = $pay->id;
-            
-            $pay->montant = 0;
 
-            foreach($reaboAfrocash as $key => $value) {
-                $marge = round(($value->montant_ttc/1.18) * (1.5/100),0);
-                $pay->montant += ($value->comission + $marge);
-            }
+            $recrutementAfrocash = RecrutementAfrocash::whereIn('pdraf_id',$data_pdraf)
+                ->whereNotNull('confirm_at')
+                ->whereNull('pay_comission_id')
+                ->get();
 
-            if($pay->montant < 10000 ) {
-                throw new AppException("Vous devez avoir au moins 10,000 GNF !");
-            }
 
             // EFFECTUER LA TRANSACTION
-            $receiver_account = $request->user()->afroCash('semi_grossiste')->first();
+            $receiver_account = request()->user()->afroCash('semi_grossiste')->first();
             $sender_account = Credit::find('afrocash');
 
-            $receiver_account->solde += $pay->montant;
-            $sender_account->solde -= $pay->montant;
+            $receiver_account->solde += $marge;
+            $sender_account->solde -= $marge;
 
 
             $trans = new TransactionAfrocash;
             $trans->compte_credite = $receiver_account->numero_compte;
-            $trans->montant = $pay->montant;
+            $trans->montant = $marge;
             $trans->motif = "Comission_Pdc_Afrocash";
 
             // 
 
             $pay->pay_at = Carbon::now();
             $pay->status = 'validated';
-
 
             $amount = $pay->montant;
 
@@ -466,26 +474,31 @@ public function addNewPdc(Request $request) {
 
             $pay->save();
 
+             
+
             foreach($reaboAfrocash as $value) {
                 $value->pay_comission_id = $tmp;
-                $value->save();
+                $value->update();
             }
-
-
+            
+            foreach($recrutementAfrocash as $value) {
+                $value->pay_comission_id = $tmp;
+                $value->update();
+            }
 
             $_user = User::where('type','gcga')->get();
             foreach($_user as $value) {
-                $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".$request->user()->localisation,$value->username);
+                $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".request()->user()->localisation,$value->username);
                 $n->save();
             }
 
-            $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".$request->user()->localisation,$request->user()->username);
+            $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".request()->user()->localisation,request()->user()->username);
             $n->save();
 
-            $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".$request->user()->localisation,'admin');
+            $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".request()->user()->localisation,'admin');
             $n->save();
 
-            $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".$request->user()->localisation,'root');
+            $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".request()->user()->localisation,'root');
             $n->save();
             
             return response()
