@@ -4806,7 +4806,9 @@ class PdrafController extends Controller
 
     public function getAllPdraf() {
         try {
-            $pdraf_users = User::where('type','pdraf')->get();
+            $pdraf_users = User::where('type','pdraf')
+                ->orderBy('localisation')
+                ->get();
             $data = [];
             foreach($pdraf_users as $key => $value) {
                 $data[$key] = [

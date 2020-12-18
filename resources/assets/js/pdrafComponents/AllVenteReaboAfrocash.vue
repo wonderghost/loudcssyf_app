@@ -48,10 +48,16 @@
                         </template>
                         <div class="uk-width-1-4@m">
                             <label for=""><span uk-icon="users"></span> Utilisateur</label>
-                            <select @change="filterRequest()" v-model="filterData.user" class="uk-select uk-border-rounded">
+                            <vue-single-select
+                                v-model="userText"
+                                :options="userList"
+                                :max-results="500"
+                                :required="true">
+                            </vue-single-select>
+                            <!-- <select @change="filterRequest()" v-model="filterData.user" class="uk-select uk-border-rounded">
                                 <option value="all">Tous</option>
                                 <option v-for="(p,index) in pdrafList" :key="index" :value="p.user.username">{{p.user.localisation}}</option>
-                            </select>
+                            </select> -->
                         </div>
                         <div class="uk-width-1-4@m">
                             <label for="">Paiement</label>
@@ -330,14 +336,17 @@
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
 import detailVente from './DetailReaboAfrocash.vue';
+import VueSingleSelect from "vue-single-select";
 
     export default {
         components : {
             Loading,
-            detailVente
+            detailVente,
+            'vue-single-select' : VueSingleSelect
         },
         mounted () {
             this.getAllData()
+            
         },
         data() {
             return {
@@ -378,6 +387,7 @@ import detailVente from './DetailReaboAfrocash.vue';
                 isLoading : false,
                 fullPage : true,
                 pdrafList : [],
+                userList : [],
                 password_confirmation : "",
                 errors : [],
                 filterData : {
@@ -389,7 +399,7 @@ import detailVente from './DetailReaboAfrocash.vue';
                     state : "all",
                     margeState : "all"
                 },
-
+                userText : "",
                 confirmUrl : "",
                 removeUrl : "",
                 getComissionUrl : "",
@@ -397,7 +407,9 @@ import detailVente from './DetailReaboAfrocash.vue';
             }
         },
         watch : {
-            '$route' : 'getAllData'
+            '$route' : 'getAllData',
+            'filterData.user' : 'filterRequest',
+            'userText' : 'filterRequest'
         },
         methods : {
             paginateFunction : async function (url) {
@@ -528,7 +540,7 @@ import detailVente from './DetailReaboAfrocash.vue';
                     }
 
                     let response = await axios
-                        .get(this.filterRequestUrl+this.filterData.pdc+'/'+this.filterData.user+'/'+this.filterData.payState+'/'+this.filterData.state+'/'+this.filterData.margeState)
+                        .get(this.filterRequestUrl+this.filterData.pdc+'/'+this.getUsername+'/'+this.filterData.payState+'/'+this.filterData.state+'/'+this.filterData.margeState)
 
                     if(response) {
                         
@@ -604,6 +616,9 @@ import detailVente from './DetailReaboAfrocash.vue';
 
                         }
                     }
+                    this.pdrafList.forEach(p => {
+                        this.userList.push(p.user.localisation)
+                    })
 
                 } catch(error) {
                     alert(error)
@@ -612,6 +627,16 @@ import detailVente from './DetailReaboAfrocash.vue';
             }
         },
         computed : {
+            getUsername() {
+                if(this.userText != null && this.userText != '') {
+
+                    return this.pdrafList.filter((p) => {
+                        return p.user.localisation == this.userText
+                    })[0].user.username
+
+                }
+                return "all"
+            },
             typeUser() {
                 return this.$store.state.typeUser
             },

@@ -511,7 +511,9 @@ public function addNewPdc(Request $request) {
 
     public function getAllPdc() {
         try {
-            $pdc_users = User::where('type','pdc')->get();
+            $pdc_users = User::where('type','pdc')
+                ->orderBy('localisation')
+                ->get();
             $data = [];
             foreach($pdc_users as $key => $value) {
                 $data[$key] = [
