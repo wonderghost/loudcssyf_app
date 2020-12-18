@@ -364,7 +364,8 @@ class LogistiqueController extends Controller
 
                 // verifier si c'est la parabole
                 $tmp = $p->where('with_serial',0)
-                  ->where('reference',$request->input('produit'))->first();
+                  ->where('reference',$request->input('produit'))
+                  ->first();
 
                 if($request->input('compense') > 0) {
                     // 
@@ -381,68 +382,66 @@ class LogistiqueController extends Controller
                 $ravitaillementVendeur->commands  = $commande;
 
                 // creation de la livraison
+
                 $livraison = new Livraison ;
                 $livraison->ravitaillement = $ravitaillementVendeur->id_ravitaillement;
                 $livraison->produits = $request->input('produit');
                 $livraison->depot = $request->input('depot');
                 $livraison->quantite = $request->input('quantite');
+
                 do {
                   $livraison->code_livraison  = Str::random(6);
                 } while ($this->existCode($livraison->code_livraison));
 
                 //debit dans le depot choisi
 
-                $newQuantite = StockPrime::where([
-                  'produit'  =>  $request->input('produit'),
-                  'depot' =>  $request->input('depot')
-                ])->first()->quantite - $request->input('quantite');
+                $stockPrime = StockPrime::where('produit',$request->input('produit'))
+                  ->where('depot',$request->input('depot'))
+                  ->first();
 
-                StockPrime::where([
-                  'produit' =>  $request->input('produit'),
-                  'depot' =>  $request->input('depot')
-                ])->update([
-                  'quantite'  =>  $newQuantite
-                ]);
+                $stockPrime->quantite -= $request->input('quantite');
 
-                if($this->vendeurHasStock($request->input('vendeur'),$request->input('produit'))) {
-                  // verifier si le produit a ete enregistre au moins une fois
-                  $quantiteVendeur = StockVendeur::where([
-                    'vendeurs'  =>  $request->input('vendeur'),
-                    'produit' =>  $request->input('produit')
-                  ])->first()->quantite + $request->input('quantite');
-                  //
-                  StockVendeur::where([
-                    'vendeurs'  =>  $request->input('vendeur'),
-                    'produit' =>  $request->input('produit')
-                  ])->update([
-                    'quantite'  =>  $quantiteVendeur
-                  ]);
+                $stockVendeur = StockVendeur::where('vendeurs',$request->input('vendeur'))
+                  ->where('produit',$request->input('produit'))
+                  ->first();
 
-                } else {
-                  // enregistrer pour la premiere fois
+
+                if($stockVendeur) {
+                  //LE PRODUIT A ETE ENREGISTRER AU MOINS UNE FOIS
+                  $stockVendeur->quantite += $request->input('quantite');
+                }
+                else {
+                  //ENREGISTRER POUR LA PREMIERE FOIS
                   $stockVendeur = new StockVendeur;
                   $stockVendeur->produit = $request->input('produit');
                   $stockVendeur->vendeurs = $request->input('vendeur');
                   $stockVendeur->quantite = $request->input('quantite');
-                  $stockVendeur->save();
+                  
                 }
 
+                $stockPrime->save();
+                $stockVendeur->save();
                 // ENREGISTREMENT DE LA COMPENSE
-                
 
                 $ravitaillementVendeur->save();
                 $livraison->save();
+
                 // ENREGISTREMENT DE LA NOTIFICATION
                 $n = $this->sendNotification("Ravitaillement Materiel","Ravitaillement materiel effectue au compte de :".User::where('username',$request->input('vendeur'))->first()->localisation,User::where('type','admin')->first()->username);
                 $n->save();
+
                 $n = $this->sendNotification("Ravitaillement Materiel" ,"Vous avez effectue un ravitaillement au compte de ".User::where("username",$request->input('vendeur'))->first()->localisation,Auth::user()->username);
                 $n->save();
+
                 $n = $this->sendNotification("Ravitaillement Materiel" ,"Votre commande materiel a ete confirme , rendez vous dans le depot : ".$request->input('depot'),$request->input('vendeur'));
                 $n->save();
+
                 $n = $this->sendNotification("Livraison Materiel" ,"Vous avez une livraison a effectue au compte de : ".User::where('username',$request->input('vendeur'))->first()->localisation , Depots::where("localisation",$request->input("depot"))->first()->vendeurs);
                 $n->save();
+
                 return response()
                   ->json('done');
+                
               } else {
                 throw new AppException("Ravitaillement indisponible");
               }
