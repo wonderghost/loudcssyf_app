@@ -301,7 +301,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	
 	Route::post('/user/rapport/check-upgrade','RapportControlleur@checkSerialOnUpgradeState');
 	
-	Route::get('/user/rapport/filter/{type}/{state}/{promo}/{payState}/{user}','AdminController@filterRapportRequest');
+	Route::get('/user/rapport/filter/{type}/{state}/{promo}/{payState}/{user}/{from}/{to}','AdminController@filterRapportRequest');
 	Route::get('/user/rapport/all','AdminController@getAllRapport');
 	Route::get('user/rapport/commission-total','RapportControlleur@totalCommission');
 	#listing promo
@@ -354,6 +354,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/logistique/commandes/livraison','AdminController@getAllLivraison')->middleware('logistique');
 	Route::post('/logistique/commandes/abort','AdminController@abortCommandMaterial')->middleware('logistique');
 	Route::get('/user/commandes/livraison','AdminController@getAllLivraison');
+	Route::get('/user/livraison/filter/{user}/{state}','AdminController@livraisonFilterRequest');
 	// === MATERIELS
 	Route::get('/user/list-material','LogistiqueController@listMaterial')->middleware('logistique');
 	Route::post('/user/list-material','LogistiqueController@getListMaterial')->middleware('logistique');

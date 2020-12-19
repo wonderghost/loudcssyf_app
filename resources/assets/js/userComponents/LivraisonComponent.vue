@@ -19,16 +19,20 @@
           <div class="uk-grid-small uk-margin-top uk-flex uk-flex-right" uk-grid>
             <div class="uk-width-1-6@m">
               <label for=""><span uk-icon=""></span>  Status</label>
-              <select class="uk-select uk-border-rounded">
-                <option value="">Tous</option>
+              <select @change="filterRequest()" v-model="filterData.status" class="uk-select uk-border-rounded">
+                <option value="all">Tous</option>
                 <option value="unconfirmed">en attente</option>
                 <option value="confirmed">confirmer</option>
-                <option value="aborted">annuler</option>
+                <!-- <option value="aborted">annuler</option> -->
               </select>
             </div>
             <div v-if="typeUser != 'v_da' && typeUser != 'v_standart'" class="uk-width-1-4@m">
-              <label for="">Recherche</label>
-              <input type="text" class="uk-input uk-border-rounded" placeholder="Recherche ...">
+              <label for="">Vendeurs</label>
+              <!-- <input type="text" class="uk-input uk-border-rounded" placeholder="Recherche ..."> -->
+              <select @change="filterRequest()" v-model="filterData.user" class="uk-select uk-border-rounded">
+                <option value="all">Tous les vendeurs</option>
+                <option v-for="(u,index) in userList" :key="index" :value="u.username">{{ u.localisation }}</option>
+              </select>
             </div>
             <!-- paginate component -->
             <div class="uk-width-1-3@m uk-margin-top">
@@ -153,23 +157,23 @@
           <div class="uk-modal-dialog uk-modal-body">
               <button class="uk-modal-close-default" type="button" uk-close></button>
               <p class="">
-                Vous confirmez l'envoi de : <span class="uk-text-bold">{{formDataConfirm.livraison.quantite}} {{formDataConfirm.livraison.produit}}</span> chez  :  <span class="uk-text-bold">{{formDataConfirm.livraison.vendeur}}</span>
+                Vous confirmez l 'envoi de : <span class="uk-text-bold">{{formDataConfirm.livraison.quantite}} {{formDataConfirm.livraison.produit}}</span> chez  :  <span class="uk-text-bold">{{formDataConfirm.livraison.vendeur}}</span>
               </p>
 
               <hr class="uk-divider-small">
               <form @submit.prevent="confirmLivraison()">
-                <!-- Erreor block -->
-                <template v-if="errors.length" v-for="error in errors">
-                <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
-                  <a href="#" class="uk-alert-close" uk-close></a>
-                  <p>{{error}}</p>
-                </div>
-              </template>
+                <!-- Error block -->
+                <template v-if="errors">
+                  <div v-for="(error,index) in errors" :key="index" class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+                    <a href="#" class="uk-alert-close" uk-close></a>
+                    <p>{{error}}</p>
+                  </div>
+                </template>
                 <div class="uk-margin-small">
                   <label for="">Confirmez votre Mot de passe</label>
                   <input type="password" v-model="formDataConfirm.password_confirmation" class="uk-input uk-border-rounded" placeholder="Entrez votre mot de passe ici" value="">
                 </div>
-              <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">validez</button>
+                <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">validez</button>
             </form>
           </div>
       </div>
@@ -190,6 +194,11 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         },
         data () {
           return {
+            filterData : {
+              status : "all",
+              user : "all"
+            },
+            userList : [],
             field_export : {
               'Date' : 'date',
               'Vendeurs' : 'vendeur',
@@ -231,20 +240,42 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           }
         },
         methods : {
+          filterRequest : async function () {
+            try {
+              this.isLoading = true
+
+              let response = await axios.get('/user/livraison/filter/'+this.filterData.user+'/'+this.filterData.status)
+              if(response) {
+
+                this.livraisonList = response.data.all
+
+                this.nextUrl = response.data.next_url
+                this.lastUrl = response.data.last_url
+                this.perPage = response.data.per_page
+                this.firstItem = response.data.first_item
+                this.total = response.data.total
+                
+                this.isLoading = false
+              }
+            }
+            catch(error) {
+              alert(error)
+            }
+          },
           paginateFunction : async function (url) {
             try {
               
               let response = await axios.get(url)
               if(response && response.data) {
                 
-                this.livraisonList = response.data.original.all
+                this.livraisonList = response.data.all
 
-                this.nextUrl = response.data.original.next_url
-                this.lastUrl = response.data.original.last_url
-                this.currentPage = response.data.original.current_page
-                this.firstPage = response.data.original.first_page
-                this.firstItem = response.data.original.first_item,
-                this.total = response.data.original.total
+                this.nextUrl = response.data.next_url
+                this.lastUrl = response.data.last_url
+                this.currentPage = response.data.current_page
+                this.firstPage = response.data.first_page
+                this.firstItem = response.data.first_item,
+                this.total = response.data.total
               }
             }
             catch(error) {
@@ -258,33 +289,30 @@ import 'vue-loading-overlay/dist/vue-loading.css'
               this.isLoading = true
 
               if(this.typeUser == 'admin') {
-
                 var response = await axios.get('/admin/commandes/livraison')
               } else if(this.typeUser == 'logistique') {
                 var response = await axios.get('/logistique/commandes/livraison')
               } else {
                 var response = await axios.get('/user/commandes/livraison')
               }
-              this.livraisonList = response.data.original.all
 
-              this.nextUrl = response.data.original.next_url
-              this.lastUrl = response.data.original.last_url
-              this.perPage = response.data.original.per_page
-              this.firstItem = response.data.original.first_item
-              this.total = response.data.original.total
+              var theResponse = await axios.get('/user/all-vendeurs')
 
-
-              this.$store.commit('setLivraisonMaterial',response.data.original.all)
-              this.isLoading = false
+              if(response && theResponse) {
+                
+                this.livraisonList = response.data.all
+                this.userList = theResponse.data
+  
+                this.nextUrl = response.data.next_url
+                this.lastUrl = response.data.last_url
+                this.perPage = response.data.per_page
+                this.firstItem = response.data.first_item
+                this.total = response.data.total
+                this.isLoading = false
+              }
             } catch (e) {
               alert(e)
             }
-          },
-          filterLivraison : function (status) {
-            this.currentPage = 1
-            this.start = 0
-            this.end = 10
-            this.$store.commit('setStateLivraison',status)
           },
           makeLivraison : function (id,quantite ,withSerial) {
             this.formData._token = this.myToken
@@ -380,27 +408,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           }
         },
         computed : {
-          livraisonMaterial () {
-            return  this.$store.state.livraisonMaterial.filter( (liv) => {
-              return liv.validation === this.statusLivraison
-            })
-          },
-          livraisonFilter () {
-            return this.livraisonMaterial.filter((liv) => {
-              if(this.typeUser == 'admin' || this.typeUser == 'logistique' || this.typeUser == 'commercial') {
-                return liv
-              }
-              else if(this.typeUser == 'gdepot') {
-                return liv.depot.match(this.userLocalisation)
-              }
-              else if(this.typeUser == 'v_da' || this.typeUser == 'v_standart') {
-                return liv.vendeur.match(this.userLocalisation)
-              }
-            })
-          },
-          statusLivraison () {
-            return this.$store.state.statusLivraison
-          },
           typeUser () {
             return this.$store.state.typeUser
           },

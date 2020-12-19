@@ -152,6 +152,14 @@
     <template id="">
       <div class="uk-grid-small" uk-grid>
         <div class="uk-width-1-6@m">
+          <label for="">Du</label>
+          <input @blur="filterRequest()" v-model="filterData.from" type="date" class="uk-input uk-border-rounded">
+        </div>
+        <div class="uk-width-1-6@m">
+          <label for="">Au</label>
+          <input @blur="filterRequest()" v-model="filterData.to" type="date" class="uk-input uk-border-rounded">
+        </div>
+        <div class="uk-width-1-6@m">
           <label for="">Type</label>
           <select @change="filterRequest()" v-model="filterData.type" class="uk-select uk-border-rounded">
             <option value="all">Tous</option>
@@ -359,7 +367,9 @@ import datepicker from 'vue-date-picker'
               state : "all",
               promoState : "all",
               payState : "all",
-              user : "all"
+              user : "all",
+              from : "all",
+              to : "all"
             },
              // paginate
             nextUrl : "",
@@ -464,7 +474,15 @@ import datepicker from 'vue-date-picker'
             try {
               this.isLoading = true
               let response = await axios
-                .get('/user/rapport/filter/'+this.filterData.type+'/'+this.filterData.state+'/'+this.filterData.promoState+'/'+this.filterData.payState+'/'+this.filterData.user)
+                .get('/user/rapport/filter/'+
+                  this.filterData.type+'/'+
+                  this.filterData.state+'/'+
+                  this.filterData.promoState+'/'+
+                  this.filterData.payState+'/'+
+                  this.filterData.user+'/'+
+                  this.filterData.from+'/'+
+                  this.filterData.to)
+
               if(response) {
                 this.rapportList = response.data.all
                 this.commission = response.data.comission

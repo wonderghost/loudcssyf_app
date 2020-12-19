@@ -891,8 +891,9 @@ Trait Rapports {
 
 	// FILTRE DES RAPPORTS
 
-	public function filterRapportRequest(Request $request , $type,$state,$promo,$payState,$user) {
+	public function filterRapportRequest($type,$state,$promo,$payState,$user,$from,$to) {
 		try {
+
 			$promoStateValue = [
 				'en_promo'	=>	1,
 				'hors_promo'	=>	0
@@ -901,8 +902,8 @@ Trait Rapports {
 			$all = [];
 			$comission = 0;
 
-			if($request->user()->type == 'v_da' || $request->user()->type == 'v_standart') {
-				$user = $request->user()->username;
+			if(request()->user()->type == 'v_da' || request()->user()->type == 'v_standart') {
+				$user = request()->user()->username;
 			}
 
 
@@ -1256,8 +1257,23 @@ Trait Rapports {
 					}
 				}
 			}
-			$result = $r->orderBy('date_rapport','desc')
-				->paginate(100);
+			// INTERVAL DE DATE PRIS EN COMPTE
+			if($from != 'all' && $to != 'all') {
+				
+				$result = $r->whereDate('date_rapport','>=',$from)
+					->whereDate('date_rapport','<=',$to)
+					->orderBy('date_rapport','desc')
+					->paginate(100);
+
+			}
+			else {
+
+				$result = $r->orderBy('date_rapport','desc')
+					->paginate(100);
+			}
+
+			// 
+			
 				
 			$comission = $r->sum('commission');
 

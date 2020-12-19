@@ -283,24 +283,19 @@ public function inventaireLivraison() {
     if($state == "validate") {
 
     return Livraison::where('status','livred')
-      ->whereIn('produits',Produits::select('reference')
-      ->where('with_serial',1)->get())
       ->whereIn('ravitaillement',RavitaillementVendeur::select('id_ravitaillement')->where('livraison','confirmer')->get())->get();
     } else {
       return Livraison::where('status','livred')
-        ->whereIn('produits',Produits::select('reference')
-        ->where('with_serial',1)->get())
         ->whereIn('ravitaillement',RavitaillementVendeur::select('id_ravitaillement')->where('livraison','non_confirmer')->get())->get();
     }
   }
 
-  public function livraisonRequest(Livraison $l , Request $request) {
-    $user = $request->user();
+  public function livraisonRequest(Livraison $l) {
+
+    $user = request()->user();
     if($user->type != 'v_standart' && $user->type != 'v_da') {
       
-      return $l->whereIn('produits',Produits::select('reference')
-        ->get())
-        ->orderBy('created_at','desc')
+      return $l->orderBy('created_at','desc')
         ->paginate(500);
     }
 
@@ -309,9 +304,7 @@ public function inventaireLivraison() {
       ->groupBy('id_ravitaillement')
       ->get();
     
-    return $l->whereIn('produits',Produits::select('reference')
-      ->get())
-      ->whereIn('ravitaillement',$ravitaillement)
+    return $l->whereIn('ravitaillement',$ravitaillement)
       ->orderBy('created_at','desc')
       ->paginate(500);
               
@@ -401,4 +394,92 @@ public function inventaireLivraison() {
       die(json_encode($e->getMessage()));
     }
   }
+
+  // LIVRAISON FILTER REQUEST
+
+  public function livraisonFilterRequest($user,$state) {
+    try {
+
+      if(request()->user()->type == 'v_da' || request()->user()->type == 'v_standart') {
+        $user = request()->user()->username;
+      }
+      
+      if($user == 'all') {
+        // TOUS LES UTILISATEURS
+        if($state == 'confirmed') {
+          //  DEJA CONFIRME
+          $data = Livraison::where('status','livred')
+            ->whereIn('ravitaillement',RavitaillementVendeur::select('id_ravitaillement')->where('livraison','confirmer')->get())
+            ->orderBy('created_at','desc')
+            ->paginate(100);
+        }
+        else if($state == 'unconfirmed') {
+          // EN ATTENTE
+          $data = Livraison::where('status','unlivred')
+            ->whereIn('ravitaillement',RavitaillementVendeur::select('id_ravitaillement')->where('livraison','non_confirmer')->get())
+            ->orderBy('created_at','desc')
+            ->paginate(100);
+        }
+        else {
+          // TOUTES LES LIVRAISON
+
+          $data = Livraison::orderBy('created_at','desc')
+            ->paginate(100);
+        }
+      }
+      else {
+        // FILTRER PAR UTILISATEUR
+        $user = User::where('username',$user)->first();
+
+        if($state == 'confirmed') {
+          // DEJA CONFIRME
+
+          $ravitaillement = $user->ravitaillementVendeur()
+            ->select('id_ravitaillement')
+            ->where('livraison','confirmer')
+            ->groupBy('id_ravitaillement')
+            ->get();
+
+          $data = Livraison::where('status','livred')
+            ->whereIn('ravitaillement',$ravitaillement)
+            ->orderBy('created_at','desc')
+            // ->whereIn('ravitaillement',RavitaillementVendeur::select('id_ravitaillement')->where('livraison','confirmer')->get())
+            ->paginate(100);
+        }
+        else if($state == 'unconfirmed') {
+          // EN ATTENTE
+          $ravitaillement = $user->ravitaillementVendeur()
+            ->select('id_ravitaillement')
+            ->where('livraison','non_confirmer')
+            ->groupBy('id_ravitaillement')
+            ->get();
+
+          $data = Livraison::where('status','unlivred')
+            ->whereIn('ravitaillement',$ravitaillement)
+            ->orderBy('created_at','desc')
+            // ->whereIn('ravitaillement',RavitaillementVendeur::select('id_ravitaillement')->where('livraison','non_confirmer')->get())
+            ->paginate(100);
+        }
+        else {
+          // TOUTES LES LIVRAISONS
+          $ravitaillement = $user->ravitaillementVendeur()
+            ->select('id_ravitaillement')
+            ->groupBy('id_ravitaillement')
+            ->get();
+
+          $data = Livraison::whereIn('ravitaillement',$ravitaillement)
+            ->orderBy('created_at','desc')
+            ->paginate(100);
+        }
+      }
+
+      return $this->organizeLivraison($data);
+    }
+    catch(AppException $e) {
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
+    }
+  }
+
+  
 }

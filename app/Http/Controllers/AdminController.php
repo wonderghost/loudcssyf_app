@@ -727,8 +727,7 @@ class AdminController extends Controller
 
   public function getAllLivraison(Request $request) {
     try {
-      return response()
-        ->json($this->organizeLivraison($this->livraisonRequest(new Livraison,$request)));
+      return $this->organizeLivraison($this->livraisonRequest(new Livraison,$request));
     } catch (AppException $e) {
       header("Erreur!",true,422);
       die(json_encode($e->getMessage()));
