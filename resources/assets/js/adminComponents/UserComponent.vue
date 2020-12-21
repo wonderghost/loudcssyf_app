@@ -16,7 +16,7 @@
   <table  class="uk-table uk-table-divider uk-table-striped uk-table-small uk-table-hover uk-table-responsive">
     <thead>
       <tr>
-        <th v-for="head in tableHeader"> {{ head }} </th>
+        <th v-for="(head,index) in tableHeader" :key="index"> {{ head }} </th>
         <th colspan="3" class="uk-text-center">-</th>
       </tr>
     </thead>
@@ -27,7 +27,8 @@
         <td>{{user.type}}</td>
         <td :uk-tooltip="user.email">{{user.email.substring(0,30)+'...'}}</td>
         <td>{{user.phone}}</td>
-        <td :uk-tooltip="user.localisation">{{user.localisation.substring(0,30)+'...'}}</td>
+        <td :uk-tooltip="user.localisation" v-if="user.localisation != null">{{user.localisation.substring(0,30)+'...'}}</td>
+        <td v-else>-</td>
         <td>{{user.status}}</td>
         <td> 
           <template v-if="typeUser == 'commercial'">

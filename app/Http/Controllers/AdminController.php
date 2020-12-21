@@ -10,6 +10,8 @@ use App\Traits\Afrocashes;
 use App\Traits\Livraisons;
 use App\Traits\Rapports;
 use App\Traits\Cga;
+use App\Traits\Technicien;
+
 use App\User;
 use App\Produits;
 use App\Agence;
@@ -64,6 +66,7 @@ class AdminController extends Controller
     use Rapports;
     use Cga;
     use Livraisons;
+    use Technicien;
 
     public function emailTest() {
       return view('emails.annulation-saisie');

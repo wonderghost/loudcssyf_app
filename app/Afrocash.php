@@ -29,4 +29,11 @@ class Afrocash extends Model
     public function setSolde($value) {
       $this->solde = $value;
     }
+
+    public function generateAccountNumber() {
+      do {
+        $this->numero_compte = mt_rand(000000000001,999999999999);
+      }
+      while(self::find($this->numero_compte));
+    }
 }

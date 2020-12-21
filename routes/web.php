@@ -159,6 +159,7 @@ Route::middleware(['auth','admin'])->group(function () {
 // //
 	Route::get('/admin/add-user','AdminController@getFormUser');
 	Route::post('/admin/add-user','AdminController@addUser');
+	Route::post('/admin/add-technicien','AdminController@addTechnicien');
 	Route::get('/admin/list-users','AdminController@listUser');
 	Route::get('/admin/users/list','AdminController@getListUsers');
 

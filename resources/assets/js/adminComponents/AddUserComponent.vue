@@ -1,26 +1,33 @@
 <template>
-<div class="uk-container uk-container-large uk-margin-large-bottom">
+<div class="uk-container uk-container-large">
   <loading :active.sync="isLoading"
       :can-cancel="false"
       :is-full-page="fullPage"
       loader="bars"
       :opacity="1"
       color="#1e87f0"
-        background-color="#fff"></loading>
+      background-color="#fff"></loading>
+
+      
+  <ul class="uk-breadcrumb">
+    <li><router-link uk-tooltip="Tableau de bord" to="/dashboard"><span uk-icon="home"></span></router-link></li>
+    <li><span>Utilisateur</span></li>
+    <li><span>Nouvel utilisateur</span></li>
+  </ul>
 
   <h3 class="uk-margin-top">Ajoutez un Utilisateur</h3>
   <hr class="uk-divider-small">
-<!-- Erreor block -->
-      <template v-if="errors.length" v-for="error in errors">
-        <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-3@m" uk-alert>
+      <!-- Erreor block -->
+      <template v-if="errors">
+        <div v-for="(error,index) in errors" :key="index" class="uk-alert-danger uk-border-rounded uk-width-1-3@m" uk-alert>
           <a href="#" class="uk-alert-close" uk-close></a>
           <p>{{error}}</p>
         </div>
       </template>
 
     <template v-if="typeUser == 'admin'">
-      <form>
-        <div class="uk-child-width-1-2@m" uk-grid>
+      <form @submit.prevent="addUser()">
+        <div class="uk-child-width-1-3@m" uk-grid>
           <div class="">
             <!-- champs obligatoires -->
             <div class="">
@@ -37,14 +44,14 @@
             </div>
             <div class="">
               <label for="">Niveau d'access *</label>
-              <select @change="setRequireState()" v-model="dataForm.access" class="uk-select uk-border-rounded uk-box-shadow-hover-small uk-margin-small" name="">
+              <select @change="setRequireState()" v-model="dataForm.access" class="uk-select uk-border-rounded" name="">
                 <option value="">-- Niveau d'access --</option>
                 <option v-for="(type , name) in typeAccess" :key="name" :value="name"> {{type}}</option>
               </select>
             </div>
             <div v-if="dataForm.access == 'pdraf'">
               <label for="">Point de contact *</label>
-              <select v-model="dataForm.pdc" class="uk-select uk-border-rounded uk-box-shadow-small uk-margin-small">
+              <select v-model="dataForm.pdc" class="uk-select uk-border-rounded">
                 <option value="">--Point de Contact --</option>
                 <option :value="p.username" v-for="p in pdcUsers" :key="p.username">{{ p.localisation }}</option>
               </select>
@@ -52,6 +59,21 @@
             <div>
               <label for="">Confirmez votre mot de passe</label>
               <input v-model="dataForm.password_confirmation" type="password" class="uk-input uk-border-rounded" placeholder="Entrez votre mot de passe">
+            </div>
+          </div>
+          <div v-if="dataForm.access == 'technicien'">
+            <!-- PROFILE UTILISATEUR / OBLIGATOIRE SEULEMENT POUR LE TECHNICIEN -->
+            <div>
+              <label for="">Nom</label>
+              <input v-model="dataForm.nom" type="text" class="uk-input uk-border-rounded">
+            </div>
+            <div>
+              <label for="">Prenom</label>
+              <input v-model="dataForm.prenom" type="text" class="uk-input uk-border-rounded">
+            </div>
+            <div>
+              <label for="">Date de naissance</label>
+              <input v-model="dataForm.date_naissance" type="date" class="uk-input uk-border-rounded">
             </div>
           </div>
           <div class="" v-if="requireState">
@@ -79,9 +101,8 @@
           </div>
         </div>
         <div class="uk-margin-small">
-          <button @click="addUser()" type="button" name="button" class="uk-button uk-width-1-1@s uk-width-1-6@m uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-sall">
+          <button type="submit" name="button" class="uk-button uk-width-1-1@s uk-width-1-6@m uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-sall">
             validez
-            <span uk-icon="icon : check"></span>
           </button>
         </div>
       </form>
@@ -97,121 +118,129 @@
 <script>
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
-    export default {
-        mounted() {
-          UIkit.offcanvas($("#side-nav")).hide();
-          this.allPdc()
-        },
-        components : {
-          Loading
-        },
-        data () {
-          return {
-            typeAccess : {
-              v_da : 'Distributeur Agree',
-              v_standart : 'Vendeur standart',
-              logistique : "Responsable Logistique",
-              controleur : 'Controleur',
-              gcga : 'Gestionnaire Cga',
-              grex : 'Gestionnaire Rex',
-              coursier : "Coursier",
-              gdepot : 'Gestionnaire depot',
-              commercial : 'Responsable commercial',
-              technicien : 'Technicien',
-              pdc : 'Point de Contact',
-              pdraf : 'Point de Retrait Afrocash',
-              graf : 'Gestionnaire Reseaux Afrocash'
-            },
-            inputClass : "uk-input uk-border-rounded uk-box-shadow-hover-small uk-margin-small",
-            isLoading : false,
-            fullPage : true,
-            // form data
-            dataForm : {
-              _token : "",
-              email : "",
-              phone : "",
-              agence : "",
-              access : "",
-              numdist : "",
-              societe : "",
-              rccm : "",
-              ville : "",
-              adresse : "",
-              password_confirmation : "",
-              pdc : ""
-            },
-            // error
-            errors : [],
-            requireState : true,
-            pdcUsers : []
+  export default {
+      mounted() {
+        this.allPdc()
+      },
+      components : {
+        Loading
+      },
+      data () {
+        return {
+          typeAccess : {
+            v_da : 'Distributeur Agree',
+            v_standart : 'Vendeur standart',
+            logistique : "Responsable Logistique",
+            controleur : 'Controleur',
+            gcga : 'Gestionnaire Cga',
+            grex : 'Gestionnaire Rex',
+            coursier : "Coursier",
+            gdepot : 'Gestionnaire depot',
+            commercial : 'Responsable commercial',
+            technicien : 'Technicien',
+            pdc : 'Point de Contact',
+            pdraf : 'Point de Retrait Afrocash',
+            graf : 'Gestionnaire Reseaux Afrocash'
+          },
+          inputClass : "uk-input uk-border-rounded",
+          isLoading : false,
+          fullPage : true,
+          // form data
+          dataForm : {
+            _token : "",
+            email : "",
+            phone : "",
+            agence : "",
+            access : "",
+            numdist : "",
+            societe : "",
+            rccm : "",
+            ville : "",
+            adresse : "",
+            password_confirmation : "",
+            pdc : "",
+            // infos profile obligatoires pour le technicien
+
+            nom : "",
+            prenom : "",
+            date_naissance : ""
+          },
+          // error
+          errors : [],
+          requireState : true,
+          pdcUsers : []
+        }
+      },
+      methods : {
+        allPdc : async function () {
+          try {
+              let response = await axios.get('/admin/pdc/list')
+              if(response) {
+                this.pdcUsers = response.data
+              }
+          } catch(error) {
+              alert(error)
           }
         },
-        methods : {
-          allPdc : async function () {
-            try {
-                let response = await axios.get('/admin/pdc/list')
-                if(response) {
-                  this.pdcUsers = response.data
-                }
-            } catch(error) {
-                alert(error)
-            }
-          },
-          setRequireState : function () {
-            try {
-                if(this.dataForm.access == 'v_da' || this.dataForm.access == 'pdc' || this.dataForm.access == "") {
-                  // set requireState to true
-                  this.requireState = true
-                }
-                else {
-                  // set requireState to false
-                  this.requireState = false
-                }
-            } catch(error) {
-                alert(error)
-            }
-          },
-          addUser : async function() {
-            try {
-              this.isLoading = true
-              this.dataForm._token = this.myToken
-              if(this.dataForm.access == 'pdc') {
-                var response = await axios.post('/admin/pdc/add',this.dataForm)
-              }
-              else if(this.dataForm.access == 'pdraf') {
-                var response = await axios.post('/admin/pdraf/add',this.dataForm)
+        setRequireState : function () {
+          try {
+              if(this.dataForm.access == 'v_da' || this.dataForm.access == 'pdc' || this.dataForm.access == "") {
+                // set requireState to true
+                this.requireState = true
               }
               else {
-                var response = await axios.post("/admin/add-user",this.dataForm)
+                // set requireState to false
+                this.requireState = false
               }
-
-              if(response && response.data == 'done') {
-                this.isLoading = false
-                alert("Operation success!")
-                Object.assign(this.$data,this.$options.data())
-                this.allPdc()
-              }
-            } catch (error) {
-              this.isLoading = false
-              if(error.response.data.errors) {
-                let errorTab = error.response.data.errors
-                for (var prop in errorTab) {
-                  this.errors.push(errorTab[prop][0])
-                }
-              } else {
-                  this.errors.push(error.response.data)
-              }
-            }
-
+          } catch(error) {
+              alert(error)
           }
         },
-        computed : {
-          myToken () {
-            return this.$store.state.myToken
-          },
-          typeUser() {
-            return this.$store.state.typeUser
+        addUser : async function() {
+          try {
+            this.isLoading = true
+            this.dataForm._token = this.myToken
+            if(this.dataForm.access == 'pdc') {
+              var response = await axios.post('/admin/pdc/add',this.dataForm)
+            }
+            else if(this.dataForm.access == 'pdraf') {
+              var response = await axios.post('/admin/pdraf/add',this.dataForm)
+            }
+            else if(this.dataForm.access == 'technicien') {
+              var response = await axios.post('/admin/add-technicien',this.dataForm)
+            }
+            else {
+              var response = await axios.post("/admin/add-user",this.dataForm)
+            }
+
+            if(response && response.data == 'done') {
+              this.isLoading = false
+              alert("Operation success!")
+              Object.assign(this.$data,this.$options.data())
+              this.allPdc()
+            }
+          } 
+          catch (error) {
+            this.isLoading = false
+            if(error.response.data.errors) {
+              let errorTab = error.response.data.errors
+              for (var prop in errorTab) {
+                this.errors.push(errorTab[prop][0])
+              }
+            } else {
+                this.errors.push(error.response.data)
+            }
           }
+
         }
-    }
+      },
+      computed : {
+        myToken () {
+          return this.$store.state.myToken
+        },
+        typeUser() {
+          return this.$store.state.typeUser
+        }
+      }
+  }
 </script>
