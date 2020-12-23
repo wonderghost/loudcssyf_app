@@ -34,6 +34,7 @@
   </head>
   <body onselectstart="return false" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;">
     <div id="app">
+      <pwa-install></pwa-install>
       @yield('content')
     </div>
 

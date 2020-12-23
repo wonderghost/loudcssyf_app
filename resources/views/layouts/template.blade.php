@@ -35,6 +35,7 @@
     <input type="hidden" id="username" value="{{Auth::user()->username}}">
 
     <div id="app">
+      <pwa-install></pwa-install>
       <serial-search></serial-search>
       <deblocage-cga></deblocage-cga>
       <feedback></feedback>

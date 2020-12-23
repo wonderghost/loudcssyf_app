@@ -21,6 +21,7 @@
         "vue-template-compiler": "^2.6.11"
     },
     "dependencies": {
+        "@pwabuilder/pwainstall": "^1.6.7",
         "echarts": "^4.6.0",
         "epic-spinners": "^1.1.0",
         "laravel-echo": "^1.6.1",

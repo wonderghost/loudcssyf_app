@@ -38,6 +38,7 @@ import numeral from 'numeral';
 import numFormat from 'vue-filter-number-format'
 import store from './store'
 import Router from './router.js'
+import '@pwabuilder/pwainstall'
 
 
 Vue.use(Vuex)
