@@ -478,6 +478,12 @@
                   <router-link  to="/retour-afrocash"><span uk-icon="icon : link"></span> Retour Afrocash</router-link>
                 </li>
                 <li>
+                  <router-link to="/afrocash/retrait"><span uk-icon="icon : link"></span> Retrait</router-link>
+                </li>
+                <li>
+                  <router-link to="/afrocash/depot"><span uk-icon="icon : link"></span>Depot</router-link>
+                </li>
+                <li>
                   <router-link  to="/all-transaction-pdraf"><span uk-icon="icon : link"></span>Toutes les transactions</router-link>
                 </li>
               </ul>
@@ -507,6 +513,21 @@
                 </li>
               </ul>
             </li>
+            <li class="uk-parent">
+              <a href="#"><span uk-icon="nut"></span> Technique</a>
+              <ul class="uk-nav-sub">
+                <li>
+                  <router-link to="/technique/installation"><span uk-icon="icon : link"></span> Installation</router-link>
+                </li>
+                <!-- <li class="">
+                  <router-link to="/reabonnement-afrocash"><span uk-icon="icon : link"></span> Reabonnement</router-link>
+                </li>
+                <li>
+                    <router-link to="/all-ventes-pdraf"><span uk-icon="icon : link"></span> Toutes les ventes</router-link>
+                </li> -->
+              </ul>
+            </li>
+            
           </template>
           <!-- // -->
           <template v-if="typeUser !== 'admin'" id="">

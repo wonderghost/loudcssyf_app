@@ -19,6 +19,7 @@ import commandAfrocash from './pdcComponents/CommandAfrocash.vue'
 import commandAfrocashList from './pdcComponents/CommandAfrocashList.vue'
 import confirmCommandAfrocash from './pdcComponents/ConfirmCommandAfrocash.vue'
 import inventoryAfrocashMateriel from './pdcComponents/InventoryAfrocashComponent.vue'
+import InterventionTechnique from './pdrafComponents/InterventionComponent.vue'
 // 
 
 // ADMIN ROUTER
@@ -82,6 +83,8 @@ import store from './store.js'
 
 import alertAbonnement from './userComponents/AlertComponent.vue'
 import { mapActions } from 'vuex'
+
+import RetraitAfrocash from './afrocashcomponents/RetraitComponent.vue'
 
 Vue.use(VueRouter);
 
@@ -755,6 +758,29 @@ const router = new VueRouter({
         {
             path : '/pdraf/materiel/inventory',
             component : inventoryAfrocashMateriel,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'pdraf') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            }
+        },
+        {
+            path : '/technique/installation',
+            component : InterventionTechnique,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'pdraf') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            } 
+        },
+        // AFROCASH TRANSACTION ROUTING
+        {
+            path : '/afrocash/retrait',
+            component : RetraitAfrocash,
             beforeEnter : (to,from,next) => {
                 if(store.state.typeUser != 'pdraf') {
                     alert('action non autorisee !')

@@ -36,4 +36,8 @@ class Afrocash extends Model
       }
       while(self::find($this->numero_compte));
     }
+
+    public function retraitAfrocash() {
+      return $this->hasMany('App\RetraitAfrocash','destinateur','numero_compte');
+  }
 }

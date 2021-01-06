@@ -213,6 +213,8 @@ Route::middleware(['auth','admin'])->group(function () {
 Auth::routes();
 
 Route::middleware(['auth','unblocked'])->group(function () {
+	// LISTING POUR LE CHOIX DES TECHNICIENS
+	Route::get('/user/technicien-list','TechniqueController@getListTechnicien');
 	// 
 	Route::get('/user/inventory-stock/filter/{vendeurs}/{status}','LogistiqueController@filterInventoryStock');
 	// 
@@ -280,6 +282,18 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/pdraf/command/new','PdcController@sendCommandAfrocash')->middleware('pdraf');
 
 	Route::get('/admin/pay-comission/pdraf/all','PdrafController@getAllPayComission');
+
+	# LISTING DES INSTALLATIONS
+
+	Route::get('/user/technique/interventions','PdrafController@getAllInterventions');
+	# VALIDER LE PAIEMENT DE L'INSTALLATION
+	Route::post('/user/technique/validate-intervention','PdrafController@validatePaymentIntervention');
+
+	######################################## AFROCASH MONEY TRANSFERT ROUTES ############################
+
+	Route::post('/user/afrocash/retrait','PdrafController@afrocashRetraitRequest')->middleware('pdraf');
+
+	############################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##############################
 
 
 	

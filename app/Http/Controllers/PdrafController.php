@@ -10,8 +10,9 @@ use Illuminate\Support\Str;
 use App\User;
 use App\Agence;
 use App\Traits\Similarity;
-use App\ReseauxPdc;
+use App\Traits\SendSms;
 use App\Traits\Afrocashes;
+use App\ReseauxPdc;
 use App\TransactionAfrocash;
 use App\ReaboAfrocash;
 use App\ReaboAfrocashSetting;
@@ -24,19 +25,21 @@ use App\ReactivationMateriel;
 use Carbon\Carbon;
 use App\RecrutementAfrocash;
 use App\RecrutementAfrocashOption;
+use App\InterventionTechnicien;
 
 class PdrafController extends Controller
 {
     //
-
+    
     use Similarity;
     use Afrocashes;
-
+    use SendSms;
+    
     public function generateId() {
         do {
             $_id = "PDRAF-".mt_rand(1000,9999);
         } while($this->isExistUsername($_id));
-
+        
         return $_id;
     }
 
@@ -445,6 +448,7 @@ class PdrafController extends Controller
                 'nom'   =>  'required|string',
                 'prenom'    =>  'required|string',
                 'ville' =>  'required|string',
+                'technicien'    =>  'required|string|exists:users,username'
             ],[
                 'required'  =>  '`:attribute` requis !',
                 'exists'   =>   '`:attribute` n\'existe pas dans le systeme'
@@ -603,15 +607,38 @@ class PdrafController extends Controller
             $transMargePdc->montant = $montantMargeMaterielPdc;
             $transMargePdc->motif = "Paiement_Marge_materiel";
             $transMargePdc->recrutement_afrocash_id = $recrutement->id;
+            // 
+            ### AJOUT DU TECHNICIEN POUR L'INSTALLATION
 
+            $intervention = new InterventionTechnicien;
+            $intervention->numero_materiel = request()->serial_number;
+            $intervention->nom_client = request()->nom." ".request()->prenom;
+            $intervention->adresse = request()->ville;
+            $intervention->telephone = request()->telephone_client;
+            $intervention->id_recrutement_afrocash = $recrutement->id;
+            $intervention->id_technicien = request()->technicien;
+            $intervention->type = 'installation';
+            $intervention->description = "Installation Nouveau Materiel !";
+
+            ### @@@@@@@@@@@@@@@@@@@@@@@@ ENVOI DE L'SMS @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            $userTechnicien = User::where('username',request()->technicien)
+                ->first();
+            $messageClient = "Installation\nClient: ".$intervention->nom_client.
+                "\nTel: ".$intervention->telephone.
+                "\nQuart : ".$intervention->adresse;
+
+            $messageTech = "Installation\nCoordonnees Technicien \n".
+                "Nom: ".$userTechnicien->nom." ".$userTechnicien->prenom.
+                "\nTel: ".$userTechnicien->phone.
+                "\nMerci pour la confiance ... :-)";
+            ### @
             # 
             $recrutement->save();
-
+            $serial->update();
+            
             foreach(request()->options as $key => $value) {
                 $data_options[$key]->save();    
             }
-
-            $serial->update();
 
             foreach($stock_vendeur as $value) {
                 $value->update();
@@ -624,10 +651,13 @@ class PdrafController extends Controller
             $receiver_account->update();
             $logistiqueAccount->update();
             $pdcAccount->update();
+            $intervention->save();
 
+            if($this->sendSmsToNumber(request()->telephone_client,$messageTech) && $this->sendSmsToNumber(request()->technicien,$messageClient)) {
 
-            return response()
-                ->json('done');
+                return response()
+                    ->json('done');
+            }
         }
         catch(AppException $e) {
             header("Erreur",true,422);
@@ -5530,6 +5560,118 @@ class PdrafController extends Controller
             
             return response()
                 ->json($comission);
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    // LISTING DES INSTALLATIONS ET DEPANNAGES
+
+    public function getAllInterventions() {
+        try {
+            if(request()->user()->type == 'admin') {
+
+                $intervention = InterventionTechnicien::all();
+            }
+            else if(request()->user()->type == 'pdraf') {
+                $recrutementAfrocash = request()->user()->recrutementAfrocash()
+                    ->select('id')
+                    ->groupBy('id')
+                    ->get();
+
+                $intervention = InterventionTechnicien::whereIn('id_recrutement_afrocash',$recrutementAfrocash)
+                    ->get();
+            }
+
+            $data = [];
+            foreach($intervention as $key => $value) {
+                $date = new Carbon($value->created_at);
+                $data[$key] = [
+                    'id'    =>  $value->id,
+                    'date'  =>  $date->toDateString(),
+                    'materiel'  =>  $value->numero_materiel,
+                    'client'    =>  $value->nom_client,
+                    'adresse'   =>  $value->adresse,
+                    'phone' =>  $value->telephone,
+                    'technicien'    =>  $value->userTechnicien()->nom." ".$value->userTechnicien()->prenom,
+                    'vendeur'   =>  is_null($value->id_recrutement_afrocash) ? $value->vendeur()->localisation : $value->pdrafUser()->localisation,
+                    'status'    =>  $value->status,
+                    'validated' =>  $value->validated == 1 ? true : false
+                ];
+            }
+
+            return response()
+                ->json($data);
+        }
+        catch(AppException $e) {
+            header('Erreur',true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+    public function validatePaymentIntervention() {
+        try {
+            $validation = request()->validate([
+                'intervention_id'   =>  'required|exists:intervention_techniciens,id'
+            ]);
+
+            $intervention = InterventionTechnicien::find(request()->intervention_id);
+
+            // VERIFIER SI LE TECHNICIEN A EFFECTUE L'INSTALLATION
+
+            if($intervention->status != 'effectif') {
+                throw new AppException("Le status de l'installation n'est pas efectif.");
+            }
+
+            if($intervention->validated) {
+                throw new AppException("Deja valide!");
+            }
+
+            $vendeurUser = request()->user();
+            $vendeurAccount = $vendeurUser->afroCash()->first();
+
+            $techUser = $intervention->userTechnicien();
+            $techAccount = $techUser->afroCash()->first();
+
+            $installationAmount = 50000;
+            $amountTech = 49500;
+            $amountAccountCentral = 500;
+
+            $vendeurAccount->solde -= $installationAmount;
+            $techAccount->solde += $amountTech;
+            $afrocashCentral = Credit::find('afrocash');
+            $afrocashCentral->solde += $amountAccountCentral;
+
+            // ENREGISTREMENT DE LA TRANSACTION
+
+            $trans = new TransactionAfrocash;
+            $trans->compte_debite = $vendeurAccount->numero_compte;
+            $trans->compte_credite = $techAccount->numero_compte;
+            $trans->motif = "Paiement_Installation";
+            $trans->montant = $installationAmount;
+
+            $transCentral = new TransactionAfrocash;
+            $transCentral->compte_debite = $techAccount->numero_compte;
+            $transCentral->compte_credite = NULL;
+            $transCentral->motif = "frais_sms_installation";
+            $transCentral->montant = $amountAccountCentral;
+
+            #changement de status de validation de paiement
+
+            $intervention->validated = true;
+
+            $techAccount->update();
+            $vendeurAccount->update();
+
+            $intervention->update();
+            $afrocashCentral->update();
+            $trans->save();
+            $transCentral->save();
+            
+            return response()
+                ->json('done');
         }
         catch(AppException $e) {
             header("Erreur",true,422);

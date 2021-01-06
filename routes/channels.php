@@ -16,6 +16,6 @@ use App\User;
 //     return (int) $user->id === (int) $id;
 // });
 
-Broadcast::channel('notification', function (Notifications $notification,User $user) {
+Broadcast::channel('notification', function (User $user) {
   return $user->username == $notification->vendeurs;
 });

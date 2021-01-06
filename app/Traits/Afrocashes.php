@@ -33,6 +33,10 @@ use App\LivraisonSerialFile;
 use App\RapportVente;
 use App\RemboursementPromo;
 
+use App\RetraitAfrocash;
+use App\ComissionSettingAfrocash;
+
+
 Trait Afrocashes {
 
 	public function  newAccount($username,$type = 'courant') {
@@ -57,7 +61,7 @@ Trait Afrocashes {
 	public function getSoldesVendeurs(Request $request) {
 		// recuperation de la liste des vendeurs
 
-		$vendeurs =	User::whereIn('type',['v_standart','v_da','logistique','pdc','pdraf'])->orderBy('localisation','asc')->get();
+		$vendeurs =	User::whereIn('type',['v_standart','v_da','logistique','pdc','pdraf','technicien'])->orderBy('localisation','asc')->get();
 		$all = [];
 		foreach($vendeurs as $key => $value) {
 			$agence = $value->agence();
@@ -77,7 +81,7 @@ Trait Afrocashes {
 			}
 
 			$all[$key]	=	[
-				'vendeurs'	=>	$value->localisation,
+				'vendeurs'	=>	$value->localisation ? $value->localisation : $value->nom." ".$value->prenom,
 				'type'	=>	$value->type,
 				'afrocash_courant'=>	$value->afroCash()->first() ? number_format($value->afroCash()->first()->solde) : 'null',
 				'afrocash_semi_grossiste'	=>	$solde_ac_sm,
@@ -551,27 +555,33 @@ Trait Afrocashes {
 		try {
 			$all = [];
 			$thisMonth = Date('m');
-			
-			if($request->user()->type !== 'admin' && $request->user()->type !== 'commercial' && $request->user()->type !== 'gcga') {
 
-				$afrocashAccount = $request->user()->type == 'v_standart' || $request->user()->type == 'pdc' ? $request->user()->afroCash('semi_grossiste')->first() : $request->user()->afroCash('courant')->first();
+			if($request->user()->type == 'v_da' || $request->user()->type == 'v_standart' || $request->user()->type == 'pdc' || $request->user()->type == 'pdraf') {
+				$afrocashAccount = $request->user()->afrocashAccounts()
+					->select('numero_compte')
+					->groupBy('numero_compte')
+					->get();
 
-				$trans = $t->select()->orderBy('created_at','desc')
-					->where('compte_debite',$afrocashAccount->numero_compte)
-					->orWhere('compte_credite',$afrocashAccount->numero_compte)
-					->paginate(100);
+				$trans = $t->select()
+				->whereIn('compte_debite',$afrocashAccount)
+				->orWhereIn('compte_credite',$afrocashAccount)
+				->orderBy('created_at','desc')
+				->paginate(100);
 			}
 			else {
-				$trans = $t->select()->orderBy('created_at','desc')
+				$trans = $t->select()
+					->orderBy('created_at','desc')
 					->paginate(100);
 			}
+			
 
 			foreach($trans as $key	=>	$value) {
 				$c = new Carbon($value->created_at);
+
 				$all[$key] = [
 					'date'	=>	$c->toDateTimeString(),
-					'expediteur'	=>	$value->compte_debite ? $value->afrocash()->vendeurs()->localisation : '-',
-					'destinataire'	=>	$value->compte_credite ? $value->afrocashcredite()->vendeurs()->localisation : '-',
+					'expediteur'	=>	$value->compte_debite ? $value->afrocash()->vendeurs()->only(['nom','prenom','localisation']) : '-',
+					'destinataire'	=>	$value->compte_credite ? $value->afrocashcredite()->vendeurs()->only(['nom','prenom','localisation']) : '-',
 					'montant'	=>	$value->montant,
 					'motif'	=>	$value->motif,
 					'solde_anterieur'	=>	$value->solde_anterieur,
@@ -936,6 +946,75 @@ public function getInfosRemboursementPromo(Request $request,
 			return response()
 				->json($_data);
 		} catch(AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
+
+	// 	 @@@@@@@@@@@@@@@ RETRAIT AFROCASH @@@@@@@@@@@@@@@@@
+	public function afrocashRetraitRequest() {
+		try {
+			$validation = request()->validate([
+				'identifiant'	=>	'required|string|exists:users,username',
+				'montant'	=>	'required|numeric|min:10000',
+				'password'	=>	'required|string'
+			],[
+				'min'	=>	'Le montant minimum requis est de 10000',
+				'exists'	=>	'`:attribute` n\'existe pas dans le system'
+			]);
+
+			if(!Hash::check(request()->password,request()->user()->password)) {
+				throw new AppException("Mot de passe invalide !");
+			}
+
+			$recepteurUser = User::where("username",request()->identifiant)
+				->whereIn('type',['technicien'])
+				->first();
+
+			if(!$recepteurUser) {
+				throw new AppException("Recepteur Invalide !");
+			}
+
+			$recepteurAccount = $recepteurUser->afroCash()->first();
+
+			# VERIFER LA DISPONIBILITE DU MONTANT DANS LE COMPTE
+
+			if(request()->montant > $recepteurAccount->solde) {
+				throw new AppException("Montant Indisponible !");
+			}
+
+			$retraitExistant = $recepteurAccount->retraitAfrocash()
+				->whereNull('confirm_at')
+				->whereNull('remove_at')
+				->first();
+
+			if($retraitExistant) {
+				throw new AppException("Un retrait est deja en attente de confirmation ...");
+			}
+
+			$initiateurAccount = request()->user()->afroCash()->first();
+
+			$retraitInstance = new RetraitAfrocash;
+			$retraitInstance->montant = request()->montant;
+			$retraitInstance->initiateur = $initiateurAccount->numero_compte;
+			$retraitInstance->destinateur = $recepteurAccount->numero_compte;
+
+			// DETERMINER LA COMISSION DE RETRAIT
+			$comissionRetrait = ComissionSettingAfrocash::where('from_amount','<',request()->montant)
+				->where('to_amount','>',request()->montant)
+				->first();
+			
+			if(!$comissionRetrait) {
+				throw new AppException("Erreur Parametre de comission non defini");
+			}
+
+			$retraitInstance->id_frais = $comissionRetrait->id;
+			$retraitInstance->save();
+
+			return response()
+				->json('done');
+		}
+		catch(AppException $e) {
 			header("Erreur",true,422);
 			die(json_encode($e->getMessage()));
 		}

@@ -167,4 +167,12 @@ class User extends Authenticatable
       return $this->hasMany('App\RecrutementAfrocash','pdraf_id','username');
     }
 
+
+    // AFROCASH ACCOUNTS
+
+    public function afrocashAccounts() {
+      return $this->hasMany('App\Afrocash','vendeurs','username');
+    }
+
+
 }

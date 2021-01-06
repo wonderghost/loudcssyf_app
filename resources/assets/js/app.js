@@ -38,15 +38,13 @@ import numeral from 'numeral';
 import numFormat from 'vue-filter-number-format'
 import store from './store'
 import Router from './router.js'
-import '@pwabuilder/pwainstall'
-
-
 Vue.use(Vuex)
 Vue.filter('numFormat', numFormat(numeral))
 Vue.use(VueRouter)
 
+
 const app = new Vue({
     el: '#app',
     store,
-    router : Router
+    router : Router,
 });

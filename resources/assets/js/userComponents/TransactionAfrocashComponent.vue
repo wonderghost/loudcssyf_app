@@ -60,10 +60,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(t,index) in transactionsList" :key="index">
+        <tr v-for="(t,index) in transactions" :key="index">
           <td>{{ t.date }}</td>
-          <td>{{ t.expediteur }}</td>
-          <td>{{ t.destinataire }}</td>
+          <td v-if="t.expediteur.localisation">{{ t.expediteur.localisation }}</td>
+          <td v-else>{{ t.expediteur.nom }} {{ t.expediteur.prenom }}</td>
+          <td v-if="t.destinataire.localisation">{{ t.destinataire.localisation }}</td>
+          <td v-else>{{ t.destinataire.nom }} {{ t.destinataire.prenom }}</td>
           <td>{{ t.montant | numFormat }}</td>
           <td v-if="t.solde_anterieur != null">{{ t.solde_anterieur | numFormat }}</td><td v-else>-</td>
           <td v-if="t.nouveau_solde != null">{{ t.nouveau_solde | numFormat }}</td><td v-else>-</td>
@@ -170,16 +172,16 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       typeUser () {
         return this.$store.state.typeUser
       },
-      transactionsList() {
-        return this.transactions.filter((t) =>  {
-          if(this.typeUser == 'admin' || this.typeUser == 'gcga' || this.typeUser == 'commercial') {
-            return (t.expediteur.toUpperCase().match(this.searchText.toUpperCase()) || t.destinataire.toUpperCase().match(this.searchText.toUpperCase()))
-          }
-          else {
-            return (t.expediteur.match(this.userLocalisation) || t.destinataire.match(this.userLocalisation))
-          }
-        })
-      }
+      // transactionsList() {
+      //   return this.transactions.filter((t) =>  {
+      //     if(this.typeUser == 'admin' || this.typeUser == 'gcga' || this.typeUser == 'commercial') {
+      //       return (t.expediteur.toUpperCase().match(this.searchText.toUpperCase()) || t.destinataire.toUpperCase().match(this.searchText.toUpperCase()))
+      //     }
+      //     else {
+      //       return (t.expediteur.match(this.userLocalisation) || t.destinataire.match(this.userLocalisation))
+      //     }
+      //   })
+      // }
     }
   }
 </script>

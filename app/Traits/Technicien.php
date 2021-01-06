@@ -56,4 +56,6 @@ trait Technicien {
             die(json_encode($e->getMessage()));
         }
     }
+
+    
 }

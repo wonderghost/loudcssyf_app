@@ -28,7 +28,7 @@
         <td :uk-tooltip="user.email">{{user.email.substring(0,30)+'...'}}</td>
         <td>{{user.phone}}</td>
         <td :uk-tooltip="user.localisation" v-if="user.localisation != null">{{user.localisation.substring(0,30)+'...'}}</td>
-        <td v-else>-</td>
+        <td v-else>{{ user.nom }} {{user.prenom}}</td>
         <td>{{user.status}}</td>
         <td> 
           <template v-if="typeUser == 'commercial'">
@@ -91,7 +91,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       },
       data :function () {
         return {
-          tableHeader : ['username','type','email','phone','agence','status'],
+          tableHeader : ['username','type','email','phone','agence/nom complet','status'],
           userEditLink : "/admin/edit-users",
           userBlockLink : "/admin/block-user",
           userUnblockLink : '/admin/unblock-user',
@@ -101,7 +101,8 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           userPassword : "",
           errorHandler : "",
           isLoading : false,
-          fullPage : true
+          fullPage : true,
+          userList : []
         }
       },
       components : {
@@ -114,6 +115,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             var tmp = this
             let response = await axios.get('/admin/users/list')
             if(response && response.data) {
+              this.userList = response.data
               tmp.$store.state.users = response.data
             }
             this.isLoading = false;
@@ -195,9 +197,15 @@ import 'vue-loading-overlay/dist/vue-loading.css'
           return this.$store.state.users
         },
         filteredUser() {
-          return this.users.filter((user) => {
+          return this.userList.filter((user) => {
             if(this.$store.state.searchState) {
-              return user.localisation.toUpperCase().match(this.$store.state.searchText.toUpperCase())
+              if(user.localisation != null) {
+                return user.localisation.toUpperCase().match(this.$store.state.searchText.toUpperCase())
+              }
+              else {
+                return (user.nom.toUpperCase().match(this.$store.state.searchText.toUpperCase()) ||
+                user.prenom.toUpperCase().match(this.$store.state.searchText.toUpperCase()))
+              }
             } else {
               return user.type.match(this.$store.state.typeUserFilter)
             }

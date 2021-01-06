@@ -140,7 +140,7 @@ class AdminController extends Controller
         $users = User::where('type','<>','admin')->orderBy('localisation','desc')->get();
         $userCollection = collect([]);
         foreach ($users as $key => $element) {
-          $_tmp = $element->only(['username','type','email','phone','localisation','status']);
+          $_tmp = $element->only(['username','type','email','phone','localisation','status','nom','prenom']);
           $_tmp['username_encrypted'] = Crypt::encryptString($element->username);
           $userCollection->prepend($_tmp);
         }
@@ -154,9 +154,6 @@ class AdminController extends Controller
 
     public function addUser(UserRequest $request) {
       try {
-
-        // return response()->json($request);
-        // die();
         $user = new User;
       	$agence = new Agence;
       	$user->email = $request->input('email');

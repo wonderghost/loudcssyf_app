@@ -80,10 +80,19 @@
                             <input v-model="dataForm.email" type="text" class="uk-input uk-border-rounded" placeholder="Adresse Email du client (ex : xyz@gmail.com)">
                         </div>
                         
+                        <!-- INFOS TECHNICIENS -->
+                        <div class="uk-width-1-3@m">
+                            <label for="">Technicien *</label>
+                            <select v-model="dataForm.technicien" class="uk-select uk-border-rounded">
+                                <option value="">-- Choisissez le Technicien --</option>
+                                <option :value="tech.username" v-for="(tech,index) in technicienList" :key="index">{{ tech.nom }} {{ tech.prenom}} {{ tech.phone }}</option>
+                            </select>
+                        </div>
                         <div class="uk-width-1-1@m">
                             <hr class="uk-divider-small">
                         </div>
                     </template>
+
                     <div class="uk-width-1-1@m">
                         <h3>Infos Materiel</h3>
                     </div>
@@ -180,6 +189,7 @@ export default {
                 ville : "",
                 adresse_postal : "",
                 email : "",
+                technicien : ""
                 
             },
             duree : [1,2,3,6,9,12,24],
@@ -187,7 +197,8 @@ export default {
             optionsList : [],
             actifOption : "",
             errors : [],
-            userAccount : {}
+            userAccount : {},
+            technicienList : []
         }
     },
     watch : {
@@ -272,6 +283,14 @@ export default {
                 response = await axios.get('/user/pdraf/get-solde')
                 if(response) {
                     this.userAccount = response.data
+                    this.isLoading = false
+                }
+
+                // recuperer la liste de tous les techniciens
+                response = await axios.get('/user/technicien-list')
+
+                if(response) {
+                    this.technicienList = response.data
                     this.isLoading = false
                 }
 

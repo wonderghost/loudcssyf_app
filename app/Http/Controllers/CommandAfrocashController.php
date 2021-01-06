@@ -480,7 +480,7 @@ class CommandAfrocashController extends Controller
 
                 $serials = request()->user()->exemplaireForPdc()
                     ->whereNotNull('vendeurs')
-                    ->whereNull('rapports')
+                    ->whereNull('recrutement_afrocash_id')
                     ->whereNull('pdraf_id')
                     ->orderBy('created_at','desc')
                     ->paginate();
@@ -490,7 +490,7 @@ class CommandAfrocashController extends Controller
 
                 $serials = request()->user()->exemplaireForPdraf()
                     ->whereNotNull('vendeurs')
-                    ->whereNull('rapports')
+                    ->whereNull('recrutement_afrocash_id')
                     ->orderBy('created_at','desc')
                     ->paginate();
 
