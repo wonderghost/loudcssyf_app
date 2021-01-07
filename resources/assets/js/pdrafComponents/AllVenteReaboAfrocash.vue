@@ -506,7 +506,7 @@ import VueSingleSelect from "vue-single-select";
                     
                     
                     if(response && response.data) {
-                        alert("Success!")
+                        UIkit.modal.alert("<div class='uk-alert uk-alert-success'>Success</div>")
                         Object.assign(this.$data,this.$options.data())
                         this.getAllData()
                     }
@@ -520,7 +520,8 @@ import VueSingleSelect from "vue-single-select";
                         }
                     } else {
                         this.errors.push(error.response.data)
-                        alert(error.response.data)
+                        // alert(error.response.data)
+                        UIkit.modal.alert("<div class='uk-alert uk-alert-danger'>"+error.response.data+"</div>")
                     }
                     this.getAllData()
                 }

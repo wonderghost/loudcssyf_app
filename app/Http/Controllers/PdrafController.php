@@ -625,7 +625,8 @@ class PdrafController extends Controller
                 ->first();
             $messageClient = "Installation\nClient: ".$intervention->nom_client.
                 "\nTel: ".$intervention->telephone.
-                "\nQuart : ".$intervention->adresse;
+                "\nQuart : ".$intervention->adresse.
+                "\nDIST : ".request()->user()->localisation." (".request()->user()->phone.")";
 
             $messageTech = "Installation\nCoordonnees Technicien \n".
                 "Nom: ".$userTechnicien->nom." ".$userTechnicien->prenom.

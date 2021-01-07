@@ -74,6 +74,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         methods : {
             onSubmitRetraitRequest : async function () {
                 try {
+                    this.isLoading = true
                     this.errors = []
                     this.dataForm._token = this.myToken
                     let response = await axios.post('/user/afrocash/retrait',this.dataForm)
@@ -83,6 +84,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                         this.dataForm.identifiant = ""
                         this.dataForm.montant = ""
                         this.dataForm.password = ""
+                        this.isLoading = false
 
                     }
                 }
