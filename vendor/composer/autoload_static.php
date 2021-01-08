@@ -458,6 +458,7 @@ class ComposerStaticInit15d5dc02f650ad17553f69fb230f4dbd
         'App\\Credit' => __DIR__ . '/../..' . '/app/Credit.php',
         'App\\DeblocageCga' => __DIR__ . '/../..' . '/app/DeblocageCga.php',
         'App\\DeficientMaterial' => __DIR__ . '/../..' . '/app/DeficientMaterial.php',
+        'App\\DepotAfrocash' => __DIR__ . '/../..' . '/app/DepotAfrocash.php',
         'App\\Depots' => __DIR__ . '/../..' . '/app/Depots.php',
         'App\\Events\\AfrocashNotification' => __DIR__ . '/../..' . '/app/Events/AfrocashNotification.php',
         'App\\Exceptions\\AppException' => __DIR__ . '/../..' . '/app/Exceptions/AppException.php',

@@ -292,6 +292,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	######################################## AFROCASH MONEY TRANSFERT ROUTES ############################
 
 	Route::post('/user/afrocash/retrait','PdrafController@afrocashRetraitRequest')->middleware('pdraf');
+	Route::post('/user/afrocash/depot','PdrafController@afrocashDepotRequest')->middleware('pdraf');
 
 	############################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##############################
 

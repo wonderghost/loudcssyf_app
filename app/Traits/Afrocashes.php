@@ -34,6 +34,7 @@ use App\RapportVente;
 use App\RemboursementPromo;
 
 use App\RetraitAfrocash;
+use App\DepotAfrocash;
 use App\ComissionSettingAfrocash;
 
 
@@ -1013,6 +1014,88 @@ public function getInfosRemboursementPromo(Request $request,
 
 			return response()
 				->json('done');
+		}
+		catch(AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
+
+	public function afrocashDepotRequest() {
+		try {
+			$validation = request()->validate([
+				'identifiant'	=>	'required|string|exists:users,username',
+				'montant'	=>	'required|numeric|min:10000',
+				'password'	=>	'required|string'
+			],[
+				'min'	=>	'Le montant minimum requis est de 10000',
+				'exists'	=>	'`:attribute` n\'existe pas dans le system'
+			]);
+
+			if(!Hash::check(request()->password,request()->user()->password)) {
+				throw new AppException("Mot de passe invalide !");
+			}
+
+			$destUser = User::where('username',request()->identifiant)
+				->whereIn('type',['technicien','client'])
+				->first();
+			
+			if(!$destUser) {
+				throw new AppException("Destinataire invalide !");
+			}
+
+			$expUser = request()->user();
+			$expAccount = $expUser->afroCash()->first();
+
+			if($expAccount->solde < request()->montant) {
+				throw new AppException("Montant Indisponible.");
+			}
+
+			$destAccount = $destUser->afroCash()->first();
+
+			$expAccount->solde -= request()->montant;
+			$destAccount->solde += request()->montant;
+
+			$trans = new TransactionAfrocash;
+			$trans->compte_debite = $expAccount->numero_compte;
+			$trans->compte_credite = $destAccount->numero_compte;
+			$trans->montant = request()->montant;
+			$trans->motif = "Depot_Afrocash";
+
+			// DETERMINER LA COMISSION DE RETRAIT
+			$comissionDepot = ComissionSettingAfrocash::where('from_amount','<=',request()->montant)
+				->where('to_amount','>=',request()->montant)
+				->first();
+			
+			if(!$comissionDepot) {
+				throw new AppException("Erreur Parametre de comission non defini");
+			}
+
+			$depotInstance = new DepotAfrocash;
+			$depotInstance->expediteur = $expAccount->numero_compte;
+			$depotInstance->destinateur = $destAccount->numero_compte;
+			$depotInstance->montant = request()->montant;
+			$depotInstance->id_frais = $comissionDepot->id;
+
+			$frais = ceil(request()->montant * ($comissionDepot->frais_pourcentage/100)) * (10/100);
+
+			//  ENVOI DE SMS 
+			$messageClient = "Bonjour ".$destUser->nom." ".$destUser->prenom.", depot de ".
+				number_format(request()->montant,0,',',' ')." GNF par ".$expUser->localisation.
+				" , frais : 0 GNF , Nouveau solde : ".number_format($destAccount->solde,0,',',' ').
+				" GNF. \nAfrocash vous remercie.";
+
+			if($depotInstance->save()) {
+				if($expAccount->update() && $destAccount->update()) {
+					if($trans->save()) {
+						if($this->sendSmsToNumber($destUser->username,$messageClient)) {
+
+							return response()
+								->json('done');
+						}
+					}
+				}
+			}
 		}
 		catch(AppException $e) {
 			header("Erreur",true,422);

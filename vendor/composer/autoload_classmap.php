@@ -29,6 +29,7 @@ return array(
     'App\\Credit' => $baseDir . '/app/Credit.php',
     'App\\DeblocageCga' => $baseDir . '/app/DeblocageCga.php',
     'App\\DeficientMaterial' => $baseDir . '/app/DeficientMaterial.php',
+    'App\\DepotAfrocash' => $baseDir . '/app/DepotAfrocash.php',
     'App\\Depots' => $baseDir . '/app/Depots.php',
     'App\\Events\\AfrocashNotification' => $baseDir . '/app/Events/AfrocashNotification.php',
     'App\\Exceptions\\AppException' => $baseDir . '/app/Exceptions/AppException.php',

@@ -85,6 +85,7 @@ import alertAbonnement from './userComponents/AlertComponent.vue'
 import { mapActions } from 'vuex'
 
 import RetraitAfrocash from './afrocashcomponents/RetraitComponent.vue'
+import DepotAfrocash from './afrocashcomponents/DepotComponent.vue'
 
 Vue.use(VueRouter);
 
@@ -781,6 +782,17 @@ const router = new VueRouter({
         {
             path : '/afrocash/retrait',
             component : RetraitAfrocash,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'pdraf') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            }
+        },
+        {
+            path : '/afrocash/depot',
+            component : DepotAfrocash,
             beforeEnter : (to,from,next) => {
                 if(store.state.typeUser != 'pdraf') {
                     alert('action non autorisee !')
