@@ -62,10 +62,10 @@
       <tbody>
         <tr v-for="(t,index) in transactions" :key="index">
           <td>{{ t.date }}</td>
-          <td v-if="t.expediteur.localisation">{{ t.expediteur.localisation }}</td>
-          <td v-else>{{ t.expediteur.nom }} {{ t.expediteur.prenom }}</td>
-          <td v-if="t.destinataire.localisation">{{ t.destinataire.localisation }}</td>
-          <td v-else>{{ t.destinataire.nom }} {{ t.destinataire.prenom }}</td>
+          <td v-if="t.expediteur.type == 'technicien' || t.expediteur.type == 'client'">{{ t.expediteur.nom }} {{ t.expediteur.prenom}}</td>
+          <td v-else>{{ t.expediteur.localisation }}</td>
+          <td v-if="t.destinataire.type == 'technicien' || t.destinataire.type == 'client'">{{ t.destinataire.nom }} {{ t.destinataire.prenom}}</td>
+          <td v-else>{{ t.destinataire.localisation }}</td>
           <td>{{ t.montant | numFormat }}</td>
           <td v-if="t.solde_anterieur != null">{{ t.solde_anterieur | numFormat }}</td><td v-else>-</td>
           <td v-if="t.nouveau_solde != null">{{ t.nouveau_solde | numFormat }}</td><td v-else>-</td>

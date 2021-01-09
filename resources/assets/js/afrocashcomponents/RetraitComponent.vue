@@ -21,7 +21,7 @@
             <div class="uk-width-1-3@m">
                 <form @submit.prevent="onSubmitRetraitRequest()">
                     <div uk-grid class="uk-grid-small">
-                        <div v-for="(err,index) in errors" :key="index" class="uk-alert-danger" uk-alert>
+                        <div v-for="(err,index) in errors" :key="index" class="uk-alert-danger uk-width-1-1@m" uk-alert>
                             <a class="uk-alert-close" uk-close></a>
                             <p>
                                 {{ err }}

@@ -299,6 +299,12 @@
                   <router-link to="/afrocash/user-operation"><span uk-icon="link"></span> Operation</router-link>
                 </li>
                 <li>
+                  <router-link to="/afrocash/retrait"><span uk-icon="icon : link"></span> Retrait</router-link>
+                </li>
+                <li>
+                  <router-link to="/afrocash/depot"><span uk-icon="icon : link"></span>Depot</router-link>
+                </li>
+                <li>
                   <router-link to="/afrocash/transactions"><span uk-icon="link"></span>Toutes les Transactions</router-link>
                 </li>
               </ul>

@@ -263,7 +263,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/pdraf/send-transaction','PdrafController@sendTransaction')->middleware('pdraf');
 	Route::get('/user/pdraf/retour-afrocash-infos','PdrafController@infosRetourAfrocash')->middleware('pdraf');
 	Route::post('/user/pdraf/send-retour-afrocash','PdrafController@sendRetourAfrocash')->middleware('pdraf');
-	Route::get('/user/pdraf/get-solde','PdrafController@getSolde')->middleware('pdraf');
+	Route::get('/user/pdraf/get-solde','PdrafController@getSolde');
 
 	Route::post('/user/pdraf/send-reabo-afrocash','PdrafController@sendReaboAfrocash')->middleware('pdraf');
 	Route::post('/user/pdraf/send-recrutement-afrocash','PdrafController@sendRecrutementAfrocash')->middleware('pdraf');
@@ -291,8 +291,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 
 	######################################## AFROCASH MONEY TRANSFERT ROUTES ############################
 
-	Route::post('/user/afrocash/retrait','PdrafController@afrocashRetraitRequest')->middleware('pdraf');
-	Route::post('/user/afrocash/depot','PdrafController@afrocashDepotRequest')->middleware('pdraf');
+	Route::post('/user/afrocash/retrait','PdrafController@afrocashRetraitRequest');
+	Route::post('/user/afrocash/depot','PdrafController@afrocashDepotRequest');
 
 	############################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##############################
 

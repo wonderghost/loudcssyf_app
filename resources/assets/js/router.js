@@ -783,7 +783,7 @@ const router = new VueRouter({
             path : '/afrocash/retrait',
             component : RetraitAfrocash,
             beforeEnter : (to,from,next) => {
-                if(store.state.typeUser != 'pdraf') {
+                if(store.state.typeUser != 'pdraf' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart') {
                     alert('action non autorisee !')
                     next('/')
                 }
@@ -794,7 +794,7 @@ const router = new VueRouter({
             path : '/afrocash/depot',
             component : DepotAfrocash,
             beforeEnter : (to,from,next) => {
-                if(store.state.typeUser != 'pdraf') {
+                if(store.state.typeUser != 'pdraf' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart') {
                     alert('action non autorisee !')
                     next('/')
                 }

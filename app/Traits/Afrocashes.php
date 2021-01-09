@@ -581,8 +581,8 @@ Trait Afrocashes {
 
 				$all[$key] = [
 					'date'	=>	$c->toDateTimeString(),
-					'expediteur'	=>	$value->compte_debite ? $value->afrocash()->vendeurs()->only(['nom','prenom','localisation']) : '-',
-					'destinataire'	=>	$value->compte_credite ? $value->afrocashcredite()->vendeurs()->only(['nom','prenom','localisation']) : '-',
+					'expediteur'	=>	$value->compte_debite ? $value->afrocash()->vendeurs()->only(['nom','prenom','localisation','type']) : '-',
+					'destinataire'	=>	$value->compte_credite ? $value->afrocashcredite()->vendeurs()->only(['nom','prenom','localisation','type']) : '-',
 					'montant'	=>	$value->montant,
 					'motif'	=>	$value->motif,
 					'solde_anterieur'	=>	$value->solde_anterieur,
@@ -968,8 +968,12 @@ public function getInfosRemboursementPromo(Request $request,
 				throw new AppException("Mot de passe invalide !");
 			}
 
+			if(!in_array(request()->user()->type,['pdraf','v_da','v_standart'])) {
+				throw new AppException("Action non autorisee !");
+			}
+
 			$recepteurUser = User::where("username",request()->identifiant)
-				->whereIn('type',['technicien'])
+				->whereIn('type',['technicien','client'])
 				->first();
 
 			if(!$recepteurUser) {
@@ -1034,6 +1038,10 @@ public function getInfosRemboursementPromo(Request $request,
 
 			if(!Hash::check(request()->password,request()->user()->password)) {
 				throw new AppException("Mot de passe invalide !");
+			}
+
+			if(!in_array(request()->user()->type,['pdraf','v_da','v_standart'])) {
+				throw new AppException("Action non autorisee !");
 			}
 
 			$destUser = User::where('username',request()->identifiant)
