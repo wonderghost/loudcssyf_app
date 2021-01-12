@@ -32,6 +32,23 @@
         </nav>
 
         <div>
+            <div class="uk-grid-small" uk-grid>
+                <div v-if="$route.params.state == 2 && typeUser == 'pdc'" class="uk-width-1-6@m">
+                    <label for="">Vendeurs</label>
+                    <select @change="filterRequest()" v-model="filterData.user" class="uk-select uk-border-rounded">
+                        <option value="none">Tous</option>
+                        <option :value="u.user.username" v-for="(u,index) in pdrafUser" :key="index">{{ u.user.localisation }}</option>
+                    </select>
+                </div>
+                <div class="uk-width-1-6@m">
+                    <label for="">Status</label>
+                    <select @change="filterRequest()" v-model="filterData.status" class="uk-select uk-border-rounded">
+                        <option value="instance">Instance</option>
+                        <option value="confirmer">Confirmer</option>
+                        <option value="annuler">Annuler</option>
+                    </select>
+                </div>
+            </div>
             <!-- paginate component -->
             <div class="uk-width-1-3@m uk-margin-top">
                 <span class="">{{firstItem}} - {{firstItem + perPage}} sur {{total}}</span>
@@ -69,9 +86,12 @@
                         <td>{{c.vendeur}}</td>
                         <td>{{c.article}}</td>
                         <td>{{c.quantite}}</td>
-                        <td v-if="c.status == 'instance'" class="uk-text-primary">{{c.status}}</td>
-                        <td v-if="c.status == 'confirmed'">{{c.status}}</td>
-                        <td v-if="c.livraison == 'instance'" class="uk-text-primary">{{c.livraison}}</td>
+                        <td v-if="c.status" class="uk-text-success"><span uk-icon="check"></span></td>
+                        <td v-if="!c.status && c.remove_status" class="uk-text-danger"><span uk-icon="close"></span></td>
+                        <td v-if="!c.status && !c.remove_status" class="uk-text-primary"><span uk-icon="more"></span></td>
+                        <td v-if="c.livraison" class="uk-text-success"><span uk-icon="check"></span></td>
+                        <td v-if="!c.livraison && c.livraison_remove" class="uk-text-danger"><span uk-icon="close"></span></td>
+                        <td v-if="!c.livraison && !c.livraison_remove" class="uk-text-primary"><span uk-icon="more"></span></td>
                         <td>
                             <button @click="showConfirmCode(c.confirm_code)" v-if="(typeUser == 'pdc' && $route.params.state == 1) || (typeUser == 'pdraf' && $route.params.state == 2)" uk-tooltip="Code de confirmation" class="uk-border-rounded uk-button-primary uk-padding-remove">
                                 <i class="material-icons">preview</i>
@@ -79,22 +99,28 @@
                             <button uk-tooltip="Details" class="uk-border-rounded uk-padding-remove uk-button-default">
                                 <i class="material-icons">more_vert</i>
                             </button>
+                            <template v-if="!c.status && !c.remove_status">
+                                <button v-if="typeUser == 'pdc' && $route.params.state == 2" uk-tooltip="Confirmer" class="uk-border-rounded uk-padding-remove uk-button-primary">
+                                    <router-link :to="'/pdraf/command/confirmation/'+c.id">
+                                        <i style="color : #fff" class="material-icons">check</i>
+                                    </router-link>
+                                </button>
+                                <button @click="deleteCommandAfrocashRequest(c.id)" v-if="typeUser == 'pdc' && $route.params.state == 2" uk-tooltip="Annuler" class="uk-border-rounded uk-padding-remove uk-button-danger">
+                                    <i class="material-icons">delete</i>
+                                </button>
+                            </template>
                             <button v-if="typeUser == 'v_standart' && $route.params.state == 1" uk-tooltip="Confirmer" class="uk-border-rounded uk-padding-remove uk-button-primary">
                                 <router-link :to="'/pdc/command/confirmation/'+c.id">
                                     <i style="color : #fff" class="material-icons">check</i>
                                 </router-link>
                             </button>
-                            <button v-if="typeUser == 'pdc' && $route.params.state == 2" uk-tooltip="Confirmer" class="uk-border-rounded uk-padding-remove uk-button-primary">
-                                <router-link :to="'/pdraf/command/confirmation/'+c.id">
-                                    <i style="color : #fff" class="material-icons">check</i>
-                                </router-link>
-                            </button>
+                            
                             <button @click="deleteCommandAfrocashRequest(c.id)" v-if="typeUser == 'v_standart' && $route.params.state == 1" uk-tooltip="Annuler" class="uk-border-rounded uk-padding-remove uk-button-danger">
                                 <i class="material-icons">delete</i>
                             </button>
-                            <button @click="deleteCommandAfrocashRequest(c.id)" v-if="typeUser == 'pdc' && $route.params.state == 2" uk-tooltip="Annuler" class="uk-border-rounded uk-padding-remove uk-button-danger">
+                            <!-- <button @click="deleteCommandAfrocashRequest(c.id)" v-if="typeUser == 'pdc' && $route.params.state == 2" uk-tooltip="Annuler" class="uk-border-rounded uk-padding-remove uk-button-danger">
                                 <i class="material-icons">delete</i>
-                            </button>
+                            </button> -->
                         </td>
                     </tr>
                 </tbody>
@@ -136,6 +162,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 firstItem : 1,
                 total : 0,
         // #####
+                filterData : {
+                    user : "none",
+                    status : "instance",
+                    livraison : "instance"
+                },
+                pdrafUser : []
             }
         },
         watch : {
@@ -143,29 +175,49 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         },
         methods : {
             paginateFunction : async function (url) {
-            try {
-              
-                let response = await axios.get(url)
-                if(response && response.data) {
-                    
-                    this.list = response.data.all
+                try {
+                
+                    let response = await axios.get(url)
+                    if(response && response.data) {
+                        
+                        this.list = response.data.all
 
-                    this.nextUrl = response.data.next_url
-                    this.lastUrl = response.data.last_url
-                    this.currentPage = response.data.current_page
-                    this.firstPage = response.data.first_page
-                    this.firstItem = response.data.first_item,
-                    this.total = response.data.total
+                        this.nextUrl = response.data.next_url
+                        this.lastUrl = response.data.last_url
+                        this.currentPage = response.data.current_page
+                        this.firstPage = response.data.first_page
+                        this.firstItem = response.data.first_item,
+                        this.total = response.data.total
+                    }
                 }
-            }
-            catch(error) {
-              alert("Erreur!")
-              console.log(error)
-            }
-          },
+                catch(error) {
+                alert("Erreur!")
+                console.log(error)
+                }
+            },
             showConfirmCode : function (code) {
                 try {
                     alert("Code de confirmation : "+code)
+                }
+                catch(error) {
+                    alert(error)
+                }
+            },
+            filterRequest : async function () {
+                try {
+                    let response = await axios.get('/pdc/command/'+this.$route.params.state+'/filter/'+
+                        this.filterData.user+'/'+this.filterData.status+'/'+this.filterData.livraison)
+
+                    if(response) {
+                        this.list = response.data.all
+
+                        this.nextUrl = response.data.next_url
+                        this.lastUrl = response.data.last_url
+                        this.currentPage = response.data.current_page
+                        this.firstPage = response.data.first_page
+                        this.firstItem = response.data.first_item,
+                        this.total = response.data.total
+                    }
                 }
                 catch(error) {
                     alert(error)
@@ -189,6 +241,15 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 
                         this.isLoading = false
                     }
+
+                    if(this.typeUser == 'pdc') {
+                        
+                        response = await axios.get('/user/get-pdraf-list') 
+                        if(response) {
+                            this.pdrafUser = response.data
+                        }
+                    }
+
                 }
                 catch(error) {
                     alert(error)
@@ -223,7 +284,16 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                     }
                 }
                 catch(error) {
-                    alert(error)
+                    if(error.response.data.errors) {
+                        let errorTab = error.response.data.errors
+                        for (var prop in errorTab) {
+                            // this.errors.push(errorTab[prop][0])
+                            alert(errorTab[prop][0])
+                        }
+                    } else {
+                        // this.errors.push(error.response.data)
+                        alert(error.response.data)
+                    }
                 }
             }
         },

@@ -23,6 +23,171 @@ class CommandAfrocashController extends Controller
 {
     //
 
+    # FILTER COMMAND AFROCASH LIST 
+    public function filterCommandAfrocashRequest($slug,$user,$state,$livraison) {
+        try {
+            $userOnline = request()->user();
+            if($userOnline->type == 'pdc' && $slug == 2) {
+                // PDC FILTER
+                if($user == 'none') {
+
+                    $pdrafUser = request()->user()
+                        ->pdrafUserList()
+                        ->select('id_pdraf')
+                        ->groupBy('id_pdraf')
+                        ->get();
+
+                    if($state == 'instance') {
+                        // tous
+                        $commandId = CommandAfrocash::select('id_commande')
+                            ->whereIn('user_id',$pdrafUser)
+                            ->where('state',false)
+                            ->where('remove_state',false)
+                            ->distinct('id_commande')
+                            ->paginate();
+
+                    }
+                    else if($state == 'confirmer') {
+                        // confirmer
+                        $commandId = CommandAfrocash::select('id_commande')
+                            ->whereIn('user_id',$pdrafUser)
+                            ->where('state',true)
+                            ->distinct('id_commande')
+                            ->paginate();
+                        
+                    }
+                    else {
+                        // annuler
+                        $commandId = CommandAfrocash::select('id_commande')
+                            ->whereIn('user_id',$pdrafUser)
+                            ->where('remove_state',true)
+                            ->distinct('id_commande')
+                            ->paginate();
+                    }
+                    
+                }
+                else {
+                    if($state == 'instance') {
+                        // tous
+                        $commandId = CommandAfrocash::select('id_commande')
+                            ->where('user_id',$user)
+                            ->where('state',false)
+                            ->where('remove_state',false)
+                            ->distinct('id_commande')
+                            ->paginate();
+
+                    }
+                    else if($state == 'confirmer') {
+                        // confirmer
+                        $commandId = CommandAfrocash::select('id_commande')
+                            ->where('user_id',$user)
+                            ->where('state',true)
+                            ->distinct('id_commande')
+                            ->paginate();
+                        
+                    }
+                    else {
+                        // annuler
+                        $commandId = CommandAfrocash::select('id_commande')
+                            ->where('user_id',$user)
+                            ->where('remove_state',true)
+                            ->distinct('id_commande')
+                            ->paginate();
+                    }
+                }
+            }
+            else if($userOnline->type == 'pdc' && $slug == 1) {
+                $commandId = CommandAfrocash::select('id_commande')
+                    ->where('user_id',$userOnline->username)
+                    ->where('state',false)
+                    ->where('remove_state',false)
+                    ->distinct('id_commande')
+                    ->paginate();
+            }
+            else if ($userOnline->type == 'pdraf') {
+                $commandId = CommandAfrocash::select('id_commande')
+                    ->where('user_id',$userOnline->username)
+                    ->where('state',false)
+                    ->where('remove_state',false)
+                    ->distinct('id_commande')
+                    ->paginate();
+            }
+            else if($userOnline->type == 'v_standart') { 
+                $pdcUser = User::select('username')
+                    ->where('type','pdc')
+                    ->groupBy('username')
+                    ->get();
+
+                $commandId = CommandAfrocash::select('id_commande')
+                    ->whereIn('user_id',$pdcUser)
+                    ->where('state',false)
+                    ->where('remove_state',false)
+                    ->distinct('id_commande')
+                    ->paginate();
+            }
+            else {
+                //
+                $commandId = CommandAfrocash::select('id_commande')
+                    ->where('state',false)
+                    ->where('remove_state',false)
+                    ->distinct('id_commande')
+                    ->paginate();
+            }
+
+            $data = [];
+            
+            foreach($commandId as $key => $value) {
+
+                $response = CommandAfrocash::find($value);
+                $produitRef = [];
+                foreach($response as $_value) {
+                    array_push($produitRef,$_value->only('produit_id'));
+                }
+
+                $article = Articles::select('kit_slug')
+                    ->whereIn('produit',$produitRef)
+                    ->groupBy('kit_slug')
+                    ->first();
+
+                $kit = $article->kits()->first();
+                
+
+                $date = new Carbon($response->first()->created_at);
+
+                $data[$key] = [
+                    'id'    =>  Crypt::encryptString($response->first()->id_commande),
+                    'date'  =>  $date->toDateString(),
+                    'heure' =>  $date->toTimeString(),
+                    'vendeur'   =>  $response->first()->user_id()->first()->localisation,
+                    'article'   =>  $kit->name,//$response->first()->produit_id()->first()->libelle,
+                    'quantite'  =>  $response->first()->quantite,
+                    'status'    =>  $response->first()->state > 0 ? true : false,
+                    'remove_status' =>  $response->first()->remove_state > 0 ? true : false,
+                    'livraison' =>  $response->first()->livraison()->first()->state > 0 ? true : false,
+                    'livraison_remove'  =>  $response->first()->livraison()->first()->remove_state > 0 ? true : false,
+                    'confirm_code'  =>  $response->first()->livraison()->first()->confirm_code
+                ];
+
+            }
+            
+            return response()
+                ->json([
+                    'all'   =>  $data,
+                    'next_url'	=> $commandId->nextPageUrl(),
+					'last_url'	=> $commandId->previousPageUrl(),
+					'per_page'	=>	$commandId->perPage(),
+					'current_page'	=>	$commandId->currentPage(),
+					'first_page'	=>	$commandId->url(1),
+					'first_item'	=>	$commandId->firstItem(),
+					'total'	=>	$commandId->total()
+                ]);
+        }
+        catch(ErrorException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
      // COMMANDE AFROCASH LIST
 
     public function commandAfrocashList($slug) {
@@ -110,8 +275,10 @@ class CommandAfrocashController extends Controller
                     'vendeur'   =>  $response->first()->user_id()->first()->localisation,
                     'article'   =>  $kit->name,//$response->first()->produit_id()->first()->libelle,
                     'quantite'  =>  $response->first()->quantite,
-                    'status'    =>  $response->first()->state > 0 ? 'success' : 'instance',
-                    'livraison' =>  $response->first()->livraison()->first()->state > 0 ? 'success' : 'instance',
+                    'status'    =>  $response->first()->state > 0 ? true : false,
+                    'remove_status' =>  $response->first()->remove_state > 0 ? true : false,
+                    'livraison' =>  $response->first()->livraison()->first()->state > 0 ? true : false,
+                    'livraison_remove'  =>  $response->first()->livraison()->first()->remove_state > 0 ? true : false,
                     'confirm_code'  =>  $response->first()->livraison()->first()->confirm_code
                 ];
 
@@ -187,7 +354,6 @@ class CommandAfrocashController extends Controller
             if(!Hash::check(request()->password_confirmation,request()->user()->password)) {
                 throw new AppException("Mot de passe invalide !");
             }
-
 
 
             $idCommande = Crypt::decryptString($slug);
@@ -377,8 +543,8 @@ class CommandAfrocashController extends Controller
             $command_afrocash = CommandAfrocash::where('id_commande',$id_commande)
                 ->get();
 
-            if($command_afrocash->first()->state) {
-                throw new AppException("Commande deja confirmee!");
+            if($command_afrocash->first()->state || $command_afrocash->first()->remove_state) {
+                throw new AppException("Impossible d'effectuer cette action!");
             }
 
             // VERIFIER SI LA COMMANDE N'EST PAS DEJA CONFIRME

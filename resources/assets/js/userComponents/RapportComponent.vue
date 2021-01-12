@@ -549,13 +549,15 @@ import datepicker from 'vue-date-picker'
                 commission_total : this.commission,
                 password_confirm : this.passwordConfirm
               })
-              if(response.data == 'done') {
-                this.isLoading = false
-                this.success = true
-                this.getRapportVente()
+              
+              if(response && response.data == 'done') {
+                alert('Success !')
                 this.getPayComissionListForVendeur()
+                this.getRapportVente()
+                this.isLoading = false
               }
-            } catch (error) {
+            } 
+            catch (error) {
               this.isLoading = false
               if(error.response.data.errors) {
                 let errorTab = error.response.data.errors
@@ -569,6 +571,9 @@ import datepicker from 'vue-date-picker'
           }
         },
         computed : {
+          lastPayCom() {
+            return this.payComissionList[0]
+          },
           typeUser () {
             return this.$store.state.typeUser
           },

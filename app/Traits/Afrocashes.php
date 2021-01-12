@@ -982,12 +982,6 @@ public function getInfosRemboursementPromo(Request $request,
 
 			$recepteurAccount = $recepteurUser->afroCash()->first();
 
-			# VERIFER LA DISPONIBILITE DU MONTANT DANS LE COMPTE
-
-			if(request()->montant > $recepteurAccount->solde) {
-				throw new AppException("Montant Indisponible !");
-			}
-
 			$retraitExistant = $recepteurAccount->retraitAfrocash()
 				->whereNull('confirm_at')
 				->whereNull('remove_at')
@@ -1005,12 +999,19 @@ public function getInfosRemboursementPromo(Request $request,
 			$retraitInstance->destinateur = $recepteurAccount->numero_compte;
 
 			// DETERMINER LA COMISSION DE RETRAIT
-			$comissionRetrait = ComissionSettingAfrocash::where('from_amount','<',request()->montant)
-				->where('to_amount','>',request()->montant)
+			$comissionRetrait = ComissionSettingAfrocash::where('from_amount','<=',request()->montant)
+				->where('to_amount','>=',request()->montant)
 				->first();
 			
 			if(!$comissionRetrait) {
 				throw new AppException("Erreur Parametre de comission non defini");
+			}
+
+			# VERIFER LA DISPONIBILITE DU MONTANT DANS LE COMPTE
+			$frais = $retraitInstance->montant * ($comissionRetrait->frais_pourcentage/100);
+
+			if((request()->montant+$frais) > $recepteurAccount->solde) {
+				throw new AppException("Montant Indisponible !");
 			}
 
 			$retraitInstance->id_frais = $comissionRetrait->id;

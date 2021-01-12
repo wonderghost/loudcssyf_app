@@ -68,76 +68,78 @@ class RapportControlleur extends Controller
 // ----------------------------------------------------------------------------------------------
 // @@@@@@
 // ENVOI DE LA DEMANDE DE PAIEMENT DE COMMISSION
-public function payCommission(Request $request , PayCommission $pay) {
-  $validation = $request->validate([
-    'password_confirm'  =>  'required'
-  ],[
-    'required'  =>  'Mot de passe requis'
-  ]);
-  try {
-    if(Hash::check($request->input('password_confirm'),Auth::user()->password)) {
+  public function payCommission(PayCommission $pay) {
+    try {
+      $validation = request()->validate([
+        'password_confirm'  =>  'required',
+      ]);
 
-
-      // recuperation des identifiants de demande de paiement
-      $_tmp = $request->user()->rapportGroupByPayId();
-      $pay_request = PayCommission::whereIn('id',$_tmp)
-        ->where('status','unvalidated')
-        ->get();
-
-      if($pay_request->count() > 0) {
-        throw new AppException("Vous avez deja une demande de paiement de comissions en attente de traitement , Veuillez Ressayez plus tard :-)");
+      # VALIDATION DU MOT PASSE UTILISATEUR
+      if(!Hash::check(request()->password_confirm,request()->user()->password)) {
+        throw new AppException("Mot de passe invalide !");
       }
 
-      $rapport = $request->user()->rapportsPayNUll();
-      $pay->id = "pay_comission_".$request->user()->username.time();
-      if($rapport->count() > 0) {
-        $pay->montant=0;
-        foreach($rapport as $key=>$value) {
-          $pay->montant+= $value->commission;
-        }
-        if($pay->montant < 100000) {
-          // si le montant n'est pas valide !
-          throw new AppException("Vous devez avoir au moins 100,000 GNF !");
-        }
-        $tmp = $pay->id;
-        $pay->save();
-        foreach($rapport as $key => $value ) {
-          $value->pay_comission_id = $tmp;
-          $value->save();
-        }
-        // VENDEURS
-        $n = $this->sendNotification("Paiement Commission","Vous avez envoye une demande de paiement de commission!",Auth::user()->username);
-        $n->save();
-        // GESTIONNAIRE DE CREDIT
-        $_user = User::where('type','gcga')->get();
-        foreach($_user as $value) {
-          $n = $this->sendNotification("Paiement Commission","Il y a une demande de paiement de commission de la part de : ".Auth::user()->localisation,$value->username);
-          $n->save();
-        }
-        // ADMIN
-        $n = $this->sendNotification("Paiement Commission","Il y a une demande de paiement de commission de la part de : ".Auth::user()->localisation,'admin');
-        $n->save();
+      $rapport = request()->user()->rapportsPayNUll();
 
-        $n = $this->sendNotification("Paiement Commission","Il y a une demande de paiement de commission de la part de : ".Auth::user()->localisation,'root');
-        $n->save();
-        return response()->json('done');
-      } else {
-        throw new AppException("Vous n'avez pas de commission !");
+      $pay->id = "pay_comission_".request()->user()->username.time();
+
+      $pay->montant = request()->user()->rapportVente()
+        ->where('state','unaborted')
+        ->whereNull('pay_comission_id')
+        ->sum('commission');
+
+      $pay->status = 'validated';
+      $pay_at = Carbon::now();
+      $pay->pay_at = $pay_at->toDateTimeString();
+
+
+      if($pay->montant < 100000) {
+        throw new AppException("Vous devez avoir au moins 100,000 GNF !");
       }
-    } else {
-      throw new AppException("Mot de Passe invalide!");
+
+      $afrocashAccount = request()->user()->afroCash()->first();
+      $afrocashCentral = Credit::find('afrocash');
+
+      $afrocashAccount->solde += $pay->montant;
+      $afrocashCentral->solde -= $pay->montant;
+
+      # ENREGISTREMENT DE LA TRANSACTION 
+      $trans = new TransactionAfrocash;
+      $trans->compte_credite = $afrocashAccount->numero_compte;
+      $trans->montant = $pay->montant;
+      $trans->motif = "Paiement_Comission";
+
+      $tmp = $pay->id;
+      foreach($rapport as $key => $value ) {
+        $value->pay_comission_id = $tmp;
+        $value->statut_paiement_commission = 'paye';
+      }
+
+      if($pay->save()) {
+        if($afrocashAccount->update() && $afrocashCentral->update()) {
+          if($trans->save()) {
+            foreach($rapport as $key => $value) {
+              $value->update();
+            }
+            return response()
+              ->json('done');
+          }
+        }
+      }
     }
-  } catch (AppException $e) {
-    header("unprocessible entity",true,422);
-    die(json_encode($e->getMessage()));
+    catch(AppException $e) {
+      header("Erreur",true,422);
+      die(json_encode($e->getMessage()));
+    }
   }
-}
 
 // LIST DE PAIEMENT DES COMMISSIONS
 public function PayCommissionListForVendeurs(Request $request) {
   try {
     $_tmp = $request->user()->rapportGroupByPayId();
-    $payCommission = PayCommission::whereIn('id',$_tmp)->get();
+    $payCommission = PayCommission::whereIn('id',$_tmp)
+      ->orderBy('created_at','desc')
+      ->get();
     $all =[];
     foreach($payCommission as $key  =>  $value) {
       $all[$key]  = [
@@ -154,7 +156,6 @@ public function PayCommissionListForVendeurs(Request $request) {
     header("unprocessible entity",true,422);
     die(json_encode($e->getMessage()));
   }
-
 }
 
 
@@ -277,7 +278,7 @@ public function validatePayComission(Request $request) {
 
       if($total === $comission->montant) {
         // LES MONTANTS SONT IDENTIQUES , IL N'Y A PAS DE CONFUSION
-        if($afrocash_central && ($afrocash_central->solde >= $total) ) {
+        if($afrocash_central && ($afrocash_central->solde >= $total)) {
           // ENVOI DES NOTIFICATIONS
           $_user_credit = User::where('type','gcga')->get();
 

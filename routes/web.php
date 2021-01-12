@@ -229,6 +229,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/pdc/command/new','PdcController@sendCommandAfrocash')->middleware('pdc');
 	Route::get('/pdc/command/new','PdcController@newCommandGetData');
 	Route::get('/pdc/command/list/{slug?}','CommandAfrocashController@commandAfrocashList');
+	Route::get('/pdc/command/{slug?}/filter/{user}/{state}/{livraison}','CommandAfrocashController@filterCommandAfrocashRequest');
 
 	Route::get('/pdc/command/confirm/{slug}','CommandAfrocashController@getDataConfirmCommand')->middleware('vendeur');
 	Route::post('/pdc/command/confirm/{slug}','CommandAfrocashController@confirmCommandAfrocash')->middleware('vendeur');
@@ -495,7 +496,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/rapport-ventes/pay-commission','RapportControlleur@payCommission')->middleware('vendeur');
 	Route::get('/user/rapport-ventes/get-pay-commission','RapportControlleur@PayCommissionListForVendeurs')->middleware('vendeur');
 
-	Route::post('/user/rapport-ventes/validate-pay-commission','RapportControlleur@validatePayComission')->middleware('cga');
+	Route::post('/user/rapport-ventes/validate-pay-commission','RapportControlleur@validatePayComission');
 	Route::post('/user/rapport-ventes/abort-pay-commission','RapportControlleur@abortPayComission')->middleware('cga');
 	
 	Route::get('/user/pay-comissions/all','RapportControlleur@payComissionList')->middleware('cga');
