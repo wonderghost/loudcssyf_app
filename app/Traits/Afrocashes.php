@@ -1095,12 +1095,14 @@ public function getInfosRemboursementPromo(Request $request,
 				" GNF. \nAfrocash vous remercie.";
 
 			if($depotInstance->save()) {
-				if($expAccount->update() && $destAccount->update()) {
-					if($trans->save()) {
-						if($this->sendSmsToNumber($destUser->username,$messageClient)) {
-
-							return response()
-								->json('done');
+				if($expAccount->update()) {
+					if($destAccount->update()) {
+						if($trans->save()) {
+							if($this->sendSmsToNumber($destUser->username,$messageClient)) {
+	
+								return response()
+									->json('done');
+							}
 						}
 					}
 				}
