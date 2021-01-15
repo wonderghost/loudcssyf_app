@@ -1113,4 +1113,212 @@ public function getInfosRemboursementPromo(Request $request,
 			die(json_encode($e->getMessage()));
 		}
 	}
+
+	# HISTORIQUE DE RETRAIT 
+
+    public function afrocashRetraitList() {
+        try {
+			if(request()->user()->type == 'pdraf') {
+
+				$userAfrocash = request()->user()->afroCash()->first();
+				$listRetrait = $userAfrocash->retraitAfrocashInitiateur()
+					->orderBy('created_at','desc')
+					->paginate(100);
+			}
+			else if(request()->user()->type == 'pdc') {
+				$pdraf_users = request()->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
+				$pdraf_afrocash_account = Afrocash::select('numero_compte')
+					->groupBy('numero_compte')
+					->whereIn('vendeurs',$pdraf_users)
+					->get();
+
+				$listRetrait = RetraitAfrocash::whereIn('initiateur',$pdraf_afrocash_account)
+					->orderBy('created_at','desc')
+					->paginate(100);
+
+			}
+
+			$totalComission = $this->getComissionRetrait();
+			
+            $data = [];
+            foreach($listRetrait as $key => $value) {
+				$date = new Carbon($value->created_at);
+				$user = $value->destinateur()->vendeurs();
+				$comissionData = $value->comissionData();
+				$frais = ceil($value->montant * ($comissionData->frais_pourcentage / 100));
+				$comission = ceil($frais * ($comissionData->pdraf_pourcentage/100));
+				$comissionPdc = ceil($frais * ($comissionData->pdc_pourcentage/100));
+
+				$initiateur = $value->initiateur()->vendeurs();
+                $data[$key] = [
+					'date'  =>  $date->toDateTimeString(),
+					'montant'	=>	$value->montant,
+                    'initiateur' =>  $initiateur->localisation,
+                    'destinateur'   =>  $user->nom." ".$user->prenom,
+                    'status'    =>  is_null($value->confirm_at) ? false : true,
+                    'frais' =>  $frais,
+					'comission' =>  $comission,
+					'pdc_comission'	=>	$comissionPdc,
+					'pay_state'	=>	is_null($value->pdraf_com_pay_at) ? false : true
+                ];
+            }
+
+            
+            return response()
+                ->json([
+					'all'	=>	$data,
+					'total_comission'	=>	$totalComission,
+					'next_url'	=> $listRetrait->nextPageUrl(),
+					'last_url'	=> $listRetrait->previousPageUrl(),
+					'per_page'	=>	$listRetrait->perPage(),
+					'current_page'	=>	$listRetrait->currentPage(),
+					'first_page'	=>	$listRetrait->url(1),
+					'first_item'	=>	$listRetrait->firstItem(),
+					'total'	=>	$listRetrait->total()
+				]);
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+	}
+
+	#	 AFROCASH DEPOT LIST
+
+	public function afrocashDepotList() {
+		try {
+
+			if(request()->user()->type == 'pdraf') {
+
+				$userAfrocash = request()->user()->afroCash()->first();
+				$listDepot = $userAfrocash->depotAfrocashInitiateur()
+					->orderBy('created_at','desc')
+					->paginate(100);
+
+				$totalComission = $this->getComissionDepot();
+			}
+			else if(request()->user()->type = 'pdc') {
+				
+				$pdraf_users = request()->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
+				$pdraf_afrocash_account = Afrocash::select('numero_compte')
+					->groupBy('numero_compte')
+					->whereIn('vendeurs',$pdraf_users)
+					->get();
+
+				$listDepot = DepotAfrocash::whereIn('expediteur',$pdraf_afrocash_account)
+					->orderBy('created_at','desc')
+					->paginate(100);
+
+				$totalComission = 0;
+			}
+
+
+			
+			
+            $data = [];
+            foreach($listDepot as $key => $value) {
+				$date = new Carbon($value->created_at);
+				$user = $value->destinateur()->vendeurs();
+				$comissionData = $value->comissionData();
+
+				$comission = ceil($value->montant * (0.01/100));
+                $data[$key] = [
+					'date'  =>  $date->toDateTimeString(),
+					'montant'	=>	$value->montant,
+                    'initiateur' =>  request()->user()->localisation,
+                    'destinateur'   =>  $user->nom." ".$user->prenom,
+                    'status'    =>  is_null($value->confirm_at) ? false : true,
+					'comission' =>  $comission,
+					'pay_state'	=>	is_null($value->pdraf_com_pay_at) ? false : true
+                ];
+            }
+
+            
+            return response()
+                ->json([
+					'all'	=>	$data,
+					'total_comission'	=>	$totalComission,
+					'next_url'	=> $listDepot->nextPageUrl(),
+					'last_url'	=> $listDepot->previousPageUrl(),
+					'per_page'	=>	$listDepot->perPage(),
+					'current_page'	=>	$listDepot->currentPage(),
+					'first_page'	=>	$listDepot->url(1),
+					'first_item'	=>	$listDepot->firstItem(),
+					'total'	=>	$listDepot->total()
+				]);
+		}
+		catch(AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
+	
+	# GET COMISSION AFROCASH 
+
+	#COMISSION DEPOT POUR LES PDRAF
+	public function getComissionDepot() {
+		try {
+			$userAfrocash = request()->user()->afroCash()->first();
+			$listForCom = $userAfrocash->depotAfrocashInitiateur()
+				->whereNull('pdraf_com_pay_at')
+				->get();
+
+			$totalComission = 0;
+
+			foreach($listForCom as $value) {
+				$comission = ceil($value->montant * 0.01/100);
+				$totalComission += $comission;
+			}
+			return $totalComission;
+		}
+		catch(AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
+
+	# COMISSION RETRAIT POUR LES PDRAF
+	public function getComissionRetrait() {
+		try {
+
+			if(request()->user()->type == 'pdraf') {
+
+				$userAfrocash = request()->user()->afroCash()->first();
+				$listForCom = $userAfrocash->retraitAfrocashInitiateur()
+					->whereNull('pdraf_com_pay_at')
+					->whereNotNull('confirm_at')
+					->get();
+			}
+			else if(request()->user()->type == 'pdc') {
+
+				$pdraf_users = request()->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
+				$pdraf_afrocash_account = Afrocash::select('numero_compte')
+					->groupBy('numero_compte')
+					->whereIn('vendeurs',$pdraf_users)
+					->get();
+
+				$listForCom = RetraitAfrocash::whereIn('initiateur',$pdraf_afrocash_account)
+					->whereNull('pdc_com_pay_at')
+					->whereNotNull('confirm_at')
+					->get();
+			}
+
+
+			$totalComission = 0;
+
+			foreach($listForCom as $value) {
+				$comissionData = $value->comissionData();
+				$frais = ceil($value->montant * ($comissionData->frais_pourcentage / 100));
+				$comissionPdraf = ceil($frais * ($comissionData->pdraf_pourcentage/100));
+				$comissionPdc = ceil($frais * ($comissionData->pdc_pourcentage/100));
+				$totalComission += $comissionPdraf + $comissionPdc;
+			}
+
+			return $totalComission;
+		}
+		catch(AppException $e) {
+			header("Erreur",true,422);
+			die(json_encode($e->getMessage()));
+		}
+	}
 }

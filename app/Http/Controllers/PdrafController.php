@@ -4992,6 +4992,8 @@ class PdrafController extends Controller
                 'required'  =>  '`:attribute` requis !',
                 'min'   =>  'Le montant minimum requis est de : 100,000 GNF'
             ]);
+
+            throw new AppException("Indisponible pour le moment !");
                 // verification de la validite du mot de passe
             if(!Hash::check(request()->password_confirmation,request()->user()->password)) {
                 throw new AppException("Mot de passe invalide !");
@@ -5536,6 +5538,9 @@ class PdrafController extends Controller
                     ->whereNull('pay_at')
                     ->whereNotNull('confirm_at')
                     ->sum('comission');
+
+                $comission += $this->getComissionRetrait();
+                $comission += $this->getComissionDepot();
             }
             else if(request()->user()->type == 'pdc') {
                 
@@ -5554,8 +5559,21 @@ class PdrafController extends Controller
                     ->whereNotNull('confirm_at')
                     ->whereNull('pay_comission_id')
                     ->sum('montant_ttc');
+                
+                $com = ReaboAfrocash::whereIn('pdraf_id',$pdraf_users)
+                    ->whereNotNull('confirm_at')
+                    ->whereNull('pay_comission_id')
+                    ->sum('comission');
 
-                $comission = round(($ttc/1.18) * (1.5/100),0);
+                $com += RecrutementAfrocash::whereIn('pdraf_id',$pdraf_users)
+                    ->whereNotNull('confirm_at')
+                    ->whereNull('pay_comission_id')
+                    ->sum('comission');
+
+                $marge = round(($ttc/1.18) * (1.5/100),0);
+
+                $comission = $com + $marge;
+                $comission += $this->getComissionRetrait();
 
             }
             
@@ -5573,7 +5591,6 @@ class PdrafController extends Controller
     public function getAllInterventions() {
         try {
             if(request()->user()->type == 'admin') {
-
                 $intervention = InterventionTechnicien::all();
             }
             else if(request()->user()->type == 'pdraf') {
@@ -5611,6 +5628,8 @@ class PdrafController extends Controller
             die(json_encode($e->getMessage()));
         }
     }
+
+    # VALIDATION DU PAIEMENT DE L'INTERVENTION TECHNICIEN
 
     public function validatePaymentIntervention() {
         try {
@@ -5679,4 +5698,6 @@ class PdrafController extends Controller
             die(json_encode($e->getMessage()));
         }
     }
+
+
 }

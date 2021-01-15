@@ -435,6 +435,12 @@
                 <li>
                   <router-link  to="/inventaire-pdraf"><span uk-icon="icon : link"></span> Inventaire PDRAF</router-link>
                 </li>
+                <li>
+                  <router-link to="/afrocash/historique/retrait"><span uk-icon="link"></span> Historique de Retrait</router-link>
+                </li>
+                <li>
+                  <router-link to="/afrocash/historique/depot"><span uk-icon="link"></span>Historique de Depot</router-link>
+                </li>
               </ul>
             </li>
             <li class="uk-parent">
@@ -491,6 +497,12 @@
                 </li>
                 <li>
                   <router-link  to="/all-transaction-pdraf"><span uk-icon="icon : link"></span>Toutes les transactions</router-link>
+                </li>
+                <li>
+                  <router-link to="/afrocash/historique/retrait"><span uk-icon="link"></span> Historique de Retrait</router-link>
+                </li>
+                <li>
+                  <router-link to="/afrocash/historique/depot"><span uk-icon="link"></span>Historique de Depot</router-link>
                 </li>
               </ul>
             </li>

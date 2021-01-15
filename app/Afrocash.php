@@ -39,5 +39,13 @@ class Afrocash extends Model
 
     public function retraitAfrocash() {
       return $this->hasMany('App\RetraitAfrocash','destinateur','numero_compte');
-  }
+    }
+
+    public function retraitAfrocashInitiateur() {
+      return $this->hasMany('App\RetraitAfrocash','initiateur','numero_compte');
+    }
+
+    public function depotAfrocashInitiateur() {
+      return $this->hasMany('App\DepotAfrocash','expediteur','numero_compte');
+    }
 }

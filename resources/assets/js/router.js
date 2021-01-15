@@ -86,6 +86,8 @@ import { mapActions } from 'vuex'
 
 import RetraitAfrocash from './afrocashcomponents/RetraitComponent.vue'
 import DepotAfrocash from './afrocashcomponents/DepotComponent.vue'
+import HistoriqueRetraitAfrocash from './afrocashcomponents/HistoriqueRetraitComponent.vue'
+import HistoriqueDepotAfrocash from './afrocashcomponents/HistoriqueDepotComponent.vue'
 
 Vue.use(VueRouter);
 
@@ -795,6 +797,28 @@ const router = new VueRouter({
             component : DepotAfrocash,
             beforeEnter : (to,from,next) => {
                 if(store.state.typeUser != 'pdraf' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            }
+        },
+        {
+            path : '/afrocash/historique/retrait',
+            component : HistoriqueRetraitAfrocash,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'pdraf' && store.state.typeUser != 'pdc') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            }
+        },
+        {
+            path : '/afrocash/historique/depot',
+            component : HistoriqueDepotAfrocash,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'pdraf' && store.state.typeUser != 'pdc') {
                     alert('action non autorisee !')
                     next('/')
                 }

@@ -409,6 +409,8 @@ public function addNewPdc(Request $request) {
                 'min'   =>  'Le montant minimum requis est de : 1,000,000 GNF'
             ]);
 
+            throw new AppException("Indisponible pour le moment !");
+
             if(!Hash::check(request()->input('password_confirmation'),request()->user()->password)) {
                 throw new AppException("Mot de passe invalide !");
             }
@@ -426,6 +428,16 @@ public function addNewPdc(Request $request) {
                 ->whereNull('pay_comission_id')
                 ->sum('montant_ttc');
 
+            $com = ReaboAfrocash::whereIn('pdraf_id',$data_pdraf)
+                ->whereNotNull('confirm_at')
+                ->whereNull('pay_comission_id')
+                ->sum('comission');
+
+            $com += RecrutementAfrocash::whereIn('pdraf_id',$data_pdraf)
+                ->whereNotNull('confirm_at')
+                ->whereNull('pay_comission_id')
+                ->sum('comission');
+
             $marge = round(($ttc/1.18) * (1.5/100),0);
 
             if($marge <= 0) {
@@ -435,7 +447,7 @@ public function addNewPdc(Request $request) {
             $pay->id = "pay_comission_".request()->user()->username.time();
             $tmp = $pay->id;
             
-            $pay->montant = $marge;
+            $pay->montant = $marge + $com;
 
             $reaboAfrocash = ReaboAfrocash::whereIn('pdraf_id',$data_pdraf)
                 ->whereNotNull('confirm_at')
@@ -452,13 +464,13 @@ public function addNewPdc(Request $request) {
             $receiver_account = request()->user()->afroCash('semi_grossiste')->first();
             $sender_account = Credit::find('afrocash');
 
-            $receiver_account->solde += $marge;
-            $sender_account->solde -= $marge;
+            $receiver_account->solde += $marge + $com;
+            $sender_account->solde -= $marge + $com;
 
 
             $trans = new TransactionAfrocash;
             $trans->compte_credite = $receiver_account->numero_compte;
-            $trans->montant = $marge;
+            $trans->montant = $marge + $com;
             $trans->motif = "Comission_Pdc_Afrocash";
 
             // 

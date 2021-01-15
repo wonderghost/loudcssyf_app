@@ -235,7 +235,6 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/pdc/command/confirm/{slug}','CommandAfrocashController@confirmCommandAfrocash')->middleware('vendeur');
 
 	Route::get('/pdraf/command/confirm/{slug}','CommandAfrocashController@getDataConfirmCommand')->middleware('pdc');
-	// Route::post('/pdraf/command/confirm/{slug}','CommandAfrocashController@confirmCommandAfrocashForPdraf')->middleware('pdc');
 	Route::post('/pdraf/command/confirm/{slug}','CommandAfrocashController@confirmCommandAfrocash')->middleware('pdc');
 
 	Route::get('/pdc/material/inventory','CommandAfrocashController@inventoryStock');
@@ -294,6 +293,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 
 	Route::post('/user/afrocash/retrait','PdrafController@afrocashRetraitRequest');
 	Route::post('/user/afrocash/depot','PdrafController@afrocashDepotRequest');
+	Route::get('/user/afrocash/historique/retrait','PdrafController@afrocashRetraitList');
+	Route::get('/user/afrocash/historique/depot','PdrafController@afrocashDepotList');
 
 	############################@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##############################
 

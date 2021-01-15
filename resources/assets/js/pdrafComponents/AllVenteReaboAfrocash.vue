@@ -520,7 +520,6 @@ import VueSingleSelect from "vue-single-select";
                         }
                     } else {
                         this.errors.push(error.response.data)
-                        // alert(error.response.data)
                         UIkit.modal.alert("<div class='uk-alert uk-alert-danger'>"+error.response.data+"</div>")
                     }
                     this.getAllData()
