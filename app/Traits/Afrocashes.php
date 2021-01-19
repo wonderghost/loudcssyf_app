@@ -1159,7 +1159,8 @@ public function getInfosRemboursementPromo(Request $request,
                     'frais' =>  $frais,
 					'comission' =>  $comission,
 					'pdc_comission'	=>	$comissionPdc,
-					'pay_state'	=>	is_null($value->pdraf_com_pay_at) ? false : true
+					'pay_state'	=>	is_null($value->pdraf_com_pay_at) ? false : true,
+					'pay_state_pdc'	=>	is_null($value->pdc_com_pay_at) ? false : true
                 ];
             }
 
@@ -1225,9 +1226,9 @@ public function getInfosRemboursementPromo(Request $request,
                 $data[$key] = [
 					'date'  =>  $date->toDateTimeString(),
 					'montant'	=>	$value->montant,
-                    'initiateur' =>  request()->user()->localisation,
+                    'initiateur' =>  $value->expediteur()->vendeurs()->localisation,
                     'destinateur'   =>  $user->nom." ".$user->prenom,
-                    'status'    =>  is_null($value->confirm_at) ? false : true,
+                    'status'    =>	true,
 					'comission' =>  $comission,
 					'pay_state'	=>	is_null($value->pdraf_com_pay_at) ? false : true
                 ];
@@ -1257,12 +1258,30 @@ public function getInfosRemboursementPromo(Request $request,
 
 	#COMISSION DEPOT POUR LES PDRAF
 	public function getComissionDepot() {
-		try {
-			$userAfrocash = request()->user()->afroCash()->first();
-			$listForCom = $userAfrocash->depotAfrocashInitiateur()
-				->whereNull('pdraf_com_pay_at')
-				->get();
+		try { // UNIQUEMENT POUR LES PDRAF
+			$listForCom = [];
+			if(request()->user()->type == 'pdraf') {
 
+				$userAfrocash = request()->user()->afroCash()->first();
+				$listForCom = $userAfrocash->depotAfrocashInitiateur()
+					->whereNull('pdraf_com_pay_at')
+					->get();
+
+			}
+			else if(request()->user()->type == 'pdc') {
+
+				$pdraf_users = request()->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
+				$pdraf_afrocash_account = Afrocash::select('numero_compte')
+					->groupBy('numero_compte')
+					->whereIn('vendeurs',$pdraf_users)
+					->get();
+
+				$listForCom = DepotAfrocash::whereIn('expediteur',$pdraf_afrocash_account)
+					->whereNull('pdc_com_pay_at')
+					->get();
+					
+			}
+			
 			$totalComission = 0;
 
 			foreach($listForCom as $value) {
@@ -1277,7 +1296,7 @@ public function getInfosRemboursementPromo(Request $request,
 		}
 	}
 
-	# COMISSION RETRAIT POUR LES PDRAF
+	# COMISSION RETRAIT
 	public function getComissionRetrait() {
 		try {
 
@@ -1311,7 +1330,15 @@ public function getInfosRemboursementPromo(Request $request,
 				$frais = ceil($value->montant * ($comissionData->frais_pourcentage / 100));
 				$comissionPdraf = ceil($frais * ($comissionData->pdraf_pourcentage/100));
 				$comissionPdc = ceil($frais * ($comissionData->pdc_pourcentage/100));
-				$totalComission += $comissionPdraf + $comissionPdc;
+
+				if(request()->user()->type == 'pdraf') {
+					$totalComission += $comissionPdraf;
+				}
+				else if(request()->user()->type == 'pdc') {
+
+					$totalComission += $comissionPdraf;
+					$totalComission += $comissionPdc;
+				}
 			}
 
 			return $totalComission;

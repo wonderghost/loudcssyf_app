@@ -2555,6 +2555,8 @@ class PdrafController extends Controller
                 $confirm_at = $value->confirm_at ? new Carbon($value->confirm_at) : null;
                 $remove_at = $value->remove_at ? new Carbon($value->remove_at) : null;
                 $pay_at = $value->pay_at ? new Carbon($value->pay_at) : null;
+
+                
                 
                 $all[$key] = [
                     'id'    =>  $value->id,
@@ -4537,6 +4539,8 @@ class PdrafController extends Controller
                 $confirm_at = $value->confirm_at ? new Carbon($value->confirm_at) : null;
                 $remove_at = $value->remove_at ? new Carbon($value->remove_at) : null;
                 $pay_at = $value->pay_at ? new Carbon($value->pay_at) : null;
+
+                $upgradeState = $value->upgrade()->first() ? $value->upgrade()->first() : null;
                 
                 $all[$key] = [
                     'id'    =>  $value->id,
@@ -4556,7 +4560,8 @@ class PdrafController extends Controller
                     'confirm_at'    => $confirm_at ? $confirm_at->toDateTimeString() : null,
                     'remove_at' =>  $remove_at ? $remove_at->toDateTimeString() : null,
                     'pay_at'    =>  $pay_at ? $pay_at->toDateTimeString() : null,
-                    'pay_comission_id'  =>  $value->pay_comission_id
+                    'pay_comission_id'  =>  $value->pay_comission_id,
+                    'upgrade_state' =>  $upgradeState
                 ];
 
             }
@@ -4993,7 +4998,7 @@ class PdrafController extends Controller
                 'min'   =>  'Le montant minimum requis est de : 100,000 GNF'
             ]);
 
-            throw new AppException("Indisponible pour le moment !");
+            // throw new AppException("Indisponible pour le moment !");
                 // verification de la validite du mot de passe
             if(!Hash::check(request()->password_confirmation,request()->user()->password)) {
                 throw new AppException("Mot de passe invalide !");
@@ -5014,6 +5019,9 @@ class PdrafController extends Controller
                 ->whereNotNull('confirm_at')
                 ->sum('comission');
 
+            $comission += $this->getComissionRetrait();
+            $comission += $this->getComissionDepot();
+
             $reabo_afrocash = request()->user()->reaboAfrocash()
                 ->whereNull('remove_at')
                 ->whereNull('pay_at')
@@ -5033,7 +5041,7 @@ class PdrafController extends Controller
             if($comission != request()->input('montant')) {
                 throw new AppException("Erreur ! Ressayez");
             }
-
+            
             $receiver_account = request()->user()->afroCash()->first();
 
             $sender_user = request()->user()->pdcUser()->usersPdc();
@@ -5049,45 +5057,70 @@ class PdrafController extends Controller
             $trans->motif = "Paiement_Comission";
             
 
+            if($sender_account->update()) {
+                if($receiver_account->update()) {
+                    if($trans->save()) {
+
+                        # CONFIRMER LES RETRAITS QUI SONT PAYES
+                        $userAfrocash = request()->user()->afroCash()->first();
+                        $listRetrait = $userAfrocash->retraitAfrocashInitiateur()
+                            ->whereNull('pdraf_com_pay_at')
+                            ->whereNotNull('confirm_at')
+                            ->get();
+
+                        $listDepot = $userAfrocash->depotAfrocashInitiateur()
+                            ->whereNull('pdraf_com_pay_at')
+                            ->get();
+
+                        foreach($listDepot as $value) {
+                            $value->pdraf_com_pay_at = Carbon::now();
+                            $value->update();
+                        }
+
+                        foreach($listRetrait as $value) {
+                            $value->pdraf_com_pay_at = Carbon::now();
+                            $value->update();
+                        }
+
+
+                        #@@@@@@@@@
+
+                        foreach($reabo_afrocash as $value) {
+                            $value->pay_at = Carbon::now();
+                            $value->update();
+                        }
             
-
-            $sender_account->update();
-            $receiver_account->update();
-            $trans->save();
-
-            foreach($reabo_afrocash as $value) {
-                $value->pay_at = Carbon::now();
-                $value->update();
+                        foreach($recrutementAfrocash as $value) {
+                            $value->pay_at = Carbon::now();
+                            $value->update();
+                        }
+            
+                        $n = $this->sendNotification(
+                            "Paiement Comission" ,
+                            "Reception de ".number_format($comission)." GNF de la part de ".$sender_user->localisation,
+                            request()->user()->username
+                            );
+                        $n->save();
+            
+                        $n = $this->sendNotification(
+                            "Paiement Comission" ,
+                            "Envoi de ".number_format($comission)." GNF a :".request()->user()->localisation,
+                            $sender_user->username
+                            );
+                        $n->save();
+            
+                        $n = $this->sendNotification(
+                            "Paiement Comission" ,
+                            "Envoi de : ".number_format($comission)." GNF de la part de ".$sender_user->localisation.", a : ".request()->user()->localisation,
+                            'admin'
+                            );
+                        $n->save();
+            
+                        return response()
+                            ->json('done');
+                    }
+                }
             }
-
-            foreach($recrutementAfrocash as $value) {
-                $value->pay_at = Carbon::now();
-                $value->update();
-            }
-
-            $n = $this->sendNotification(
-                "Paiement Comission" ,
-                "Reception de ".number_format($comission)." GNF de la part de ".$sender_user->localisation,
-                request()->user()->username
-                );
-            $n->save();
-
-            $n = $this->sendNotification(
-                "Paiement Comission" ,
-                "Envoi de ".number_format($comission)." GNF a :".request()->user()->localisation,
-                $sender_user->username
-                );
-            $n->save();
-
-            $n = $this->sendNotification(
-                "Paiement Comission" ,
-                "Envoi de : ".number_format($comission)." GNF de la part de ".$sender_user->localisation.", a : ".request()->user()->localisation,
-                'admin'
-                );
-            $n->save();
-
-            return response()
-                ->json('done');
         } catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));
@@ -5574,6 +5607,7 @@ class PdrafController extends Controller
 
                 $comission = $com + $marge;
                 $comission += $this->getComissionRetrait();
+                $comission += $this->getComissionDepot();
 
             }
             

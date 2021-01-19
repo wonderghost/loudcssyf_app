@@ -300,7 +300,6 @@ export default {
         sendPayComissionRequest : async function () {
             this.errors = []
             try {
-
                 UIkit.modal($("#modal-pay-comission")).hide()
                 this.isLoading = true
 
@@ -324,7 +323,6 @@ export default {
                 }
                 
                 if(response) {
-                    
                     this.isLoading = false
                     alert("Success !")
                     location.reload()

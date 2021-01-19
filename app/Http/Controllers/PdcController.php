@@ -29,6 +29,10 @@ use Carbon\Carbon;
 
 use Illuminate\Support\Str;
 
+use App\RetraitAfrocash;
+use App\DepotAfrocash;
+use App\ComissionSettingAfrocash;
+
 
 class PdcController extends Controller {
 
@@ -409,8 +413,6 @@ public function addNewPdc(Request $request) {
                 'min'   =>  'Le montant minimum requis est de : 1,000,000 GNF'
             ]);
 
-            throw new AppException("Indisponible pour le moment !");
-
             if(!Hash::check(request()->input('password_confirmation'),request()->user()->password)) {
                 throw new AppException("Mot de passe invalide !");
             }
@@ -438,9 +440,12 @@ public function addNewPdc(Request $request) {
                 ->whereNull('pay_comission_id')
                 ->sum('comission');
 
+            $com += $this->getComissionRetrait();
+            $com += $this->getComissionDepot();
+
             $marge = round(($ttc/1.18) * (1.5/100),0);
 
-            if($marge <= 0) {
+            if(($marge+$com) <= 0) {
                 throw new AppException("Vous n'avez pas de comission !");
             }
 
@@ -479,42 +484,85 @@ public function addNewPdc(Request $request) {
             $pay->status = 'validated';
 
             $amount = $pay->montant;
+            if($sender_account->update()) {
+                if($receiver_account->update()) {
+                    if($trans->save()) {
+                        if($pay->save()) {
 
-            $receiver_account->save();
-            $sender_account->save();
-            $trans->save();
+                            ## VALIDATION DE PAIEMENTS DES COMISSIONS DE TRANSACTIONS
+                            $pdraf_users = request()->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
+                            $pdraf_afrocash_account = Afrocash::select('numero_compte')
+                                ->groupBy('numero_compte')
+                                ->whereIn('vendeurs',$pdraf_users)
+                                ->get();
+                
+                            $listRetrait = RetraitAfrocash::whereIn('initiateur',$pdraf_afrocash_account)
+                                ->whereNull('pdc_com_pay_at')
+                                ->whereNotNull('confirm_at')
+                                ->get();
 
-            $pay->save();
+                            $listDepot = DepotAfrocash::whereIn('expediteur',$pdraf_afrocash_account)
+                                ->whereNull('pdc_com_pay_at')
+                                ->get();
+                
+                            foreach($listRetrait as $value) {
+                                $value->pdc_com_pay_at = Carbon::now();
+                                $value->update();
+                            }
 
-             
-
-            foreach($reaboAfrocash as $value) {
-                $value->pay_comission_id = $tmp;
-                $value->update();
+                            foreach($listDepot as $value) {
+                                $value->pdc_com_pay_at = Carbon::now();
+                                $value->update();
+                            }
+                            #@@@@@@@@@@@@
+                
+                             
+                
+                            foreach($reaboAfrocash as $value) {
+                                $value->pay_comission_id = $tmp;
+                                $value->update();
+                            }
+                            
+                            foreach($recrutementAfrocash as $value) {
+                                $value->pay_comission_id = $tmp;
+                                $value->update();
+                            }
+                
+                            $_user = User::where('type','gcga')->get();
+                            foreach($_user as $value) {
+                                $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".request()->user()->localisation,$value->username);
+                                $n->save();
+                            }
+                
+                            $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".request()->user()->localisation,request()->user()->username);
+                            $n->save();
+                
+                            $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".request()->user()->localisation,'admin');
+                            $n->save();
+                
+                            $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".request()->user()->localisation,'root');
+                            $n->save();
+                            
+                            return response()
+                                ->json('done');
+                        }
+                        else {
+                            throw new AppException("Pay Error !");
+                        }
+                    }
+                    else {
+                        throw new AppException("Transaction Error !");
+                    }
+                }
+                else {
+                    throw new AppException("Receiver Error !");
+                }
+            }
+            else {
+                throw new AppException("Sender Error!");
             }
             
-            foreach($recrutementAfrocash as $value) {
-                $value->pay_comission_id = $tmp;
-                $value->update();
-            }
 
-            $_user = User::where('type','gcga')->get();
-            foreach($_user as $value) {
-                $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".request()->user()->localisation,$value->username);
-                $n->save();
-            }
-
-            $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".request()->user()->localisation,request()->user()->username);
-            $n->save();
-
-            $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".request()->user()->localisation,'admin');
-            $n->save();
-
-            $n = $this->sendNotification("Paiement Commission","Paiement d'un montant de : ".$amount." effectue pour :".request()->user()->localisation,'root');
-            $n->save();
-            
-            return response()
-                ->json('done');
         } catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));

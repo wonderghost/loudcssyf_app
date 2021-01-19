@@ -89,8 +89,14 @@
                         <td v-show="typeUser == 'pdc'">{{ r.pdc_comission | numFormat }}</td>
                         <td v-if="r.status" class="uk-text-success"><span uk-icon="check"></span></td>
                         <td v-else class="uk-text-primary"><span uk-icon="more"></span></td>
-                        <td v-if="r.pay_state" class="uk-text-success"><span uk-icon="check"></span></td>
-                        <td v-else class="uk-text-primary"><span uk-icon="more"></span></td>
+                        <template v-if="typeUser == 'pdraf'">
+                            <td v-if="r.pay_state" class="uk-text-success"><span uk-icon="check"></span></td>
+                            <td v-else class="uk-text-primary"><span uk-icon="more"></span></td>
+                        </template>
+                        <template v-if="typeUser == 'pdc'">
+                            <td v-if="r.pay_state_pdc" class="uk-text-success"><span uk-icon="check"></span></td>
+                            <td v-else class="uk-text-primary"><span uk-icon="more"></span></td>
+                        </template>
                     </tr>
                 </tbody>
             </table>

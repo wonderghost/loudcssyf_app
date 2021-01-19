@@ -32,7 +32,7 @@
   </script>
   <title> LOUDCSSYF </title>
   </head>
-  <body onselectstart="return false" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;">
+  <body onselectstart="return true" oncontextmenu="return false" ondragstart="return false" onMouseOver="window.status=''; return true;">
     <div id="app">
       @yield('content')
     </div>
