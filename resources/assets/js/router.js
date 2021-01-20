@@ -807,7 +807,7 @@ const router = new VueRouter({
             path : '/afrocash/historique/retrait',
             component : HistoriqueRetraitAfrocash,
             beforeEnter : (to,from,next) => {
-                if(store.state.typeUser != 'pdraf' && store.state.typeUser != 'pdc') {
+                if(store.state.typeUser != 'pdraf' && store.state.typeUser != 'pdc' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart') {
                     alert('action non autorisee !')
                     next('/')
                 }
@@ -818,7 +818,7 @@ const router = new VueRouter({
             path : '/afrocash/historique/depot',
             component : HistoriqueDepotAfrocash,
             beforeEnter : (to,from,next) => {
-                if(store.state.typeUser != 'pdraf' && store.state.typeUser != 'pdc') {
+                if(store.state.typeUser != 'pdraf' && store.state.typeUser != 'pdc' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart') {
                     alert('action non autorisee !')
                     next('/')
                 }

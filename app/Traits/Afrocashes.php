@@ -1008,7 +1008,7 @@ public function getInfosRemboursementPromo(Request $request,
 			}
 
 			# VERIFER LA DISPONIBILITE DU MONTANT DANS LE COMPTE
-			$frais = $retraitInstance->montant * ($comissionRetrait->frais_pourcentage/100);
+			$frais = $comissionRetrait->frais_pourcentage;
 
 			if((request()->montant+$frais) > $recepteurAccount->solde) {
 				throw new AppException("Montant Indisponible !");
@@ -1098,11 +1098,13 @@ public function getInfosRemboursementPromo(Request $request,
 				if($expAccount->update()) {
 					if($destAccount->update()) {
 						if($trans->save()) {
-							if($this->sendSmsToNumber($destUser->username,$messageClient)) {
+							return response()
+								->json('done');
+							// if($this->sendSmsToNumber($destUser->username,$messageClient)) {
 	
-								return response()
-									->json('done');
-							}
+							// 	return response()
+							// 		->json('done');
+							// }
 						}
 					}
 				}
@@ -1118,7 +1120,7 @@ public function getInfosRemboursementPromo(Request $request,
 
     public function afrocashRetraitList() {
         try {
-			if(request()->user()->type == 'pdraf') {
+			if(request()->user()->type == 'pdraf' || request()->user()->type == 'v_da' || request()->user()->type == 'v_standart') {
 
 				$userAfrocash = request()->user()->afroCash()->first();
 				$listRetrait = $userAfrocash->retraitAfrocashInitiateur()
@@ -1145,7 +1147,8 @@ public function getInfosRemboursementPromo(Request $request,
 				$date = new Carbon($value->created_at);
 				$user = $value->destinateur()->vendeurs();
 				$comissionData = $value->comissionData();
-				$frais = ceil($value->montant * ($comissionData->frais_pourcentage / 100));
+				$frais = $comissionData->frais_pourcentage;
+				// $frais = ceil($value->montant * ($comissionData->frais_pourcentage / 100));
 				$comission = ceil($frais * ($comissionData->pdraf_pourcentage/100));
 				$comissionPdc = ceil($frais * ($comissionData->pdc_pourcentage/100));
 
@@ -1189,7 +1192,7 @@ public function getInfosRemboursementPromo(Request $request,
 	public function afrocashDepotList() {
 		try {
 
-			if(request()->user()->type == 'pdraf') {
+			if(request()->user()->type == 'pdraf' || request()->user()->type == 'v_da' || request()->user()->type == 'v_standart') {
 
 				$userAfrocash = request()->user()->afroCash()->first();
 				$listDepot = $userAfrocash->depotAfrocashInitiateur()
@@ -1260,7 +1263,7 @@ public function getInfosRemboursementPromo(Request $request,
 	public function getComissionDepot() {
 		try { // UNIQUEMENT POUR LES PDRAF
 			$listForCom = [];
-			if(request()->user()->type == 'pdraf') {
+			if(request()->user()->type == 'pdraf' || request()->user()->type == 'v_da' || request()->user()->type == 'v_standart') {
 
 				$userAfrocash = request()->user()->afroCash()->first();
 				$listForCom = $userAfrocash->depotAfrocashInitiateur()
@@ -1300,7 +1303,7 @@ public function getInfosRemboursementPromo(Request $request,
 	public function getComissionRetrait() {
 		try {
 
-			if(request()->user()->type == 'pdraf') {
+			if(request()->user()->type == 'pdraf' || request()->user()->type == 'v_da' || request()->user()->type == 'v_standart') {
 
 				$userAfrocash = request()->user()->afroCash()->first();
 				$listForCom = $userAfrocash->retraitAfrocashInitiateur()
@@ -1327,11 +1330,12 @@ public function getInfosRemboursementPromo(Request $request,
 
 			foreach($listForCom as $value) {
 				$comissionData = $value->comissionData();
-				$frais = ceil($value->montant * ($comissionData->frais_pourcentage / 100));
+				// $frais = ceil($value->montant * ($comissionData->frais_pourcentage / 100));
+				$frais = $comissionData->frais_pourcentage;
 				$comissionPdraf = ceil($frais * ($comissionData->pdraf_pourcentage/100));
 				$comissionPdc = ceil($frais * ($comissionData->pdc_pourcentage/100));
 
-				if(request()->user()->type == 'pdraf') {
+				if(request()->user()->type == 'pdraf' || request()->user()->type == 'v_da' || request()->user()->type == 'v_standart') {
 					$totalComission += $comissionPdraf;
 				}
 				else if(request()->user()->type == 'pdc') {

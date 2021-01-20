@@ -248,7 +248,6 @@
               <li>
                 <router-link to="/set-rapport-parametre"><span uk-icon="link"></span> Reglage Rapport de vente</router-link>
               </li>
-              <!-- <li><a href="#" uk-toggle="target : #rapport-setting-modal"><span uk-icon="icon : minus"></span> Reglage Rapport de vente</a></li> -->
               <li>
                   <form action="/logout" method="post">
                     <input type="hidden" name="_token" :value="myToken">
@@ -306,6 +305,12 @@
                 </li>
                 <li>
                   <router-link to="/afrocash/transactions"><span uk-icon="link"></span>Toutes les Transactions</router-link>
+                </li>
+                <li>
+                  <router-link to="/afrocash/historique/retrait"><span uk-icon="link"></span> Historique de Retrait</router-link>
+                </li>
+                <li>
+                  <router-link to="/afrocash/historique/depot"><span uk-icon="link"></span>Historique de Depot</router-link>
                 </li>
               </ul>
             </li>
