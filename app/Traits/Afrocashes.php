@@ -1015,10 +1015,13 @@ public function getInfosRemboursementPromo(Request $request,
 			}
 
 			$retraitInstance->id_frais = $comissionRetrait->id;
-			$retraitInstance->save();
-
-			return response()
-				->json('done');
+			$messageClient = "Bonjour ,".$recepteurUser->nom." ".$recepteurUser->prenom.", vous avez un retrait en attente de confirmation !";
+			if($retraitInstance->save()) {
+				if($this->sendSmsToNumber($recepteurUser->username,$messageClient)) {
+					return response()
+						->json('done');
+				}
+			}
 		}
 		catch(AppException $e) {
 			header("Erreur",true,422);
@@ -1093,18 +1096,17 @@ public function getInfosRemboursementPromo(Request $request,
 				number_format(request()->montant,0,',',' ')." GNF par ".$expUser->localisation.
 				" , frais : 0 GNF , Nouveau solde : ".number_format($destAccount->solde,0,',',' ').
 				" GNF. \nAfrocash vous remercie.";
-
+				
 			if($depotInstance->save()) {
 				if($expAccount->update()) {
 					if($destAccount->update()) {
 						if($trans->save()) {
-							return response()
-								->json('done');
-							// if($this->sendSmsToNumber($destUser->username,$messageClient)) {
+							
+							if($this->sendSmsToNumber($destUser->username,$messageClient)) {
 	
-							// 	return response()
-							// 		->json('done');
-							// }
+								return response()
+									->json('done');
+							}
 						}
 					}
 				}

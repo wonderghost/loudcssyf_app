@@ -274,6 +274,7 @@ class Osms
             );
         }
 
+        
         if ($httpCode !== $successCode) {
             if (!empty($response['error_description'])) {
                 $errorMessage = $response['error_description'];
@@ -287,10 +288,9 @@ class Osms
                 $errorMessage = $response['requestError']['serviceException']['text'];//. ' ' . $response['requestError']['serviceException']['variables'];
 
             } else if (!empty($response['requestError']['policyException'])) {
-                $errorMessage = $response['requestError']['policyException']['text']
-                    . ' ' . $response['requestError']['policyException']['variables'];
+                $errorMessage = $response['requestError']['policyException']['text'];
+                $errorVariables = $response['requestError']['policyException']['variables'];
             }
-
             return array('error' => $errorMessage);
         }
 

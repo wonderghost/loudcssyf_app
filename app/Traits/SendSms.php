@@ -9,7 +9,7 @@ trait SendSms {
 
     protected $config = array(
         'clientId' => 'XdkjxfD1BMMskXTWitJ9s8U4a4eALTGO',
-        'clientSecret' => 'uKCrXvpu8kNFHKaM'
+        'clientSecret' => 'WwlHkIinvPfvk7hy'
     );
 
     protected $senderAdress = "tel:+2240000";
@@ -26,8 +26,8 @@ trait SendSms {
             }
 
             $receiverAddress = 'tel:+224'.$phoneNumber;
-            $theResponse = $sms->sendSMS($this->senderAdress, $receiverAddress, $message,$this->senderName);
-
+            $theResponse = $sms->sendSMS($this->senderAdress,$receiverAddress, $message,$this->senderName);
+            
             if(!empty($theResponse['error'])) {
                 throw new AppException($theResponse['error']);
             }
