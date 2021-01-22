@@ -184,7 +184,7 @@ Trait Afrocashes {
 							$commande->status = 'validated';
 							$user = $commande->vendeurs();
 
-							$messageDist = "Bonjour, ".$user->localisation." , votre compte cga a été credité.\nLOUDCSSYF vous remercie.";
+							$messageDist = "Bonjour, ".$user->localisation." , votre compte cga a été credité de ".request()->montant.".\nLOUDCSSYF vous remercie.";
 
 							
 
