@@ -160,7 +160,7 @@ Trait Afrocashes {
 			if(!Hash::check($request->input("password_confirmed"),Auth::user()->password)) {
 				throw new AppException("Mauvais mot de passe !");
 			}
-			// $commande = CommandCredit::where('id',$request->input('commande'))->first();
+			
 			$commande = CommandCredit::find($request->input('commande'));
 			// tester l'invalidite de la commande
 			if($this->commandCreditState($commande->id) == 'unvalidated') {
@@ -171,36 +171,45 @@ Trait Afrocashes {
 						// tester la disponibilite du montant
 						if($this->getSoldeGlobal("cga") >= $commande->montant) {
 							$cga_account = CgaAccount::where('vendeur',$commande->vendeurs)->first();
+							$cga_central = Credit::where('designation','cga')->first();
 							// crediter le compte cga du vendeur
-							$new_solde_cga_vendeur = $cga_account->solde + $request->input('montant');
-							CgaAccount::where('numero',$cga_account->numero)->update([
-								'solde'	=>	$new_solde_cga_vendeur
-							]);
+							$cga_account->solde += request()->montant;
 							// debiter le compte central cga
-							$new_solde_cga_central	=	Credit::where('designation','cga')->first()->solde - $request->input('montant');
-							Credit::where('designation','cga')->update([
-								'solde'	=>	$new_solde_cga_central
-							]);
+							$cga_central->solde -= request()->montant;
 
 							$transaction_cga	= new	TransactionCga;
 
 							$transaction_cga->cga	=	$cga_account->numero;
 							$transaction_cga->montant	=	$request->input('montant');
+							$commande->status = 'validated';
+							$user = $commande->vendeurs();
+
+							$messageDist = "Bonjour, ".$user->localisation." , votre compte cga a été credité.\nLOUDCSSYF vous remercie.";
+
+							
 
 							$transaction_cga->save();
-							CommandCredit::where("id",$commande->id)->update([
-								'status'	=>	'validated'
-							]);
-							// ENVOI DE LA NOTIFICATION
-							$n = $this->sendNotification("Commande Credit cga" ,"Une commande cga a ete valide pour : ".$commande->vendeurs()->localisation,User::where('type','admin')->first()->username);
-							$n->save();
-							$n = $this->sendNotification("Commande Credit Cga" , "Votre Commande cga a ete valide",$commande->vendeurs);
-							$n->save();
-							$n = $this->sendNotification("Commande Credit Cga" , "Vous avez valide une commande cga pour : ".$commande->vendeurs()->localisation,Auth::user()->username);
-							$n->save();
+							if($transaction_cga->save()) {
+								if($cga_account->update() && $cga_central->update()) {									
 
-							return response()
-								->json('done');
+									if($commande->update()) {
+										// ENVOI DE SMS DE CONFIRMATION
+										if($this->sendSmsToNumber(trim($user->phone),$messageDist)) {
+											// ENVOI DE LA NOTIFICATION
+											$n = $this->sendNotification("Commande Credit cga" ,"Une commande cga a ete valide pour : ".$commande->vendeurs()->localisation,User::where('type','admin')->first()->username);
+											$n->save();
+											$n = $this->sendNotification("Commande Credit Cga" , "Votre Commande cga a ete valide",$commande->vendeurs);
+											$n->save();
+											$n = $this->sendNotification("Commande Credit Cga" , "Vous avez valide une commande cga pour : ".$commande->vendeurs()->localisation,Auth::user()->username);
+											$n->save();
+				
+											return response()
+												->json('done');
+										}
+									}
+
+								}
+							}
 
 						} else {
 							throw new AppException("Montant Indisponible!");

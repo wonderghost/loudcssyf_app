@@ -267,13 +267,12 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             try {
               this.isLoading = true
               UIkit.modal($("#modal-validation-command")).hide()
-
               let response = await axios.post("/user/send-afrocash",this.validateFormData)
 
               Object.assign(this.$data,this.$options.data())
               
               // 
-              if(response.data == 'done') {
+              if(response) {
                 this.isLoading = false
                 alert("Success !")
                 this.getCommandCredit()

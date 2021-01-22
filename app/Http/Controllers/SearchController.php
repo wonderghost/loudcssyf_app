@@ -32,6 +32,8 @@ class SearchController extends Controller
                 'etat'  =>  $result->deficientMaterial() ? 'defectueux' : '-',
                 'status'    =>  $result->status,
                 'vendeurs'  =>  $result->vendeurs() ? $result->vendeurs()->localisation : '',
+                'pdc'   =>  $result->pdcUser()->first() ? $result->pdcUser()->first()->localisation : '',
+                'pdraf' =>  $result->pdrafUser()->first() ? $result->pdrafUser()->first()->localisation : '',
                 'origine'   =>  $result->depot() ? $result->depot()->depot : '-',
                 'abonnements'   =>  $abonnement,
                 'rapport_vente' =>  $result->rapport() ? $result->rapport() : null,

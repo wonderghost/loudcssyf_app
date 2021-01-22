@@ -79,6 +79,8 @@
                   </li>
                   <li><span>Vendeurs</span> : <span>{{serialNumber.vendeurs}}</span></li>
                   <li><span>Origine</span> : <span>{{serialNumber.origine}}</span></li>
+                  <li><span>Pdc</span> : <span>{{ serialNumber.pdc }}</span></li>
+                  <li><span>Pdraf</span> : <span>{{ serialNumber.pdraf }}</span></li>
                 </ul>
                 <!-- // -->
               </div>

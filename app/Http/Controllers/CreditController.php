@@ -28,6 +28,7 @@ use App\Exceptions\AppException;
 use App\Notifications;
 use App\Alert;
 use Illuminate\Support\Facades\DB;
+use App\Traits\SendSms;
 
 class CreditController extends Controller
 {
@@ -35,6 +36,7 @@ class CreditController extends Controller
 	use Afrocashes;
 	use Cga;
 	use Rex;
+	use SendSms;
 
 // 	INVENTAIRE EN CREDIT CHEZ LES VENDEURS
 
