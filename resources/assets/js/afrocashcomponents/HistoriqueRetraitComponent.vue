@@ -73,7 +73,7 @@
                         <th>Montant(GNF)</th>
                         <th>Frais(GNF)</th>
                         <th>Comission Pdraf(GNF)</th>
-                        <th v-show="typeUser == 'pdc'">Comission Pdc(GNF)</th>
+                        <th v-show="typeUser == 'pdc' || typeUser == 'admin'">Comission Pdc(GNF)</th>
                         <th>Status</th>
                         <th>Paiement</th>
                     </tr>
@@ -86,7 +86,7 @@
                         <td>{{ r.montant | numFormat }}</td>
                         <td>{{ r.frais | numFormat }}</td>
                         <td>{{ r.comission | numFormat }}</td>
-                        <td v-show="typeUser == 'pdc'">{{ r.pdc_comission | numFormat }}</td>
+                        <td v-show="typeUser == 'pdc' || typeUser == 'admin'">{{ r.pdc_comission | numFormat }}</td>
                         <td v-if="r.status" class="uk-text-success"><span uk-icon="check"></span></td>
                         <td v-else class="uk-text-primary"><span uk-icon="more"></span></td>
                         <template v-if="typeUser == 'pdraf' || typeUser == 'v_da'">
@@ -97,9 +97,16 @@
                             <td v-if="r.pay_state_pdc" class="uk-text-success"><span uk-icon="check"></span></td>
                             <td v-else class="uk-text-primary"><span uk-icon="more"></span></td>
                         </template>
+                        <template v-if="typeUser == 'admin'">
+                            <td v-if="r.pay_state_central" class="uk-text-success"><span uk-icon="check"></span></td>
+                            <td v-else class="uk-text-primary"><span uk-icon="more"></span></td>
+                        </template>
                     </tr>
                 </tbody>
             </table>
+            <div class="uk-flex uk-flex-center">
+                <button class="uk-button uk-button-small uk-border-rounded" uk-scroll uk-tooltip="revenir en haut"><span uk-icon="triangle-up"></span></button>
+            </div>
         </div>
 
     </div>

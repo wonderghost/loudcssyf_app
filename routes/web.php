@@ -238,6 +238,9 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/pdraf/command/confirm/{slug}','CommandAfrocashController@confirmCommandAfrocash')->middleware('pdc');
 
 	Route::get('/pdc/material/inventory','CommandAfrocashController@inventoryStock');
+
+	# inventaire stock pdraf par pdc
+	Route::get('/materiel/inventory/pdraf','CommandAfrocashController@inventoryStockPdraf');
 	
 
 	Route::post('/pdc/command/remove','CommandAfrocashController@removeCommandAfrocash')->middleware('vendeur');

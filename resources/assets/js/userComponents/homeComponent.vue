@@ -186,6 +186,12 @@
                 <li>
                   <router-link to="/afrocash/recouvrement"><span uk-icon="link"></span> Recouvrements</router-link>
                 </li>
+                <li>
+                  <router-link to="/afrocash/historique/retrait"><span uk-icon="link"></span> Historique de retrait</router-link>
+                </li>
+                <li>
+                  <router-link to="/afrocash/historique/depot"><span uk-icon="link"></span> Historique de depots</router-link>
+                </li>
               </ul>
             </li>
             <li class="uk-parent">
@@ -456,6 +462,9 @@
                 </li>
                 <li>
                   <router-link to="/pdc/material/inventory"><span uk-icon="icon : link"></span> Inventaire Stock</router-link>
+                </li>
+                <li>
+                  <router-link to="/materiel/inventory/pdraf"><span uk-icon="link"></span> Inventaire Stock PDRAF</router-link>
                 </li>
               </ul>
             </li>

@@ -88,7 +88,7 @@ import RetraitAfrocash from './afrocashcomponents/RetraitComponent.vue'
 import DepotAfrocash from './afrocashcomponents/DepotComponent.vue'
 import HistoriqueRetraitAfrocash from './afrocashcomponents/HistoriqueRetraitComponent.vue'
 import HistoriqueDepotAfrocash from './afrocashcomponents/HistoriqueDepotComponent.vue'
-
+import InventaireStockPdraf from './pdcComponents/inventaireStockPdraf.vue'
 Vue.use(VueRouter);
 
 const router = new VueRouter({
@@ -807,7 +807,7 @@ const router = new VueRouter({
             path : '/afrocash/historique/retrait',
             component : HistoriqueRetraitAfrocash,
             beforeEnter : (to,from,next) => {
-                if(store.state.typeUser != 'pdraf' && store.state.typeUser != 'pdc' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart') {
+                if(store.state.typeUser != 'pdraf' && store.state.typeUser != 'pdc' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart' && store.state.typeUser != 'admin') {
                     alert('action non autorisee !')
                     next('/')
                 }
@@ -818,7 +818,18 @@ const router = new VueRouter({
             path : '/afrocash/historique/depot',
             component : HistoriqueDepotAfrocash,
             beforeEnter : (to,from,next) => {
-                if(store.state.typeUser != 'pdraf' && store.state.typeUser != 'pdc' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart') {
+                if(store.state.typeUser != 'pdraf' && store.state.typeUser != 'pdc' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart' && store.state.typeUser != 'admin') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            }
+        },
+        {
+            path : '/materiel/inventory/pdraf',
+            component : InventaireStockPdraf,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'pdc') {
                     alert('action non autorisee !')
                     next('/')
                 }

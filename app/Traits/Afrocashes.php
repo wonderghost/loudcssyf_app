@@ -1150,6 +1150,10 @@ public function getInfosRemboursementPromo(Request $request,
 					->paginate(100);
 
 			}
+			else if(request()->user()->type == 'admin') {
+				$listRetrait = RetraitAfrocash::orderBy('created_at','desc')
+					->paginate(100);
+			}
 
 			$totalComission = $this->getComissionRetrait();
 			
@@ -1174,7 +1178,8 @@ public function getInfosRemboursementPromo(Request $request,
 					'comission' =>  $comission,
 					'pdc_comission'	=>	$comissionPdc,
 					'pay_state'	=>	is_null($value->pdraf_com_pay_at) ? false : true,
-					'pay_state_pdc'	=>	is_null($value->pdc_com_pay_at) ? false : true
+					'pay_state_pdc'	=>	is_null($value->pdc_com_pay_at) ? false : true,
+					'pay_state_central'	=>	is_null($value->central_com_pay_at) ? false : true
                 ];
             }
 
@@ -1212,7 +1217,7 @@ public function getInfosRemboursementPromo(Request $request,
 
 				$totalComission = $this->getComissionDepot();
 			}
-			else if(request()->user()->type = 'pdc') {
+			else if(request()->user()->type == 'pdc') {
 				
 				$pdraf_users = request()->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
 				$pdraf_afrocash_account = Afrocash::select('numero_compte')
@@ -1226,9 +1231,13 @@ public function getInfosRemboursementPromo(Request $request,
 
 				$totalComission = 0;
 			}
+			else if(request()->user()->type == 'admin') {
+				$listDepot = DepotAfrocash::orderBy('created_at','desc')
+					->paginate(100);
 
+				$totalComission = 0;
+			}
 
-			
 			
             $data = [];
             foreach($listDepot as $key => $value) {
@@ -1295,6 +1304,9 @@ public function getInfosRemboursementPromo(Request $request,
 					->get();
 					
 			}
+			else if(request()->user()->type == 'admin') {
+				$listForCom = DepotAfrocash::all();
+			}
 			
 			$totalComission = 0;
 
@@ -1332,6 +1344,12 @@ public function getInfosRemboursementPromo(Request $request,
 
 				$listForCom = RetraitAfrocash::whereIn('initiateur',$pdraf_afrocash_account)
 					->whereNull('pdc_com_pay_at')
+					->whereNotNull('confirm_at')
+					->get();
+			}
+			else if(request()->user()->type == 'admin') {
+				
+				$listForCom = RetraitAfrocash::whereNull('central_com_pay_at')
 					->whereNotNull('confirm_at')
 					->get();
 			}

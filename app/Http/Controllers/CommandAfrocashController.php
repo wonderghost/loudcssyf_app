@@ -708,4 +708,52 @@ class CommandAfrocashController extends Controller
             die(json_encode($e->getMessage()));
         }
     }
+
+    # VISU STOCK PAR PDC DES PDRAF
+
+    public function inventoryStockPdraf() {
+        try {
+
+            if(request()->user()->type != 'pdc') {
+                throw new AppException("Access indisponible !");
+            }
+
+            $pdrafUsers = request()->user()->pdrafUsersForList()->select('id_pdraf')->groupBy('id_pdraf')->get();
+            $serials = request()->user()->exemplaireForPdc()
+                ->whereIn('pdraf_id',$pdrafUsers)
+                ->whereNotNull('vendeurs')
+                ->whereNull('recrutement_afrocash_id')
+                ->orderBy('created_at','desc')
+                ->paginate(100);
+
+            $data = [];
+            
+            foreach($serials as $key => $value) {
+
+                $data[$key] = [
+                    'numero_materiel'   =>  $value->serial_number,
+                    'user'  =>  $value->pdrafUser()->first()->localisation,
+                    'article'   =>  $value->produit()->libelle,
+                    'status'    =>  $value->status  
+                ];
+
+            }
+
+            return response()
+                ->json([
+                    'all'  => $data,
+                    'next_url'	=> $serials->nextPageUrl(),
+                    'last_url'	=> $serials->previousPageUrl(),
+                    'per_page'	=>	$serials->perPage(),
+                    'current_page'	=>	$serials->currentPage(),
+                    'first_page'	=>	$serials->url(1),
+                    'first_item'	=>	$serials->firstItem(),
+                    'total'	=>	$serials->total()
+                ]);
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
 }

@@ -603,16 +603,27 @@ class ObjectifController extends Controller
                 $moyReabonnement = 0;
 
                 for($i = 1 ; $i <= $request->input('evaluation') ; $i++ ) {
+                    $month = "";
+                    $year = date('Y');
 
-                    $objRapportRecrutement[$i] = $rv->whereYear('date_rapport',date('Y'))
-                        ->whereMonth('date_rapport',$theMonth - $i)
+                    if($theMonth - $i <= 0) {
+                        $month = 12;
+                        $year = date('Y') - 1;
+                    }
+                    else {
+                        $month--;
+                    }
+
+
+                    $objRapportRecrutement[$i] = $rv->whereYear('date_rapport',$year)
+                        ->whereMonth('date_rapport',$month)
                         ->where('type','recrutement')
                         ->where('vendeurs',$value->username)
                         ->sum('quantite');
                     
 
-                    $objRapportReabonnement[$i] =  $rv->whereYear('date_rapport',date('Y'))
-                        ->whereMonth('date_rapport',$theMonth - $i)
+                    $objRapportReabonnement[$i] =  $rv->whereYear('date_rapport',$year)
+                        ->whereMonth('date_rapport',$month)
                         ->where('type','reabonnement')
                         ->where('vendeurs',$value->username)
                         ->sum('montant_ttc');

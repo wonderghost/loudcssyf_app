@@ -68,7 +68,7 @@
                                 <a class="uk-accordion-title" href="#">Classe A</a>
                                 <div class="uk-accordion-content">
                                     <ul class="uk-list uk-list-divider">
-                                        <li v-for="u in recrutementClassA" ><span>{{u.user}}</span><span class="uk-badge uk-align-right">{{u.moyenne_recrutement}}</span></li>
+                                        <li v-for="(u,index) in recrutementClassA" :key="index" ><span>{{u.user}}</span><span class="uk-badge uk-align-right">{{u.moyenne_recrutement}}</span></li>
                                     </ul>
                                 </div>
                             </li>
@@ -76,7 +76,7 @@
                                 <a class="uk-accordion-title" href="#">Class B</a>
                                 <div class="uk-accordion-content">
                                     <ul class="uk-list uk-list-divider">
-                                        <li v-for="u in recrutementClassB" ><span>{{u.user}}</span><span class="uk-badge uk-align-right">{{u.moyenne_recrutement}}</span></li>
+                                        <li v-for="(u,index) in recrutementClassB" :key="index" ><span>{{u.user}}</span><span class="uk-badge uk-align-right">{{u.moyenne_recrutement}}</span></li>
                                     </ul>
                                 </div>
                             </li>
@@ -84,7 +84,7 @@
                                 <a class="uk-accordion-title" href="#">Class C</a>
                                 <div class="uk-accordion-content">
                                     <ul class="uk-list uk-list-divider">
-                                        <li v-for="u in recrutementClassC" ><span>{{u.user}}</span><span class="uk-badge uk-align-right">{{u.moyenne_recrutement}}</span></li>
+                                        <li v-for="(u,index) in recrutementClassC" :key="index" ><span>{{u.user}}</span><span class="uk-badge uk-align-right">{{u.moyenne_recrutement}}</span></li>
                                     </ul>
                                 </div>
                             </li>
