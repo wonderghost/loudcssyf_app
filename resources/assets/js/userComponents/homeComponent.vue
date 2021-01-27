@@ -145,7 +145,6 @@
             <li class="uk-parent">
                 <a href="#"><span uk-icon="icon:user;ratio:0.9"></span> Utilisateurs</a>
                 <ul class="uk-nav-sub">
-                    <!-- <li><a href="/admin/add-user"><span uk-icon="icon:arrow-right"></span> Nouveau</a></li> -->
                     <li>
                       <router-link to="/user/add"><span uk-icon="icon : link"></span> Nouveau</router-link>
                     </li>
@@ -213,6 +212,9 @@
                 <ul class="uk-nav-sub">
                     <li>
                       <router-link to="/inventory"><span uk-icon="link"></span> Inventaire</router-link>
+                    </li>
+                    <li>
+                      <router-link to="/afrocash/inventaire"><span uk-icon="link"></span> Inventaire Afrocash</router-link>
                     </li>
                 </ul>
             </li>

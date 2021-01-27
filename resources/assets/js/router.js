@@ -89,6 +89,8 @@ import DepotAfrocash from './afrocashcomponents/DepotComponent.vue'
 import HistoriqueRetraitAfrocash from './afrocashcomponents/HistoriqueRetraitComponent.vue'
 import HistoriqueDepotAfrocash from './afrocashcomponents/HistoriqueDepotComponent.vue'
 import InventaireStockPdraf from './pdcComponents/inventaireStockPdraf.vue'
+import InventaireStockAfrocash from './afrocashcomponents/InventaireStockAfrocash.vue'
+
 Vue.use(VueRouter);
 
 const router = new VueRouter({
@@ -830,6 +832,17 @@ const router = new VueRouter({
             component : InventaireStockPdraf,
             beforeEnter : (to,from,next) => {
                 if(store.state.typeUser != 'pdc') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            }
+        },
+        {
+            path : '/afrocash/inventaire',
+            component : InventaireStockAfrocash,
+            beforeEnter : (to,from ,next) => {
+                if(store.state.typeUser != 'admin') {
                     alert('action non autorisee !')
                     next('/')
                 }

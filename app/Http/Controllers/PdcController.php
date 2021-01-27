@@ -32,7 +32,7 @@ use Illuminate\Support\Str;
 use App\RetraitAfrocash;
 use App\DepotAfrocash;
 use App\ComissionSettingAfrocash;
-
+use App\Exemplaire;
 
 class PdcController extends Controller {
 
@@ -795,5 +795,44 @@ public function addNewPdc(Request $request) {
         }
     }
 
+    #INVENTAIRE STOCK AFROCASH
+
+    public function inventaireStockAfrocash() {
+        try {
+            $serials = Exemplaire::whereNotNull('pdc_id')
+                ->whereNull('recrutement_afrocash_id')
+                ->paginate(300);
+
+            $data = [];
+
+            foreach($serials as $key => $value) {
+
+                $data[$key] = [
+                    'numero_materiel'   =>  $value->serial_number,
+                    'pdc'   =>  $value->pdcUser()->first()->localisation,
+                    'pdraf'  =>  $value->pdrafUser()->first() ? $value->pdrafUser()->first()->localisation : '-',
+                    'article'   =>  $value->produit()->libelle,
+                    'status'    =>  $value->status  
+                ];
+
+            }
+
+            return response()
+                ->json([
+                    'all'  => $data,
+                    'next_url'	=> $serials->nextPageUrl(),
+                    'last_url'	=> $serials->previousPageUrl(),
+                    'per_page'	=>	$serials->perPage(),
+                    'current_page'	=>	$serials->currentPage(),
+                    'first_page'	=>	$serials->url(1),
+                    'first_item'	=>	$serials->firstItem(),
+                    'total'	=>	$serials->total()
+                ]);
+        }
+        catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
    
 }

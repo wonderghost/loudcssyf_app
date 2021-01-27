@@ -20,6 +20,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/serial-number/actived','LogistiqueController@makeActivedSerial');
 	// RESEAUX DES PDC ET PDRAF
 	Route::get('/admin/pdc/list','PdcController@getList');
+	Route::get('/admin/afrocash/inventaire-stock','PdcController@inventaireStockAfrocash');
 
 	Route::post('/admin/pdc/add','PdcController@addNewPdc');
 	Route::post('/admin/pdraf/add','PdrafController@addNewPdraf');
@@ -30,6 +31,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::post('/admin/pdraf/confirm-recrutement-afrocash','PdrafController@confirmRecrutementAfrocash');
 	Route::post('/admin/pdraf/remove-reabo-afrocash','PdrafController@removeReaboAfrocash');
 	// Route::post('/admin/pdraf/remove-recrutement-afrocash','PdrafController@removeRecrutementAfrocash');
+	
 
 	Route::post('/admin/pdraf/change-status-reactivation-materiel','PdrafController@changeStatusReactivationMateriel');
 	
