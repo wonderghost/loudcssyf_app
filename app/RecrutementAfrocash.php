@@ -46,4 +46,8 @@ class RecrutementAfrocash extends Model
     public function transactions() {
         return $this->hasMany('App\TransactionAfrocash','recrutement_afrocash_id','id');
     }
+
+    public function interventionTechnicien() {
+        return $this->hasOne('App\InterventionTechnicien','id_recrutement_afrocash','id')->first();
+    }
 }

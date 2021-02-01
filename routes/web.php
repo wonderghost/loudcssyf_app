@@ -544,6 +544,11 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/chart/command-material-stat','ChartController@commandMaterialStat')->middleware('logistique');
 	Route::get('/user/chart/livraison-stat','ChartController@livraisonMaterialStat')->middleware('logistique');
 
+
+	########################### INSTALLATION TECHNICIEN ####################################
+
+	Route::post('/send-installation-request','TechniqueController@sendInstallationRequest')->middleware('vendeur');
+
 });
 
 Route::middleware(['auth'])->group(function () {

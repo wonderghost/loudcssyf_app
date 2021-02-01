@@ -6,7 +6,7 @@
       loader="dots"></loading>
 
 
-        <h3> <router-link to="/user/list"><button class="uk-button uk-button-small uk-button-default uk-border-rounded" uk-tooltip="Retour"><span uk-icon="arrow-left"></span></button></router-link> Modifier infos Utilisateurs</h3>
+        <h3><button @click="$router.push('/user/list')" class="uk-button-default uk-border-rounded" uk-tooltip="Retour"><span uk-icon="arrow-left"></span></button> Modifier infos Utilisateurs</h3>
         <hr class="uk-divider-small">
 
         <template>

@@ -90,6 +90,7 @@ import HistoriqueRetraitAfrocash from './afrocashcomponents/HistoriqueRetraitCom
 import HistoriqueDepotAfrocash from './afrocashcomponents/HistoriqueDepotComponent.vue'
 import InventaireStockPdraf from './pdcComponents/inventaireStockPdraf.vue'
 import InventaireStockAfrocash from './afrocashcomponents/InventaireStockAfrocash.vue'
+import InstallationTechnicien from './userComponents/InstallationTechnicien.vue'
 
 Vue.use(VueRouter);
 
@@ -843,6 +844,17 @@ const router = new VueRouter({
             component : InventaireStockAfrocash,
             beforeEnter : (to,from ,next) => {
                 if(store.state.typeUser != 'admin') {
+                    alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            }
+        },
+        {
+            path : '/technicien/installation',
+            component : InstallationTechnicien,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart') {
                     alert('action non autorisee !')
                     next('/')
                 }

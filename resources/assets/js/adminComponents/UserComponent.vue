@@ -1,12 +1,12 @@
 <template>
 <div class="uk-container uk-container-large">
-  <loading :active.sync="isLoading"
-      :can-cancel="false"
-      :is-full-page="fullPage"
-      loader="bars"
-      :opacity="1"
-      color="#1e87f0"
-      background-color="#fff"></loading>
+    <loading :active.sync="isLoading"
+        :can-cancel="false"
+        :is-full-page="fullPage"
+        loader="bars"
+        :opacity="1"
+        color="#1e87f0"
+        background-color="#fff"></loading>
 
   <h3 class="uk-margin-top">Tous les Utilisateurs</h3>
   <hr class="uk-divider-small">
@@ -36,19 +36,24 @@
               uk-toggle="target : #reset-modal"
               @click="userToReset = user.localisation , userId = user.username"
               :id="user.username"
-              class="uk-button uk-text-small uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small uk-text-capitalize"> reset <span uk-icon="icon : refresh"></span>
+              class="uk-button uk-text-small uk-button-default uk-border-rounded uk-box-shadow-small uk-text-capitalize">
+              <i class="material-icons">refresh</i>
             </button> 
           </template>
           <template v-else>
-            <router-link :to="'/user/edit/'+user.username_encrypted" class="uk-button uk-text-small uk-button-small uk-button-primary uk-border-rounded uk-box-shadow-small uk-text-capitalize"><span uk-icon="pencil"></span> Editer</router-link>
+            <button class="uk-button-primary uk-border-rounded" @click="$router.push('/user/edit/'+user.username_encrypted)"><i class="material-icons">edit</i></button>
             <button
               uk-toggle="target : #reset-modal"
               @click="userToReset = user.localisation , userId = user.username"
               :id="user.username"
-              class="uk-button uk-button-small uk-button-default uk-border-rounded uk-box-shadow-small uk-text-small uk-text-capitalize"> reset <span uk-icon="icon : refresh"></span>
+              class="uk-button-default uk-border-rounded"><i class="material-icons">refresh</i>
             </button> 
-            <button @click="blockUser(user.username)" v-if="user.status === 'unblocked'" :id="user.username" class="uk-button uk-button-small uk-button-danger uk-text-capitalize uk-text-small uk-border-rounded uk-box-shadow-small">bloquer <span uk-icon="icon : lock"></span> </button>
-            <button @click="unblockUser(user.username)" v-else :id="user.username" class="uk-button uk-button-small uk-button-default uk-alert-success uk-text-capitalize uk-border-rounded uk-box-shadow-small">debloquer <span uk-icon="icon : unlock"></span> </button>
+            <button @click="blockUser(user.username)" v-if="user.status === 'unblocked'" :id="user.username" class="uk-button-danger uk-border-rounded">
+              <i class="material-icons">lock</i>
+            </button>
+            <button @click="unblockUser(user.username)" v-else :id="user.username" class="uk-button-default uk-border-rounded" style="background:#32d296;color:#fff">
+              <i class="material-icons">lock_open</i>
+            </button>
           </template>
         </td>
       </tr>

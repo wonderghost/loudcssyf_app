@@ -174,5 +174,10 @@ class User extends Authenticatable
       return $this->hasMany('App\Afrocash','vendeurs','username');
     }
 
+    // INTERVENTION POUR LES VENDEURS
+    public function interventionsTechnicien() {
+      return $this->hasMany('App\InterventionTechnicien','id_vendeur','username');
+    }
+
 
 }

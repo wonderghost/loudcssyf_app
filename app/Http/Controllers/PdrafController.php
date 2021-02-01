@@ -628,7 +628,7 @@ class PdrafController extends Controller
                 "\nQuart : ".$intervention->adresse.
                 "\nDIST : ".request()->user()->localisation." (".request()->user()->phone.")";
 
-            $messageTech = "Installation\nCoordonnees Technicien \n".
+            $messageTech = "Installation\n Veuillez contacter ce Technicien \n".
                 "Nom: ".$userTechnicien->nom." ".$userTechnicien->prenom.
                 "\nTel: ".$userTechnicien->phone.
                 "\nMerci pour la confiance ... :-)";
@@ -4677,11 +4677,23 @@ class PdrafController extends Controller
     public function getVenteDetails($slug) {
         try {
             $data = RecrutementAfrocash::find($slug);
+            if(is_null($data)) {
+               throw new AppException("Aucune donnees !");
+            }
             $data->serial = $data->serialNumber();
             $date = new Carbon($data->created_at);
             $data->date = $date->toDateTimeString();
 
             $data->marge = round(($data->montant_ttc/1.18) * (1.5/100),0);
+            if(!is_null($data->interventionTechnicien())) {
+
+                $data->technicien = $data->interventionTechnicien()
+                    ->userTechnicien()
+                    ->only('service_plus_id');
+            }
+            else {
+                $data->technicien = null;
+            }
 
             return response()
                 ->json($data);
@@ -5634,6 +5646,13 @@ class PdrafController extends Controller
                     ->get();
 
                 $intervention = InterventionTechnicien::whereIn('id_recrutement_afrocash',$recrutementAfrocash)
+                    ->get();
+            }
+
+            else if(request()->user()->type == 'v_da' || request()->user()->type == 'v_standart') {
+                $intervention = request()->user()->interventionsTechnicien()
+                    ->where('type','installation')
+                    ->orderBy('created_at','desc')
                     ->get();
             }
 

@@ -282,8 +282,6 @@
                   <li>
                     <router-link to="/inventory"><span uk-icon="link"></span> Inventaire</router-link>
                   </li>
-                    <!-- <li><a href="/user/my-inventory"><span uk-icon="icon:arrow-right"></span> Inventaire</a></li> -->
-                    <!-- <li><a href="/user/my-history-ravitaillement"><span uk-icon="icon:arrow-right"></span> Historique de ravitaillement</a></li> -->
                 </ul>
             </li>
 
@@ -335,6 +333,14 @@
                     <!-- <li><a href="/user/new-command"><span uk-icon="icon:arrow-right"></span> Nouvelle Commande</a></li> -->
                     <!-- <li><a href="/user/list-command"><span uk-icon="icon:arrow-right"></span> Toutes les Commandes</a></li> -->
                 </ul>
+            </li>
+            <li class="uk-parent">
+              <a href="#"><span uk-icon="icon : cog;ratio : 0.9"></span> Technicien</a>
+              <ul class="uk-nav-sub">
+                <li>
+                  <router-link to="/technicien/installation"><span uk-icon="link"></span> Installation</router-link>
+                </li>
+              </ul>
             </li>
           </template>
           <!-- GESTIONNAIRE CGA -->

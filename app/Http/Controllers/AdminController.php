@@ -248,11 +248,14 @@ class AdminController extends Controller
 
         $agence = $user->agence();
 
-        $user->numdist = $agence->num_dist;
-        $user->societe = $agence->societe;
-        $user->rccm = $agence->rccm;
-        $user->ville = $agence->ville;
-        $user->adresse = $agence->adresse;
+        if($agence) {
+
+          $user->numdist = $agence->num_dist;
+          $user->societe = $agence->societe;
+          $user->rccm = $agence->rccm;
+          $user->ville = $agence->ville;
+          $user->adresse = $agence->adresse;
+        }
         
 
         return response()
@@ -270,7 +273,6 @@ class AdminController extends Controller
         $validation = $request->validate([
           'email' =>  'required|email',
           'phone' =>  'required',
-          'localisation'  =>  'required',
           'password_confirmation' =>  'required'
         ]);
 
@@ -282,19 +284,27 @@ class AdminController extends Controller
         $user->email = $request->input('email');
         $user->phone = $request->input('phone');
         $user->localisation = $request->input('localisation');
+        $user->service_plus_id = request()->service_plus_id;
 
-        $agence = $user->agence();
-        $agence->societe = $request->input('societe');
-        $agence->num_dist = $request->input('numdist');
-        $agence->rccm = $request->input('rccm');
-        $agence->ville = $request->input('ville');
-        $agence->adresse = $request->input('adresse');
+        $agence = $user->agence() ? $user->agence() : null;
+        if(!is_null($agence)) {
+          $agence->societe = $request->input('societe');
+          $agence->num_dist = $request->input('numdist');
+          $agence->rccm = $request->input('rccm');
+          $agence->ville = $request->input('ville');
+          $agence->adresse = $request->input('adresse');
+        }
 
-        $user->save();
-        $agence->save();
-        
-        return response()
-          ->json('done');
+        if($user->update()) {
+          if($user->type != 'technicien') {
+            if($agence->update()) {
+              return response()
+                ->json('done');
+            }
+          }
+          return response()
+            ->json('done');
+        }
       }
       catch(AppException $e) {
         header("Erreur",true,422);

@@ -29,21 +29,25 @@
                             <label for="">Prenom</label>
                             <span class="uk-input uk-border-rounded">{{ vente.prenom }}</span>
                         </div>
-                        <div class="uk-width-1-3@m">
+                        <div class="uk-width-1-1@m">
                             <label for="">Ville</label>
                             <span class="uk-input uk-border-rounded">{{ vente.ville }}</span>
                         </div>
-                        <div class="uk-width-1-3@m">
+                        <div class="uk-width-1-1@m">
                             <label for="">Adresse Postale</label>
                             <span class="uk-input uk-border-rounded">{{ vente.adresse_postal }}</span>
                         </div>
-                        <div class="uk-width-1-3@m">
+                        <div class="uk-width-1-1@m">
                             <label for="">Telephone</label>
                             <span class="uk-input uk-border-rounded">{{ vente.telephone_client }}</span>
                         </div>
                         <div class="uk-width-1-1@m">
                             <label for="">Email</label>
                             <span class="uk-input uk-border-rounded">{{ vente.email }}</span>
+                        </div>
+                        <div class="uk-width-1-1@m">
+                            <label for="">Identifiant Alonwa</label>
+                            <span class="uk-input uk-border-rounded">{{ vente.technicien.service_plus_id }}</span>
                         </div>
                     </div>
                     <div class="uk-width-1-2@m uk-grid-small" uk-grid>
@@ -56,11 +60,11 @@
                             <label for="">Materiel</label>
                             <span class="uk-input uk-border-rounded">{{ vente.serial }}</span>
                         </div>
-                        <div class="uk-width-1-3@m">
+                        <div class="uk-width-1-2@m">
                             <label for="">Formule</label>
                             <span class="uk-input uk-border-rounded">{{ vente.formule_name }}</span>
                         </div>
-                        <div class="uk-width-1-3@m">
+                        <div class="uk-width-1-2@m">
                             <label for="">Option</label>
                             <span class="uk-input uk-border-rounded"></span>
                         </div>
@@ -68,11 +72,11 @@
                             <label for="">Duree</label>
                             <span class="uk-input uk-border-rounded">{{ vente.duree }}</span>
                         </div>
-                        <div class="uk-width-1-3@m">
+                        <div class="uk-width-1-1@m">
                             <label for="">Montant Ttc</label>
                             <span class="uk-input uk-border-rounded">{{ vente.montant_ttc | numFormat }}</span>
                         </div>
-                        <div class="uk-width-1-3@m">
+                        <div class="uk-width-1-1@m">
                             <label for="">Comission</label>
                             <span class="uk-input uk-border-rounded">{{ vente.comission | numFormat}}</span>
                         </div>
@@ -125,7 +129,16 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     }
                 }
                 catch(error) {
-                    alert(error)
+                    if(error.response.data.errors) {
+                        let errorTab = error.response.data.errors
+                        for (var prop in errorTab) {
+                            // this.errors.push(errorTab[prop][0])
+                            alert(errorTab[prop][0])
+                        }
+                    } else {
+                        // this.errors.push(error.response.data)
+                        alert(error.response.data)
+                    }
                 }
             }
         },

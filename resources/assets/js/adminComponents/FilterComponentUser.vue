@@ -9,7 +9,7 @@
     <label for=""> <span uk-icon="icon : users"></span> Vendeurs</label>
     <select @change="filterUserByType(type)" v-model="type" class="uk-select uk-border-rounded uk-box-shadow-hover-small" name="">
       <option value="">tous</option>
-      <option v-for="(type , key) in userType"  :value="key"> {{type}} </option>
+      <option v-for="(type , key) in userType"  :value="key" :key="key">{{ type }}</option>
     </select>
   </div>
   <div class="">
@@ -36,7 +36,8 @@
               'coursier' : 'coursier',
               'controleur' : 'controleur',
               'pdc' : 'Point de controle',
-              'pdraf' : 'Point de Recharge Afrocash'
+              'pdraf' : 'Point de Recharge Afrocash',
+              'technicien'  : 'Technicien'
             },
             wordSearch : "",
             type : ""
