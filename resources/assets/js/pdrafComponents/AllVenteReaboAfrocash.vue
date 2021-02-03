@@ -28,9 +28,7 @@
             </div>
         </nav>
        
-        <download-to-excel :data-to-export="all" :data-fields="field_export" file-name="reabonnement-afrocash"></download-to-excel>
-        <detailVente :vente-id="venteId"></detailVente>
-        
+        <download-to-excel :data-to-export="all" :data-fields="field_export" file-name="reabonnement-afrocash"></download-to-excel>        
         <!-- // -->
         <!-- ADMIN -->
         <template>
@@ -54,10 +52,6 @@
                                 :max-results="500"
                                 :required="true">
                             </vue-single-select>
-                            <!-- <select @change="filterRequest()" v-model="filterData.user" class="uk-select uk-border-rounded">
-                                <option value="all">Tous</option>
-                                <option v-for="(p,index) in pdrafList" :key="index" :value="p.user.username">{{p.user.localisation}}</option>
-                            </select> -->
                         </div>
                         <div class="uk-width-1-4@m">
                             <label for="">Paiement</label>
@@ -97,9 +91,7 @@
                         <div class="uk-width-1-4@m">
                             <label for=""><span uk-icon="credit-card"></span> Comission Total</label>
                             <span class="uk-input uk-border-rounded uk-text-center">{{comission + marge | numFormat}}</span>
-                            <!-- <template v-if="typeUser == 'pdc'">
-                                <button uk-toggle="target : #modal-pay-comission" class="uk-button uk-button-small uk-border-rounded uk-text-capitalize uk-button-primary uk-margin-small">se faire payer</button>
-                            </template> -->
+                            
                         </div>
                         
                     </div>
@@ -225,7 +217,7 @@
                             </template>
                         </td>
                         <td>
-                            <button @click="venteId = r.id" uk-toggle="target : #modal-container" class="uk-padding-remove uk-button uk-button-default uk-border-rounded uk-text-capitalize uk-text-small" uk-tooltip="Details"><i class="material-icons" style="font-size : 20px;cursor:pointer">more_vert</i></button>
+                            <button @click="$router.push('/vente-afrocash/'+r.id)" class="uk-button-default uk-border-rounded" uk-tooltip="Details"><i class="material-icons" style="cursor:pointer">more_vert</i></button>
                         </td>
                         <td>
                             <template v-if="!r.confirm_at && !r.remove_at">
@@ -560,7 +552,6 @@ import VueSingleSelect from "vue-single-select";
                 }
                 catch(error) {
                     alert("Erreur")
-                    console.log(error)
                 }
             },
             getAllData : async function () {
@@ -622,7 +613,6 @@ import VueSingleSelect from "vue-single-select";
 
                 } catch(error) {
                     alert(error)
-                    console.log(error)
                 }
             }
         },

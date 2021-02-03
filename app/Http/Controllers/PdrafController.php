@@ -2560,7 +2560,7 @@ class PdrafController extends Controller
                 
                 $all[$key] = [
                     'id'    =>  $value->id,
-                    'materiel'  =>  $value->serial_number,
+                    'materiel'  =>  $value->serialNumber(),
                     'formule'   =>  $value->formule_name,
                     'duree' =>  $value->duree,
                     'option'    =>  $options,
