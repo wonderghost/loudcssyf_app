@@ -8,8 +8,8 @@
         color="#1e87f0"
         background-color="#fff"></loading>
 
-        <h3>Toutes les transactions</h3>
-        <hr class="uk-divider-small">
+    <h3>Toutes les transactions</h3>
+    <hr class="uk-divider-small">
 
     <div class="uk-grid-small" uk-grid>
       <div class="uk-grid-small uk-width-1-1@m" uk-grid>

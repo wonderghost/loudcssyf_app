@@ -412,21 +412,36 @@ class PdrafController extends Controller
             $trans->montant = $request->input('montant_ttc');
             $trans->motif = "Reabo_Afrocash";
 
-            $reabo->save();
-            
-            if(count($data_options) > 0) {
-                foreach($data_options as $value) {
-                    $value->save();
+            if($reabo->save()) {
+
+                if(count($data_options) > 0) {
+                    foreach($data_options as $value) {
+                        $value->save();
+                    }
+                }
+                if($sender_account->save() && $receiver_account->save()) {
+
+                    if($trans->save()) {
+                        // ENVOI DU MESSAGE DE CONFIRMATION
+                        $msg = "Bonjour, votre abonnement est activé pour une durée de ".request()->duree." mois , à la formule ".request()->formule." , par ".request()->user()->localisation."\n Merci pour la confiance.";
+                        if($this->sendSmsToNumber(request()->telephone_client,$msg)) {
+                            return response()
+                                ->json('done');
+                        }
+
+                    }
+                    else {
+                        throw new AppException("Erreur_Reabo.");
+                    }
+                }
+                else {
+                    throw new AppException("Erreur_Reabo.");
                 }
             }
-            $sender_account->save();
-            $receiver_account->save();
-            $trans->save();
-
-
+            else {
+                throw new AppException("Erreur_Reabo.");
+            }
             
-            return response()
-                ->json('done');
         } catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));

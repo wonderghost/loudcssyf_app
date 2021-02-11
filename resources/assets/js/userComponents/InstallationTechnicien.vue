@@ -81,29 +81,29 @@
                         <form @submit.prevent="sendInstallationRequest()" uk-grid class="uk-grid-small">
                             <div class="uk-width-1-1@m">
                                 <label for="">Numero Materiel ({{ dataForm.materiel.length }})</label>
-                                <input v-model="dataForm.materiel" placeholder="ex : 224400499" type="text" class="uk-border-rounded uk-input" maxlength="14">
+                                <input v-model="dataForm.materiel" placeholder="Numero du materiel" type="text" class="uk-border-rounded uk-input" maxlength="14">
                             </div>
                             <div class="uk-width-1-1@m">
                                 <label for="">Nom</label>
-                                <input v-model="dataForm.nom" placeholder="ex : Doumbouya" type="text" class="uk-border-rounded uk-input">
+                                <input v-model="dataForm.nom" placeholder="Nom du client" type="text" class="uk-border-rounded uk-input">
                             </div>
                             <div class="uk-width-1-1@m">
                                 <label for="">Prenom</label>
-                                <input v-model="dataForm.prenom" placeholder="ex : Ousmane" type="text" class="uk-border-rounded uk-input">
+                                <input v-model="dataForm.prenom" placeholder="Prenom du client" type="text" class="uk-border-rounded uk-input">
                             </div>
                             <div class="uk-width-1-1@m">
                                 <label for="">Adresse</label>
-                                <input v-model="dataForm.adress" placeholder="ex : Dixinn Centre 2" type="text" class="uk-border-rounded uk-input">
+                                <input v-model="dataForm.adress" placeholder="Adresse/Quariter du client" type="text" class="uk-border-rounded uk-input">
                             </div>
                             <div class="uk-width-1-1@m">
                                 <label for="">Telephone</label>
-                                <input v-model="dataForm.telephone" placeholder="ex : 666 00 00 00" type="text" class="uk-border-rounded uk-input">
+                                <input v-model="dataForm.telephone" placeholder="Numero telephone du client" type="text" class="uk-border-rounded uk-input">
                             </div>
                             <div class="uk-width-1-1@m">
                                 <label for="">Technicien</label>
                                 <select v-model="dataForm.technicien" class="uk-select uk-border-rounded">
                                     <option value="none">-- Choisissez un Technicien --</option>
-                                    <option :value="t.username" v-for="(t,index) in techniciens" :key="index"> {{ t.nom }} {{ t.prenom }}</option>
+                                    <option :value="t.username" v-for="(t,index) in techniciens" :key="index"> {{ t.nom }} {{ t.prenom }} {{t.phone}} ({{t.service_plus_id}})</option>
                                 </select>
                             </div>
                             <div class="uk-width-1-1@m">

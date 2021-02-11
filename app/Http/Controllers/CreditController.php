@@ -155,7 +155,7 @@ class CreditController extends Controller
 				$date->locale('fr_FR');
 				$temp[$key] = [
 					'id'	=>	$value->id,
-					'date'	=>	$date->toFormattedDateString()." (".$date-> diffForHumans()." )",
+					'date'	=>	$date->toFormattedDateString()." | ".$date->toTimeString(),
 					'vendeurs'	=>	$value->vendeurs()->localisation,
 					'type'	=>	$value->type,
 					'montant'	=>	number_format($value->montant),

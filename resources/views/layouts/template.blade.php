@@ -46,7 +46,7 @@
     <div class="uk-section uk-section-muted uk-padding-small uk-margin-top uk-visible@m ">
       <div class="uk-container uk-container-large">
         <p class="uk-text-center">
-          &copy; Copyright {{date('Y')}} Loudcssyf-Sarl,Layedist v3.0.1 by Smartech
+          &copy; Copyright {{date('Y')}} Loudcssyf-Sarl,Layedist v3.1.0 by Smartech
         </p>
       </div>
     </div>
