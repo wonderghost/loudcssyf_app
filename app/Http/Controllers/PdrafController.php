@@ -420,14 +420,9 @@ class PdrafController extends Controller
                     }
                 }
                 if($sender_account->save() && $receiver_account->save()) {
-
                     if($trans->save()) {
-                        // ENVOI DU MESSAGE DE CONFIRMATION
-                        $msg = "Bonjour, votre abonnement est activé pour une durée de ".request()->duree." mois , à la formule ".request()->formule." , par ".request()->user()->localisation."\n Merci pour la confiance.";
-                        if($this->sendSmsToNumber(request()->telephone_client,$msg)) {
-                            return response()
-                                ->json('done');
-                        }
+                        return response()
+                            ->json('done');
 
                     }
                     else {
@@ -4950,10 +4945,13 @@ class PdrafController extends Controller
 
 
             $reabo_afrocash->confirm_at = Carbon::now();
-            $reabo_afrocash->update();
-
-            return response()
-                ->json('done');
+            if($reabo_afrocash->update()) {
+                $msg = "Bonjour, votre abonnement est activé pour ".$reabo_afrocash->duree." mois , à la formule ".$reabo_afrocash->formule_name." , par ".$reabo_afrocash->pdrafUser()->localisation."\n Merci pour votre fidelite.";
+                if($this->sendSmsToNumber($reabo_afrocash->telephone_client,$msg)) {
+                    return response()
+                        ->json('done');
+                }
+            }
         } catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));
