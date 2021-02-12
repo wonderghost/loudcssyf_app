@@ -23,13 +23,16 @@
     <tbody>
       <tr v-for="user in filteredUser" :key="user.username">
         <!-- <td v-for="column in user">{{column}}</td> -->
+        <td>{{user.nom}}</td>
+        <td>{{user.prenom}}</td>
         <td>{{user.username}}</td>
         <td>{{user.type}}</td>
-        <td :uk-tooltip="user.email">{{user.email.substring(0,30)+'...'}}</td>
+        <!-- <td :uk-tooltip="user.email">{{user.email.substring(0,30)+'...'}}</td> -->
         <td>{{user.phone}}</td>
         <td :uk-tooltip="user.localisation" v-if="user.localisation != null">{{user.localisation.substring(0,30)+'...'}}</td>
         <td v-else>{{ user.nom }} {{user.prenom}}</td>
-        <td>{{user.status}}</td>
+        <td v-if="user.status == 'unblocked'" class="uk-text-success"><i class="material-icons">check</i></td>
+        <td v-else class="uk-text-danger"><i class="material-icons">close</i></td>
         <td> 
           <template v-if="typeUser == 'commercial'">
               <button
@@ -96,7 +99,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
       },
       data :function () {
         return {
-          tableHeader : ['username','type','email','phone','agence/nom complet','status'],
+          tableHeader : ['nom','prenom','username','type','phone','agence/nom complet','status'],
           userEditLink : "/admin/edit-users",
           userBlockLink : "/admin/block-user",
           userUnblockLink : '/admin/unblock-user',

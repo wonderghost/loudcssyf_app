@@ -103,7 +103,7 @@
                                 <label for="">Technicien</label>
                                 <select v-model="dataForm.technicien" class="uk-select uk-border-rounded">
                                     <option value="none">-- Choisissez un Technicien --</option>
-                                    <option :value="t.username" v-for="(t,index) in techniciens" :key="index"> {{ t.nom }} {{ t.prenom }} {{t.phone}} ({{t.service_plus_id}})</option>
+                                    <option :value="t.username" v-for="(t,index) in techniciens" :key="index"> {{ t.nom }} {{ t.prenom }} {{t.phone}} {{t.localisation}} ({{t.service_plus_id}})</option>
                                 </select>
                             </div>
                             <div class="uk-width-1-1@m">
