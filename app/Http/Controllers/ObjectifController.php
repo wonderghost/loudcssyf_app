@@ -142,9 +142,9 @@ class ObjectifController extends Controller
     public function statForVendeursRecrutement(Request $request,Objectif $obj , RapportVente $rv) {
         try {
             $month = date('m');
-            $objectif = $obj->select()->whereYear('debut',2020)
+            $objectif = $obj->select()->whereYear('debut',date('Y'))
                 ->whereMonth('debut',$month)
-                ->whereYear('fin',2020)
+                ->whereYear('fin',date('Y'))
                 ->whereMonth('fin',$month)
                 ->first();
             if($objectif) {

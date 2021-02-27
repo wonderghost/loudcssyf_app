@@ -46,7 +46,7 @@ class Exemplaire extends Model
 
   public function abonnements() {
     return $this->hasMany('App\Abonnement','serial_number','serial_number')
-      ->orderBy('created_at')
+      ->orderBy('created_at','desc')
       ->get();
   }
 

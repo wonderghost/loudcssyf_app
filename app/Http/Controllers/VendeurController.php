@@ -24,6 +24,7 @@ use App\TransactionAfrocash;
 use Illuminate\Support\Facades\Hash;
 use App\Exceptions\AppException;
 use App\Produits;
+use App\Ventes;
 
 
 class VendeurController extends Controller
@@ -38,10 +39,6 @@ class VendeurController extends Controller
 
 
     protected $materialPrice    =   0;
-
-    public function __construct() {
-        //
-    }
 
     public function addClient() {
     	return view('simple-users.add-client');
@@ -257,6 +254,30 @@ class VendeurController extends Controller
 
             return response()->json('done');
         } catch(AppException $e) {
+            header("Erreur",true,422);
+            die(json_encode($e->getMessage()));
+        }
+    }
+
+
+    /**
+     * Historique de vente chez les vendeurs standarts
+     */
+    public function historiqueVentes() {
+        try {
+            $ventes = request()->user()->ventes()
+                ->orderBy('created_at','desc')
+                ->get();
+
+            foreach($ventes as $value) {
+                $date = new Carbon($value->created_at);
+                $value->date = $date->toDateTimeString();
+                $value->user = $value->user()->localisation;
+            }
+
+            return response()->json($ventes);
+        }
+        catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));
         }

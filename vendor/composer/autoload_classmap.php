@@ -169,6 +169,7 @@ return array(
     'App\\Upgrade' => $baseDir . '/app/Upgrade.php',
     'App\\UpgradeReaboAfrocash' => $baseDir . '/app/UpgradeReaboAfrocash.php',
     'App\\User' => $baseDir . '/app/User.php',
+    'App\\Ventes' => $baseDir . '/app/Ventes.php',
     'Attribute' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
     'Carbon\\Carbon' => $vendorDir . '/nesbot/carbon/src/Carbon/Carbon.php',
     'Carbon\\CarbonImmutable' => $vendorDir . '/nesbot/carbon/src/Carbon/CarbonImmutable.php',

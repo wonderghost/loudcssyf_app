@@ -12,10 +12,10 @@
         <hr class="uk-divider-small">
 
         <!-- Erreor block -->
-        <template v-if="errors.length" v-for="error in errors">
-            <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
-            <a href="#" class="uk-alert-close" uk-close></a>
-            <p>{{error}}</p>
+        <template v-if="errors.length">
+            <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert v-for="(error,index) in errors" :key="index">
+                <a href="#" class="uk-alert-close" uk-close></a>
+                <p>{{error}}</p>
             </div>
         </template>
 

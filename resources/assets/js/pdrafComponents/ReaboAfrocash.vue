@@ -104,7 +104,7 @@
                         <label for="">Formule*</label>
                         <select @change="calculMontantTtc()" v-model="dataForm.formule" class="uk-select uk-border-rounded">
                             <option value="">-- Selectionnez une formule --</option>
-                            <option :data-prix="f.prix" :value="f.nom" v-for="(f,index) in formuleList" :key="index">{{ f.nom }}</option>
+                            <option :data-prix="f.prix" :value="f.nom" v-for="(f,index) in formuleList" :key="index">{{ f.title }}</option>
                         </select>
                     </div>
                     <div class="uk-width-1-3@m">

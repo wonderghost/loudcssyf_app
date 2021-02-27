@@ -549,6 +549,15 @@ Route::middleware(['auth','unblocked'])->group(function () {
 
 	Route::post('/send-installation-request','TechniqueController@sendInstallationRequest')->middleware('vendeur');
 
+
+	/**
+	 * Routes vente pour vendeurs standarts
+	 */
+	Route::post('/vente/recrutement','RecrutementController@create')->middleware('vendeur');
+	Route::post('/vente/reabonnement','ReabonnementController@create')->middleware('vendeur');
+	Route::post('/vente/upgrade','UpgradeController@create')->middleware('vendeur');
+	Route::get('/ventes','VendeurController@historiqueVentes')->middleware('vendeur');
+
 });
 
 Route::middleware(['auth'])->group(function () {

@@ -598,6 +598,7 @@ class ComposerStaticInit15d5dc02f650ad17553f69fb230f4dbd
         'App\\Upgrade' => __DIR__ . '/../..' . '/app/Upgrade.php',
         'App\\UpgradeReaboAfrocash' => __DIR__ . '/../..' . '/app/UpgradeReaboAfrocash.php',
         'App\\User' => __DIR__ . '/../..' . '/app/User.php',
+        'App\\Ventes' => __DIR__ . '/../..' . '/app/Ventes.php',
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'Carbon\\Carbon' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Carbon.php',
         'Carbon\\CarbonImmutable' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/CarbonImmutable.php',

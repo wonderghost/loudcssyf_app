@@ -67,8 +67,9 @@ Trait Rapports {
 	
 				$fin = new Carbon($value->debut);
 				$fin->addMonths($value->duree)->subDay();
-
 				$now = Carbon::now();
+
+				$diff = $now->diffInDays($debut);
 				
 				if($debut <= $now && $now <= $fin) {
 					// $valide_abonnement = $value;

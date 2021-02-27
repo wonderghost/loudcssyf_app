@@ -31,7 +31,7 @@
         <div class="" uk-drop="mode: click ; animation: uk-animation-slide-top-small;">
           <div class="uk-card-default uk-box-shadow-small notification-container uk-overflow-auto" style="background : #fefefe !important;border : solid 1px #ddd !important; ">
             <ul class="uk-list uk-list-divider">
-              <li v-for="n in unreadNotifications.slice(0,5)">
+              <li v-for="n in unreadNotifications.slice(0,5)" :key="n.id">
                 <span class="">
                   <span class="uk-text-bold">{{n.titre}}</span>
                   <p class="uk-margin-remove">{{n.description}}</p>
@@ -112,7 +112,7 @@
           <ul class="uk-switcher uk-margin uk-overflow-auto uk-height-medium">
               <li>
                 <ul class="uk-list uk-list-divider">
-                  <li v-for="n in unreadNotifications.slice(0,50)">
+                  <li v-for="n in unreadNotifications.slice(0,50)" :key="n.id">
                     <span class="uk-text-bold">{{n.titre}}</span>
                     <p class="uk-margin-remove">{{n.description}}</p>
                   </li>
@@ -120,7 +120,7 @@
               </li>
               <li>
                 <ul class="uk-list uk-list-divider">
-                  <li v-for="n in readNotifications.slice(0,50)">
+                  <li v-for="n in readNotifications.slice(0,50)" :key="n.id">
                     <span class="uk-text-bold">{{n.titre}}</span>
                     <p class="uk-margin-remove">{{n.description}}</p>
                   </li>
@@ -273,6 +273,18 @@
                 <ul class="uk-nav-sub">
                     <li>
                       <router-link to="/rapport/list"><span uk-icon="link"></span> Rapport de ventes</router-link>
+                    </li>
+                    <li>
+                      <router-link to="/vente/recrutement"><span uk-icon="link"></span> Recrutement</router-link>
+                    </li>
+                    <li>
+                      <router-link to="/vente/reabonnement"><span uk-icon="link"></span> Reabonnement</router-link>
+                    </li>
+                    <li>
+                      <router-link to="/vente/upgrade"><span uk-icon="link"></span> Upgrade</router-link>
+                    </li>
+                    <li>
+                      <router-link to="/ventes"><span uk-icon="link"></span> Historique de ventes</router-link>
                     </li>
                 </ul>
             </li>
@@ -559,12 +571,6 @@
                 <li>
                   <router-link to="/technique/installation"><span uk-icon="icon : link"></span> Installation</router-link>
                 </li>
-                <!-- <li class="">
-                  <router-link to="/reabonnement-afrocash"><span uk-icon="icon : link"></span> Reabonnement</router-link>
-                </li>
-                <li>
-                    <router-link to="/all-ventes-pdraf"><span uk-icon="icon : link"></span> Toutes les ventes</router-link>
-                </li> -->
               </ul>
             </li>
             

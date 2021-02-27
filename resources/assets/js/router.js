@@ -65,7 +65,10 @@ import listContact from './userComponents/ContactComponent.vue'
 import afrocashOperationUser from './userComponents/AfrocashComponent.vue'
 import newCommand from './userComponents/NewCommandComponent.vue'
 import profile from './userComponents/SettingComponent.vue'
-
+import Recrutement from './userComponents/Recrutement.vue'
+import Reabonnement from './userComponents/Reabonnement.vue'
+import Upgrade from './userComponents/Upgrade.vue'
+import historiqueVente from './userComponents/HistoriqueVente.vue'
 // 
 
 // LOGISTIQUE
@@ -79,7 +82,7 @@ import commandCredit from './adminComponents/CreditComponent.vue'
 // GESTIONNAIRE DEPOT
 import livraisonMateriel from './userComponents/LivraisonComponent.vue'
 import store from './store.js'
-// import { some } from 'lodash'
+
 
 import alertAbonnement from './userComponents/AlertComponent.vue'
 import { mapActions } from 'vuex'
@@ -92,6 +95,7 @@ import InventaireStockPdraf from './pdcComponents/inventaireStockPdraf.vue'
 import InventaireStockAfrocash from './afrocashcomponents/InventaireStockAfrocash.vue'
 import InstallationTechnicien from './userComponents/InstallationTechnicien.vue'
 import DetailReaboAfrocash from './pdrafComponents/DetailReaboAfrocash.vue'
+
 
 Vue.use(VueRouter);
 
@@ -868,6 +872,50 @@ const router = new VueRouter({
             beforeEnter : (to,from,next) => {
                 if(store.state.typeUser != 'admin' && store.state.typeUser != 'gcga' && store.state.typeUser != 'commercial') {
                     alert('action non autorisee !')
+                    next('/')
+                }
+                next()
+            }
+        },
+        {
+            path : '/vente/recrutement',
+            component : Recrutement,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'v_standart') {
+                    alert('action non autorisee.')
+                    next('/')
+                }
+                next()
+            }
+        },
+        {
+            path : '/vente/reabonnement',
+            component : Reabonnement,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'v_standart') {
+                    alert('action non autorisee.')
+                    next('/')                    
+                }
+                next()
+            }
+        },
+        {
+            path : "/vente/upgrade",
+            component : Upgrade,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'v_standart') {
+                    alert('action non autorisee.')
+                    next('/')
+                }
+                next()
+            }
+        },
+        {
+            path : "/ventes",
+            component : historiqueVente,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser != 'v_standart') {
+                    alert('action non autorisee.')
                     next('/')
                 }
                 next()

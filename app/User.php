@@ -180,4 +180,11 @@ class User extends Authenticatable
     }
 
 
+    /**
+     * Historique de ventes des vendeurs standarts
+     */
+    public function ventes() {
+      return $this->hasMany('App\Ventes','id_user','username');
+    }
+
 }
