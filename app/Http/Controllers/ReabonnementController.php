@@ -9,9 +9,11 @@ use App\Credit;
 use App\Exemplaire;
 use App\TransactionAfrocash;
 use Illuminate\Support\Facades\Hash;
+use App\Traits\SendSms;
 
 class ReabonnementController extends Controller
 {
+    use SendSms;
     /**
      * Enregistrement d'un nouveau reabonnement
      */
@@ -65,20 +67,35 @@ class ReabonnementController extends Controller
             }
 
             $userAfrocash = request()->user()->afroCash()->first();
-            $centralAfrocash = Credit::find('afrocash');
+            $userAfrocashGrossiste = request()->user()->afroCash('semi_grossiste')->first();
 
-            $centralAfrocash->solde -= request()->montant;
+            // Verifier la disponibilite du montant
+            if($userAfrocashGrossiste->solde < request()->montant) {
+                throw new AppException("Montant indisponibile.");
+            }
+            
+            $userAfrocashGrossiste->solde -= request()->montant;
             $userAfrocash->solde += request()->montant;
+
+
 
             $trans = new TransactionAfrocash;
             $trans->compte_credite = $userAfrocash->numero_compte;
+            $trans->compte_debite = $userAfrocashGrossiste->numero_compte;
             $trans->montant = request()->montant;
             $trans->motif = "Vente_Reabonnement";
 
             if($vente->save()) {
                 if($trans->save()) {
-                    if($userAfrocash->update() && $centralAfrocash->update()) {
-                        return response()->json('done');
+                    if($userAfrocash->update() && $userAfrocashGrossiste->update()) {
+                        // Envoi du sms de confirmation
+                        $msg = "Bonjour, votre abonnement est activé pour ".request()->duree." mois , à la formule ".request()->formule." , par ".request()->user()->localisation."\nMerci pour votre fidelite.";
+                        if($this->sendSmsToNumber(request()->telephone,$msg)) {
+                            return response()->json('done');
+                        }
+                        else {
+                            return response()->json('done');
+                        }
                     }
                 }
             }

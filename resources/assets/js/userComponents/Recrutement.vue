@@ -143,6 +143,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             },
             sendRecrutementRequest : async function () {
                 try {
+                    this.isLoading = true
                     this.errors = []
                     this.form._token = this.myToken
                     let response = await axios.post('/vente/recrutement',this.form)
@@ -152,6 +153,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     }
                 }
                 catch(error) {
+                    this.isLoading = false
                     if(error.response.data.errors) {
                         let errorTab = error.response.data.errors
                         for (var prop in errorTab) {
