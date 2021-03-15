@@ -866,6 +866,138 @@ Trait Rapports {
 							->json('done');
 
 					break;
+					case 'migration-gratuite' : 
+						# RAPPORT DE MIGRATION
+						$validation = request()->validate([
+							'date'  =>  'required|date|before_or_equal :'.(date("Y/m/d",strtotime("now"))),
+							'vendeurs'  =>  'required|exists:users,username',
+							'quantite_materiel' =>  'required|min:1',
+							'serial_number.*'	=>	'required|distinct|exists:exemplaire,serial_number'
+						],[
+							'required'	=>	'Champ(s) :attribute est obligatoire!',
+							'exists'	=>	':attribute n\'existe dans la base de donnees',
+							'distinct'	=>	':attribute est duplique'
+						]);
+	
+						// verification de l'existence des numeros de serie et de leur inactivite
+	
+						foreach(request()->serial_number as $value) {
+							if(!$this->checkSerial($value,request()->vendeurs,$e)) {
+								throw new AppException("Numero de Serie Invalide  : ". $value);
+							}
+						}
+
+						# VERIFICATION DE L 'EXISTENCE DU RAPPORT DE MIGRATION A CETTE DATE
+						if($this->isExistRapportOnThisDate(new Carbon(request()->date),request()->vendeurs,'migration')) {
+							throw new AppException("Un rapport existe deja a cette date!");
+						}
+
+						$rapport = new RapportVente;
+						$rapport->makeRapportId();
+						$rapport->date_rapport  = request()->date;
+						$rapport->vendeurs  = request()->vendeurs;
+						$rapport->quantite = request()->quantite_materiel;
+						$rapport->type = 'migration';
+
+						$id_rapport = $rapport->id_rapport;
+						// LA PROMO EXISTE
+						$tmp_promo = $this->isExistPromo();
+
+						if($tmp_promo) {
+							$promo_fin_to_carbon_date = new Carbon($tmp_promo->fin);
+							$promo_debut_to_carbon_date = new Carbon($tmp_promo->debut);
+							$rapport_date_to_carbon_date = new Carbon(request()->date);
+							if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
+								// le rapport est en mode promo
+								$rapport->promo = $tmp_promo->id;
+							}
+						} else {
+							// la promo n'est pas active
+							if(request()->promo_id != 'none') {
+								// le rapport appartien a une promo
+								$thePromo = $p->find(request()->promo_id);
+
+								$promo_fin_to_carbon_date = new Carbon($thePromo->fin);
+
+								$promo_debut_to_carbon_date = new Carbon($thePromo->debut);
+
+								$rapport_date_to_carbon_date = new Carbon(request()->date);
+
+								if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
+								// 	// le rapport est en mode promo
+								// 	// AJOUT DU RAPPORT PROMO
+									$rapport->promo = $thePromo->id;
+
+									// $rp->save();
+								} else {
+									throw new AppException("La date choisi n'est pas inclut dans la periode de promo !");
+								}
+
+							}
+						}
+						
+						$rapport->save();
+
+						# CHANGEMENT DE STATUS DES MATERIELS
+
+						$serialNumbers = Exemplaire::whereIn('serial_number',request()->serial_number)
+							->get();
+
+						foreach($serialNumbers as $value) {
+							$value->status = 'actif';
+							$value->rapports = $id_rapport;
+							$value->update();
+						}
+
+						# DEBIT DE LA QUANTITE DANS LE STOCK DU VENDEURS
+
+						$produit = $serialNumbers->first()->produit();
+
+						$user_stock = StockVendeur::where('vendeurs',request()->vendeurs)
+							->where('produit',$produit->reference)
+							->get();
+
+						foreach($user_stock as $value) {
+							$value->quantite -= request()->quantite_materiel;
+							$value->update();
+						}
+
+						// TRANSACTION PAIEMENT MARGE MATERIEL
+						$mat = $serialNumbers->first()->produit();
+						$montantTransaction = ceil(($mat->marge / 1.18) * request()->quantite_materiel);
+
+						$user_rapport = User::where('username',request()->vendeurs)
+							->first();
+
+						$receiver_account = $user_rapport->afroCash()->first();
+						$sender_user = User::where('type','logistique')
+							->first();
+						
+						$sender_account = $sender_user->afroCash()->first();
+
+						$receiver_account->solde += $montantTransaction;
+						$sender_account->solde -= $montantTransaction;
+
+						
+						#ENREGISTREMENT DE LA TRANSACTION // ACTION DISPONIBLE UNIQUEMENT POUR LE DISTRIBUTEUR
+
+						// if($user_rapport->type == 'v_da') {
+
+						// 	$trans = new TransactionAfrocash;
+						// 	$trans->compte_credite = $receiver_account->numero_compte;
+						// 	$trans->compte_debite = $sender_account->numero_compte;
+						// 	$trans->montant = $montantTransaction;
+						// 	$trans->motif = "Paiement_Marge_Materiel";
+						// 	$trans->rapport_id = $id_rapport;
+													
+						// 	$receiver_account->update();
+						// 	$sender_account->update();
+						// 	$trans->save();
+						// }
+
+						return response()
+							->json('done');
+					break;
 					default:
 						throw new AppException("Veuillez ressayez ulterieurement !");
 					break;

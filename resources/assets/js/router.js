@@ -96,6 +96,7 @@ import InventaireStockAfrocash from './afrocashcomponents/InventaireStockAfrocas
 import InstallationTechnicien from './userComponents/InstallationTechnicien.vue'
 import DetailReaboAfrocash from './pdrafComponents/DetailReaboAfrocash.vue'
 
+import MigrationGratuite from './adminComponents/MigrationGratuite.vue'
 
 Vue.use(VueRouter);
 
@@ -920,7 +921,7 @@ const router = new VueRouter({
                 }
                 next()
             }
-        }
+        },
     ]
 
 

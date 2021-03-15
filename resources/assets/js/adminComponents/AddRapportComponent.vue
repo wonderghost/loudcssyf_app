@@ -44,6 +44,7 @@
                 <li><a @click="with_serial = true" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Recrutement</a></li>
                 <li><a @click="with_serial = false" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Reabonnement</a></li>
                 <li><a @click="with_serial = true" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Migration</a></li>
+                <li><a  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Migration Gratuite</a></li>
             </ul>
 
             <ul class="uk-switcher uk-margin">
@@ -64,8 +65,8 @@
               <li>
                 <!-- MIGRATION -->
                 <!-- Error block -->
-                <template v-if="errors.length" v-for="error in errors">
-                  <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert>
+                <template v-if="errors.length">
+                  <div v-for="(error,index) in errors" :key="index" class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert>
                     <a href="#" class="uk-alert-close" uk-close></a>
                     <p>{{error}}</p>
                   </div>
@@ -77,9 +78,35 @@
                     <input type="number" v-model="formData.quantite_materiel" min="1" class="uk-input uk-margin-small uk-border-rounded">
                   </div>
                   <!-- SERIAL NUMBERS -->
-                  <div v-if="with_serial" v-for="input in parseInt(formData.quantite_materiel)" :key="input" class="uk-margin-small">
-                    <input type="text" class="uk-input uk-border-rounded" v-model="formData.serial_number[input-1]" required :placeholder="'Serial Number '+input">
+                  <template v-if="with_serial">
+                    <div v-for="input in parseInt(formData.quantite_materiel)" :key="input" class="uk-margin-small">
+                      <input type="text" class="uk-input uk-border-rounded" v-model="formData.serial_number[input-1]" required :placeholder="'Serial Number '+input">
+                    </div>
+                  </template>
+                  <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
+                </form>
+                <!-- // -->
+              </li>
+              <li>
+                <!-- MIGRATION GRATUITE -->
+                <template v-if="errors.length">
+                  <div v-for="(error,index) in errors" :key="index" class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small uk-width-1-2@m" uk-alert>
+                    <a href="#" class="uk-alert-close" uk-close></a>
+                    <p>{{error}}</p>
                   </div>
+                </template>
+              <!-- // -->
+                <form @submit.prevent="sendRapport('migration_gratuite')" class="uk-width-1-2@m">
+                  <div class="uk-margin-small">
+                    <label for="">Quantite Materiel</label>
+                    <input type="number" v-model="formData.quantite_materiel" min="1" class="uk-input uk-margin-small uk-border-rounded">
+                  </div>
+                  <!-- SERIAL NUMBERS -->
+                  <template v-if="with_serial">
+                    <div v-for="input in parseInt(formData.quantite_materiel)" :key="input" class="uk-margin-small">
+                      <input type="text" class="uk-input uk-border-rounded" v-model="formData.serial_number[input-1]" required :placeholder="'Serial Number '+input">
+                    </div>
+                  </template>
                   <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
                 </form>
                 <!-- // -->
@@ -183,8 +210,7 @@ import reabo from './ReabonnementComponent.vue'
         }
       },
       sendRapport : async function (type) {
-        this.isLoading = true
-
+        // this.isLoading = true
         this.formData._token = this.myToken
         try {
           if(type == 'reabonnement') {
@@ -198,6 +224,22 @@ import reabo from './ReabonnementComponent.vue'
               this.isLoading = false
               alert("Success")
               location.reload()
+            }
+          }
+          else if(type == 'migration_gratuite') {
+            if(this.typeUser == 'admin') {
+
+              var response = await axios.post('/admin/send-rapport/migration-gratuite',this.formData)
+            }
+            else {
+              var response = await axios.post('/user/send-rapport/migration-gratuite',this.formData)
+            }
+            if(response.data == 'done') {
+              
+              UIkit.modal.alert("<div class='uk-alert-success uk-border-rounded' uk-alert>Rapport ajoute :)</div>")
+                .then(function () {
+                  location.reload()
+                })
             }
           }
           else {

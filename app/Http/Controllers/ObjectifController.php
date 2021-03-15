@@ -88,9 +88,9 @@ class ObjectifController extends Controller
 
             $month = date('m');
 
-            $objectifs = $obj->select('id')->whereYear('debut',2020)
+            $objectifs = $obj->select('id')->whereYear('debut',date('Y'))
                 ->whereMonth('debut','<',$month)
-                ->whereYear('debut',2020)
+                ->whereYear('debut',date('Y'))
                 ->groupBy('id')
                 ->get();
 
@@ -179,9 +179,9 @@ class ObjectifController extends Controller
     public function getBonusObjectif(Request $request ,Objectif $obj , RapportVente $rv) {
         try {
             $month = date('m');
-            $objectifs = $obj->select('id')->whereYear('debut',2020)
+            $objectifs = $obj->select('id')->whereYear('debut',date('Y'))
                 ->whereMonth('debut','<',$month)
-                ->whereYear('debut',2020)
+                ->whereYear('debut',date('Y'))
                 ->groupBy('id')
                 ->get();
             
@@ -340,7 +340,7 @@ class ObjectifController extends Controller
                     'class_b'   =>  $obv->where('id_objectif',$objectif->id)->where('classe_reabonnement','B')->get(),
                     'class_c'   =>  $obv->where('id_objectif',$objectif->id)->where('classe_reabonnement','C')->get()
                 ];
-                
+
                 $dataObjectif = [];
                 $i = 0 ;
 
@@ -349,7 +349,7 @@ class ObjectifController extends Controller
                     $atteint = 0;
                     foreach($value as $_value) {
                         $som += $_value->plafond_reabonnement;
-                        $rapp = $rp->whereYear('date_rapport',2020)
+                        $rapp = $rp->whereYear('date_rapport',date('Y'))
                             ->whereMonth('date_rapport',$month)
                             ->where('vendeurs',$_value->vendeurs)
                             ->where('type','reabonnement')
@@ -406,7 +406,7 @@ class ObjectifController extends Controller
                     
                     foreach($value as $_value) {
                         $som += $_value->plafond_recrutement;
-                        $rapp = $rp->whereYear('date_rapport',2020)
+                        $rapp = $rp->whereYear('date_rapport',date('Y'))
                             ->whereMonth('date_rapport',$month)
                             ->where('vendeurs',$_value->vendeurs)
                             ->where('type','recrutement')
