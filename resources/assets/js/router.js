@@ -922,6 +922,17 @@ const router = new VueRouter({
                 next()
             }
         },
+        {
+            path : '/migration-gratuite',
+            component : MigrationGratuite,
+            beforeEnter : (to,from , next) => {
+                if(store.state.typeUser != 'logistique') {
+                    alert('action non autorisee')
+                    next('/')
+                }
+                next()
+            }
+        }
     ]
 
 

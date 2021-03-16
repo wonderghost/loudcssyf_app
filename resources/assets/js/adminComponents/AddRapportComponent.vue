@@ -210,7 +210,7 @@ import reabo from './ReabonnementComponent.vue'
         }
       },
       sendRapport : async function (type) {
-        // this.isLoading = true
+        this.isLoading = true
         this.formData._token = this.myToken
         try {
           if(type == 'reabonnement') {

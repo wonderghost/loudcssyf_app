@@ -402,7 +402,9 @@
                   <li>
                     <router-link to="/inventory"><span uk-icon="link"></span> Inventaire</router-link>
                   </li>
-                    <!-- <li><a href="#"><span uk-icon="icon:arrow-right"></span> Historique de ravitaillement</a></li> -->
+                  <li>
+                    <router-link to="/migration-gratuite"><span uk-icon="link"></span> Migration Gratuite</router-link>
+                  </li>
                 </ul>
             </li>
             <li class="uk-parent">
