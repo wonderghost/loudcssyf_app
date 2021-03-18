@@ -318,8 +318,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::get('/user/feedback/list','ToolsController@listFeedback');
 	// rapport pour controleur
 	Route::get('user/add-rapport','RapportControlleur@addRapport')->middleware('controleur');
-	Route::post('/user/send-rapport/{slug}','RapportControlleur@sendRapport')->middleware('controleur');
-	Route::post('/user/send-rapport/{slug}','RapportControlleur@sendRapport')->middleware('logistique');
+	Route::post('/user/send-rapport/{slug}','RapportControlleur@sendRapport');
 	Route::post('/user/rapport/check-serial','RapportControlleur@checkSerial')->middleware('controleur');
 	Route::get('/user/formule/list','AdminController@listFormule');
 	
