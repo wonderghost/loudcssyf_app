@@ -158,7 +158,7 @@
                         <th>Comission</th>
                     </template>
                     <th>Telephone Client</th>
-                    <th>Pdraf</th>
+                    <th>Pdraf / Utilisateur</th>
                     <template v-if="typeUser == 'pdc' || typeUser == 'admin' || typeUser == 'gcga' || typeUser == 'commercial'">
                         <th>Marge</th>
                         <th>Total</th>
@@ -186,7 +186,13 @@
                         <td>{{r.option}}</td>
                         <td>{{r.montant |numFormat}}</td>
                         <td>{{r.telephone_client}}</td>
-                        <td>{{r.pdraf.localisation}}</td>
+                        <template v-if="r.pdraf.username == r.telephone_client">
+                            <td>{{r.pdraf.nom}} {{r.pdraf.prenom}}</td>
+                        </template>
+                        <template v-else>
+                            <td>{{ r.pdraf.localisation }}</td>
+                        </template>
+
                         <td>
                             <template v-if="r.pay_comission_id">
                                 <span class="uk-label uk-label-success">{{r.marge | numFormat}}</span>

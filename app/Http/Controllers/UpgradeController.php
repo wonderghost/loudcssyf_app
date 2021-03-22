@@ -47,7 +47,7 @@ class UpgradeController extends Controller
 
             // verifier si le materiel n'est pas vierge
 
-            if($materiel && is_null($materiel->rapports)) {
+            if($materiel && $materiel->status != 'actif') {
                 throw new AppException("Materiel vierge.");
             }
 

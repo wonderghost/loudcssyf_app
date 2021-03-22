@@ -45,7 +45,7 @@ class ReabonnementController extends Controller
 
             $materiel = Exemplaire::find(request()->materiel);
 
-            if($materiel && is_null($materiel->rapports)) {
+            if($materiel && $materiel->status != 'actif') {
                 throw new AppException("Materiel vierge.");
             }
 

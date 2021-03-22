@@ -150,6 +150,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     if(response && response.data == 'done') {
                         alert("Success!")
                         this.onInit()
+                        this.isLoading = false
                     }
                 }
                 catch(error) {

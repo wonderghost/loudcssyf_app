@@ -143,15 +143,18 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             },
             sendReabonnementRequest : async function () {
                 try {
+                    this.isLoading = true
                     this.errors = []
                     this.form._token = this.myToken
                     let response = await axios.post('/vente/reabonnement',this.form)
                     if(response && response.data == 'done') {
                         alert('Success.')
                         this.onInit()
+                        this.isLoading = false
                     }
                 }
                 catch(error) {
+                    this.isLoading = false
                     if(error.response.data.errors) {
                         let errorTab = error.response.data.errors
                         for (var prop in errorTab) {
