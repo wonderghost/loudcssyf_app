@@ -342,7 +342,7 @@ Trait Afrocashes {
 		try {
 			$temp = $a->select(['numero_compte','vendeurs'])->where('type','courant')
 				->whereIn('vendeurs',$u->select('username')
-					->whereIn('type',['v_da','v_standart']))
+					->whereIn('type',['v_da']))
 				->get();
 			
 			$_temp = $a->select(['numero_compte','vendeurs'])->where('type','semi_grossiste')

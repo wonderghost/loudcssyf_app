@@ -4946,7 +4946,7 @@ class PdrafController extends Controller
 
             $reabo_afrocash->confirm_at = Carbon::now();
             if($reabo_afrocash->update()) {
-                $msg = "Bonjour, votre abonnement est activé pour ".$reabo_afrocash->duree." mois , à la formule ".$reabo_afrocash->formule_name." , par ".$reabo_afrocash->pdrafUser()->localisation."\n Merci pour votre fidelite.";
+                $msg = "Bonjour, votre abonnement est activé pour ".$reabo_afrocash->duree." mois , à la formule ".$reabo_afrocash->formule_name.".\n Merci pour votre fidelite.";
                 if($this->sendSmsToNumber($reabo_afrocash->telephone_client,$msg)) {
                     return response()
                         ->json('done');
