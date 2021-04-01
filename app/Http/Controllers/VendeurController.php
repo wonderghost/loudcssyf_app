@@ -263,11 +263,41 @@ class VendeurController extends Controller
     /**
      * Historique de vente chez les vendeurs standarts
      */
-    public function historiqueVentes() {
+    public function historiqueVentes($type = "all") {
         try {
-            $ventes = request()->user()->ventes()
-                ->orderBy('created_at','desc')
-                ->get();
+            if(request()->user()->type == 'admin')
+            {
+                if($type == 'all')
+                {
+                    $ventes = Ventes::select()
+                        ->orderBy('created_at','desc')
+                        ->get();
+                }
+                else
+                {
+                    $ventes = Ventes::select()
+                        ->where('type',$type)
+                        ->orderBy('created_at','desc')
+                        ->get();
+                }
+            }
+            else
+            {
+                if($type == 'all')
+                {
+
+                    $ventes = request()->user()->ventes()
+                        ->orderBy('created_at','desc')
+                        ->get();
+                }
+                else
+                {
+                    $ventes = request()->user()->ventes()
+                        ->where('type',$type)
+                        ->orderBy('created_at','desc')
+                        ->get();
+                }
+            }   
 
             foreach($ventes as $value) {
                 $date = new Carbon($value->created_at);

@@ -915,7 +915,7 @@ const router = new VueRouter({
             path : "/ventes",
             component : historiqueVente,
             beforeEnter : (to,from,next) => {
-                if(store.state.typeUser != 'v_standart') {
+                if(store.state.typeUser != 'v_standart' && store.state.typeUser != 'admin') {
                     alert('action non autorisee.')
                     next('/')
                 }

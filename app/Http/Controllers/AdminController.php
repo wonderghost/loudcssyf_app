@@ -1427,4 +1427,30 @@ class AdminController extends Controller
     }
   }
 
+
+
+  /**
+   * Kist list
+   */
+  public function listArticles() {
+    try 
+    {
+      $kits = Kits::all();
+      foreach($kits as $value)
+      {
+        $value->articles = $value->articles()->select('produit')->get();
+        foreach($value->articles as $_value)
+        {
+          $_value->libelle = $_value->produits()->first()->libelle;
+        }
+      }
+      return response()->json($kits,200);
+    }
+    catch(AppException $e)
+    {
+      header("Erreur",true,422);
+      return response()->json($e->getMessage(),422);
+    }
+  }
+
 }

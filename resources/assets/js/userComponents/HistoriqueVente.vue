@@ -20,12 +20,22 @@
         <div class="uk-grid-small" uk-grid>
             <div class="uk-width-1-6@m">
                 <label for="">Type</label>
-                <select class="uk-select uk-border-rounded">
+                <select v-model="type" class="uk-select uk-border-rounded">
+                    <option value="all">Tous</option>
                     <option value="recrutement">Recrutement</option>
                     <option value="reabonnement">Reabonnement</option>
                     <option value="upgrade">Upgrade</option>
                 </select>
             </div>
+            <template v-if="typeUser == 'admin'">
+                <div class="uk-width-1-6@m">
+                    <label for="">Utilisateur</label>
+                    <select class="uk-select uk-border-rounded">
+                        <option value="">-- Tous --</option>
+                        <option v-for="(u,index) in users" :key="index" :value="u.username">{{ u.localisation }}</option>
+                    </select>
+                </div>
+            </template>
             <div class="uk-width-1-1@m">
                 <table class="uk-table uk-table-small uk-table-hover uk-table-striped uk-table-responsive">
                     <thead>
@@ -69,23 +79,49 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 isLoading : false,
                 fullPage : true,
                 headers : ['date','materiel','Utilisateur','nom','prenom','formule','montant (GNF)','duree','telephone','type'],
-                ventes : []
+                ventes : [],
+                users : [],
+                type : "all"
             }
+        },
+        watch : {
+            type : 'onInit'
         },
         methods : {
             onInit : async function () {
                 try {
-                    let response = await axios.get('/ventes')
-                    if(response) {
+                    this.isLoading = true
+                    let response , theResponse
+                    if(this.typeUser != 'admin')
+                    {
+                        response = await axios.get('/ventes/'+this.type)
+                    }
+                    else
+                    {
+                        response = await axios.get('/admin/ventes/'+this.type)
+                        theResponse = await axios.get('/admin/all-vendeurs')
+                    }
+                    if(response)
+                    {
                         this.ventes = response.data
+                        if(theResponse)
+                        {
+                            this.users = theResponse.data
+                        }
+                        this.isLoading = false
                     }
                 }
                 catch(error) {
+                    this.isLoading = false
                     alert(error)
                 }
             }
         },
         computed : {
+            typeUser()
+            {
+                return this.$store.state.typeUser
+            },
             myToken() {
                 return this.$store.state.myToken
             }

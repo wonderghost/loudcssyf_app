@@ -143,6 +143,14 @@
           </li>
           <template v-if="typeUser == 'admin' || typeUser == 'commercial'" id="">
             <li class="uk-parent">
+              <a href="#"><span uk-icon="icon : cart ; ratio : 0.9"></span> Ventes</a>
+              <ul class="uk-nav-sub">
+                <li>
+                  <router-link to="/ventes"><span uk-icon="icon : link"></span> Toutes les ventes</router-link>
+                </li>
+              </ul>
+            </li>
+            <li class="uk-parent">
                 <a href="#"><span uk-icon="icon:user;ratio:0.9"></span> Utilisateurs</a>
                 <ul class="uk-nav-sub">
                     <li>
@@ -563,7 +571,7 @@
                   <router-link to="/reabonnement-afrocash"><span uk-icon="icon : link"></span> Reabonnement</router-link>
                 </li>
                 <li>
-                    <router-link to="/all-ventes-pdraf"><span uk-icon="icon : link"></span> Toutes les ventes</router-link>
+                  <router-link to="/all-ventes-pdraf"><span uk-icon="icon : link"></span> Toutes les ventes</router-link>
                 </li>
               </ul>
             </li>

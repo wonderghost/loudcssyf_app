@@ -17,45 +17,62 @@
         <h3>Parametres commande materiel</h3>
         <hr class="uk-divider-small">
 
-        <div class="uk-width-1-2@m">
-            <template v-if="errors">
-                <div v-for="(error,index) in errors" class="uk-width-1-1@m uk-border-rounded uk-alert-danger" uk-alert :key="index">
-                    <a href="#" class="uk-alert-close" uk-close></a>
-                    <p>
-                        {{error}}
-                    </p>
-                </div>
-            </template>
-            <form @submit.prevent="saveKitRequest()" class="uk-grid-small" uk-grid>
-                <div class="uk-width-1-2@m">
-                    <div class="uk-grid-small" uk-grid>
-                        <div class="uk-width-1-1@m">
-                            <label for="">Intitule</label>
-                            <input v-model="dataForm.intitule" type="text" class="uk-input uk-border-rounded" placeholder="ex : Kit materiel">
-                        </div>
-                        <div class="uk-width-1-1@m">
-                            <label for="">Description</label>
-                            <textarea v-model="dataForm.description" class="uk-textarea uk-border-rounded" placeholder="Decrivez le materiel"></textarea>
-                        </div>
-                        <div class="uk-width-1-1@m">
-                            <label for="">Confirmez votre mot de passe</label>
-                            <input v-model="dataForm.password_confirmation" type="password" class="uk-input uk-border-rounded" placeholder="Entrez votre mot de passe">
+        <div class="uk-grid-small uk-grid-divider" uk-grid>
+            <div class="uk-width-1-2@m">
+                <template v-if="errors">
+                    <div v-for="(error,index) in errors" class="uk-width-1-1@m uk-border-rounded uk-alert-danger" uk-alert :key="index">
+                        <a href="#" class="uk-alert-close" uk-close></a>
+                        <p>
+                            {{error}}
+                        </p>
+                    </div>
+                </template>
+                <form @submit.prevent="saveKitRequest()" class="uk-grid-small" uk-grid>
+                    <div class="uk-width-1-2@m">
+                        <div class="uk-grid-small" uk-grid>
+                            <div class="uk-width-1-1@m">
+                                <label for="">Intitule</label>
+                                <input v-model="dataForm.intitule" type="text" class="uk-input uk-border-rounded" placeholder="ex : Kit materiel">
+                            </div>
+                            <div class="uk-width-1-1@m">
+                                <label for="">Description</label>
+                                <textarea v-model="dataForm.description" class="uk-textarea uk-border-rounded" placeholder="Decrivez le materiel"></textarea>
+                            </div>
+                            <div class="uk-width-1-1@m">
+                                <label for="">Confirmez votre mot de passe</label>
+                                <input v-model="dataForm.password_confirmation" type="password" class="uk-input uk-border-rounded" placeholder="Entrez votre mot de passe">
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="uk-width-1-2@m">
-                    <div class="uk-grid-small uk-margin-top" uk-grid>
-                        <div v-for="(m,index) in materials" :key="index" class="uk-width-1-2@m">
-                            <label for="">{{m.libelle}}</label>
-                            <input v-model="dataForm.materiels" type="checkbox" :id="m.reference" :value="m.reference" class="uk-border uk-checkbox">    
+                    <div class="uk-width-1-2@m">
+                        <div class="uk-grid-small uk-margin-top" uk-grid>
+                            <div v-for="(m,index) in materials" :key="index" class="uk-width-1-2@m">
+                                <label for="">{{m.libelle}}</label>
+                                <input v-model="dataForm.materiels" type="checkbox" :id="m.reference" :value="m.reference" class="uk-border uk-checkbox">    
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="uk-width-1-1@m">
-                    <button class="uk-button uk-button-small uk-border-rounded uk-button-primary">Envoyez</button>
-                </div>
-            </form>
-            
+                    <div class="uk-width-1-1@m">
+                        <button class="uk-button uk-button-small uk-border-rounded uk-button-primary">Envoyez</button>
+                    </div>
+                </form>
+                
+            </div>
+            <div class="uk-width-1-2@m">
+                <ul uk-accordion="collapsible: true">
+                    <li v-for="(a,index) in articles" :key="index">
+                        <a class="uk-accordion-title" href="#">{{ a.name }}</a>
+                        <div class="uk-accordion-content" uk-grid>
+                            <div v-for="(item,index) in a.articles" :key="index">
+                                <form class="uk-width-1-1@m">
+                                    <label for="">{{ item.libelle }}</label>
+                                    <input v-model="form.materiels" :id="item.produit" type="checkbox" :value="item.produit" class="uk-border uk-checkbox">    
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
 
     </div>
@@ -71,6 +88,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         mounted() {
             UIkit.offcanvas($("#side-nav")).hide();
             this.getData()
+            this.onInit()
         },
         data() {
             return {
@@ -84,10 +102,27 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                     password_confirmation : "",
                     materiels : []
                 },
-                errors : []
+                errors : [],
+                articles : [],
+                form : {
+                    _token : "",
+                    materiels : []
+                }
             }
         },
         methods : {
+            onInit : async function () {
+                try {
+                    let response = await axios.get('/admin/kits')
+                    if(response)
+                    {
+                        this.articles = response.data
+                    }
+                }
+                catch(error) {
+                    alert(error)
+                }
+            },
             saveKitRequest : async function () {
                 try {
                     this.isLoading = true

@@ -12,6 +12,8 @@
 */
 
 Route::middleware(['auth','admin'])->group(function () {
+	// Historique de ventes
+	Route::get('/admin/ventes/{type}','VendeurController@historiqueVentes');
 	// INTERVAL & FORMULES
 	Route::get('/admin/get-interval-infos','AdminController@getIntervalInfos');
 	Route::post('/admin/add-formule-interval','AdminController@addFormuleToInterval');
@@ -74,7 +76,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/commandes','AdminController@allCommandes');
 	# PARAMETRAGE DE COMMANDES DE KITS MATERIELS
 	Route::post('/admin/commandes/save-kits','AdminController@saveKitRequest');
-	
+	Route::get('/admin/kits','AdminController@listArticles');
 	Route::get('/admin/commandes/livraison','AdminController@getAllLivraison');
 	// DASHBOARD DATA
 	Route::get('/admin/chart/user-stat','ChartController@userStat');
@@ -556,7 +558,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/vente/recrutement','RecrutementController@create')->middleware('vendeur');
 	Route::post('/vente/reabonnement','ReabonnementController@create')->middleware('vendeur');
 	Route::post('/vente/upgrade','UpgradeController@create')->middleware('vendeur');
-	Route::get('/ventes','VendeurController@historiqueVentes')->middleware('vendeur');
+	Route::get('/ventes/{type}','VendeurController@historiqueVentes')->middleware('vendeur');
 
 });
 
