@@ -555,7 +555,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	/**
 	 * Routes vente pour vendeurs standarts
 	 */
-	Route::post('/vente/recrutement','RecrutementController@create')->middleware('vendeur');
+	Route::post('/vente/recrutement','RecrutementController@_create')->middleware('vendeur');
+	Route::post('/vente/recrutement-easytv','RecrutementController@create')->middleware('vendeur');
 	Route::post('/vente/reabonnement','ReabonnementController@create')->middleware('vendeur');
 	Route::post('/vente/upgrade','UpgradeController@create')->middleware('vendeur');
 	Route::get('/ventes/{type}','VendeurController@historiqueVentes')->middleware('vendeur');

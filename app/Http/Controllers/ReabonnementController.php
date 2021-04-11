@@ -104,7 +104,7 @@ class ReabonnementController extends Controller
         }
         catch(AppException $e) {
             header("Erreur",true,422);
-            die(json_encode($e->getMessage()));
+            return response()->json($e->getMessage(),422);
         }
     }
 }

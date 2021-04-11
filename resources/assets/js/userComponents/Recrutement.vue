@@ -54,7 +54,7 @@
                         <label for="">Formule*</label>
                         <select v-model="form.formule" class="uk-select uk-border-rounded">
                             <option value="">-- Selectionnez une formule --</option>
-                            <option :data-prix="f.prix" :value="f.nom" v-for="(f,index) in formules" :key="index">{{ f.title }}</option>
+                            <option :data-prix="f.prix" :value="f.nom" v-for="(f,index) in formuleDispo" :key="index">{{ f.title }}</option>
                         </select>
                     </div>
                     <div class="uk-width-1-3@m">
@@ -204,15 +204,24 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         }
         },
         computed : {
-            actifFormule() {
-                let data = this.formules.filter((f) => {
-                    return f.nom == this.form.formule
+            formuleDispo()
+            {
+                return this.formules.filter((f)    =>  {
+                    return f.nom != 'EASY TV'
                 })
-
-                if(data) {
-                    return data[0]
+            },
+            actifFormule() {
+                if(this.formuleDispo)
+                {
+                    let data = this.formuleDispo.filter((f) => {
+                        return f.nom == this.form.formule
+                    })
+                    
+                    if(data) {
+                        return data[0]
+                    }
+                    return false
                 }
-                return false
             },
             actifOptionInfos() {
                 let data = this.options.filter((o) => {

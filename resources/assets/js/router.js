@@ -95,7 +95,7 @@ import InventaireStockPdraf from './pdcComponents/inventaireStockPdraf.vue'
 import InventaireStockAfrocash from './afrocashcomponents/InventaireStockAfrocash.vue'
 import InstallationTechnicien from './userComponents/InstallationTechnicien.vue'
 import DetailReaboAfrocash from './pdrafComponents/DetailReaboAfrocash.vue'
-
+import RecrutementEasyTv from './userComponents/RecrutementEasy.vue'
 import MigrationGratuite from './adminComponents/MigrationGratuite.vue'
 
 Vue.use(VueRouter);
@@ -696,6 +696,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'admin') {
                     alert('action non autorisee !')
                     next('/')
+                    return 0
                 }
                 next()
             }
@@ -707,6 +708,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'pdc') {
                     alert('action non autorisee !')
                     next('/')
+                    return 0
                 }
                 next()
             }
@@ -718,6 +720,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'pdraf') {
                     alert('action non autorisee !')
                     next('/')
+                    return 0
                 }
                 next()
             }
@@ -729,6 +732,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'pdc' && store.state.typeUser != 'admin' && store.state.typeUser != 'v_standart' && store.state.typeUser != 'pdraf') {
                     alert('action non autorisee !')
                     next('/')
+                    return 0
                 }
                 next()
             },
@@ -741,6 +745,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'v_standart') {
                     alert('action non autorisee !')
                     next('/')
+                    return 0
                 }
                 next()
             }
@@ -752,6 +757,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'pdc') {
                     alert('action non autorisee!')
                     next('/')
+                    return 0
                 }
                 next()
             }
@@ -763,6 +769,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'pdc') {
                     alert('action non autorisee !')
                     next('/')
+                    return 0
                 }
                 next()
             }
@@ -774,6 +781,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'pdraf') {
                     alert('action non autorisee !')
                     next('/')
+                    return 0
                 }
                 next()
             }
@@ -785,6 +793,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'pdraf') {
                     alert('action non autorisee !')
                     next('/')
+                    return 0
                 }
                 next()
             } 
@@ -797,6 +806,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'pdraf' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart') {
                     alert('action non autorisee !')
                     next('/')
+                    return 0
                 }
                 next()
             }
@@ -808,6 +818,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'pdraf' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart') {
                     alert('action non autorisee !')
                     next('/')
+                    return 0
                 }
                 next()
             }
@@ -819,6 +830,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'pdraf' && store.state.typeUser != 'pdc' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart' && store.state.typeUser != 'admin') {
                     alert('action non autorisee !')
                     next('/')
+                    return 0
                 }
                 next()
             }
@@ -830,6 +842,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'pdraf' && store.state.typeUser != 'pdc' && store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart' && store.state.typeUser != 'admin') {
                     alert('action non autorisee !')
                     next('/')
+                    return 0
                 }
                 next()
             }
@@ -841,6 +854,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'pdc') {
                     alert('action non autorisee !')
                     next('/')
+                    return 0
                 }
                 next()
             }
@@ -852,6 +866,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'admin') {
                     alert('action non autorisee !')
                     next('/')
+                    return 0
                 }
                 next()
             }
@@ -863,6 +878,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'v_da' && store.state.typeUser != 'v_standart') {
                     alert('action non autorisee !')
                     next('/')
+                    return 0
                 }
                 next()
             }
@@ -874,6 +890,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'admin' && store.state.typeUser != 'gcga' && store.state.typeUser != 'commercial') {
                     alert('action non autorisee !')
                     next('/')
+                    return 0
                 }
                 next()
             }
@@ -885,6 +902,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'v_standart') {
                     alert('action non autorisee.')
                     next('/')
+                    return 0
                 }
                 next()
             }
@@ -896,6 +914,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'v_standart') {
                     alert('action non autorisee.')
                     next('/')                    
+                    return 0
                 }
                 next()
             }
@@ -907,6 +926,7 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'v_standart') {
                     alert('action non autorisee.')
                     next('/')
+                    return 0
                 }
                 next()
             }
@@ -915,9 +935,10 @@ const router = new VueRouter({
             path : "/ventes",
             component : historiqueVente,
             beforeEnter : (to,from,next) => {
-                if(store.state.typeUser != 'v_standart' && store.state.typeUser != 'admin') {
+                if(store.state.typeUser !== 'v_standart' && store.state.typeUser !== 'admin' && store.state.typeUser !== 'v_da') {
                     alert('action non autorisee.')
                     next('/')
+                    return 0
                 }
                 next()
             }
@@ -929,14 +950,25 @@ const router = new VueRouter({
                 if(store.state.typeUser != 'logistique') {
                     alert('action non autorisee')
                     next('/')
+                    return 0
+                }
+                next()
+            }
+        },
+        {
+            path : '/vente/recrutement-easytv',
+            component : RecrutementEasyTv,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser !== 'v_standart' && store.state.typeUser !== 'v_da')
+                {
+                    alert('action non autorisee.')
+                    next('/')
+                    return 0
                 }
                 next()
             }
         }
     ]
-
-
-
 })
 
 router.afterEach( (to,from) => {

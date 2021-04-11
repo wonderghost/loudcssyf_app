@@ -282,14 +282,19 @@
                     <li>
                       <router-link to="/rapport/list"><span uk-icon="link"></span> Rapport de ventes</router-link>
                     </li>
+                    <template v-if="typeUser == 'v_standart'">
+                      <li>
+                        <router-link to="/vente/recrutement"><span uk-icon="link"></span> Recrutement</router-link>
+                      </li>
+                      <li>
+                        <router-link to="/vente/reabonnement"><span uk-icon="link"></span> Reabonnement</router-link>
+                      </li>
+                      <li>
+                        <router-link to="/vente/upgrade"><span uk-icon="link"></span> Upgrade</router-link>
+                      </li>
+                    </template>
                     <li>
-                      <router-link to="/vente/recrutement"><span uk-icon="link"></span> Recrutement</router-link>
-                    </li>
-                    <li>
-                      <router-link to="/vente/reabonnement"><span uk-icon="link"></span> Reabonnement</router-link>
-                    </li>
-                    <li>
-                      <router-link to="/vente/upgrade"><span uk-icon="link"></span> Upgrade</router-link>
+                      <router-link to="/vente/recrutement-easytv"><span uk-icon="link"></span> Easy Tv</router-link>
                     </li>
                     <li>
                       <router-link to="/ventes"><span uk-icon="link"></span> Historique de ventes</router-link>

@@ -26,10 +26,14 @@ trait SendSms {
             }
 
             $receiverAddress = 'tel:+224'.$phoneNumber;
-            $theResponse = $sms->sendSMS($this->senderAdress,$receiverAddress, $message,$this->senderName);
-            
-            if(!empty($theResponse['error'])) {
-                throw new AppException($theResponse['error']);
+
+            if(env('APP_ENV') == 'production')
+            {
+                $theResponse = $sms->sendSMS($this->senderAdress,$receiverAddress, $message,$this->senderName);
+                
+                if(!empty($theResponse['error'])) {
+                    throw new AppException($theResponse['error']);
+                }
             }
     
             return true;
