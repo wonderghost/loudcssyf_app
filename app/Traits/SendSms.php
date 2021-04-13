@@ -27,7 +27,7 @@ trait SendSms {
 
             $receiverAddress = 'tel:+224'.$phoneNumber;
 
-            if(env('APP_ENV') == 'production')
+            if(!env('APP_ENV') == 'production')
             {
                 $theResponse = $sms->sendSMS($this->senderAdress,$receiverAddress, $message,$this->senderName);
                 

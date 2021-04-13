@@ -17,7 +17,7 @@ class RecrutementController extends Controller
 {
     use SendSms;
 
-    protected $easyReceiverPhone = "629000099";
+    protected $easyReceiverPhone ='629000099';
 
     public function getFormule(Request $request) {
     	return response()->json();
@@ -146,6 +146,10 @@ class RecrutementController extends Controller
             // Changement  de status du materiel EASY
             $materiel->status = 'actif';
             $msg = "Bonjour, votre abonnement est activé pour ".request()->duree." mois , à la formule ".request()->formule." , par ".request()->user()->localisation."\nMerci pour votre fidelite.";
+            $msgEasy = "E#";
+            $msgEasy .= request()->nom.request()->prenom."#";
+            $msgEasy .= request()->telephone."#";
+            $msgEasy .= request()->materiel."#TV1";
 
             if($vente->save()) {
                 if(request()->user()->type == 'v_standart')
@@ -177,24 +181,29 @@ class RecrutementController extends Controller
 
                         if($userAfrocash->update() && $userAfrocashGrossiste->update()) {
                            // recrutement easy tv
-                            if($this->activeEasyMateriel(request()->telephone,request()->materiel,request()->nom,request()->prenom))
-                            {
-                                if($this->sendSmsToNumber(request()->telephone,$msg)) {
+
+                           if($this->sendSmsToNumber($this->easyReceiverPhone,$msgEasy))
+                           {
+                                if($this->sendSmsToNumber(request()->telephone,$msg))
+                                {
                                     return response()->json('done');
                                 }
-                                else {
+                                else
+                                {
                                     return response()->json('done');
                                 }
-                            }
-                            else
-                            {
-                                if($this->sendSmsToNumber(request()->telephone,$msg)) {
+                           }
+                           else
+                           {
+                                if($this->sendSmsToNumber(request()->telephone,$msg))
+                                {
                                     return response()->json('done');
                                 }
-                                else {
+                                else
+                                {
                                     return response()->json('done');
                                 }
-                            }
+                           }
                         }
                     }
                     
@@ -210,21 +219,25 @@ class RecrutementController extends Controller
                     if($trans->save() && $materiel->update()) {
                         if($logistiqueAccount->update() && $userAfrocash->update()) {
                             // recrutement easy tv
-                            if($this->activeEasyMateriel(request()->telephone,request()->materiel,request()->nom,request()->prenom))
+                            if($this->sendSmsToNumber($this->easyReceiverPhone,$msgEasy))
                             {
-                                if($this->sendSmsToNumber(request()->telephone,$msg)) {
+                                if($this->sendSmsToNumber(request()->telephone,$msg))
+                                {
                                     return response()->json('done');
                                 }
-                                else {
+                                else
+                                {
                                     return response()->json('done');
                                 }
                             }
                             else
                             {
-                                if($this->sendSmsToNumber(request()->telephone,$msg)) {
+                                if($this->sendSmsToNumber(request()->telephone,$msg))
+                                {
                                     return response()->json('done');
                                 }
-                                else {
+                                else
+                                {
                                     return response()->json('done');
                                 }
                             }
@@ -354,27 +367,4 @@ class RecrutementController extends Controller
         }
     }
 
-    /**
-     * Activation du materiel easy par envoi de sms
-     */
-    public function activeEasyMateriel($phone,$materiel,$nom,$prenom)
-    {
-        $msg = "E#";
-        $msg .= $nom.$prenom."#";
-        $msg .= $phone."#";
-        $msg .= $materiel."#TV1";
-
-        if(env('APP_ENV') == 'production')
-        {
-            if($this->sendSmsToNumber($this->easyReceiverPhone,$msg))
-            {
-                return true;
-            }
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
 }
