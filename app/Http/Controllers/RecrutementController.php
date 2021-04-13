@@ -181,28 +181,13 @@ class RecrutementController extends Controller
 
                         if($userAfrocash->update() && $userAfrocashGrossiste->update()) {
                            // recrutement easy tv
-
                            if($this->sendSmsToNumber($this->easyReceiverPhone,$msgEasy))
                            {
-                                if($this->sendSmsToNumber(request()->telephone,$msg))
-                                {
-                                    return response()->json('done');
-                                }
-                                else
-                                {
-                                    return response()->json('done');
-                                }
+                                return response()->json('done',200);
                            }
                            else
                            {
-                                if($this->sendSmsToNumber(request()->telephone,$msg))
-                                {
-                                    return response()->json('done');
-                                }
-                                else
-                                {
-                                    return response()->json('done');
-                                }
+                                return response()->json('done',200);
                            }
                         }
                     }
@@ -221,25 +206,11 @@ class RecrutementController extends Controller
                             // recrutement easy tv
                             if($this->sendSmsToNumber($this->easyReceiverPhone,$msgEasy))
                             {
-                                if($this->sendSmsToNumber(request()->telephone,$msg))
-                                {
-                                    return response()->json('done');
-                                }
-                                else
-                                {
-                                    return response()->json('done');
-                                }
+                                return response()->json('done',200);
                             }
                             else
                             {
-                                if($this->sendSmsToNumber(request()->telephone,$msg))
-                                {
-                                    return response()->json('done');
-                                }
-                                else
-                                {
-                                    return response()->json('done');
-                                }
+                                return response()->json('done',200);
                             }
                         }
                     }
