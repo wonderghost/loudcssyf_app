@@ -292,13 +292,13 @@
                       <li>
                         <router-link to="/vente/upgrade"><span uk-icon="link"></span> Upgrade</router-link>
                       </li>
+                      <li>
+                        <router-link to="/vente/recrutement-easytv"><span uk-icon="link"></span> Easy Tv</router-link>
+                      </li>
+                      <li>
+                        <router-link to="/ventes"><span uk-icon="link"></span> Historique de ventes</router-link>
+                      </li>
                     </template>
-                    <li>
-                      <router-link to="/vente/recrutement-easytv"><span uk-icon="link"></span> Easy Tv</router-link>
-                    </li>
-                    <li>
-                      <router-link to="/ventes"><span uk-icon="link"></span> Historique de ventes</router-link>
-                    </li>
                 </ul>
             </li>
             <li class="uk-parent">

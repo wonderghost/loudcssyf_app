@@ -935,7 +935,7 @@ const router = new VueRouter({
             path : "/ventes",
             component : historiqueVente,
             beforeEnter : (to,from,next) => {
-                if(store.state.typeUser !== 'v_standart' && store.state.typeUser !== 'admin' && store.state.typeUser !== 'v_da') {
+                if(store.state.typeUser !== 'v_standart' && store.state.typeUser !== 'admin') {
                     alert('action non autorisee.')
                     next('/')
                     return 0
@@ -959,7 +959,7 @@ const router = new VueRouter({
             path : '/vente/recrutement-easytv',
             component : RecrutementEasyTv,
             beforeEnter : (to,from,next) => {
-                if(store.state.typeUser !== 'v_standart' && store.state.typeUser !== 'v_da')
+                if(store.state.typeUser !== 'v_standart')
                 {
                     alert('action non autorisee.')
                     next('/')

@@ -159,18 +159,18 @@ class RecrutementController extends Controller
                     $userAfrocashGrossiste = request()->user()->afroCash('semi_grossiste')->first();
 
                     // Verifier la disponibilite du montant
-                    if($userAfrocashGrossiste->solde < request()->montant + $produit->prix_vente) {
+                    if($userAfrocashGrossiste->solde < request()->montant) {
                         throw new AppException("Montant indisponibile.");
                     }
                     
-                    $userAfrocashGrossiste->solde -= request()->montant + $produit->prix_vente;
-                    $userAfrocash->solde += request()->montant + $produit->prix_vente;
+                    $userAfrocashGrossiste->solde -= request()->montant;
+                    $userAfrocash->solde += request()->montant;
 
                     // Transaction Vente Recrutement
                     $transVenteRecrutement = new TransactionAfrocash;
                     $transVenteRecrutement->compte_credite = $userAfrocash->numero_compte;
                     $transVenteRecrutement->compte_debite = $userAfrocashGrossiste->numero_compte;
-                    $transVenteRecrutement->montant = request()->montant + $produit->prix_vente;
+                    $transVenteRecrutement->montant = request()->montant;
                     $transVenteRecrutement->motif = "Vente_Recrutement";
 
                     if($transVenteRecrutement->save() && $materiel->update()) {
