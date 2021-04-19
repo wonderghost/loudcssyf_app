@@ -54,12 +54,10 @@ class ObjectifController extends Controller
         ]
     ];
 
-    // 
-
+    //
     #PAIEMENT DU BONUS DES OBJECTIFS
     public function payBonusObjectif(Request $request , Credit $c , TransactionAfrocash $ta , Objectif $obj , RapportVente $rv) {
         try {
-
             $validation = $request->validate([
                 'password_confirm'  =>  'required|string'
             ],[
@@ -103,7 +101,6 @@ class ObjectifController extends Controller
             $debut = $objVendeurs->first()->objectif()->debut;
             $fin = $objVendeurs->last()->objectif()->fin;
             
-
             $ta->compte_credite = $afrocash_account_user->numero_compte;
             $ta->montant = $tmp->original;
             $ta->motif = "Bonus objectif du ".$debut.": au :".$fin;
@@ -135,7 +132,6 @@ class ObjectifController extends Controller
         }
     }
     
-
     # DASHBOARD STATISTIQUES
     #@@@@@@@@@@STATISTIQUES FOR USERS
     
@@ -582,7 +578,6 @@ class ObjectifController extends Controller
 
     public function classificationVendeurByCA(Request $request , RapportVente $rv , User $u) {
         try {
-
             $validation = $request->validate([
                 'evaluation'    =>  'required|numeric',
             ],[
@@ -603,7 +598,7 @@ class ObjectifController extends Controller
                 $moyReabonnement = 0;
 
                 for($i = 1 ; $i <= $request->input('evaluation') ; $i++ ) {
-                    $month = "";
+                    $month = $theMonth;
                     $year = date('Y');
 
                     if($theMonth - $i <= 0) {
@@ -640,7 +635,6 @@ class ObjectifController extends Controller
                     'class_recrutement' =>  '',
                     'class_reabonnement' =>  ''
                 ];
-
             }
             // CLASSIFICATION DES VENDEURS
             #EN FONCTION DE LA MOYENNE DE RECRUTEMENT
@@ -663,7 +657,6 @@ class ObjectifController extends Controller
     }
 
     public function makeClassifyForRecrutement($value) {
-
         if($value['moyenne_recrutement'] <= 15) {
             $value['class_recrutement'] = $this->recrutement['class_c']['name'];
         } else if (15 < $value['moyenne_recrutement'] && $value['moyenne_recrutement'] <= 30) {

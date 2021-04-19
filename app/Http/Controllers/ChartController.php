@@ -14,6 +14,7 @@ use Illuminate\Support\Arr;
 use App\RapportVente;
 use App\Abonnement;
 use Carbon\Carbon;
+use App\Produits;
 
 class ChartController extends Controller
 {
@@ -413,29 +414,6 @@ class ChartController extends Controller
                 }
             }
 
-            // foreach($serials as $key => $value) {
-            //     foreach($value['data'] as $_value) {
-            //         if($_value['duree'] > 1) {
-            //             for($k = 0; $k < $_value['duree'] - 1 ; $k++) {
-            //                 if($key +1 +$k < 12) {
-
-            //                     $tmp = new Carbon($_value['debut']);
-
-            //                     $debut = $tmp->addMonths(1);
-
-            //                     array_push($serials[$key + 1 + $k]['data'],[
-            //                         'serial'    =>  $_value['serial'],
-            //                         'start' =>  $_value['debut'],
-            //                         'debut' =>  $debut->toDateTimeString(),
-            //                         'formule'   =>  $_value['formule'],
-            //                         'duree' => $_value['duree']
-            //                     ]);
-            //                 }
-            //             }
-            //         }
-            //     }
-            // }
-            
             return response()
                 ->json([
                     'stats' => $statByMonth,
@@ -445,6 +423,41 @@ class ChartController extends Controller
         catch(AppException $e) {
             header("Erreur",true,422);
             die(json_encode($e->getMessage()));
+        }
+    }
+
+
+    /**
+     * Statistiques de depots
+     */
+    public function depotStat()
+    {
+        try
+        {
+            $response = Depots::select('localisation')->get();
+            $keys = ['localisation'];
+            
+            foreach(Produits::select('libelle')->get() as $value)
+            {
+                array_push($keys,$value->libelle);
+            }
+
+            foreach($response as $value)
+            {
+                foreach($value->stockMateriel()->get() as $_value)
+                {
+                    $value[$_value->produits()->first()->libelle] = $_value->quantite;
+                }
+            }
+            return response()->json([
+                'response'  =>  $response,
+                'keys'  =>  $keys
+            ],200);
+        }
+        catch(AppException $e)
+        {
+            header("Erreur",true,422);
+            return response()->json($e->getMessage(),422);
         }
     }
   

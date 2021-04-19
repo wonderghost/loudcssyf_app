@@ -83,6 +83,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/chart/command-stat','ChartController@commandStat');
 	Route::get('/admin/chart/command-material-stat','ChartController@commandMaterialStat');
 	Route::get('/admin/chart/livraison-stat','ChartController@livraisonMaterialStat');
+	Route::get('/admin/chart/depot-stat','ChartController@depotStat');
 	#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	#DATA PERFORMANCE  ON DASHBOARD
 	Route::get('/admin/perform-obj/recrutement','ChartController@getRecrutementStat');

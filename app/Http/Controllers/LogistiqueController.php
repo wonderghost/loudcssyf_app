@@ -853,12 +853,10 @@ class LogistiqueController extends Controller
 
   public function depotList (Depots $d , Produits $p) {
     try {
-      
       $depots = $d->all();
       $all = [];
 
       foreach($depots as $key => $value) {
-        
         $stock = $value->stockMateriel()->get();
 
         foreach($stock as $_key => $_value) {

@@ -164,7 +164,7 @@ export default {
                 rows : []
             },
             depotData : {
-                columns: ['localisation', 'terminal', 'parabole'],
+                columns: [],
                 rows: []
             },
             commandData : {
@@ -248,8 +248,10 @@ export default {
                     let response = await axios.get('/admin/chart/user-stat')
                     this.userData.rows = response.data
 
-                    response = await axios.get('/admin/inventory/depot')
-                    this.depotData.rows = response.data
+                    // response = await axios.get('/admin/inventory/depot')
+                    response = await axios.get('/admin/chart/depot-stat')
+                    this.depotData.columns = response.data.keys
+                    this.depotData.rows = response.data.response
 
                     response = await axios.get('/admin/chart/command-stat')
                     this.commandData.rows = response.data
