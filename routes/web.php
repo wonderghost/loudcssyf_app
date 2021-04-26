@@ -12,6 +12,11 @@
 */
 
 Route::middleware(['auth','admin'])->group(function () {
+	
+	/**
+	 * Route Maps Utilisateur
+	 */
+	Route::get('/maps','MapsController@index');
 	// Historique de ventes
 	Route::get('/admin/ventes/{type}','VendeurController@historiqueVentes');
 	// INTERVAL & FORMULES
@@ -561,7 +566,6 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/vente/reabonnement','ReabonnementController@create')->middleware('vendeur');
 	Route::post('/vente/upgrade','UpgradeController@create')->middleware('vendeur');
 	Route::get('/ventes/{type}','VendeurController@historiqueVentes')->middleware('vendeur');
-
 });
 
 Route::middleware(['auth'])->group(function () {

@@ -166,6 +166,9 @@
                     <li>
                       <router-link to="/reseaux/afrocash"><span uk-icon="link"></span> Reseaux Afrocash</router-link>
                     </li>
+                    <li>
+                      <router-link to="/user/maps"><span uk-icon="link"></span> Maps</router-link>
+                    </li>
                     <!-- <li><a href="/admin/pdraf/list"><span uk-icon="icon : arrow-right"></span> Creation Pdraf</a></li> -->
                 </ul>
             </li>

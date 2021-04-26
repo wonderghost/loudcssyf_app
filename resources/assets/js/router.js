@@ -98,6 +98,8 @@ import DetailReaboAfrocash from './pdrafComponents/DetailReaboAfrocash.vue'
 import RecrutementEasyTv from './userComponents/RecrutementEasy.vue'
 import MigrationGratuite from './adminComponents/MigrationGratuite.vue'
 
+import Map from './adminComponents/MapComponent.vue'
+
 Vue.use(VueRouter);
 
 const router = new VueRouter({
@@ -961,6 +963,18 @@ const router = new VueRouter({
             beforeEnter : (to,from,next) => {
                 if(store.state.typeUser !== 'v_standart')
                 {
+                    alert('action non autorisee.')
+                    next('/')
+                    return 0
+                }
+                next()
+            }
+        },
+        {
+            path : '/user/maps',
+            component : Map,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser !== 'admin') {
                     alert('action non autorisee.')
                     next('/')
                     return 0

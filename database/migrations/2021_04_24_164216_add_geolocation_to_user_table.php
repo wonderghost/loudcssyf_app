@@ -15,8 +15,8 @@ class AddGeolocationToUserTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->float('long',8,2)->default(0);
-            $table->float('lat',8,2)->default(0);
+            $table->float('long',12,10)->default(0);
+            $table->float('lat',12,10)->default(0);
         });
     }
 
