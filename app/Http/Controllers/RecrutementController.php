@@ -101,9 +101,9 @@ class RecrutementController extends Controller
                 ->whereIn('produit',$article)
                 ->get();
 
-            foreach($stock_vendeur as $value) {
-                $value->quantite --;
-            }
+            // foreach($stock_vendeur as $value) {
+            //     $value->quantite --;
+            // }
 
             $vente = new Ventes;
             $vente->nom = request()->nom;
@@ -173,11 +173,11 @@ class RecrutementController extends Controller
                     $transVenteRecrutement->montant = request()->montant;
                     $transVenteRecrutement->motif = "Vente_Recrutement";
 
-                    if($transVenteRecrutement->save() && $materiel->update()) {
+                    if($transVenteRecrutement->save()) {
                         // debit de la quantite de stock
-                        foreach($stock_vendeur as $value) {
-                            $value->update();
-                        }
+                        // foreach($stock_vendeur as $value) {
+                        //     $value->update();
+                        // }
 
                         if($userAfrocash->update() && $userAfrocashGrossiste->update()) {
                            // recrutement easy tv

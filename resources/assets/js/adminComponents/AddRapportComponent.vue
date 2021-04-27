@@ -45,6 +45,9 @@
                 <li><a @click="with_serial = false" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Reabonnement</a></li>
                 <li><a @click="with_serial = true" class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Migration</a></li>
                 <li><a  class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Migration Gratuite</a></li>
+                <li>
+                    <a class="uk-button uk-button-small uk-border-rounded uk-box-shadow-small" href="#">Recrutement Easy</a>
+                </li>
             </ul>
 
             <ul class="uk-switcher uk-margin">
@@ -111,6 +114,14 @@
                 </form>
                 <!-- // -->
               </li>
+              <li>
+                <!-- RECRUTEMENT EASY -->
+                <easy-component 
+                  :rapp-date="formData.date"
+                  :rapp-vendeur="formData.vendeurs"
+                  :promo-id="formData.promo_id"></easy-component>
+                <!-- // -->
+              </li>
             </ul>
           </template>
           <template v-else>
@@ -140,12 +151,14 @@ import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
 import recrutementComp from './RecrutementComponent.vue'
 import reabo from './ReabonnementComponent.vue'
+import easyRapp from './RapportEasy.vue'
 
   export default {
     components : {
       Loading,
       'recrutement-component' : recrutementComp,
-      'reabonnement-component' : reabo
+      'reabonnement-component' : reabo,
+      'easy-component' : easyRapp
     },
     mounted() {
       UIkit.offcanvas($("#side-nav")).hide();

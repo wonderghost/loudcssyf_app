@@ -99,7 +99,7 @@ import RecrutementEasyTv from './userComponents/RecrutementEasy.vue'
 import MigrationGratuite from './adminComponents/MigrationGratuite.vue'
 
 import Map from './adminComponents/MapComponent.vue'
-
+import RappEasy from './adminComponents/RapportEasy.vue'
 Vue.use(VueRouter);
 
 const router = new VueRouter({
@@ -975,6 +975,19 @@ const router = new VueRouter({
             component : Map,
             beforeEnter : (to,from,next) => {
                 if(store.state.typeUser !== 'admin') {
+                    alert('action non autorisee.')
+                    next('/')
+                    return 0
+                }
+                next()
+            }
+        },
+        {
+            path : '/rapport/easy/add',
+            component : RappEasy,
+            beforeEnter : (to,from ,next) => {
+                if(store.state.typeUser !== 'admin')
+                {
                     alert('action non autorisee.')
                     next('/')
                     return 0

@@ -998,6 +998,227 @@ Trait Rapports {
 						return response()
 							->json('done');
 					break;
+					case 'recrutement-easy':
+						$validation = request()->validate([
+							'quantite_materiel'  =>  'required|min:1',
+							'montant_ttc' =>  'required|numeric',
+							'vendeurs'   =>  'required|exists:users,username',
+							'date'  =>  'required|before_or_equal:'.(date("Y/m/d",strtotime("now"))),
+							'serial_number.*'	=>	'required|distinct|exists:exemplaire,serial_number',
+							'debut.*'	=>	'required|date|after_or_equal:date',
+							// 'formule.*'	=>	'required|string|exists:formule,nom',
+							// 'duree.*'	=>	'required|numeric'
+						],[
+							'required'  =>  'Veuillez remplir le champ `:attribute`',
+							'numeric'  =>  '`:attribute` doit etre une valeur numeric',
+							'before_or_equal' =>  'Vous ne pouvez ajouter de rapport a cette date',
+							'after_or_equal'	=>	'Le debut doit etre egal ou superieur a la date d\'activation',
+							'distinct'	=>	"Doublons repere!",
+							'exists'	=>	'Numero inexistant! : `:attribute`'
+						]);
+
+						#VERIFIER L'EXISTENCE D'UN RAPPORT A CETTE DATE POUR CE VENDEUR
+						if($this->isExistRapportOnThisDate(new Carbon(request()->date),request()->vendeurs)) {
+							throw new AppException("Un rapport existe deja a cette date pour ce vendeur!");
+						}
+
+						// #VERIFIER SI LE SOLDE EXISTE POUR CE VENDEUR
+						if(!$this->isCgaDisponible(request()->vendeurs,request()->montant)) {
+							throw new AppException("Solde indisponible");
+						}
+
+						// # VERIFIER LA DISPONIBILITE DES NUMEROS MATERIELS
+
+						foreach(request()->serial_number as $value) {
+							if(!$this->checkSerial($value,request()->vendeurs,$e)) {
+								throw new AppException("Materiel invalide : ".$value);
+							}
+						}
+
+						// #NOUVEAU RAPPORT
+						$rapport = new RapportVente;
+
+						do {
+							$rapport->id_rapport =  Str::random(10).'_'.time();
+						} while ($rapport->isExistRapportById());
+
+						$temp_date = new Carbon(request()->date);
+						$rapport->date_rapport = $temp_date->toDateTimeString();
+						$rapport->vendeurs = request()->vendeurs;
+						$rapport->montant_ttc = request()->montant_ttc;
+						$rapport->quantite = request()->quantite_materiel;
+						$rapport->credit_utilise = 'cga';
+						$rapport->type = 'recrutement';
+						$rapport->calculCommission('recrutement',$cs);
+
+						$id_rapport = $rapport->id_rapport;
+
+
+						// # DEBITE DU CREDIT CGA
+						$user_rapport = User::where('username',request()->vendeurs)
+							->first();
+						
+						$cga_account = $user_rapport->cgaAccount();
+						$cga_account->solde -= request()->montant_ttc;
+
+						// # RECUPERATION DES INFOS LIES AU NUMEROS MATERIELS
+
+						$serialNumbers = Exemplaire::whereIn('serial_number',request()->serial_number)
+							->get();
+
+						foreach($serialNumbers as $value) {
+							$value->status = 'actif';
+							$value->rapports = $id_rapport;
+						}
+
+						// # DEBIT DU STOCK VENDEUR
+						$produit = $serialNumbers->first()->produit();
+						$article = $produit->articles()
+							->first()
+							->kits()
+							->first()
+							->articles()
+							->select('produit')
+							->groupBy('produit')
+							->get();
+
+						$user_stock = StockVendeur::where('vendeurs',request()->vendeurs)
+							->whereIn('produit',$article)
+							->get();
+
+
+						foreach($user_stock as $value) {
+							$value->quantite -= request()->quantite_materiel;
+						}
+
+						// // LA PROMO EXISTE
+						$tmp_promo = $this->isExistPromo();
+						
+						if($tmp_promo) {
+							// la promo est active
+							$promo_fin_to_carbon_date = new Carbon($tmp_promo->fin);
+							$promo_debut_to_carbon_date = new Carbon($tmp_promo->debut);
+							$rapport_date_to_carbon_date = new Carbon(request()->date);//new Carbon($request->input('date'));
+							if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
+								// le rapport est en mode promo
+								// AJOUT DU RAPPORT PROMO
+								do {
+									$rp->id =  Str::random(10).'_'.time();
+								} while ($rp->isExistId());
+
+								$rp->quantite_a_compenser = request()->quantite_materiel;
+								$rp->compense_espece = request()->quantite_materiel * $tmp_promo->subvention;
+								$rp->promo = $tmp_promo->id;
+								$rapport->id_rapport_promo = $rp->id;
+								$rapport->promo = $tmp_promo->id;
+								// $rp->save();
+							}
+						} else {
+							// la promo n'est pas active
+							if(request()->promo_id != 'none') {
+								// le rapport appartien a une promo
+								$thePromo = $p->find(request()->promo_id);//$p->find($request->input('promo_id'));
+
+								$promo_fin_to_carbon_date = new Carbon($thePromo->fin);
+
+								$promo_debut_to_carbon_date = new Carbon($thePromo->debut);
+
+								$rapport_date_to_carbon_date = new Carbon(request()->date);//new Carbon($request->input('date'));
+
+								if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
+								// 	// le rapport est en mode promo
+								// 	// AJOUT DU RAPPORT PROMO
+									do {
+										$rp->id =  Str::random(10).'_'.time();
+									} while ($rp->isExistId());
+
+									$rp->quantite_a_compenser = request()->quantite_materiel;//$request->input('quantite_materiel');
+									$rp->compense_espece = request()->quantite_materiel * $thePromo->subvention;
+									$rp->promo = $thePromo->id;
+									$rapport->id_rapport_promo = $rp->id;
+
+									$rapport->promo = $thePromo->id;
+
+									// $rp->save();
+								} else {
+									throw new AppException("La date choisi n'est pas inclut dans la periode de promo !");
+								}
+
+							}
+						}
+
+						// // ENREGISTREMENT DES ABONNEMENTS
+						$abonnement_data = [];
+						$allAbonnOption_data = [];
+						foreach(request()->serial_number as $key => $value) {
+							$abonnement_data[$key] = new Abonnement;
+							$abonnement_data[$key]->makeAbonnementId();
+							$abonnement_data[$key]->rapport_id = $id_rapport;
+							$abonnement_data[$key]->serial_number = $value;
+							$abonnement_data[$key]->debut = request()->debut[$key];//$request->input('debut')[$key];
+							$abonnement_data[$key]->duree = request()->duree; //$request->input('duree')[$key];
+							$abonnement_data[$key]->formule_name = request()->formule; //$request->input('formule')[$key];
+
+							// VERIFICATION DE L'EXISTENCE DE L'OPTION
+							if(array_key_exists($key,request()->options)) {//$request->input('options')
+								$allAbonnOption_data[$key] = new AbonneOption;
+								$allAbonnOption_data[$key]->id_abonnement = $abonnement_data[$key]->id;
+								$allAbonnOption_data[$key]->id_option = request()->options[$key]; //$request->input('options')[$key];
+							}
+						}
+
+
+						foreach($user_stock as $value) {
+							$value->update();
+						}
+
+						$cga_account->update();						
+						$rapport->save();
+
+						foreach($serialNumbers as $value) {
+							$value->update();
+						}
+
+						foreach(request()->serial_number as $key => $value) {
+							$abonnement_data[$key]->save();
+							if(array_key_exists($key,$allAbonnOption_data) && !is_null($allAbonnOption_data[$key]->id_option)) {
+								$allAbonnOption_data[$key]->save();
+							}							
+						}
+
+						// // TRANSACTION PAIEMENT MARGE MATERIEL
+						$mat = $serialNumbers->first()->produit();
+						$montantTransaction = ceil(($mat->marge / 1.18) * request()->quantite_materiel);
+
+						$receiver_account = $user_rapport->afroCash()->first();
+						$sender_user = User::where('type','logistique')
+							->first();
+						
+						$sender_account = $sender_user->afroCash()->first();
+
+						$receiver_account->solde += $montantTransaction;
+						$sender_account->solde -= $montantTransaction;
+
+						
+						// #ENREGISTREMENT DE LA TRANSACTION // ACTION DISPONIBLE SEULEMENT POUR LE DISTRIBUTEUR
+
+						if($user_rapport->type == 'v_da') {
+
+							$trans = new TransactionAfrocash;
+							$trans->compte_credite = $receiver_account->numero_compte;
+							$trans->compte_debite = $sender_account->numero_compte;
+							$trans->montant = $montantTransaction;
+							$trans->motif = "Paiement_Marge_Materiel";
+							$trans->rapport_id = $id_rapport;
+
+							$receiver_account->update();
+							$sender_account->update();
+							$trans->save();
+						}
+
+
+						return response()->json('done',200);
+					break;
 					default:
 						throw new AppException("Veuillez ressayez ulterieurement !");
 					break;
@@ -1006,7 +1227,7 @@ Trait Rapports {
 		}
 		catch(AppException $e) {
 			header("Erreur",true,422);
-			die(json_encode($e->getMessage()));
+			return response()->json($e->getMessage(),422);
 		}
 	}
 	

@@ -192,7 +192,9 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             return this.$store.state.typeUser
           },
           formules() {
-            return this.$store.state.formulesList
+            return this.$store.state.formulesList.filter((f) => {
+              return f.nom != 'EASY TV'
+            })
           },
           options() {
             return this.$store.state.optionsList
