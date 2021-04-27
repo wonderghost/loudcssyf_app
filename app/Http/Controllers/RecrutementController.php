@@ -127,21 +127,21 @@ class RecrutementController extends Controller
 
             # TRANSACTION MARGE MATERIEL
 
-            $logistiqueUser = User::where('type','logistique')
-                ->first();
-            $logistiqueAccount = $logistiqueUser->afrocash()->where('type','courant')
-                ->first();
+            // $logistiqueUser = User::where('type','logistique')
+            //     ->first();
+            // $logistiqueAccount = $logistiqueUser->afrocash()->where('type','courant')
+            //     ->first();
 
-            $montantMargeMateriel = ceil($produit->marge / 1.18);
+            // $montantMargeMateriel = ceil($produit->marge / 1.18);
 
-            $userAfrocash->solde += $montantMargeMateriel;
-            $logistiqueAccount->solde -= $montantMargeMateriel;
+            // $userAfrocash->solde += $montantMargeMateriel;
+            // $logistiqueAccount->solde -= $montantMargeMateriel;
 
-            $trans = new TransactionAfrocash;
-            $trans->compte_credite = $userAfrocash->numero_compte;
-            $trans->compte_debite = $logistiqueAccount->numero_compte;
-            $trans->montant = $montantMargeMateriel;
-            $trans->motif = "Paiement_Marge_Materiel";
+            // $trans = new TransactionAfrocash;
+            // $trans->compte_credite = $userAfrocash->numero_compte;
+            // $trans->compte_debite = $logistiqueAccount->numero_compte;
+            // $trans->montant = $montantMargeMateriel;
+            // $trans->motif = "Paiement_Marge_Materiel";
 
             // Changement  de status du materiel EASY
             $materiel->status = 'actif';
@@ -181,40 +181,41 @@ class RecrutementController extends Controller
 
                         if($userAfrocash->update() && $userAfrocashGrossiste->update()) {
                            // recrutement easy tv
-                           if($this->sendSmsToNumber($this->easyReceiverPhone,$msgEasy))
-                           {
-                                return response()->json('done',200);
-                           }
-                           else
-                           {
-                                return response()->json('done',200);
-                           }
+                           return response()->json('done',200);
+                        //    if($this->sendSmsToNumber($this->easyReceiverPhone,$msgEasy))
+                        //    {
+                        //         return response()->json('done',200);
+                        //    }
+                        //    else
+                        //    {
+                        //         return response()->json('done',200);
+                        //    }
                         }
                     }
                     
                 }
-                else if(request()->user()->type == 'v_da')
-                {
-                    // Distributeur Agree
+                // else if(request()->user()->type == 'v_da')
+                // {
+                //     // Distributeur Agree
                     
-                    foreach($stock_vendeur as $value) {
-                        $value->update();
-                    }
+                //     foreach($stock_vendeur as $value) {
+                //         $value->update();
+                //     }
     
-                    if($trans->save() && $materiel->update()) {
-                        if($logistiqueAccount->update() && $userAfrocash->update()) {
-                            // recrutement easy tv
-                            if($this->sendSmsToNumber($this->easyReceiverPhone,$msgEasy))
-                            {
-                                return response()->json('done',200);
-                            }
-                            else
-                            {
-                                return response()->json('done',200);
-                            }
-                        }
-                    }
-                }
+                //     if($trans->save() && $materiel->update()) {
+                //         if($logistiqueAccount->update() && $userAfrocash->update()) {
+                //             // recrutement easy tv
+                //             if($this->sendSmsToNumber($this->easyReceiverPhone,$msgEasy))
+                //             {
+                //                 return response()->json('done',200);
+                //             }
+                //             else
+                //             {
+                //                 return response()->json('done',200);
+                //             }
+                //         }
+                //     }
+                // }
             }
             throw new AppException("Erreur de traitement , ressayez.");
         }
