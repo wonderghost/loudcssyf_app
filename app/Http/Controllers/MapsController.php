@@ -16,7 +16,9 @@ class MapsController extends Controller
         try
         {
             $users = User::select('localisation','lat','long','phone')
-                ->whereIn('type',['v_da','pdraf','v_standart'])
+                ->whereIn('type',['pdraf','v_da','v_standart'])
+                ->where('lat','<>',0)
+                ->where('long','<>',0)
                 ->get();
             return response()->json($users,200);
         }
