@@ -18,14 +18,14 @@ class RecouvrementController extends Controller
     //
     use Similarity;
 
-    public function addRecouvrement(Request $request , TransactionAfrocash $ta) {
-      $validation = $request->validate([
-        'vendeurs'  =>  'required|exists:users,username',
-        'montant' =>  'required|numeric',
-        'numero_recu' =>  'required|string|unique:recouvrements,numero_recu'
-      ]);
-
+    public function addRecouvrement(Request $request , TransactionAfrocash $ta) {  
       try {
+        $validation = $request->validate([
+          'vendeurs'  =>  'required|exists:users,username',
+          'montant' =>  'required|numeric',
+          'numero_recu' =>  'required|string|unique:recouvrements,numero_recu'
+        ]);
+
         if($request->input('montant_du') <= 0) {
           throw new AppException("Recouvrement Impossible !");
         }
@@ -36,7 +36,14 @@ class RecouvrementController extends Controller
             'vendeurs'  =>  $request->input('vendeurs')
           ])->get())->whereNull('recouvrement')->sum('montant');
 
-          if($request->input('montant') != $total) {
+          $retourAfrocash = $ta->whereIn('compte_credite',Afrocash::select('numero_compte')->where([
+            'type'  =>  'semi_grossiste',
+            'vendeurs'  =>  $request->input('vendeurs')
+          ])->get())->whereNull('recouvrement')
+            ->where('motif','RETOUR_AFROCASH')
+            ->sum('montant');
+
+          if($request->input('montant') != ($total - $retourAfrocash)) {
             throw new AppException("Erreur Veuillez ressayer ulterieurment , Il semble qu'une transaction ait eu lieu , veuillez reprendre la procedure!");
           }
 
@@ -76,12 +83,20 @@ class RecouvrementController extends Controller
             'recouvrement'  =>  $temp
           ]);
 
+          TransactionAfrocash::whereIn('compte_credite',Afrocash::select('numero_compte')->where([
+            'type'  =>  'semi_grossiste',
+            'vendeurs'  =>  $request->input('vendeurs')
+          ])->get())->whereNull('recouvrement')->where('motif','RETOUR_AFROCASH')->update([
+            'recouvrement' =>  $temp
+          ]);
+
           return response()
             ->json('done');
         } else {
           throw new AppException("Erreur sur le montant!");
         }
-      } catch (AppException $e) {
+      } 
+      catch (AppException $e) {
         header("Erreur",true,422);
         die(json_encode($e->getMessage()));
       }
@@ -137,12 +152,21 @@ class RecouvrementController extends Controller
 
     public function getMontantDuRecouvrement(TransactionAfrocash $ta , $vendeur) {
       try {
+        $retourAfrocash = $ta->whereIn('compte_credite',Afrocash::select('numero_compte')->where([
+          'type'  =>  'semi_grossiste',
+          'vendeurs'  =>  $vendeur
+        ])->get())->whereNull('recouvrement')
+          ->where('motif','RETOUR_AFROCASH')
+          ->sum('montant');
+
         $total = $ta->whereIn('compte_debite',Afrocash::select('numero_compte')->where([
           'type'  =>  'semi_grossiste',
           'vendeurs'  =>  $vendeur
-        ])->get())->whereNull('recouvrement')->sum('montant');
+        ])->get())->whereNull('recouvrement')
+          ->sum('montant');
+
         return response()
-          ->json($total);
+          ->json($total - $retourAfrocash);
       } catch (AppException $e) {
         header("Erreur!",true,422);
         die(json_encode($e->getMessage()));

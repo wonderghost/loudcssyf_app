@@ -184,15 +184,12 @@
             <li class="uk-parent">
               <a href="#"><span uk-icon="icon: credit-card;"></span> Afrocash</a>
               <ul class="uk-nav-sub">
-                <!-- <li><a href="/admin/afrocash"><span uk-icon="icon :arrow-right;"></span> Operations</a>	</li> -->
                 <li>
                   <router-link to="/afrocash/operation"><span uk-icon="link"></span> Operation</router-link>
                 </li>
-                <!-- <li><a href="/admin/afrocash/all-transactions"><span uk-icon="icon : arrow-right;"></span> Toutes les transactions</a>	</li> -->
                 <li>
                   <router-link to="/afrocash/all-transaction"><span uk-icon="link"></span> Toutes les transactions</router-link>
                 </li>
-                <!-- <li><a href="/admin/recouvrement/operations"><span uk-icon="icon : arrow-right"></span> Recouvrements</a></li> -->
                 <li>
                   <router-link to="/afrocash/recouvrement"><span uk-icon="link"></span> Recouvrements</router-link>
                 </li>
@@ -336,6 +333,9 @@
                 </li>
                 <li>
                   <router-link to="/afrocash/depot"><span uk-icon="icon : link"></span>Depot</router-link>
+                </li>
+                <li>
+                  <router-link to="/afrocash/retour-afrocash"><span uk-icon="icon : link"></span> Retour Afrocash</router-link>
                 </li>
                 <li>
                   <router-link to="/afrocash/transactions"><span uk-icon="link"></span>Toutes les Transactions</router-link>

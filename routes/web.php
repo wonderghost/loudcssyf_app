@@ -566,6 +566,13 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/vente/reabonnement','ReabonnementController@create')->middleware('vendeur');
 	Route::post('/vente/upgrade','UpgradeController@create')->middleware('vendeur');
 	Route::get('/ventes/{type}','VendeurController@historiqueVentes')->middleware('vendeur');
+
+	/**
+	 * Retour afrocash pour les distributeurs agrees
+	 */
+	Route::get('/afrocash/retour-afrocash','VendeurController@retourAfrocash')->middleware('vendeur');
+	Route::post('/afrocash/retour-afrocash','VendeurController@sendRetourRequest')->middleware('vendeur');
+	
 });
 
 Route::middleware(['auth'])->group(function () {

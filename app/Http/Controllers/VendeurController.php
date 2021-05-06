@@ -313,4 +313,88 @@ class VendeurController extends Controller
         }
     }
 
+
+    /**
+     * Retour afrocash pour les DA
+     */
+    public function retourAfrocash()
+    {
+        try
+        {
+            $users = User::select('localisation','username')
+                ->where('type','v_standart')->get();
+
+            $solde = request()->user()->afroCash('courant')->first();
+
+            return response()->json([
+                'users' =>  $users,
+                'account' =>  $solde
+            ],200);
+        }
+        catch(AppException $e)
+        {
+            header("Erreur",true,422);
+            return response()->json($e->getMessage(),422);
+        }
+    }
+
+    /**
+     * Traitement de la requete du retour afrocash
+     */
+    public function sendRetourRequest()
+    {
+        try
+        {   
+            $validation = request()->validate([
+                'destinataire'  =>  'required|exists:users,username',
+                'montant'   =>  'required',
+                'password_confirmation' =>  'required'
+            ],[
+                'required'  =>  '`:attribute` requis.',
+                'password_confirmation.required'    =>  'Mot de passe requis.'
+            ]);
+
+            // validation du mot de passe
+            if(!Hash::check(request()->password_confirmation,request()->user()->password))
+            {
+                throw new AppException("Mot de passe invalide.");
+            }
+
+            $userAccount = request()->user()->afroCash('courant')->first();
+            $destinataireUser = User::where('username',request()->destinataire)
+                ->first();
+
+            //  verifier si le montant existe dans le compte du user
+
+            if(!($userAccount->solde >= request()->montant))
+            {
+                throw new AppException("Montant indisponible.");
+            }
+
+            $destinataireAccount = $destinataireUser->afroCash('semi_grossiste')->first();
+
+            $userAccount->solde -= request()->montant;
+            $destinataireAccount->solde += request()->montant;
+
+            $trans = new TransactionAfrocash;
+            $trans->compte_debite = $userAccount->numero_compte;
+            $trans->compte_credite = $destinataireAccount->numero_compte;
+            $trans->montant = request()->montant;
+            $trans->motif = "RETOUR_AFROCASH";
+
+            if($destinataireAccount->update() && $userAccount->update())
+            {
+                if($trans->save())
+                {
+                    return response()->json('done',200);
+                }
+            }
+        }
+        catch(AppException $e)
+        {
+            header("Erreur",true,422);
+            return response()->json($e->getMessage(),422);
+        }
+    }
+
 }

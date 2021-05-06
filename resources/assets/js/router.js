@@ -100,6 +100,8 @@ import MigrationGratuite from './adminComponents/MigrationGratuite.vue'
 
 import Map from './adminComponents/MapComponent.vue'
 import RappEasy from './adminComponents/RapportEasy.vue'
+import AfrocashRetour from './afrocashcomponents/RetourAfrocash.vue'
+
 Vue.use(VueRouter);
 
 const router = new VueRouter({
@@ -987,6 +989,19 @@ const router = new VueRouter({
             component : RappEasy,
             beforeEnter : (to,from ,next) => {
                 if(store.state.typeUser !== 'admin')
+                {
+                    alert('action non autorisee.')
+                    next('/')
+                    return 0
+                }
+                next()
+            }
+        },
+        {
+            path : '/afrocash/retour-afrocash',
+            component : AfrocashRetour,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser !== 'v_da')
                 {
                     alert('action non autorisee.')
                     next('/')
