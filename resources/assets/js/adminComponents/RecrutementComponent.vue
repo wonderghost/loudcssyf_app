@@ -107,6 +107,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
         methods : {
           sendRecrutementRapport : async function () {
             try {
+              this.errors = []
                 this.isLoading = true
                 this.formData._token = this.myToken
                 this.formData.promo_id = this.promoId

@@ -48,9 +48,10 @@ Trait Rapports {
 	    'vendeurs'  =>  $vendeurs,
 			'type'	=>	$type,
 			'state'	=>	'unaborted'
-	    ])->first();
-	  if($temp) {
-	    return $temp;
+	    ])->get();
+
+	  if(count($temp) >= 2) {
+	    return true;
 	  }
 	  return false;
 	}
@@ -283,7 +284,8 @@ Trait Rapports {
 
 						#VERIFIER L'EXISTENCE D'UN RAPPORT A CETTE DATE POUR CE VENDEUR
 						if($this->isExistRapportOnThisDate(new Carbon(request()->date),request()->vendeurs)) {
-							throw new AppException("Un rapport existe deja a cette date pour ce vendeur!");
+							// throw new AppException("Un rapport existe deja a cette date pour ce vendeur!");
+							throw new AppException("Rapport maximum atteint a cette date pour ce vendeur.");
 						}
 
 						#VERIFIER SI LE SOLDE EXISTE POUR CE VENDEUR
