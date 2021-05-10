@@ -43,17 +43,35 @@ use App\IntervalProduit;
 Trait Rapports {
 
 	public function isExistRapportOnThisDate(Carbon $date,$vendeurs,$type = 'recrutement') {
-	  $temp = RapportVente::where([
-	    'date_rapport'  =>  $date->toDateTimeString(),
-	    'vendeurs'  =>  $vendeurs,
-			'type'	=>	$type,
-			'state'	=>	'unaborted'
-	    ])->get();
+		$temp = RapportVente::where([
+			'date_rapport'  =>  $date->toDateTimeString(),
+			'vendeurs'  =>  $vendeurs,
+				'type'	=>	$type,
+				'state'	=>	'unaborted'
+		])->get();
 
-	  if(count($temp) >= 2) {
-	    return true;
-	  }
-	  return false;
+		if(count($temp) >= 2) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * existence de reabonnement a une date
+	 */
+	public function isExistRapportOnThisDateForReabo(Carbon $date, $vendeurs , $type = 'reabonnement')
+	{
+		$temp = RapportVente::where([
+			'date_rapport'  =>  $date->toDateTimeString(),
+			'vendeurs'  =>  $vendeurs,
+				'type'	=>	$type,
+				'state'	=>	'unaborted'
+		])->first();
+
+		if($temp) {
+			return true;
+		}
+		return false;
 	}
 
 	// 
@@ -510,7 +528,7 @@ Trait Rapports {
 
 						# VERIFICATION DE L'EXISTENCE D'UN RAPPORT A CETTE DATE
 
-						if($this->isExistRapportOnThisDate(new Carbon(request()->date),request()->vendeurs,'reabonnement')) {
+						if($this->isExistRapportOnThisDateForReabo(new Carbon(request()->date),request()->vendeurs,'reabonnement')) {
 							throw new AppException("Un rapport existe deja a cette date!");
 						}
 
