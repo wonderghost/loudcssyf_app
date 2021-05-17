@@ -1138,6 +1138,8 @@ Trait Rapports {
 							// la promo est active
 							$transPromo->montant = $tmp_promo->subvention;
 							$subventionPromo = $tmp_promo->subvention;
+							$rapport->promo_id = $tmp_promo->id;
+							$rapport->promo = true;
 						}
 						else
 						{
@@ -1156,6 +1158,8 @@ Trait Rapports {
 								}
 								
 								$transPromo->montant = $laPromo->subvention;
+								$rapport->promo_id = $laPromo->id;
+								$rapport->promo = true;
 							}
 
 						}
@@ -1186,7 +1190,6 @@ Trait Rapports {
 								$allAbonnOption_data[$key]->id_option = request()->options[$key]; //$request->input('options')[$key];
 							}
 						}
-
 
 						foreach($user_stock as $value) {
 							$value->update();
