@@ -53,6 +53,7 @@ return array(
     'App\\Http\\Controllers\\CreditController' => $baseDir . '/app/Http/Controllers/CreditController.php',
     'App\\Http\\Controllers\\HomeController' => $baseDir . '/app/Http/Controllers/HomeController.php',
     'App\\Http\\Controllers\\LogistiqueController' => $baseDir . '/app/Http/Controllers/LogistiqueController.php',
+    'App\\Http\\Controllers\\MapsController' => $baseDir . '/app/Http/Controllers/MapsController.php',
     'App\\Http\\Controllers\\NotificationController' => $baseDir . '/app/Http/Controllers/NotificationController.php',
     'App\\Http\\Controllers\\ObjectifController' => $baseDir . '/app/Http/Controllers/ObjectifController.php',
     'App\\Http\\Controllers\\PdcController' => $baseDir . '/app/Http/Controllers/PdcController.php',

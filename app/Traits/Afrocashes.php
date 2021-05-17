@@ -714,7 +714,8 @@ public function getInfosRemboursementPromo(Request $request,
 			$promoState = true;
 			if(!$promo) {
 				// throw new AppException("Aucune promo en cours !");
-				$promo = $p->all()->first();
+				$promo = $p->select()
+					->where('type','kit_sat')->first();
 				$promoState = false;
 			}
 			

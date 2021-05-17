@@ -6,7 +6,7 @@
         loader="bars"
         :opacity="1"
         color="#fff"
-        background-color="#083050"></loading>
+        background-color="#fff"></loading>
 
         <template v-if="typeUser == 'v_da' || typeUser == 'v_standart'">
             <div class="uk-visible@m uk-margin-top" style="margin-left : 10% !important">
@@ -128,43 +128,57 @@
                                 <!-- INFOS PROMO -->
                                 <div>
                                     <!-- Erreor block -->
-                                    <template v-if="errors.length" v-for="error in errors">
-                                    <div class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
+                                    <template v-if="errors.length" >
+                                    <div v-for="(error,index) in errors" :key="index" class="uk-alert-danger uk-border-rounded uk-box-shadow-hover-small" uk-alert>
                                         <a href="#" class="uk-alert-close" uk-close></a>
                                         <p class="uk-text-center"><span uk-icon="icon : warning"></span> {{error}}</p>
                                     </div>
                                     </template>
 
                                     <template v-if="!promoStatus">
-                                        <h4 v-if="formState == 'add'">Nouvel Promo</h4>
-                                        <h4 v-else>Editer</h4>
-                                        <hr class="uk-divider-small">
-                                        <form v-if="typeUser == 'admin'" @submit.prevent="addPromo()" class="uk-grid-small" uk-grid>
-                                            <div class="uk-width-1-2@m">
-                                                <label for=""><span uk-icon="icon : calendar"></span> Debut de la promo</label>
-                                                <input type="date" class="uk-input uk-border-rounded" v-model="formData.debut">
-                                            </div>
-                                            <div class="uk-width-1-2@m">
-                                                <label for=""><span uk-icon="icon : calendar"></span> Fin de la promo</label>
-                                                <input type="date" class="uk-input uk-border-rounded" v-model="formData.fin">
-                                            </div>
-                                            <div class="uk-width-1-2@m">
-                                                <label for=""><span uk-icon="icon : pencil"></span> Intitutle Promo</label>
-                                                <input type="text" class="uk-input uk-border-rounded" v-model="formData.intitule">
-                                            </div>
-                                            <div class="uk-width-1-2@m">
-                                                <label for=""><span uk-icon="icon : credit-card"></span> Subvention</label>
-                                                <input type="number" class="uk-input uk-border-rounded" v-model="formData.subvention">
-                                            </div>
-                                            <div class="uk-width-1-1@m">
-                                                <label for=""><span uk-icon="icon : comment"></span> Description</label>
-                                                <textarea class="uk-textarea uk-border-rounded" v-model="formData.description" cols="30" rows="10"></textarea>
-                                                <div class="uk-margin-small">
-                                                    <button v-if="formState == 'edit'" @click="abortEdit()" type="button" class="uk-border-rounded uk-button uk-button-small uk-button-danger"><span uk-icon="icon : close"></span> Annuler</button>
-                                                    <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
+                                        <div class="uk-container">
+                                            <h4 v-if="formState == 'add'">Nouvel Promo</h4>
+                                            <h4 v-else>Editer</h4>
+                                            <hr class="uk-divider-small">
+                                            <form v-if="typeUser == 'admin'" @submit.prevent="addPromo()" class="uk-grid-small" uk-grid>
+                                                <div class="uk-width-1-1@m">
+                                                    <label for="">
+                                                        <span uk-icon="icon : settings"></span>
+                                                        Type de Promo
+                                                    </label>
+                                                    <select v-model="formData.type" class="uk-select uk-border-rounded">
+                                                        <option value="">-- Choisissez une option --</option>
+                                                        <option value="kit_sat">Kit Sat</option>
+                                                        <option value="kit_easy">Kit Easy</option>
+                                                        <option value="formule">Formule</option>
+                                                    </select>
                                                 </div>
-                                            </div>
-                                        </form>
+                                                <div class="uk-width-1-2@m">
+                                                    <label for=""><span uk-icon="icon : calendar"></span> Debut de la promo</label>
+                                                    <input type="date" class="uk-input uk-border-rounded" v-model="formData.debut">
+                                                </div>
+                                                <div class="uk-width-1-2@m">
+                                                    <label for=""><span uk-icon="icon : calendar"></span> Fin de la promo</label>
+                                                    <input type="date" class="uk-input uk-border-rounded" v-model="formData.fin">
+                                                </div>
+                                                <div class="uk-width-1-2@m">
+                                                    <label for=""><span uk-icon="icon : pencil"></span> Intitutle Promo</label>
+                                                    <input type="text" class="uk-input uk-border-rounded" v-model="formData.intitule">
+                                                </div>
+                                                <div class="uk-width-1-2@m">
+                                                    <label for=""><span uk-icon="icon : credit-card"></span> Subvention</label>
+                                                    <input type="number" class="uk-input uk-border-rounded" v-model="formData.subvention">
+                                                </div>
+                                                <div class="uk-width-1-1@m">
+                                                    <label for=""><span uk-icon="icon : comment"></span> Description</label>
+                                                    <textarea class="uk-textarea uk-border-rounded" v-model="formData.description" cols="30" rows="10"></textarea>
+                                                    <div class="uk-margin-small">
+                                                        <button v-if="formState == 'edit'" @click="abortEdit()" type="button" class="uk-border-rounded uk-button uk-button-small uk-button-danger"><span uk-icon="icon : close"></span> Annuler</button>
+                                                        <button type="submit" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Envoyez</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
                                     </template>
                                     <template v-else>
                                         <h4>Promo en cours</h4>
@@ -211,6 +225,7 @@
                                             <th>Fin</th>
                                             <th>Subvention</th>
                                             <th>Status</th>
+                                            <th>-</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -220,6 +235,12 @@
                                             <td>{{lp.fin}}</td>
                                             <td>{{lp.subvention}}</td>
                                             <td>{{lp.status_promo}}</td>
+                                            <td>
+                                                <template v-if="lp.status_promo == 'actif'">
+                                                    <button class="uk-button-primary uk-button-small uk-border-rounded">Editer</button>
+                                                    <button @click="() => {activePromo = lp ; abortPromo();}" class="uk-button-danger uk-button-small uk-border-rounded">Interrompre</button>
+                                                </template>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -320,7 +341,8 @@ export default {
                 debut : "",
                 fin : "",
                 subvention : 0,
-                id_promo : ""
+                id_promo : "",
+                type : ""
             },
             promoStatus : false,
             isLoading : false,

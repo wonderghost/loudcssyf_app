@@ -349,29 +349,31 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             this.montantTtcSubv = parseInt(this.formData.quantite) * this.material.subvention
             this.material.parabole_du = parseInt(this.formData.quantite) - (this.material.migration - this.material.compense)
 
-            if(this.promoState) {
+            this.formData.prix_achat = parseInt(this.formData.quantite) * this.material.prix_vente
+
+            // if(this.promoState) {
               // la promo est active
               // if(this.typeUser == 'v_da') {
                   // distributeur agree
                   // this.formData.prix_achat = parseInt(this.formData.quantite) * ((this.material.prix_vente - (this.marge.ht)) - this.promo.subvention)
               // } else {
                   // vendeurs standart
-                  this.formData.prix_achat = parseInt(this.formData.quantite) * (this.material.prix_vente - this.promo.subvention)
+                  // this.formData.prix_achat = parseInt(this.formData.quantite) * (this.material.prix_vente - this.promo.subvention)
               // }
-            } else {
+            // } else {
                 // la promo est inactive
                 // if(this.typeUser == 'v_da') {
                   // this.formData.prix_achat = parseInt(this.formData.quantite) * (this.material.prix_vente - (this.marge.ht))
                 // } 
                 // else {
-                  this.formData.prix_achat = parseInt(this.formData.quantite) * this.material.prix_vente
+                  // this.formData.prix_achat = parseInt(this.formData.quantite) * this.material.prix_vente
                 // }
-            }
+            // }
 
           },
           sendCommandMaterial : async function () {
-            // this.isLoading = true
             try {
+              this.isLoading = true
               this.formData._token = this.myToken
               this.formData.reference_material = this.material.reference
               this.formData.parabole_du = this.material.parabole_du

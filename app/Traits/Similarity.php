@@ -532,8 +532,9 @@ public function debitStockCentral($depot,$produit,$newQuantite) {
   }
 
    // VERIFIER SI UNE PROMO N'EST PAS DEJA ACTIVE
-   public function isExistPromo() {
-    $temp = Promo::where('status_promo','actif')->first();
+   public function isExistPromo($type = 'kit_sat') {
+    $temp = Promo::where('status_promo','actif')
+      ->where('type',$type)->first();
     if($temp) {
       return $temp;
     }

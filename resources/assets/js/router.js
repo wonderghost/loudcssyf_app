@@ -101,6 +101,7 @@ import MigrationGratuite from './adminComponents/MigrationGratuite.vue'
 import Map from './adminComponents/MapComponent.vue'
 import RappEasy from './adminComponents/RapportEasy.vue'
 import AfrocashRetour from './afrocashcomponents/RetourAfrocash.vue'
+import PromoEasy from './adminComponents/PromoEasy.vue'
 
 Vue.use(VueRouter);
 
@@ -1009,7 +1010,7 @@ const router = new VueRouter({
                 }
                 next()
             }
-        }
+        },
     ]
 })
 

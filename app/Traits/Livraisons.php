@@ -125,6 +125,9 @@ public function inventaireLivraison() {
         'distinct' => 'Vous ne pouvez envoyer le meme numero de serie plus d\'une fois :-(',
         'exists'  =>  ':attribute est Inexistant :-('
       ]);
+
+      // verifier si le(s) appartient au depot
+      
       
       // verifier si le materiel est defectueux ou pas!
 

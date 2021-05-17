@@ -1111,62 +1111,62 @@ Trait Rapports {
 							$value->quantite -= request()->quantite_materiel;
 						}
 
-						// // LA PROMO EXISTE
-						$tmp_promo = $this->isExistPromo();
+						// // TRANSACTION PAIEMENT MARGE MATERIEL
+						$mat = $serialNumbers->first()->produit();
+						$montantTransaction = ceil(($mat->marge / 1.18) * request()->quantite_materiel);
+
+						$receiver_account = $user_rapport->afroCash()->first();
+						$sender_user = User::where('type','logistique')
+							->first();
 						
-						if($tmp_promo) {
+						$sender_account = $sender_user->afroCash()->first();
+
+						$receiver_account->solde += $montantTransaction;
+						$sender_account->solde -= $montantTransaction;
+
+						// // LA PROMO EXISTE
+						$subventionPromo = 0;
+						$tmp_promo = $this->isExistPromo('kit_easy');
+
+						$transPromo = new TransactionAfrocash;
+						$transPromo->compte_credite = $receiver_account->numero_compte;
+						$transPromo->compte_debite = $sender_account->numero_compte;
+						$transPromo->motif = "SUBVENTION_PROMO";
+
+						if($tmp_promo)
+						{
 							// la promo est active
-							$promo_fin_to_carbon_date = new Carbon($tmp_promo->fin);
-							$promo_debut_to_carbon_date = new Carbon($tmp_promo->debut);
-							$rapport_date_to_carbon_date = new Carbon(request()->date);//new Carbon($request->input('date'));
-							if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
-								// le rapport est en mode promo
-								// AJOUT DU RAPPORT PROMO
-								do {
-									$rp->id =  Str::random(10).'_'.time();
-								} while ($rp->isExistId());
+							$transPromo->montant = $tmp_promo->subvention;
+							$subventionPromo = $tmp_promo->subvention;
+						}
+						else
+						{
+							// la promo est inactive
+							if(request()->promo_id != 'none')
+							{
+								$laPromo = $p->find(request()->promo_id);
+								$subventionPromo = $laPromo->subvention;
+								$promo_fin_to_carbon_date = new Carbon($laPromo->fin);
+								$promo_debut_to_carbon_date = new Carbon($laPromo->debut);
+								$rapport_date_to_carbon_date = new Carbon(request()->date);
 
-								$rp->quantite_a_compenser = request()->quantite_materiel;
-								$rp->compense_espece = request()->quantite_materiel * $tmp_promo->subvention;
-								$rp->promo = $tmp_promo->id;
-								$rapport->id_rapport_promo = $rp->id;
-								$rapport->promo = $tmp_promo->id;
-								// $rp->save();
-							}
-						} else {
-							// la promo n'est pas active
-							if(request()->promo_id != 'none') {
-								// le rapport appartien a une promo
-								$thePromo = $p->find(request()->promo_id);//$p->find($request->input('promo_id'));
-
-								$promo_fin_to_carbon_date = new Carbon($thePromo->fin);
-
-								$promo_debut_to_carbon_date = new Carbon($thePromo->debut);
-
-								$rapport_date_to_carbon_date = new Carbon(request()->date);//new Carbon($request->input('date'));
-
-								if($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date) {
-								// 	// le rapport est en mode promo
-								// 	// AJOUT DU RAPPORT PROMO
-									do {
-										$rp->id =  Str::random(10).'_'.time();
-									} while ($rp->isExistId());
-
-									$rp->quantite_a_compenser = request()->quantite_materiel;//$request->input('quantite_materiel');
-									$rp->compense_espece = request()->quantite_materiel * $thePromo->subvention;
-									$rp->promo = $thePromo->id;
-									$rapport->id_rapport_promo = $rp->id;
-
-									$rapport->promo = $thePromo->id;
-
-									// $rp->save();
-								} else {
-									throw new AppException("La date choisi n'est pas inclut dans la periode de promo !");
+								if(!($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date))
+								{
+									throw new AppException("La date choisie ne se trouve pas dans la periode promo.");
 								}
-
+								
+								$transPromo->montant = $laPromo->subvention;
 							}
+
 						}
 
+						if($subventionPromo > 0)
+						{
+							$receiver_account->solde += $subventionPromo;
+							$sender_account->solde -= $subventionPromo;
+						}
+						
+						
 						// // ENREGISTREMENT DES ABONNEMENTS
 						$abonnement_data = [];
 						$allAbonnOption_data = [];
@@ -1206,19 +1206,6 @@ Trait Rapports {
 							}							
 						}
 
-						// // TRANSACTION PAIEMENT MARGE MATERIEL
-						$mat = $serialNumbers->first()->produit();
-						$montantTransaction = ceil(($mat->marge / 1.18) * request()->quantite_materiel);
-
-						$receiver_account = $user_rapport->afroCash()->first();
-						$sender_user = User::where('type','logistique')
-							->first();
-						
-						$sender_account = $sender_user->afroCash()->first();
-
-						$receiver_account->solde += $montantTransaction;
-						$sender_account->solde -= $montantTransaction;
-
 						
 						// #ENREGISTREMENT DE LA TRANSACTION // ACTION DISPONIBLE SEULEMENT POUR LE DISTRIBUTEUR
 
@@ -1231,12 +1218,20 @@ Trait Rapports {
 							$trans->motif = "Paiement_Marge_Materiel";
 							$trans->rapport_id = $id_rapport;
 
-							$receiver_account->update();
-							$sender_account->update();
-							$trans->save();
+							if($receiver_account->update() && $sender_account->update())
+							{
+								if($trans->save())
+								{
+									if($subventionPromo > 0)
+									{
+										if($transPromo->save())
+										{
+											return response()->json('done',200);
+										}
+									}
+								}
+							}
 						}
-
-
 						return response()->json('done',200);
 					break;
 					default:

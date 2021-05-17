@@ -886,10 +886,20 @@ class LogistiqueController extends Controller
         ->where('status','inactif')
         ->get();
 
-      $stock = $s
-        ->whereIn('exemplaire',$non_attribuer)
-        ->orderBy('exemplaire','asc')
-        ->paginate(500);
+      if(request()->user()->type == 'admin')
+      {
+        $stock = $s
+          ->whereIn('exemplaire',$non_attribuer)
+          ->orderBy('exemplaire','asc')
+          ->paginate(500);
+      }
+      else
+      {
+        $stock = $s
+          ->whereIn('exemplaire',$non_attribuer)
+          ->where('depot',request()->user()->depot()->first()->localisation)
+          ->paginate(500);
+      }
 
       $all = [];
 
