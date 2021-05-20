@@ -15,6 +15,8 @@ use App\RapportVente;
 use App\Abonnement;
 use Carbon\Carbon;
 use App\Produits;
+use Illuminate\Support\Facades\DB;
+
 
 class ChartController extends Controller
 {
@@ -335,27 +337,21 @@ class ChartController extends Controller
     }
 
 
-    public function getActeReabonnementStat(RapportVente $r , Abonnement $a) {
+    public function getActeReabonnementStat() {
         try {
-            
-            $rapport_vente = $r->select('id_rapport')
-                ->where('type','reabonnement')
-                ->where('state','unaborted')
-                ->get();
-
-            
             $acteReabo = [];
 
-            foreach($this->months as $value) {
-                $abonnementByMonth = $a->whereIn('rapport_id',$rapport_vente)
-                    ->where('upgrade',0)
+            foreach($this->months as $value)
+            {
+                $acteReabo[$value] = DB::table('rapport_vente')
+                    ->where('type','reabonnement')
+                    ->where('state','unaborted')
                     ->whereYear('debut',date('Y'))
                     ->whereMonth('debut',$value)
+                    ->join('abonnements','rapport_vente.id_rapport','=','abonnements.rapport_id')
+                    ->where('upgrade',false)
                     ->get();
-                
-                $acteReabo[$value] = $abonnementByMonth;
             }
-
 
             $statByMonth = [];
 
@@ -414,15 +410,105 @@ class ChartController extends Controller
                 }
             }
 
-            return response()
-                ->json([
-                    'stats' => $statByMonth,
-                    // 'serials'   =>  $serials
-                ]);
+            return response()->json([
+                'stats' =>  $statByMonth,
+                // 'serials'   =>  $serials,
+            ],200);
         }
         catch(AppException $e) {
             header("Erreur",true,422);
-            die(json_encode($e->getMessage()));
+            return response()->json($e->getMessage(),422);
+        }
+    }
+
+
+    /**
+     * Exportation des actes de reabonnements
+     */
+    public function acteReabonnementExport()
+    {
+        try
+        {
+            $validation = request()->validate([
+                'month'  =>  'required',
+                'year'    =>  'required'
+            ]);
+
+            foreach($this->months as $value)
+            {
+                $acteReabo[$value] = DB::table('rapport_vente')
+                    ->where('type','reabonnement')
+                    ->where('state','unaborted')
+                    ->whereYear('debut',request()->year)
+                    ->whereMonth('debut',$value)
+                    ->join('abonnements','rapport_vente.id_rapport','=','abonnements.rapport_id')
+                    ->where('upgrade',false)
+                    ->get();
+            }
+
+            $statByMonth = [];
+
+            $serials = [];
+
+            foreach($acteReabo as $key => $value) {
+                $acte = 0;
+                $plus = 0;
+                $duree = [];
+
+                $serials[$key] = [
+                    'data'  =>  [],
+                    'month' =>  array_keys($this->months,$key)
+                ];
+                
+                foreach($value as $_value) {
+
+                    if($_value->duree > 1) {
+
+                        $acte++;
+                        
+                        $debut = new Carbon($_value->debut);
+
+                        array_push($duree,$_value->duree);
+                        
+                    }
+                    else {
+                        $acte++;
+                    }
+
+                    array_push($serials[$key]['data'],[
+                        'serial'    =>  $_value->serial_number,
+                        'debut' =>  $_value->debut,
+                        'formule'   =>  $_value->formule_name,
+                        'duree' =>  $_value->duree
+                    ]);
+                    
+                }
+
+                array_push($statByMonth,[ 
+                    'date'  =>  array_keys($this->months,$key),
+                    'acte_reabo'    =>  $acte,
+                    'duree' =>  $duree,
+                    'data_abonnement'   =>  ''
+                ]);
+            }
+
+            foreach($statByMonth as $key => $value) {
+                foreach($value['duree'] as $_value) {
+                    $rest = $_value - 1;
+                    for($k = 0 ;$k < $rest ; $k++) {
+                        if(($key+$k+1) < 12) {
+                            $statByMonth[$key + $k+1]['acte_reabo'] = $statByMonth[$key + $k+1]['acte_reabo'] + 1;
+                        }
+                    }
+                }
+            }
+
+            return response()->json($serials[request()->month],200);
+        }
+        catch(AppException $e)
+        {
+            header("Erreur",true,422);
+            return response()->json($e->getMessage(),422);
         }
     }
 
