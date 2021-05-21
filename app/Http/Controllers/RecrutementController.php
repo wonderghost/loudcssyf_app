@@ -12,10 +12,13 @@ use App\TransactionAfrocash;
 use App\Traits\SendSms;
 use Illuminate\Support\Str;
 use App\User;
+use App\Traits\Similarity;
+use App\Kits;
 
 class RecrutementController extends Controller
 {
     use SendSms;
+    use Similarity;
 
     protected $easyReceiverPhone ='629000099';
 
@@ -181,7 +184,7 @@ class RecrutementController extends Controller
 
                         if($userAfrocash->update() && $userAfrocashGrossiste->update()) {
                            // recrutement easy tv
-                           return response()->json('done',200);
+                            return response()->json('done',200);
                         //    if($this->sendSmsToNumber($this->easyReceiverPhone,$msgEasy))
                         //    {
                         //         return response()->json('done',200);
@@ -333,6 +336,38 @@ class RecrutementController extends Controller
             throw new AppException("Erreur de traitement... ressayez.");
         }
         catch(AppException $e)
+        {
+            header("Erreur",true,422);
+            return response()->json($e->getMessage(),422);
+        }
+    }
+
+
+    /**
+     * Initialiser les donnees de la page de recrutement easy
+     */
+    public function index()
+    {
+        try
+        {
+            $promo = $this->isExistPromo('kit_easy');
+            $kit = Kits::find('kit-easy-tv');
+            $mat = $kit->getTerminalReference();
+            $pu = 0;
+
+            if($promo)
+            {
+                // la promo exist
+                $pu = $mat->prix_vente - $promo->subvention;
+            }
+            else
+            {
+                // la promo n'existe pas
+                $pu = $mat->prix_vente;
+            }
+            return response()->json($pu,200);
+        }
+        catch(ErrorException $e)
         {
             header("Erreur",true,422);
             return response()->json($e->getMessage(),422);

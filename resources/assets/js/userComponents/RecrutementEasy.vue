@@ -117,10 +117,18 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             onInit : async function () {
                 try {
                     Object.assign(this.$data,this.$options.data())
+                    this.isLoading = true
                     let response = await axios.get('/user/formule/list')
+                    let res = await axios.get('/ventes/recrutement/easytv')
                     if(response) {
                         this.formules = response.data.formules
-                        this.setMontant()
+                        // this.setMontant()
+                    }
+
+                    if(res)
+                    {
+                        this.form.montant = res.data
+                        this.isLoading = false
                     }
                 }
                 catch(error) {

@@ -426,6 +426,11 @@ export default {
         abortPromo : async function () {
             // ENVOI DE LA REQUETE D'INTERRUPTION DE LA PROMO EN COURS 
             try {
+                var conf = confirm("Etes vous sûr de vouloir continuer ?")
+                if(!conf)
+                {
+                    return 0
+                }
                 this.isLoading = true
                 this.formData.id_promo = this.activePromo.id
                 this.formData._token = this.myToken
