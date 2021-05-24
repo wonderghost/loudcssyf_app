@@ -567,6 +567,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/vente/upgrade','UpgradeController@create')->middleware('vendeur');
 	Route::get('/ventes/{type}','VendeurController@historiqueVentes')->middleware('vendeur');
 	Route::get('/ventes/recrutement/easytv','RecrutementController@index')->middleware('vendeur');
+	Route::post('/vente/migration','MigrationController@create')->middleware('vendeur');
+	Route::get('/vente/migration','MigrationController@index')->middleware('vendeur');
 
 	/**
 	 * Retour afrocash pour les distributeurs agrees

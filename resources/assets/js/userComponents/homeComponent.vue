@@ -296,6 +296,9 @@
                         <router-link to="/vente/recrutement-easytv"><span uk-icon="link"></span> Easy Tv</router-link>
                       </li>
                       <li>
+                        <router-link to="/vente/migration"><span uk-icon='link'></span> Migration</router-link>
+                      </li>
+                      <li>
                         <router-link to="/ventes"><span uk-icon="link"></span> Historique de ventes</router-link>
                       </li>
                     </template>

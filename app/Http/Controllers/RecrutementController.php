@@ -72,7 +72,7 @@ class RecrutementController extends Controller
                 ->first();
             
             if($stock->quantite <= 0) {
-                throw new ErrorException("Quantite indisponible !");
+                throw new ErrorException("Quantite indisponible.");
             }
 
             $serialIntervalData = Str::substr(request()->materiel,0,3);
@@ -147,7 +147,7 @@ class RecrutementController extends Controller
             // $trans->motif = "Paiement_Marge_Materiel";
 
             // Changement  de status du materiel EASY
-            $materiel->status = 'actif';
+            // $materiel->status = 'actif';
             $msg = "Bonjour, votre abonnement est activé pour ".request()->duree." mois , à la formule ".request()->formule." , par ".request()->user()->localisation."\nMerci pour votre fidelite.";
             $msgEasy = "E#";
             $msgEasy .= request()->nom.request()->prenom."#";

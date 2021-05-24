@@ -101,7 +101,7 @@ import MigrationGratuite from './adminComponents/MigrationGratuite.vue'
 import Map from './adminComponents/MapComponent.vue'
 import RappEasy from './adminComponents/RapportEasy.vue'
 import AfrocashRetour from './afrocashcomponents/RetourAfrocash.vue'
-import PromoEasy from './adminComponents/PromoEasy.vue'
+import Migration from './userComponents/Migration.vue'
 
 Vue.use(VueRouter);
 
@@ -1011,6 +1011,19 @@ const router = new VueRouter({
                 next()
             }
         },
+        {
+            path : '/vente/migration',
+            component : Migration,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser !== 'v_standart')
+                {
+                    alert('action non autorisee.')
+                    next('/')
+                    return 0
+                }
+                next()
+            }
+        }
     ]
 })
 

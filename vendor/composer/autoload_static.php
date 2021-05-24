@@ -483,6 +483,7 @@ class ComposerStaticInit15d5dc02f650ad17553f69fb230f4dbd
         'App\\Http\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Http/Controllers/HomeController.php',
         'App\\Http\\Controllers\\LogistiqueController' => __DIR__ . '/../..' . '/app/Http/Controllers/LogistiqueController.php',
         'App\\Http\\Controllers\\MapsController' => __DIR__ . '/../..' . '/app/Http/Controllers/MapsController.php',
+        'App\\Http\\Controllers\\MigrationController' => __DIR__ . '/../..' . '/app/Http/Controllers/MigrationController.php',
         'App\\Http\\Controllers\\NotificationController' => __DIR__ . '/../..' . '/app/Http/Controllers/NotificationController.php',
         'App\\Http\\Controllers\\ObjectifController' => __DIR__ . '/../..' . '/app/Http/Controllers/ObjectifController.php',
         'App\\Http\\Controllers\\PdcController' => __DIR__ . '/../..' . '/app/Http/Controllers/PdcController.php',
