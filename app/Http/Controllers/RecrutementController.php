@@ -270,6 +270,11 @@ class RecrutementController extends Controller
                 throw new AppException("Materiel deja actif.");
             }
 
+            if($materiel->vendeurs !== request()->user()->username)
+            {
+                throw new AppException("Ce materiel n'est pas votre pack.");
+            }
+
             $serialIntervalData = Str::substr(request()->materiel,0,3);
             $produit = $materiel->produit();
             $intervals = $produit->intervals()

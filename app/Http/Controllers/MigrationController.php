@@ -47,6 +47,11 @@ class MigrationController extends Controller
                 throw new AppException("Materiel deja actif.");
             }
 
+            if($materiel->vendeurs !== request()->user()->username)
+            {
+                throw new AppException("Ce materiel n'est pas dans votre stock.");
+            }
+
             $stock = request()->user()->stockVendeurs()
                 ->select('quantite')
                 ->where('produit',$materiel->produit()->reference)
