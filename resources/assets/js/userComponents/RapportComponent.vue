@@ -440,12 +440,13 @@ import datepicker from 'vue-date-picker'
             try {
               let response = await axios.get('/admin/all-vendeurs')
               this.users = response.data
-            } catch (e) {
-                alert(e)
+            } 
+            catch (e) {
+              alert(e)
             }
           },
           abortRapport : async function () {
-            // this.isLoading = true
+            this.isLoading = true
             UIkit.modal($("#modal-abort-rapport")).hide()
             this.abortRapportFormData._token = this.myToken
             this.abortRapportFormData.id_rapport = this.activRapport.id

@@ -84,4 +84,8 @@ class RapportVente extends Model
     public function transactions() {
       return $this->hasMany('App\TransactionAfrocash','rapport_id','id_rapport');
     }
+
+    public function abonnementType(){
+      return $this->hasMany('App\Abonnement','rapport_id','id_rapport')->first();
+    }
 }

@@ -1069,7 +1069,8 @@ Trait Rapports {
 						$rapport->quantite = request()->quantite_materiel;
 						$rapport->credit_utilise = 'cga';
 						$rapport->type = 'recrutement';
-						$rapport->calculCommission('recrutement',$cs);
+						$rapport->commission = 0;
+						// $rapport->calculCommission('recrutement',$cs);
 
 						$id_rapport = $rapport->id_rapport;
 
@@ -1706,11 +1707,19 @@ Trait Rapports {
 		$all = [];
 		foreach ($data as $key => $value) {
 			$created_at = new Carbon($value->created_at);
+			if($value->type == 'recrutement')
+			{
+				$abonnement = $value->abonnementType() ? $value->abonnementType()->formule_name : '';
+				$type = $abonnement == 'EASY TV' ? $value->type.'_EASY' : $value->type.'_SAT';
+			}
+			else {
+				$type = $value->type;
+			}
 			$all[$key] = [
 				'id'	=>	$value->id_rapport,
 				'date'  =>  $value->date_rapport,
 				'vendeurs'  =>  $value->vendeurs()->agence()->societe." ( ".$value->vendeurs()->localisation." )",
-				'type'  =>  $value->type,
+				'type'  =>	$type,
 				'credit'  =>  $value->credit_utilise,
 				'quantite'  =>  $value->quantite,
 				'montant_ttc' =>  $value->montant_ttc,
