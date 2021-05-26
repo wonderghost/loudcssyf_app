@@ -1191,9 +1191,9 @@ Trait Rapports {
 							}
 						}
 
-						foreach($user_stock as $value) {
-							$value->update();
-						}
+						// foreach($user_stock as $value) {
+						// 	$value->update();
+						// }
 
 						$cga_account->update();						
 						$rapport->save();

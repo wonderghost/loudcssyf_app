@@ -63,38 +63,55 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             rappVendeur : String,
             promoId : String
         },
-        mounted() {
-            
+        beforeMount() {
+          this.onInit()
         },
         data() {
-            return {
-              isLoading : false,
-              fullPage : true,
-              formData : {
-                _token : "",
-                quantite_materiel : 0,
-                vendeurs : "",
-                date : "",
-                montant_ttc : 0,
-                promo_id : "",
-                serial_number : [""],
-                formule : 'EASY TV',
-                debut : [""],
-                duree : 1,
-                options : [""],
-                type_credit : "cga"
-              },
-              duree : [1,2,3,6,12,24],
-              amount_ttc : [],
-              currentF : "",
-              currentO : "",
-              errors : []
-            }
+          return {
+            isLoading : false,
+            fullPage : true,
+            formData : {
+              _token : "",
+              quantite_materiel : 0,
+              vendeurs : "",
+              date : "",
+              montant_ttc : 0,
+              promo_id : "",
+              serial_number : [""],
+              formule : 'EASY TV',
+              debut : [""],
+              duree : 1,
+              options : [""],
+              type_credit : "cga"
+            },
+            duree : [1,2,3,6,12,24],
+            amount_ttc : [],
+            currentF : "",
+            currentO : "",
+            errors : [],
+            prixUnitaire : 0
+          }
         },
         watch : {
           'formData.quantite_materiel'  : 'ajusteQuantiteInput'
         },
         methods : {
+          onInit : async function () {
+            try {
+              this.isLoading = true
+              let response = await axios.get('/ventes/recrutement/easytv')
+              if(response)
+              {
+                this.prixUnitaire = response.data
+                this.isLoading = false
+              }
+            }
+            catch(error)
+            {
+              this.isLoading = false
+              alert(error)
+            }
+          },
           sendRecrutementRapport : async function () {
             try {
                 this.isLoading = true
@@ -144,7 +161,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
           calculMontantTtc : function () {
             try {
                 var ttc_montant = 0
-                ttc_montant = this.formData.quantite_materiel * 190000
+                ttc_montant = this.formData.quantite_materiel * this.prixUnitaire
                 this.formData.montant_ttc = ttc_montant
             } catch(error) {
                 alert(error)
