@@ -130,6 +130,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                   Object.assign(this.$data,this.$options.data())
                   this.isLoading = false
                   alert("Success !")
+                  this.onInit()
                 }
             } catch(error) {
                 this.isLoading = false
