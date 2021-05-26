@@ -1710,7 +1710,7 @@ Trait Rapports {
 			if($value->type == 'recrutement')
 			{
 				$abonnement = $value->abonnementType() ? $value->abonnementType()->formule_name : '';
-				$type = $abonnement == 'EASY TV' ? 'RECRUT_EASY' : 'RECRUT_SAT';
+				$type = $abonnement == 'EASY TV' ? 'RECRUT EASYTV' : 'RECRUT CANAL SAT';
 			}
 			else {
 				$type = $value->type;
