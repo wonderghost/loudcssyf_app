@@ -603,47 +603,7 @@ class AdminController extends Controller
         return response()->json($e->getMessage(),422);
       }
     }
-  // public function addPromo(Request $request) {
-  //   $validation = $request->validate([
-  //     'intitule' =>  'required|string',
-  //     'description'  =>  'string',
-  //     'debut' =>  'required|date|before:fin',
-  //     'fin' =>  'required|date|after_or_equal:'.(date("Y/m/d",strtotime("now")))
-  //   ],[
-  //     'required'  =>  'Champ(s) `:attribute` ne peut etre vide',
-  //     'string'  =>  'Champ(s) `:attribute` est une chaine de caractere',
-  //     'date'  =>  'Champ(s) `:attribute` doit etre une date',
-  //     'before'  =>  'Champ(s) date de `:attribute` invalide',
-  //     'after_or_equal'  =>  'date de `:attribute` invalide'
-  //   ]);
-  //   try {
-  //     if(!$this->isExistPromo()) {
-  //       if(Produits::where('with_serial',1)->first()) {
-  //         $promo = new Promo;
-  //         $promo->intitule = $request->input('intitule');
-  //         $promo->debut = $request->input('debut');
-  //         $promo->fin = $request->input('fin');
-  //         $promo->subvention = $request->input('subvention');
-  //         $promo->description = $request->input('description');
-  //         $prix_vente_normal = Produits::where('with_serial',1)->first() ? Produits::where('with_serial',1)->first()->prix_vente : 0;
-  //         $promo->prix_vente = $prix_vente_normal - $request->input('subvention');
-  //         if($promo->prix_vente <= 0) {
-  //           throw new AppException("Valeur de la subvention invalide!");
-  //         }
-  //         $promo->save();
-  //         return response()->json('done');
-  //       } else {
-  //         throw new AppException("Erreur ! Contatez l'administrateur");
-  //       }
-  //     } else {
-  //       throw new AppException("Une Promo est deja en cours!");
-  //     }
-  //   } catch (AppException $e) {
-  //     header("Unprocessable entity",true,422);
-  //     die(json_encode($e->getMessage()));
-  //   }
-  // }
-
+  
  
 
   // editer une promo

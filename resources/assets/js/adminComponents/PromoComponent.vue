@@ -378,7 +378,8 @@ export default {
                     id_promo : this.filterPromoId
                 })
                 this.remboursementPromo = response.data
-            } catch(error) {
+            } 
+            catch(error) {
                 alert(error)
             }
         },

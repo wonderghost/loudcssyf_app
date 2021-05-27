@@ -1122,8 +1122,11 @@ Trait Rapports {
 						
 						$sender_account = $sender_user->afroCash()->first();
 
-						$receiver_account->solde += $montantTransaction;
-						$sender_account->solde -= $montantTransaction;
+						if($user_rapport->type == 'v_da')
+						{
+							$receiver_account->solde += $montantTransaction;
+							$sender_account->solde -= $montantTransaction;
+						}
 
 						// // LA PROMO EXISTE
 						$subventionPromo = 0;
@@ -1232,6 +1235,19 @@ Trait Rapports {
 										{
 											return response()->json('done',200);
 										}
+									}
+								}
+							}
+						}
+						elseif($user_rapport->type == 'v_standart')
+						{
+							if($receiver_account->update() && $sender_account->update())
+							{
+								if($subventionPromo > 0)
+								{
+									if($transPromo->save())
+									{
+										return response('done',200);
 									}
 								}
 							}
