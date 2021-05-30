@@ -153,6 +153,11 @@
                                                         <option value="formule">Formule</option>
                                                     </select>
                                                 </div>
+                                                <div class="uk-width-1-1@m">
+                                                    <span uk-icon="icon : list"></span>
+                                                    <label for="">Selectionnez les formules</label>
+
+                                                </div>
                                                 <div class="uk-width-1-2@m">
                                                     <label for=""><span uk-icon="icon : calendar"></span> Debut de la promo</label>
                                                     <input type="date" class="uk-input uk-border-rounded" v-model="formData.debut">
@@ -320,7 +325,7 @@ export default {
     props : {
         theUser : String
     },  
-    mounted() {
+    beforeMount() {
         UIkit.offcanvas($("#side-nav")).hide();
         this.getInfosPromo()
         if(this.typeUser == 'admin') {
@@ -371,6 +376,21 @@ export default {
         }
     },
     methods : {
+        getFormule : async function ()
+        {
+            try
+            {
+                let response = await axios.get('/')
+                if(response)
+                {
+                    console.log(response.data)
+                }
+            }
+            catch(error)
+            {
+                alert(error)
+            }
+        },
         filterRemboursementByPromo : async function () {
             try {
                 let response = await axios.post('/admin/promo/filter-get-remboursement',{

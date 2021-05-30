@@ -64,10 +64,14 @@
                         <a class="uk-accordion-title" href="#">{{ a.name }}</a>
                         <div class="uk-accordion-content" uk-grid>
                             <div v-for="(item,index) in a.articles" :key="index">
-                                <form class="uk-width-1-1@m">
+                                <div class="uk-width-1-1@m">
                                     <label for="">{{ item.libelle }}</label>
-                                    <input v-model="form.materiels" :id="item.produit" type="checkbox" :value="item.produit" class="uk-border uk-checkbox">    
-                                </form>
+                                    <span uk-icon="icon : check"></span>
+                                    <!-- <input v-model="form.materiels" checked :id="item.produit" type="checkbox" :value="item.produit" class="uk-border uk-checkbox">     -->
+                                </div>
+                            </div>
+                            <div class="uk-width-1-1@m">
+                                <button @click="onEditArticleName(a.slug)" class="uk-button uk-button-small uk-button-primary uk-border-rounded">Editer</button>
                             </div>
                         </div>
                     </li>
@@ -85,7 +89,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
         components : {
             Loading
         },
-        mounted() {
+        beforeMount() {
             UIkit.offcanvas($("#side-nav")).hide();
             this.getData()
             this.onInit()
@@ -156,6 +160,44 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 }
                 catch(error) {
                     alert(error)
+                }
+            },
+            onEditArticleName : async function (slug)
+            {
+                try
+                {
+                    var newName = prompt("Entrez le text ici : ")
+                    if(newName == "")
+                    {
+                        alert("Veuillez remplir le champ")
+                        return 0
+                    }
+
+                    this.isLoading = true
+                    let response = await axios.post('/admin/commandes/edit-kits',{
+                        _token : this.myToken,
+                        slug : slug,
+                        new_name : newName
+                    })
+                    if(response && response.data == 'done')
+                    {
+                        alert('Success.')
+                        this.isLoading = false
+                        this.getData()
+                        this.onInit()
+                    }
+                }
+                catch(error)
+                {
+                    this.isLoading = false
+                    if(error.response.data.errors) {
+                        let errorTab = error.response.data.errors
+                        for (var prop in errorTab) {
+                            this.errors.push(errorTab[prop][0])
+                        }
+                    } else {
+                        this.errors.push(error.response.data)
+                    }
                 }
             }
         },

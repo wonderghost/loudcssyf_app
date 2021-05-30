@@ -81,6 +81,7 @@ Route::middleware(['auth','admin'])->group(function () {
 	Route::get('/admin/commandes','AdminController@allCommandes');
 	# PARAMETRAGE DE COMMANDES DE KITS MATERIELS
 	Route::post('/admin/commandes/save-kits','AdminController@saveKitRequest');
+	Route::post('/admin/commandes/edit-kits','AdminController@editKitRequest');
 	Route::get('/admin/kits','AdminController@listArticles');
 	Route::get('/admin/commandes/livraison','AdminController@getAllLivraison');
 	// DASHBOARD DATA

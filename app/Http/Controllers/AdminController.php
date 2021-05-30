@@ -1360,6 +1360,39 @@ class AdminController extends Controller
     }
   }
 
+  /**
+   * Edit Kit Name Request
+   */
+  public function editKitRequest()
+  {
+    try
+    {
+      $validation = request()->validate([
+        'slug'  =>  'required|exists:kits,slug',
+        'new_name'  =>  'required|string'
+      ]);
+
+      $kit = Kits::find(request()->slug);
+      if(!$kit)
+      {
+        throw new AppException("Erreur , try again later.");
+      }
+
+      $kit->name = request()->new_name;
+      $kit->description = request()->new_name;
+
+      if($kit->update())
+      {
+        return response()->json('done',200);
+      }
+    }
+    catch(AppException $e)
+    {
+      header("Erreur",true,422);
+      return response()->json($e->getMessage(),422);
+    }
+  }
+
   #  GET DATA EDIT MATERIEL
 
   public function getDataEditMateriel($slug) {
