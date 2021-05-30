@@ -167,11 +167,16 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                 try
                 {
                     var newName = prompt("Entrez le text ici : ")
+                    if(!newName)
+                    {
+                        return 0
+                    }
                     if(newName == "")
                     {
                         alert("Veuillez remplir le champ")
                         return 0
                     }
+                    
 
                     this.isLoading = true
                     let response = await axios.post('/admin/commandes/edit-kits',{
