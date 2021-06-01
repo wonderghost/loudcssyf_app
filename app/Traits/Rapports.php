@@ -1140,8 +1140,8 @@ Trait Rapports {
 						if($tmp_promo)
 						{
 							// la promo est active
-							$transPromo->montant = $tmp_promo->subvention;
-							$subventionPromo = $tmp_promo->subvention;
+							$transPromo->montant = $tmp_promo->subvention * request()->quantite_materiel;
+							$subventionPromo = $tmp_promo->subvention * request()->quantite_materiel;
 							$rapport->promo_id = $tmp_promo->id;
 							$rapport->promo = true;
 						}
@@ -1151,7 +1151,7 @@ Trait Rapports {
 							if(request()->promo_id != 'none')
 							{
 								$laPromo = $p->find(request()->promo_id);
-								$subventionPromo = $laPromo->subvention;
+								$subventionPromo = $laPromo->subvention * request()->quantite_materiel;
 								$promo_fin_to_carbon_date = new Carbon($laPromo->fin);
 								$promo_debut_to_carbon_date = new Carbon($laPromo->debut);
 								$rapport_date_to_carbon_date = new Carbon(request()->date);
@@ -1161,7 +1161,7 @@ Trait Rapports {
 									throw new AppException("La date choisie ne se trouve pas dans la periode promo.");
 								}
 								
-								$transPromo->montant = $laPromo->subvention;
+								$transPromo->montant = $laPromo->subvention * request()->quantite_materiel;
 								$rapport->promo_id = $laPromo->id;
 								$rapport->promo = true;
 							}
