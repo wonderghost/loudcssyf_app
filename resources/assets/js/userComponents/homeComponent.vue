@@ -213,6 +213,9 @@
                     <li>
                       <router-link to="/material/affectation"><span uk-icon="link"></span> Affectation Materiel</router-link>
                     </li>
+                    <li>
+                      <router-link to="/material/retour-materiel"><span uk-icon="link"></span> Retour Materiel</router-link>
+                    </li>
                 </ul>
             </li>
             <li class="uk-parent">

@@ -102,6 +102,7 @@ import Map from './adminComponents/MapComponent.vue'
 import RappEasy from './adminComponents/RapportEasy.vue'
 import AfrocashRetour from './afrocashcomponents/RetourAfrocash.vue'
 import Migration from './userComponents/Migration.vue'
+import RetourMateriel from './adminComponents/RetourMateriel.vue'
 
 Vue.use(VueRouter);
 
@@ -1016,6 +1017,19 @@ const router = new VueRouter({
             component : Migration,
             beforeEnter : (to,from,next) => {
                 if(store.state.typeUser !== 'v_standart')
+                {
+                    alert('action non autorisee.')
+                    next('/')
+                    return 0
+                }
+                next()
+            }
+        },
+        {
+            path : '/material/retour-materiel',
+            component : RetourMateriel,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser !== 'admin')
                 {
                     alert('action non autorisee.')
                     next('/')

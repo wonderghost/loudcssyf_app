@@ -576,6 +576,11 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	 */
 	Route::get('/afrocash/retour-afrocash','VendeurController@retourAfrocash')->middleware('vendeur');
 	Route::post('/afrocash/retour-afrocash','VendeurController@sendRetourRequest')->middleware('vendeur');
+
+	/**
+	 * Retour Materiel
+	 */
+	Route::post('/material/retour-materiel','MaterielController@retourMateriel');
 	
 });
 
