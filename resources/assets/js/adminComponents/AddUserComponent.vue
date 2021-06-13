@@ -140,7 +140,8 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             technicien : 'Technicien',
             pdc : 'Point de Contact',
             pdraf : 'Point de Retrait Afrocash',
-            graf : 'Gestionnaire Reseaux Afrocash'
+            graf : 'Gestionnaire Reseaux Afrocash',
+            g_compte : 'Grand Compte'
           },
           inputClass : "uk-input uk-border-rounded",
           isLoading : false,

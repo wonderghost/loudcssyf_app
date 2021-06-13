@@ -54,6 +54,7 @@ return array(
     'App\\Http\\Controllers\\HomeController' => $baseDir . '/app/Http/Controllers/HomeController.php',
     'App\\Http\\Controllers\\LogistiqueController' => $baseDir . '/app/Http/Controllers/LogistiqueController.php',
     'App\\Http\\Controllers\\MapsController' => $baseDir . '/app/Http/Controllers/MapsController.php',
+    'App\\Http\\Controllers\\MaterielController' => $baseDir . '/app/Http/Controllers/MaterielController.php',
     'App\\Http\\Controllers\\MigrationController' => $baseDir . '/app/Http/Controllers/MigrationController.php',
     'App\\Http\\Controllers\\NotificationController' => $baseDir . '/app/Http/Controllers/NotificationController.php',
     'App\\Http\\Controllers\\ObjectifController' => $baseDir . '/app/Http/Controllers/ObjectifController.php',

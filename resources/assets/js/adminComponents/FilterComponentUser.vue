@@ -37,7 +37,8 @@
               'controleur' : 'controleur',
               'pdc' : 'Point de controle',
               'pdraf' : 'Point de Recharge Afrocash',
-              'technicien'  : 'Technicien'
+              'technicien'  : 'Technicien',
+              'client'  : 'Client'
             },
             wordSearch : "",
             type : ""

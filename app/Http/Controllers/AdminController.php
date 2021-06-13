@@ -182,12 +182,12 @@ class AdminController extends Controller
       			$agence->rccm = $request->input('rccm');
       			$agence->adresse = $request->input('adresse');
       			$agence->ville = $request->input('ville');
-                  $agence->num_dist = $request->input('num_dist');
+            $agence->num_dist = $request->input('num_dist');
       			$user->agence = $agence->reference;
-                  // dd($user->username);
+            // dd($user->username);
       			$agence->save();
       		}
-                  // die();
+            // die();
       			$user->save();
             $this->createAccountCredit($user->username,'cga');
             $this->newAccount($user->username);
