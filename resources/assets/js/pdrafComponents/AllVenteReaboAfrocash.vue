@@ -22,8 +22,13 @@
         <nav class="" uk-navbar>
             <div class="uk-navbar-left">
                 <ul class="uk-navbar-nav">
-                    <li v-if="$route.path == '/all-ventes-pdraf'" ><router-link to="/all-ventes-pdraf/recrutement-afrocash">Recrutements</router-link></li>
-                    <li v-else><router-link to="/all-ventes-pdraf">Reabonnements</router-link></li>
+                    <template v-if="$route.path == '/all-ventes-pdraf'">
+                        <li><router-link to="/all-ventes-pdraf/recrutement-afrocash">Recrutements</router-link></li>
+                        <li><router-link to="/vente-grand-compte">Vente GC</router-link></li>
+                    </template>
+                    <template v-else>
+                        <li><router-link to="/all-ventes-pdraf">Reabonnements</router-link></li>
+                    </template>
                 </ul>
             </div>
         </nav>

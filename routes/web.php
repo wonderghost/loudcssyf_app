@@ -582,6 +582,12 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	 */
 	Route::post('/material/retour-materiel','MaterielController@retourMateriel');
 	
+
+	/**
+	 * Vente Grand Compte routes
+	 */
+	Route::get('/vente-grand-compte','VenteGrandCompteController@index');
+	
 });
 
 Route::middleware(['auth'])->group(function () {

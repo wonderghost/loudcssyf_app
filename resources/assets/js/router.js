@@ -103,6 +103,7 @@ import RappEasy from './adminComponents/RapportEasy.vue'
 import AfrocashRetour from './afrocashcomponents/RetourAfrocash.vue'
 import Migration from './userComponents/Migration.vue'
 import RetourMateriel from './adminComponents/RetourMateriel.vue'
+import VenteGrandCompte from './adminComponents/VenteGrandCompte.vue'
 
 Vue.use(VueRouter);
 
@@ -1028,6 +1029,19 @@ const router = new VueRouter({
         {
             path : '/material/retour-materiel',
             component : RetourMateriel,
+            beforeEnter : (to,from,next) => {
+                if(store.state.typeUser !== 'admin')
+                {
+                    alert('action non autorisee.')
+                    next('/')
+                    return 0
+                }
+                next()
+            }
+        },
+        {
+            path : '/vente-grand-compte',
+            component : VenteGrandCompte,
             beforeEnter : (to,from,next) => {
                 if(store.state.typeUser !== 'admin')
                 {

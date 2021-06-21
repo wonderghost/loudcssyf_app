@@ -72,7 +72,10 @@
         <table class="uk-table uk-table-small uk-table-divider uk-table-striped uk-table-hover uk-table-responsive">
             <thead>
                 <tr>
-                    <th>Email</th>
+                    <th>Nom</th>
+                    <th>Prenom</th>
+                    <th>Type</th>
+                    <!-- <th>Email</th> -->
                     <th>Telephone</th>
                     <th>Agence</th>
                     <th>Adresse</th>
@@ -83,7 +86,10 @@
             </thead>
             <tbody>
                 <tr v-for="(l,index) in listCreation" :key="index">
-                    <td>{{l.email}}</td>
+                    <td>{{l.nom}}</td>
+                    <td>{{l.prenom}}</td>
+                    <td>{{l.type}}</td>
+                    <!-- <td>{{l.email}}</td> -->
                     <td>{{l.telephone}}</td>
                     <td>{{l.agence}}</td>
                     <td>{{l.adresse}}</td>
@@ -141,7 +147,9 @@ import 'vue-loading-overlay/dist/vue-loading.css'
                         password_confirmation : this.password_confirmation,
                         tag : 'by_confirm',
                         pdc : this.actifDemand.pdc.username,
-                        access : 'pdraf'
+                        access : this.actifDemand.type,
+                        nom : this.actifDemand.nom,
+                        prenom : this.actifDemand.prenom,
                     })
 
                     

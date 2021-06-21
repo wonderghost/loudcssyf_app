@@ -35,9 +35,17 @@ class PdrafController extends Controller
     use Afrocashes;
     use SendSms;
     
-    public function generateId() {
+    public function generateId($access = 'pdraf') {
         do {
-            $_id = "PDRAF-".mt_rand(1000,9999);
+            if($access == 'pdraf')
+            {
+                $_id = "PDRAF-".mt_rand(1000,9999);
+            }
+            else if($access == 'supervisor')
+            {
+                $_id = "SUP-".mt_rand(1000,9999);
+            }
+                
         } while($this->isExistUsername($_id));
         
         return $_id;
@@ -79,7 +87,9 @@ class PdrafController extends Controller
     public function addNewPdraf(Request $request) {
         try {
             $validation = $request->validate([
-                // 'email' =>  'required|email|unique:users,email',
+                // 'email' =>  'required_if:access,supervisor|email|unique:users,email',
+                'nom'   =>  'required|string',
+                'prenom'    =>  'required|string',
                 'phone' =>  'required|string',
                 'agence'    =>  'required|string',
                 'access'    =>  'required|string',
@@ -92,10 +102,14 @@ class PdrafController extends Controller
                 'min'   =>  '9 caracteres minimum pour le `:attribute` !'
             ]);
 
+            
             // confirmation du mot de passe utilisateur
             if(!Hash::check($request->input('password_confirmation'),$request->user()->password)) {
                 throw new AppException("Mot de passe invalide !");
             }
+
+
+            
 
             $u = new User;
             $a = new Agence;
@@ -103,13 +117,22 @@ class PdrafController extends Controller
 
 
 
-            $u->username = $this->generateId();
-            // $u->email = $request->input("email");
+            $u->username = $this->generateId(request()->access);
             $u->randomEmailGenerate();
-            $u->phone = $request->input('phone');
-            $u->type = $request->input('access');
-            $u->localisation = $request->input('agence');
+            // if(request()->access == 'pdraf')
+            // {
+            // }
+            // else if(request()->access == 'supervisor')
+            // {
+            //     $u->randomEmailGenerate();
+            //     $u->email = request()->email;
+            // }
+            $u->phone = request()->phone;
+            $u->type = request()->access;
+            $u->localisation = request()->agence;
             $u->password = bcrypt("loudcssyf");
+            $u->nom = request()->nom;
+            $u->prenom = request()->prenom;
 
             // agence inexistante
             
@@ -128,7 +151,10 @@ class PdrafController extends Controller
 
             $a->save();
             $u->save();
-            $this->newAccount($u->username);
+            if(request()->access == 'pdraf')
+            {
+                $this->newAccount($u->username);
+            }
             $r->save();
 
             // 
@@ -4906,6 +4932,9 @@ class PdrafController extends Controller
 
             foreach($data as $key => $value) {
                 $all[$key] = [
+                    'type'  =>  $value->type,
+                    'nom'   =>  $value->nom,
+                    'prenom' => $value->prenom,
                     'id'    =>  $value->id,
                     'email' =>  $value->email,
                     'telephone' =>  $value->telephone,
