@@ -219,6 +219,9 @@ Route::middleware(['auth','admin'])->group(function () {
 	//
 	#historique de ravitaillement des depots
 	Route::get('/admin/depot/historique-depot','LogistiqueController@historiqueRavitaillementDepot');
+
+	// 
+	Route::delete('/vente-grand-compte/{id}','VenteGrandCompteController@delete');
 });
 
 Auth::routes();
@@ -587,6 +590,7 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	 * Vente Grand Compte routes
 	 */
 	Route::get('/vente-grand-compte','VenteGrandCompteController@index');
+	Route::post('/vente-grand-compte','VenteGrandCompteController@confirm');
 	
 });
 
