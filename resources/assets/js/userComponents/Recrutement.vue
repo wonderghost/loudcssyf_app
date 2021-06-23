@@ -179,29 +179,30 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                 }
             },
             totalOption : function () {
-            try {
-                var total = 0
+                try {
+                    var total = 0
 
-                if(this.form.options.length > 0) {
+                    if(this.form.options.length > 0) {
 
-                    this.form.options.forEach((o) => {
-                        if(o != "") {
+                        this.form.options.forEach((o) => {
+                            if(o != "") {
 
-                            this.actifOption = o
-                            total += this.actifOptionInfos.prix
-                        }
-                    })
-                    
-                    return total
+                                this.actifOption = o
+                                total += this.actifOptionInfos.prix
+                            }
+                        })
+                        
+                        return total
+                    }
+
+                    return 0
+
+
                 }
-
-                return 0
-
-
-            } catch(error) {
-                alert(error)
+                catch(error) {
+                    alert(error)
+                }
             }
-        }
         },
         computed : {
             formuleDispo()

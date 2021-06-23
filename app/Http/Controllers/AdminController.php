@@ -54,8 +54,7 @@ use App\IntervalProduit;
 use App\FormuleInterval;
 
 use Illuminate\Support\Facades\DB;
-
-
+use App\PromoFormule;
 
 
 class AdminController extends Controller
@@ -367,7 +366,7 @@ class AdminController extends Controller
             ->json([
               'formules'  =>  $data_formule,
               'options' =>  $data_option
-            ]);
+            ],200);
       } catch(AppException $e) {
           header("Erreur",true,422);
           die(json_encode($e->getMessage()));
@@ -558,7 +557,8 @@ class AdminController extends Controller
           'description' =>  'string',
           'debut' =>  'required|date|before:fin',
           'fin' =>  'required|date|after_or_equal:'.(date("Y/m/d",strtotime("now"))),
-          'type'  =>  'required|string'
+          'type'  =>  'required|string',
+          'formules'  =>  'required_if:type,formule'
         ],[
           'required'  =>  'Champ(s) `:attribute` ne peut etre vide',
           'string'  =>  'Champ(s) `:attribute` est une chaine de caractere',
@@ -594,6 +594,16 @@ class AdminController extends Controller
         }
         if($promo->save())
         {
+          if(request()->type == 'on_formule')
+          {
+            foreach(request()->formules as $value)
+            {
+              $pf = new PromoFormule;
+              $pf->promo_id = $promo->id;
+              $pf->formule = $value;
+              $pf->save();
+            }
+          }
           return response()->json('done',200);
         }
       }

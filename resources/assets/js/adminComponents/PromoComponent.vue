@@ -150,14 +150,24 @@
                                                         <option value="">-- Choisissez une option --</option>
                                                         <option value="kit_sat">Kit Sat</option>
                                                         <option value="kit_easy">Kit Easy</option>
-                                                        <option value="formule">Formule</option>
+                                                        <option value="on_formule">Formule</option>
                                                     </select>
                                                 </div>
-                                                <div class="uk-width-1-1@m">
-                                                    <span uk-icon="icon : list"></span>
-                                                    <label for="">Selectionnez les formules</label>
-
-                                                </div>
+                                                <template v-if="formData.type == 'on_formule'">
+                                                    <div class="uk-width-1-1@m">
+                                                        <span uk-icon="icon : list"></span>
+                                                        <label for="">Selectionnez les Formule(s)</label>
+                                                        <div class="uk-divider"></div>
+                                                        <div class="uk-grid-small" uk-grid>
+                                                            <template v-for="(f,index) in formules">
+                                                                <div class="uk-width-1-6@m" :key="index">
+                                                                    <label for="">{{ f.title }}</label>
+                                                                    <input v-model="formData.formules" :value="f.nom" type="checkbox" class="uk-checkbox">
+                                                                </div>
+                                                            </template>
+                                                        </div>
+                                                    </div>
+                                                </template>
                                                 <div class="uk-width-1-2@m">
                                                     <label for=""><span uk-icon="icon : calendar"></span> Debut de la promo</label>
                                                     <input type="date" class="uk-input uk-border-rounded" v-model="formData.debut">
@@ -288,7 +298,6 @@
                                     </tbody>
                                 </table>
                             </li>
-                            
                         </ul>                        
                     </div>
                 </div>
@@ -326,10 +335,10 @@ export default {
         theUser : String
     },  
     beforeMount() {
-        UIkit.offcanvas($("#side-nav")).hide();
         this.getInfosPromo()
         if(this.typeUser == 'admin') {
             this.getRemboursementForUsers()
+            this.getFormule()
         }
         if(this.typeUser == 'v_da' || this.typeUser == 'v_standart') {
             this.getCompensePromoInfos()
@@ -339,6 +348,7 @@ export default {
     },
     data() {
         return {
+            formules : [],
             formData : {
                 _token : "",
                 intitule : "",
@@ -347,7 +357,8 @@ export default {
                 fin : "",
                 subvention : 0,
                 id_promo : "",
-                type : ""
+                type : "",
+                formules : []
             },
             promoStatus : false,
             isLoading : false,
@@ -380,10 +391,10 @@ export default {
         {
             try
             {
-                let response = await axios.get('/')
-                if(response)
+                let response = await axios.get('/admin/formule/list')
+                if(response.status == 200)
                 {
-                    console.log(response.data)
+                    this.formules = response.data.formules
                 }
             }
             catch(error)
@@ -490,9 +501,11 @@ export default {
                 this.formData._token = this.myToken
                 if(this.formState == 'add') {
                     var response = await axios.post('/admin/promo/add',this.formData)
-                    if(response.data == 'done') {
+                    if(response.status == 200) {
                         alert("Success!")
                         Object.assign(this.$data,this.$options.data())
+                        this.getInfosPromo()
+
                     }
                 } else if(this.formState == 'edit') {
                     var response = await axios.post('/admin/promo/edit',this.formData)

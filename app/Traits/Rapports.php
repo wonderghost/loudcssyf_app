@@ -375,7 +375,7 @@ Trait Rapports {
 							$value->quantite -= request()->quantite_materiel;
 						}
 
-						// LA PROMO EXISTE
+						// LA PROMO EXISTE SUR LE MATERIEL SAT
 						$tmp_promo = $this->isExistPromo();
 						
 						if($tmp_promo) {
@@ -431,6 +431,8 @@ Trait Rapports {
 							}
 						}
 
+						
+
 						// ENREGISTREMENT DES ABONNEMENTS
 						$abonnement_data = [];
 						$allAbonnOption_data = [];
@@ -451,6 +453,103 @@ Trait Rapports {
 							}
 						}
 
+						// TRANSACTION PAIEMENT MARGE MATERIEL
+						$mat = $serialNumbers->first()->produit();
+						$montantTransaction = ceil(($mat->marge / 1.18) * request()->quantite_materiel);
+
+						$receiver_account = $user_rapport->afroCash()->first();
+						$sender_user = User::where('type','logistique')
+							->first();
+						
+						$sender_account = $sender_user->afroCash()->first();
+						
+						#ENREGISTREMENT DE LA TRANSACTION // ACTION DISPONIBLE SEULEMENT POUR LE DISTRIBUTEUR
+
+						if($user_rapport->type == 'v_da') {
+
+							$receiver_account->solde += $montantTransaction;
+							$sender_account->solde -= $montantTransaction;
+
+							$trans = new TransactionAfrocash;
+							$trans->compte_credite = $receiver_account->numero_compte;
+							$trans->compte_debite = $sender_account->numero_compte;
+							$trans->montant = $montantTransaction;
+							$trans->motif = "Paiement_Marge_Materiel";
+							$trans->rapport_id = $id_rapport;
+
+						}
+
+
+						// TRAITEMENT EN CAS DE PROMO SUR LA FORMULE
+
+						$tmp_promo = $this->isExistPromo('on_formule');
+
+						$transPromoOnFormule = new TransactionAfrocash;
+						$transPromoOnFormule->compte_credite = $receiver_account->numero_compte;
+						$transPromoOnFormule->compte_debite = $sender_account->numero_compte;
+						$transPromoOnFormule->motif = "SUBVENTION_PROMO";
+
+						$subventionPromo = 0;
+						
+						
+						if($tmp_promo)
+						{
+							// la promo est active
+							foreach(request()->formule as $value)
+							{		
+								if(in_array($value,$tmp_promo->promoFormule()))
+								{
+									$subventionPromo += $tmp_promo->subvention;
+								}
+							}
+							$transPromoOnFormule->montant = $subventionPromo;
+							$rapport->promo_id = $tmp_promo->id;
+							$rapport->promo = true;
+						}
+						else
+						{
+							// la promo est inactive
+							if(request()->promo_id != 'none')
+							{
+								$laPromo = $p->find(request()->promo_id);
+								if($laPromo->type == 'on_formule')
+								{
+									$promo_fin_to_carbon_date = new Carbon($laPromo->fin);
+									$promo_debut_to_carbon_date = new Carbon($laPromo->debut);
+									$rapport_date_to_carbon_date = new Carbon(request()->date);
+
+									foreach(request()->formule as $value)
+									{		
+										if(in_array($value,$laPromo->promoFormule()))
+										{
+											$subventionPromo += $laPromo->subvention;
+										}
+									}
+	
+									if(!($promo_fin_to_carbon_date >= $rapport_date_to_carbon_date && $rapport_date_to_carbon_date >= $promo_debut_to_carbon_date))
+									{
+										throw new AppException("La date choisie ne se trouve pas dans la periode promo.");
+									}
+									
+									$transPromoOnFormule->montant = $subventionPromo;
+									$rapport->promo_id = $laPromo->id;
+									$rapport->promo = true;
+								}
+							}
+
+						}
+
+						if($subventionPromo > 0)
+						{
+							$receiver_account->solde += $subventionPromo;
+							$sender_account->solde -= $subventionPromo;
+						}
+
+
+
+
+						// return response()->json([$transPromoOnFormule,$subventionPromo],200);
+						
 						foreach($user_stock as $value) {
 							$value->update();
 						}
@@ -468,41 +567,18 @@ Trait Rapports {
 								$allAbonnOption_data[$key]->save();
 							}							
 						}
-
-						// TRANSACTION PAIEMENT MARGE MATERIEL
-						$mat = $serialNumbers->first()->produit();
-						$montantTransaction = ceil(($mat->marge / 1.18) * request()->quantite_materiel);
-
-						$receiver_account = $user_rapport->afroCash()->first();
-						$sender_user = User::where('type','logistique')
-							->first();
-						
-						$sender_account = $sender_user->afroCash()->first();
-
-						$receiver_account->solde += $montantTransaction;
-						$sender_account->solde -= $montantTransaction;
-
-						
-						#ENREGISTREMENT DE LA TRANSACTION // ACTION DISPONIBLE SEULEMENT POUR LE DISTRIBUTEUR
-
-						if($user_rapport->type == 'v_da') {
-
-							$trans = new TransactionAfrocash;
-							$trans->compte_credite = $receiver_account->numero_compte;
-							$trans->compte_debite = $sender_account->numero_compte;
-							$trans->montant = $montantTransaction;
-							$trans->motif = "Paiement_Marge_Materiel";
-							$trans->rapport_id = $id_rapport;
-
-							$receiver_account->update();
-							$sender_account->update();
-							$trans->save();
+						$receiver_account->update();
+						$sender_account->update();
+						$trans->save();
+						if($subventionPromo > 0)
+						{
+							$transPromoOnFormule->save();
 						}
 						
 												
 						// redirection
 						return response()
-							->json('done');
+							->json('done',200);
 						
 					break;
 					case 'reabonnement':

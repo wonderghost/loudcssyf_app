@@ -104,10 +104,6 @@ class RecrutementController extends Controller
                 ->whereIn('produit',$article)
                 ->get();
 
-            // foreach($stock_vendeur as $value) {
-            //     $value->quantite --;
-            // }
-
             $vente = new Ventes;
             $vente->nom = request()->nom;
             $vente->prenom = request()->prenom;
@@ -129,25 +125,8 @@ class RecrutementController extends Controller
             $userAfrocash = request()->user()->afroCash()->first();
 
             # TRANSACTION MARGE MATERIEL
-
-            // $logistiqueUser = User::where('type','logistique')
-            //     ->first();
-            // $logistiqueAccount = $logistiqueUser->afrocash()->where('type','courant')
-            //     ->first();
-
-            // $montantMargeMateriel = ceil($produit->marge / 1.18);
-
-            // $userAfrocash->solde += $montantMargeMateriel;
-            // $logistiqueAccount->solde -= $montantMargeMateriel;
-
-            // $trans = new TransactionAfrocash;
-            // $trans->compte_credite = $userAfrocash->numero_compte;
-            // $trans->compte_debite = $logistiqueAccount->numero_compte;
-            // $trans->montant = $montantMargeMateriel;
-            // $trans->motif = "Paiement_Marge_Materiel";
-
             // Changement  de status du materiel EASY
-            // $materiel->status = 'actif';
+            
             $msg = "Bonjour, votre abonnement est activé pour ".request()->duree." mois , à la formule ".request()->formule." , par ".request()->user()->localisation."\nMerci pour votre fidelite.";
             $msgEasy = "E#";
             $msgEasy .= request()->nom.request()->prenom."#";
@@ -177,48 +156,13 @@ class RecrutementController extends Controller
                     $transVenteRecrutement->motif = "Vente_Recrutement";
 
                     if($transVenteRecrutement->save()) {
-                        // debit de la quantite de stock
-                        // foreach($stock_vendeur as $value) {
-                        //     $value->update();
-                        // }
-
                         if($userAfrocash->update() && $userAfrocashGrossiste->update()) {
                            // recrutement easy tv
                             return response()->json('done',200);
-                        //    if($this->sendSmsToNumber($this->easyReceiverPhone,$msgEasy))
-                        //    {
-                        //         return response()->json('done',200);
-                        //    }
-                        //    else
-                        //    {
-                        //         return response()->json('done',200);
-                        //    }
                         }
                     }
                     
                 }
-                // else if(request()->user()->type == 'v_da')
-                // {
-                //     // Distributeur Agree
-                    
-                //     foreach($stock_vendeur as $value) {
-                //         $value->update();
-                //     }
-    
-                //     if($trans->save() && $materiel->update()) {
-                //         if($logistiqueAccount->update() && $userAfrocash->update()) {
-                //             // recrutement easy tv
-                //             if($this->sendSmsToNumber($this->easyReceiverPhone,$msgEasy))
-                //             {
-                //                 return response()->json('done',200);
-                //             }
-                //             else
-                //             {
-                //                 return response()->json('done',200);
-                //             }
-                //         }
-                //     }
-                // }
             }
             throw new AppException("Erreur de traitement , ressayez.");
         }

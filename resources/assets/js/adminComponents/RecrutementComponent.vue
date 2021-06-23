@@ -72,9 +72,9 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             Loading
         },
         props : {
-            rappDate : String,
-            rappVendeur : String,
-            promoId : String
+          rappDate : String,
+          rappVendeur : String,
+          promoId : String
         },
         mounted() {
             
