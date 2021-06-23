@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 use App\User;
 use App\Traits\Similarity;
 use App\Kits;
+use App\Promo;
 
 class RecrutementController extends Controller
 {
@@ -257,14 +258,37 @@ class RecrutementController extends Controller
             if($userAfrocashGrossiste->solde < request()->montant + $produit->prix_vente) {
                 throw new AppException("Montant indisponibile.");
             }
+
+            // traitement a effectuer en cas de promo sur la formule
+            $promo = Promo::where('type','on_formule')->where('status_promo','actif')->first();
+
+            $montantTransaction = 0;
+
+            if($promo)
+            {
+                // la promo est active
+                if(in_array(request()->formule,$promo->promoFormule()))
+                {
+                    $montantTransaction = request()->montant + $promo->prix_vente;
+                }
+                else 
+                {
+                    $montantTransaction = request()->montant + $produit->prix_vente;
+                }
+            }
+            else 
+            {
+                $montantTransaction = request()->montant + $produit->prix_vente;
+            }
             
-            $userAfrocashGrossiste->solde -= request()->montant + $produit->prix_vente;
-            $userAfrocash->solde += request()->montant + $produit->prix_vente;
+            $userAfrocashGrossiste->solde -= $montantTransaction;
+            $userAfrocash->solde += $montantTransaction;
+            
 
             $trans = new TransactionAfrocash;
             $trans->compte_credite = $userAfrocash->numero_compte;
             $trans->compte_debite = $userAfrocashGrossiste->numero_compte;
-            $trans->montant = request()->montant + $produit->prix_vente;
+            $trans->montant = $montantTransaction;
             $trans->motif = "Vente_Recrutement";
 
             if($vente->save()) {

@@ -488,6 +488,7 @@ Trait Rapports {
 						$transPromoOnFormule->compte_credite = $receiver_account->numero_compte;
 						$transPromoOnFormule->compte_debite = $sender_account->numero_compte;
 						$transPromoOnFormule->motif = "SUBVENTION_PROMO";
+						$transPromoOnFormule->rapport_id = $id_rapport;
 
 						$subventionPromo = 0;
 						
@@ -569,7 +570,10 @@ Trait Rapports {
 						}
 						$receiver_account->update();
 						$sender_account->update();
-						$trans->save();
+						if($user_rapport->type == 'v_da')
+						{
+							$trans->save();
+						}
 						if($subventionPromo > 0)
 						{
 							$transPromoOnFormule->save();
