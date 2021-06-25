@@ -242,7 +242,6 @@ class RecrutementController extends Controller
             $vente->formule = request()->formule;
             $vente->duree = request()->duree;
             $vente->telephone = request()->telephone;
-            $vente->montant = request()->montant + $produit->prix_vente;
             $vente->id_user = request()->user()->username;
             $vente->type = 'recrutement';
             $vente->option = "";
@@ -284,6 +283,7 @@ class RecrutementController extends Controller
             $userAfrocashGrossiste->solde -= $montantTransaction;
             $userAfrocash->solde += $montantTransaction;
             
+            $vente->montant = $montantTransaction;
 
             $trans = new TransactionAfrocash;
             $trans->compte_credite = $userAfrocash->numero_compte;
