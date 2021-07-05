@@ -487,7 +487,7 @@ Trait Rapports {
 						$transPromoOnFormule = new TransactionAfrocash;
 						$transPromoOnFormule->compte_credite = $receiver_account->numero_compte;
 						$transPromoOnFormule->compte_debite = $sender_account->numero_compte;
-						$transPromoOnFormule->motif = "SUBVENTION_PROMO";
+						$transPromoOnFormule->motif = "SUBVENTION_PROMO_SAT";
 						$transPromoOnFormule->rapport_id = $id_rapport;
 
 						$subventionPromo = 0;
@@ -1215,7 +1215,7 @@ Trait Rapports {
 						$transPromo = new TransactionAfrocash;
 						$transPromo->compte_credite = $receiver_account->numero_compte;
 						$transPromo->compte_debite = $sender_account->numero_compte;
-						$transPromo->motif = "SUBVENTION_PROMO";
+						$transPromo->motif = "SUBVENTION_PROMO_SAT";
 
 						if($tmp_promo)
 						{
