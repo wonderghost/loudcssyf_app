@@ -585,7 +585,23 @@ class AdminController extends Controller
         $promo->fin = request()->fin;
         $promo->subvention = request()->subvention;
         $promo->description = request()->description;
+        // if(request()->type == 'kit_easy')
+        // {
+        //   $kit = Kit::find('kit-easy-tv');
+        //   $terminal = $kit->getTerminalReference();
+        //   $prix_
+        //   $prix_vente_normal = Produits::where('with_serial',1)->first() ? Produits::where('with_serial',1)->first()->prix_vente : 0;
+        // }
+        // else if(request()->type == 'on_formule')
+        // {
+
+        // }
+        // else
+        // {
+
+        // }
         $prix_vente_normal = Produits::where('with_serial',1)->first() ? Produits::where('with_serial',1)->first()->prix_vente : 0;
+
         $promo->prix_vente = $prix_vente_normal - request()->subvention;
 
         if($promo->prix_vente <= 0)
@@ -639,8 +655,19 @@ class AdminController extends Controller
         $promo->fin = $request->input('fin');
         $promo->description = $request->input('description');
         $promo->subvention = $request->input('subvention');
-        $prix_vente_normal = Produits::where('with_serial',1)->first() ? Produits::where('with_serial',1)->first()->prix_vente : 0;
-        $promo->prix_vente = $prix_vente_normal - $request->input('subvention');
+        if($promo->type == 'kit_easy')
+        {
+          $kit = Kits::find('kit-easy-tv');
+          $terminal = $kit->getTerminalReference();
+        }
+        else
+        {
+          $kit = Kits::find('kits-canal-sat');
+          $terminal = $kit->getTerminalReference();
+        }
+
+        $promo->prix_vente = $terminal->prix_vente - $request->input('subvention');
+        
         if($promo->prix_vente <= 0) {
           throw new AppException("Valeur de la subvention invalide!");
         }

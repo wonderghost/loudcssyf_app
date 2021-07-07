@@ -252,7 +252,7 @@
                                             <td>{{lp.status_promo}}</td>
                                             <td>
                                                 <template v-if="lp.status_promo == 'actif'">
-                                                    <button class="uk-button-primary uk-button-small uk-border-rounded">Editer</button>
+                                                    <button @click="() => { activePromo = lp; formState = 'edit' ; editPromo();  }" class="uk-button-primary uk-button-small uk-border-rounded">Editer</button>
                                                     <button @click="() => {activePromo = lp ; abortPromo();}" class="uk-button-danger uk-button-small uk-border-rounded">Interrompre</button>
                                                 </template>
                                             </td>
