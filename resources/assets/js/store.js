@@ -32,9 +32,24 @@ const store = new Vuex.Store({
     alertCount : 0,
     alertInactifCount : 0,
     infosComissionPercent : {},
-    reactivationCount : 0
+    reactivationCount : 0,
+    recrutementAfrocashLength : 0,
+    venteGCompteLength : 0,
+    reaboAfrocashLength : 0,
   },
   mutations : {
+    setReaboAfrocashLength(state,data)
+    {
+      state.reaboAfrocashLength = data
+    },
+    setVenteGCompteLength(state,data)
+    {
+      state.venteGCompteLength = data
+    },
+    setRecrutementAfrocashLength(state,data)
+    {
+      state.recrutementAfrocashLength = data
+    },
     setReactivationCount(state,data) {
       state.reactivationCount = data
     },

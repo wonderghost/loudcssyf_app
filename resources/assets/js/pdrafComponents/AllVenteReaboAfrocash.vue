@@ -23,11 +23,12 @@
             <div class="uk-navbar-left">
                 <ul class="uk-navbar-nav">
                     <template v-if="$route.path == '/all-ventes-pdraf'">
-                        <li><router-link to="/all-ventes-pdraf/recrutement-afrocash">Recrutements</router-link></li>
-                        <li><router-link to="/vente-grand-compte">Vente GC</router-link></li>
+                        <li><router-link to="/all-ventes-pdraf/recrutement-afrocash">Recrutements <sup class="uk-badge"> {{ recrutementAfrocashLength }}</sup></router-link></li>
+                        <li><router-link to="/vente-grand-compte">Vente GC <sup class="uk-badge"> {{ venteGCompteLength }}</sup></router-link></li>
                     </template>
                     <template v-else>
-                        <li><router-link to="/all-ventes-pdraf">Reabonnements</router-link></li>
+                        <li><router-link to="/all-ventes-pdraf">Reabonnements <sup class="uk-badge">{{ reaboAfrocashLength }}</sup></router-link></li>
+                        <li><router-link to="/vente-grand-compte">Vente GC <sup class="uk-badge"> {{ venteGCompteLength }}</sup></router-link></li>
                     </template>
                 </ul>
             </div>
@@ -586,6 +587,9 @@ import VueSingleSelect from "vue-single-select";
                     if(response && theResponse) {
                         this.isLoading = false
                         this.all = response.data.all
+                        this.$store.commit('setRecrutementAfrocashLength',response.data.recrutement_count)
+                        this.$store.commit('setVenteGCompteLength',response.data.ventegc_count)
+                        this.$store.commit('setReaboAfrocashLength',response.data.reabonnement_count)
                         
                         this.nextUrl = response.data.next_url
                         this.lastUrl = response.data.last_url
@@ -628,6 +632,18 @@ import VueSingleSelect from "vue-single-select";
             }
         },
         computed : {
+            reaboAfrocashLength()
+            {
+                return this.$store.state.reaboAfrocashLength
+            },
+            venteGCompteLength()
+            {
+                return this.$store.state.venteGCompteLength
+            },
+            recrutementAfrocashLength()
+            {
+                return this.$store.state.recrutementAfrocashLength
+            },
             getUsername() {
                 if(this.userText != null && this.userText != '') {
 

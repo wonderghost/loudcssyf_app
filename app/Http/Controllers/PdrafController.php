@@ -26,6 +26,7 @@ use Carbon\Carbon;
 use App\RecrutementAfrocash;
 use App\RecrutementAfrocashOption;
 use App\InterventionTechnicien;
+use App\VenteGrandCompte;
 
 class PdrafController extends Controller
 {
@@ -2704,6 +2705,19 @@ class PdrafController extends Controller
 
             }
 
+            // Recrutement length
+            $recrutementLength = RecrutementAfrocash::select()
+                ->orderBy('created_at','desc')
+                ->whereNull('confirm_at')
+                ->whereNull('remove_at')
+                ->count();
+
+            // Vente grand compte length
+
+            $venteGCompteLength = VenteGrandCompte::whereNull('confirmed_at')
+                ->whereNull('removed_at')
+                ->count();
+
             return response()
                 ->json([
                     'all'   =>  $all,
@@ -2713,7 +2727,9 @@ class PdrafController extends Controller
 					'current_page'	=>	$data->currentPage(),
 					'first_page'	=>	$data->url(1),
 					'first_item'	=>	$data->firstItem(),
-					'total'	=>	$data->total()
+					'total'	=>	$data->total(),
+                    'recrutement_count' =>  $recrutementLength,
+                    'ventegc_count' =>  $venteGCompteLength
                 ]);
 
 
@@ -4690,6 +4706,17 @@ class PdrafController extends Controller
                 ];
             }
 
+            // Reabonnement length
+            $reabonnementLength = ReaboAfrocash::whereNull('confirm_at')
+                ->whereNull('remove_at')
+                ->count();
+            
+                // Vente grand compte length
+
+            $venteGCompteLength = VenteGrandCompte::whereNull('confirmed_at')
+            ->whereNull('removed_at')
+            ->count();
+
             return response()
                 ->json([
                     'all'   =>  $all,
@@ -4699,7 +4726,9 @@ class PdrafController extends Controller
 					'current_page'	=>	$data->currentPage(),
 					'first_page'	=>	$data->url(1),
 					'first_item'	=>	$data->firstItem(),
-					'total'	=>	$data->total()
+					'total'	=>	$data->total(),
+                    'reabonnement_count'    =>  $reabonnementLength,
+                    'ventegc_count'  =>  $venteGCompteLength
                 ]);
         }
         catch(AppException $e) {

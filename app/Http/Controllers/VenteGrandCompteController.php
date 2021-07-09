@@ -10,6 +10,9 @@ use App\Credit;
 use App\ReaboAfrocashSetting;
 use App\User;
 use App\TransactionAfrocash;
+use App\RecrutementAfrocash;
+use App\ReaboAfrocash;
+
 
 class VenteGrandCompteController extends Controller
 {
@@ -45,7 +48,22 @@ class VenteGrandCompteController extends Controller
                     $value->status = 'removed';
                 }
             }
-            return response()->json($result,200);
+            
+            // Reabonnement length
+            $reabonnementLength = ReaboAfrocash::whereNull('confirm_at')
+                ->whereNull('remove_at')
+                ->count();
+
+            // Recrutement length
+            $recrutementLength = RecrutementAfrocash::whereNull('confirm_at')
+                ->whereNull('remove_at')
+                ->count();
+
+            return response()->json([
+                'result'    =>  $result,
+                'reabo_count'   =>  $reabonnementLength,
+                'recrutement_count' =>  $recrutementLength
+            ],200);
         }
         catch(AppException $e)
         {

@@ -17,6 +17,15 @@
         <h3>Vente(s) Grand Compte</h3>
         <hr class="uk-divider-small">
 
+        <nav class="" uk-navbar>
+            <div class="uk-navbar-left">
+                <ul class="uk-navbar-nav">
+                    <li><router-link to="/all-ventes-pdraf/recrutement-afrocash">Recrutements <sup class="uk-badge"> {{ recrutementAfrocashLength }}</sup></router-link></li>
+                    <li><router-link to="/all-ventes-pdraf">Reabonnements <sup class="uk-badge">{{ reaboAfrocashLength }}</sup></router-link></li>
+                </ul>
+            </div>
+        </nav>
+
         <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover uk-table-divider uk-table-responsive">
             <thead>
                 <tr>
@@ -95,7 +104,9 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     let response = await axios.get('/vente-grand-compte')
                     if(response.status == 200)
                     {
-                        this.ventes = response.data
+                        this.ventes = response.data.result
+                        this.$store.commit('setRecrutementAfrocashLength',response.data.recrutement_count)
+                        this.$store.commit('setReaboAfrocashLength',response.data.reabo_count)
                         this.isLoading = false
                     }
                 }
@@ -174,6 +185,14 @@ import 'vue-loading-overlay/dist/vue-loading.css';
             }
         },
         computed : {
+            recrutementAfrocashLength()
+            {
+                return this.$store.state.recrutementAfrocashLength
+            },
+            reaboAfrocashLength()
+            {
+                return this.$store.state.reaboAfrocashLength
+            },
             myToken()
             {
                 return this.$store.state.myToken
