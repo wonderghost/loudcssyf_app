@@ -24,7 +24,7 @@ class VenteGrandCompteController extends Controller
     {
         try
         {
-            $result = VenteGrandCompte::all();
+            $result = VenteGrandCompte::orderBy('created_at','desc')->get();
             
             foreach($result as $value)
             {
