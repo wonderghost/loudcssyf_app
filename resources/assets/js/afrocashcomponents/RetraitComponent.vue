@@ -79,13 +79,12 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                     this.dataForm._token = this.myToken
                     let response = await axios.post('/user/afrocash/retrait',this.dataForm)
 
-                    if(response && response.data == 'done') {
+                    if(response.status == 200) {
                         alert("Retrait initie avec success!")
                         this.dataForm.identifiant = ""
                         this.dataForm.montant = ""
                         this.dataForm.password = ""
                         this.isLoading = false
-
                     }
                 }
                 catch(error) {

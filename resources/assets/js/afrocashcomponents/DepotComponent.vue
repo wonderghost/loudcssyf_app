@@ -45,7 +45,7 @@
                         </div>
                         <div class="uk-width-1-1@m">
                             <label for=""><span uk-icon="credit-card"></span> Montant</label>
-                            <input v-model="dataForm.montant" type="number" class="uk-input uk-border-rounded" placeholder="Montant du retrait (ex : 10000)">
+                            <input v-model="dataForm.montant" type="number" class="uk-input uk-border-rounded" placeholder="Montant du depot (ex : 10000)">
                         </div>
                         <div class="uk-width-1-1@m">
                             <label for=""><span uk-icon="lock"></span> Mot de passe</label>
@@ -112,7 +112,6 @@ import 'vue-loading-overlay/dist/vue-loading.css';
                         this.dataForm.password = ""
                         this.isLoading = false
                         this.onInit()
-
                     }
                 }
                 catch(error) {

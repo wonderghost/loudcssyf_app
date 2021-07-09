@@ -978,7 +978,7 @@ public function getInfosRemboursementPromo(Request $request,
 				throw new AppException("Mot de passe invalide !");
 			}
 
-			if(!in_array(request()->user()->type,['pdraf','v_da','v_standart'])) {
+			if(!in_array(request()->user()->type,['v_da','v_standart'])) {
 				throw new AppException("Action non autorisee !");
 			}
 
@@ -997,11 +997,19 @@ public function getInfosRemboursementPromo(Request $request,
 				->whereNull('remove_at')
 				->first();
 
-			if($retraitExistant) {
+			if($retraitExistant)
+			{
 				throw new AppException("Un retrait est deja en attente de confirmation ...");
 			}
 
-			$initiateurAccount = request()->user()->afroCash()->first();
+			if(request()->user()->type != 'v_standart')
+			{
+				$initiateurAccount = request()->user()->afroCash()->first();
+			}
+			else
+			{
+				$initiateurAccount = request()->user()->afroCash('semi_grossiste')->first();
+			}
 
 			$retraitInstance = new RetraitAfrocash;
 			$retraitInstance->montant = request()->montant;
@@ -1054,7 +1062,8 @@ public function getInfosRemboursementPromo(Request $request,
 				throw new AppException("Mot de passe invalide !");
 			}
 
-			if(!in_array(request()->user()->type,['pdraf','v_da','v_standart'])) {
+			if(!in_array(request()->user()->type,['v_da','v_standart']))
+			{
 				throw new AppException("Action non autorisee !");
 			}
 
@@ -1066,8 +1075,17 @@ public function getInfosRemboursementPromo(Request $request,
 				throw new AppException("Destinataire invalide !");
 			}
 
+			// Expeditaire user
+
 			$expUser = request()->user();
-			$expAccount = $expUser->afroCash()->first();
+			if($expUser->type != 'v_standart')
+			{
+				$expAccount = $expUser->afroCash()->first();
+			}
+			else
+			{
+				$expAccount = $expUser->afroCash('semi_grossiste')->first();
+			}
 
 			if($expAccount->solde < request()->montant) {
 				throw new AppException("Montant Indisponible.");

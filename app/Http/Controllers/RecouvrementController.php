@@ -156,7 +156,7 @@ class RecouvrementController extends Controller
           'type'  =>  'semi_grossiste',
           'vendeurs'  =>  $vendeur
         ])->get())->whereNull('recouvrement')
-          ->where('motif','RETOUR_AFROCASH')
+          ->whereIn('motif',['RETOUR_AFROCASH','Retrait_Afrocash'])
           ->sum('montant');
 
         $total = $ta->whereIn('compte_debite',Afrocash::select('numero_compte')->where([
@@ -165,9 +165,9 @@ class RecouvrementController extends Controller
         ])->get())->whereNull('recouvrement')
           ->sum('montant');
 
-        return response()
-          ->json($total - $retourAfrocash);
-      } catch (AppException $e) {
+        return response()->json($total - $retourAfrocash,200);
+      } 
+      catch (AppException $e) {
         header("Erreur!",true,422);
         die(json_encode($e->getMessage()));
       }
