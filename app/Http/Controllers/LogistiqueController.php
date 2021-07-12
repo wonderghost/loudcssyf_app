@@ -886,7 +886,7 @@ class LogistiqueController extends Controller
         ->where('status','inactif')
         ->get();
 
-      if(request()->user()->type == 'admin')
+      if(in_array(request()->user()->type,['admin','logistique']))
       {
         $stock = $s
           ->whereIn('exemplaire',$non_attribuer)

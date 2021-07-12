@@ -40,7 +40,7 @@ class RecouvrementController extends Controller
             'type'  =>  'semi_grossiste',
             'vendeurs'  =>  $request->input('vendeurs')
           ])->get())->whereNull('recouvrement')
-            ->where('motif','RETOUR_AFROCASH')
+            ->whereIn('motif',['RETOUR_AFROCASH','Retrait_Afrocash'])
             ->sum('montant');
 
           if($request->input('montant') != ($total - $retourAfrocash)) {
@@ -86,7 +86,7 @@ class RecouvrementController extends Controller
           TransactionAfrocash::whereIn('compte_credite',Afrocash::select('numero_compte')->where([
             'type'  =>  'semi_grossiste',
             'vendeurs'  =>  $request->input('vendeurs')
-          ])->get())->whereNull('recouvrement')->where('motif','RETOUR_AFROCASH')->update([
+          ])->get())->whereNull('recouvrement')->whereIn('motif',['RETOUR_AFROCASH','Retrait_Afrocash'])->update([
             'recouvrement' =>  $temp
           ]);
 
