@@ -334,7 +334,8 @@ Route::middleware(['auth','unblocked'])->group(function () {
 	Route::post('/user/rapport/check-serial','RapportControlleur@checkSerial')->middleware('controleur');
 	Route::get('/user/formule/list','AdminController@listFormule');
 	
-	Route::post('/user/rapport/check-upgrade','RapportControlleur@checkSerialOnUpgradeState');
+	// Route::post('/user/rapport/check-upgrade','RapportControlleur@checkSerialOnUpgradeState');
+	Route::post('/user/rapport/check-upgrade','RapportControlleur@checkUpgradeState');
 	
 	Route::get('/user/rapport/filter/{type}/{state}/{promo}/{payState}/{user}/{from}/{to}','AdminController@filterRapportRequest');
 	Route::get('/user/rapport/all','AdminController@getAllRapport');

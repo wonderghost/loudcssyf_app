@@ -2162,4 +2162,51 @@ public function abortRapport(Request $request , RapportVente $r , StockVendeur $
 			die(json_encode($e->getMessage()));
 		}
 	}
+
+	/**
+	 * check upgrade new
+	 */
+	public function checkUpgradeState()
+    {
+        try
+        {
+            $materiel = Exemplaire::find(request()->serial_number);
+            $abonnements = $materiel ? $materiel->abonnements() : [];
+            $actifAbonne = null;
+			$debut = null;
+			$now = Carbon::now();
+
+            foreach($abonnements as $value)
+            {
+                $debut = new Carbon($value->debut);
+                $diff = $debut->diffInDays($now);
+                
+                if($diff > 0 && $diff < 30)
+                {
+                    $actifAbonne = $value;
+                    break;
+                }
+            }
+
+			$actifAbonne->formule_prix = $actifAbonne->formule()->prix;
+			$fin_abonnement = $debut->addMonths($actifAbonne->duree)
+				->subDay()
+				->addHours(23)
+				->addMinutes(59)
+				->addSeconds(59);
+			$actifAbonne->jour_restant = $fin_abonnement->diffInDays($now);
+			if($actifAbonne->jour_restant < 15 && $actifAbonne->jour_restant > 0) {
+				$actifAbonne->mois_restant = 1;
+			}
+			else {
+				$actifAbonne->mois_restant = round($fin_abonnement->diffInDays($now) / 28);
+			}
+            return response()->json($actifAbonne,200);
+        }
+        catch(ErrorException $e)
+        {
+            header("Erreur",true,422);
+            return response()->json($e->getMessage(),422);
+        }
+    }
 }
