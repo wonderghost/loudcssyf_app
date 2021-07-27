@@ -51,7 +51,11 @@ class LoginController extends Controller
         ]);
         try {
             $credentials = $request->only('username', 'password');
-            if (Auth::attempt($credentials)) {
+            if (Auth::attempt([
+                'username'  =>  request()->username,
+                'password'  => request()->password,
+                'type'  =>  ['v_da','v_standart','logistique','gcga','coursier','controleur','commerciale','admin','gdepot']
+            ])) {
             // Authentication passed...
             return response()
                 ->json('done');
