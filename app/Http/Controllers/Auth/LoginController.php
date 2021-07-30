@@ -54,7 +54,7 @@ class LoginController extends Controller
             if (Auth::attempt([
                 'username'  =>  request()->username,
                 'password'  => request()->password,
-                'type'  =>  ['v_da','v_standart','logistique','gcga','controleur','commerciale','admin','gdepot']
+                'type'  =>  ['v_da','v_standart','logistique','gcga','controleur','commercial','admin','gdepot']
             ])) {
             // Authentication passed...
             return response()
