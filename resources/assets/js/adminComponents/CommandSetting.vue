@@ -48,7 +48,7 @@
                         <div class="uk-grid-small uk-margin-top" uk-grid>
                             <div v-for="(m,index) in materials" :key="index" class="uk-width-1-2@m">
                                 <label for="">{{m.libelle}}</label>
-                                <input v-model="dataForm.materiels" type="checkbox" :id="m.reference" :value="m.reference" class="uk-border uk-checkbox">    
+                                <input v-model="dataForm.materiels" type="checkbox" :id="m._reference" :value="m._reference" class="uk-border uk-checkbox">    
                             </div>
                         </div>
                     </div>
@@ -90,7 +90,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
             Loading
         },
         beforeMount() {
-            UIkit.offcanvas($("#side-nav")).hide();
             this.getData()
             this.onInit()
         },

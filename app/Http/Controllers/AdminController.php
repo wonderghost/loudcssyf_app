@@ -85,7 +85,8 @@ class AdminController extends Controller
           'marge_pdc' => $value->marge_pdc,
           'marge_pdraf' =>  $value->marge_pdraf,
           'with_serial' =>  $value->with_serial,
-          'reference' =>  Crypt::encryptString($value->reference)
+          'reference' =>  Crypt::encryptString($value->reference),
+          '_reference'  =>  $value->reference
         ];
       }
       return response()->json($data);
